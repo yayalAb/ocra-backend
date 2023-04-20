@@ -17,16 +17,22 @@ namespace AppDiv.CRVS.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
         {
+            // services.AddDbContext<CRVSDbContext>(
+            //     options => options.UseSqlServer(
+            //         configuration.GetConnectionString("CRVSConnectionString"),
+            //         o => o.MigrationsAssembly(typeof(ServiceContainer).Assembly.FullName)
+            //     ).EnableSensitiveDataLogging()
+            // );
             services.AddDbContext<CRVSDbContext>(
-                options => options.UseSqlServer(
-                    configuration.GetConnectionString("CRVSConnectionString"),
-                    o => o.MigrationsAssembly(typeof(ServiceContainer).Assembly.FullName)
-                ).EnableSensitiveDataLogging()
-            );
+                options =>
+            options.UseMySql(configuration.GetConnectionString("CRVSConnectionString"),
+                  Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.29-mysql"),
+                  mySqlOptions => mySqlOptions.EnableRetryOnFailure()));
           
             services.AddIdentity<ApplicationUser, IdentityRole>()
                       .AddEntityFrameworkStores<CRVSDbContext>()
                       .AddDefaultTokenProviders();
+
 
             services.Configure<IdentityOptions>(options =>
             {

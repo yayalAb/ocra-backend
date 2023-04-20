@@ -10,12 +10,11 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
 {
     public class CreateUserCommand : IRequest<int>
     {
-        public string FullName { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public string ConfirmationPassword { get; set; }
-        public List<string> Roles { get; set; }
+        public string UserGroupId { get; set; }
+        public string PersonalInfoId { get; set;}
     }
 
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
@@ -27,13 +26,12 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         }
         public async Task<int> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
-            var result = await _identityService.CreateUserAsync(
+            var response = await _identityService.createUser(
                 request.UserName,
-                request.Password,
                 request.Email,
-                request.FullName,
-                request.Roles);
-            return result.isSucceed ? 1 : 0;
+                request.UserGroupId,
+                request.PersonalInfoId);
+            return response.result.Succeeded ? 1 : 0;
         }
     }
 }

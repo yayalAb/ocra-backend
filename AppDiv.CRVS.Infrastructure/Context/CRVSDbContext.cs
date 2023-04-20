@@ -7,7 +7,6 @@ using Audit.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Newtonsoft.Json;
-using AppDiv.CRVS.Domain.Configurations;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Infrastructure.Seed;
@@ -24,7 +23,6 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Suffix> Suffixes { get; set; }
-        public DbSet<Customer> Customers { get; set; }
         public CRVSDbContext(DbContextOptions<CRVSDbContext> options, IUserResolverService userResolverService) : base(options)
         {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -46,15 +44,14 @@ namespace AppDiv.CRVS.Infrastructure
               //  modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new GenderEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new SuffixEntityConfiguration());
-                modelBuilder.ApplyConfiguration(new CustomerEntityConfiguration());
             }
             #endregion
             base.OnModelCreating(modelBuilder);
-            SeedData.SeedRoles(modelBuilder);
-            SeedData.SeedUsers(modelBuilder);
-            SeedData.SeedUserRoles(modelBuilder);
-            SeedData.SeedGender(modelBuilder);
-            SeedData.SeedSuffix(modelBuilder);
+            // SeedData.SeedRoles(modelBuilder);
+            // SeedData.SeedUsers(modelBuilder);
+            // SeedData.SeedUserRoles(modelBuilder);
+            // SeedData.SeedGender(modelBuilder);
+            // SeedData.SeedSuffix(modelBuilder);
 
             #region Audit Config
             Audit.Core.Configuration.Setup()

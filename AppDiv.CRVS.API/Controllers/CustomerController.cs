@@ -16,9 +16,9 @@ namespace AppDiv.CRVS.API.Controllers
     [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin,Member")]
-    [Authorize]
-    [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member")]
+    // [Authorize(Roles = "Admin,Member")]
+    // [Authorize]
+    // [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member")]
 
     // Authorize with a specific scheme
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]

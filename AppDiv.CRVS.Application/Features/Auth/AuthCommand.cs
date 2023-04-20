@@ -29,21 +29,21 @@ namespace AppDiv.CRVS.Application.Features.Auth
 
         public async Task<AuthResponseDTO> Handle(AuthCommand request, CancellationToken cancellationToken)
         {
-            var result = await _identityService.SigninUserAsync(request.UserName, request.Password);
+            var response = await _identityService.AuthenticateUser(request.UserName, request.Password);
 
-            if (!result)
+            if (!response.result.Succeeded)
             {
-                throw new BadRequestException("Invalid username or password");
+                throw new InvalidLoginException(string.Join(",", response.result.Errors));
             }
 
-            var (userId, fullName, userName, email, roles) = await _identityService.GetUserDetailsAsync(await _identityService.GetUserIdAsync(request.UserName));
+            // var (userId, fullName, userName, email, roles) = await _identityService.GetUserDetailsAsync(await _identityService.GetUserIdAsync(request.UserName));
 
-            string token = _tokenGenerator.GenerateJWTToken((userId, userName, roles));
+            string token = _tokenGenerator.GenerateJWTToken((response.user.Id, response.user.UserName, response.roles));
 
             return new AuthResponseDTO()
             {
-                UserId = userId,
-                Name = userName,
+                UserId = response.user.Id,
+                Name = response.user.UserName,
                 Token = token
             };
         }

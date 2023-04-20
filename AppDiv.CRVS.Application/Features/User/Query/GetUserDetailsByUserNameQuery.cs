@@ -24,8 +24,9 @@ namespace AppDiv.CRVS.Application.Features.User.Query
         }
         public async Task<UserDetailsResponseDTO> Handle(GetUserDetailsByUserNameQuery request, CancellationToken cancellationToken)
         {
-            var (userId, fullName, userName, email, roles) = await _identityService.GetUserDetailsByUserNameAsync(request.UserName);
-            return new UserDetailsResponseDTO() { Id = userId, FullName = fullName, UserName = userName, Email = email, Roles = roles };
+            // var (userId, fullName, userName, email, roles) = await _identityService.GetUserDetailsByUserNameAsync(request.UserName);
+            return new UserDetailsResponseDTO() ;
+            // { Id = userId, FullName = fullName, UserName = userName, Email = email, Roles = roles };
         }
     }
 }

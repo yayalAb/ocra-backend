@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Domain.Configuration.Settings
         {
             builder.HasKey(m => m.Id);
             builder.HasIndex(m => m.Name, "IDX_UQ_Suffix").IsUnique();
-            builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETDATE()");
+            builder.Property(m => m.CreatedAt).HasDefaultValue(DateTime.Now);
         }
     }
 }

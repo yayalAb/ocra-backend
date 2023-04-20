@@ -51,5 +51,35 @@ namespace AppDiv.CRVS.Application.Service
             var encodedToken = new JwtSecurityTokenHandler().WriteToken(token);
             return encodedToken;
         }
+
+        //      private async Task<string> generateToken(ApplicationUser user)
+        // {
+        //     var userRoles = await _userManager.GetRolesAsync(user);
+
+        //     var claims = new List<Claim>
+        //     {
+
+        //        new Claim(ClaimTypes.NameIdentifier,user.Id.ToString()),
+        //        new Claim(ClaimTypes.Email, user.Email)
+        //    };
+        //     foreach (var userRole in userRoles)
+        //     {
+        //         claims.Add(new Claim(ClaimTypes.Role, userRole));
+
+        //     }
+        //     var token = new JwtSecurityToken(
+        //         issuer: _configuration["Jwt:Issuer"],
+        //         audience: _configuration["Jwt:Audience"],
+        //         claims: claims,
+        //         expires: DateTime.UtcNow.AddDays(1),
+        //         // AddDays(1),
+        //         notBefore: DateTime.UtcNow,
+        //         signingCredentials: new SigningCredentials(
+        //             key: new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"])),
+        //             algorithm: SecurityAlgorithms.HmacSha256)
+        //         );
+        //     var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+        //     return tokenString;
+        // }
     }
 }

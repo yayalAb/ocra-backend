@@ -5,23 +5,14 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : ApiControllerBase
     {
-        private readonly IMediator _mediator;
-
-        public AuthController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
-
 
         [HttpPost("Login")]
         [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
         public async Task<IActionResult> Login([FromBody] AuthCommand command)
         {
-            return Ok(await _mediator.Send(command));
+            return Ok(await Mediator.Send(command));
         }
     }
 }

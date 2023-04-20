@@ -10,7 +10,7 @@ namespace Ab.Domain.Configuration.Settings
         {
             builder.HasKey(m => m.Id);
             builder.HasIndex(m => m.Name, "IDX_UQ_Gender").IsUnique();
-            builder.Property(m => m.CreatedAt).HasDefaultValueSql("GETDATE()");
+            builder.Property(m => m.CreatedAt).HasDefaultValue(DateTime.Now);
         }
     }
 }
