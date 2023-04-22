@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Application.Service
         // public string GetUserGroupId(string userId){
         //     return  _userManager.Users.First(u => u.Id == userId).UserGroupId;
         // }
-        public async Task<(Result, string)> createUser(string userName, string email,  string personalInfoId, string userGroupId)
+        public async Task<(Result, string)> createUser(string userName, string email,  Guid personalInfoId, Guid userGroupId)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
             if (existingUser != null)
@@ -122,7 +122,7 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(string id, string userName, string email,  string personalInfoId, string userGroupId){
+        public async Task<Result> UpdateUser(string id, string userName, string email,  Guid personalInfoId, Guid userGroupId){
 
             var user = await _userManager.FindByIdAsync(id.ToString());
 

@@ -51,6 +51,12 @@ namespace AppDiv.CRVS.Infrastructure
             {
                 modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new UserGroupEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new PersonalInfoEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new LookupEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new AddressEntityConfiguration());
+
+
+
 
 
 

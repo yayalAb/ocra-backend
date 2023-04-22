@@ -13,8 +13,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         public string UserName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public string UserGroupId { get; set; }
-        public string PersonalInfoId { get; set;}
+        public Guid UserGroupId { get; set; }
+        public Guid PersonalInfoId { get; set;}
     }
 
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, int>
