@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.Lookup.Query.GetAllLookup
+namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
 
 {
     // Customer query with List<Customer> response

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.Lookup.Command.Create
+namespace AppDiv.CRVS.Application.Features.Lookups.Command.Create
 {
     public class CreateLookupCommadResponse : BaseResponse
     {

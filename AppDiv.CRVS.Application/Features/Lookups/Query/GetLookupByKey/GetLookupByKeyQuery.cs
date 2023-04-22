@@ -1,5 +1,5 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
-using AppDiv.CRVS.Application.Features.Lookup.Query.GetAllLookup;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
@@ -9,10 +9,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.Lookup.Query.GetLookupByKey
+namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
 {
 
-    public class GetLookupByKeyQuery : IRequest<LookupModel>
+    public class GetLookupByKeyQuery : IRequest<Lookup>
     {
         public string Key { get; private set; }
 
@@ -22,7 +22,7 @@ namespace AppDiv.CRVS.Application.Features.Lookup.Query.GetLookupByKey
         }
     }
 
-    public class GetLookupByKeyQueryHandler : IRequestHandler<GetLookupByKeyQuery, LookupModel>
+    public class GetLookupByKeyQueryHandler : IRequestHandler<GetLookupByKeyQuery, Lookup>
     {
         private readonly IMediator _mediator;
 
@@ -30,12 +30,12 @@ namespace AppDiv.CRVS.Application.Features.Lookup.Query.GetLookupByKey
         {
             _mediator = mediator;
         }
-        public async Task<LookupModel> Handle(GetLookupByKeyQuery request, CancellationToken cancellationToken)
+        public async Task<Lookup> Handle(GetLookupByKeyQuery request, CancellationToken cancellationToken)
         {
             var lookups = await _mediator.Send(new GetAllLookupQuery());
             var selectedCustomer = lookups.FirstOrDefault(x => x.Key.ToLower().Contains(request.Key.ToLower()));
 
-            return CustomMapper.Mapper.Map<LookupModel>(selectedCustomer);
+            return CustomMapper.Mapper.Map<Lookup>(selectedCustomer);
         }
     }
 }

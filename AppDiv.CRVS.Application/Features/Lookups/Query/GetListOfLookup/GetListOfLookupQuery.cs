@@ -1,5 +1,5 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
-using AppDiv.CRVS.Application.Features.Lookup.Query.GetAllLookup;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.Lookup.Query.GetListOfLookup
+namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
 {
     // Customer GetListOfLookupQuery with  response
     public class GetListOfLookupQuery : IRequest<ListOfLookupDTO>

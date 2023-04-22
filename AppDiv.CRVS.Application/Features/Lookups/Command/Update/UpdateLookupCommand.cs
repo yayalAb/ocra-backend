@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.Lookup.Command.Update
         public async Task<LookupDTO> Handle(UpdateLookupCommand request, CancellationToken cancellationToken)
         {
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request);
-            LookupModel LookupEntity = new LookupModel
+            Lookup LookupEntity = new Lookup
             {
                 Id = request.Id,
                 Key = request.Key,

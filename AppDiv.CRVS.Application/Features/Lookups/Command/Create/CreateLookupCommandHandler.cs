@@ -1,3 +1,4 @@
+using System.Linq;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Mapper;
@@ -7,7 +8,7 @@ using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 
-namespace AppDiv.CRVS.Application.Features.Lookup.Command.Create
+namespace AppDiv.CRVS.Application.Features.Lookups.Command.Create
 {
 
     public class CreateLookupCommandHandler : IRequestHandler<CreateLookupCommand, CreateLookupCommadResponse>
@@ -39,12 +40,12 @@ namespace AppDiv.CRVS.Application.Features.Lookup.Command.Create
             if (CreateLookupCommadResponse.Success)
             {
                 //can use this instead of automapper
-                var lookup = new LookupModel
+                var lookup = new Lookup
                 {
                     Id = Guid.NewGuid(),
                     Key = request.lookup.Key,
-                    valueStr = request.lookup.valueStr,
-                    descriptionStr = request.lookup.descriptionStr,
+                    ValueStr = request.lookup.valueStr,
+                    DescriptionStr = request.lookup.descriptionStr,
                     StatisticCode = request.lookup.StatisticCode,
                     Code = request.lookup.Code
                 };

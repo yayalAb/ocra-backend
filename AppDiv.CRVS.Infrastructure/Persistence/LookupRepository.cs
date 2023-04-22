@@ -11,23 +11,23 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
-    public class LookupRepository : BaseRepository<LookupModel>, ILookupRepository
+    public class LookupRepository : BaseRepository<Lookup>, ILookupRepository
     {
         public LookupRepository(CRVSDbContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<LookupModel> GetByIdAsync(Guid id)
+        public async Task<Lookup> GetByIdAsync(Guid id)
         {
             return await base.GetAsync(id);
         }
 
-        public Task<LookupModel> GetLookupByKey(string key)
+        public Task<Lookup> GetLookupByKey(string key)
         {
             return base.GetFirstEntryAsync(x => x.Key.Equals(key), q => q.Id, Utility.Contracts.SortingDirection.Ascending);
         }
 
-        public Task<LookupModel> GetLookupListByKey(string[] key)
+        public Task<Lookup> GetLookupListByKey(string[] key)
         {
             throw new NotImplementedException();
         }

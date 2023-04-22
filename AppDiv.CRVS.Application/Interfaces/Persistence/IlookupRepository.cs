@@ -3,12 +3,12 @@ using AppDiv.CRVS.Domain.Entities;
 
 namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
-    public interface ILookupRepository : IBaseRepository<LookupModel>
+    public interface ILookupRepository : IBaseRepository<Lookup>
     {
-        Task<IEnumerable<LookupModel>> GetAllAsync();
-        Task<LookupModel> GetByIdAsync(Guid id);
-        Task<LookupModel> GetLookupByKey(string key);
-        Task<LookupModel> GetLookupListByKey(string[] key);
+        Task<IEnumerable<Lookup>> GetAllAsync();
+        Task<Lookup> GetByIdAsync(Guid id);
+        Task<Lookup> GetLookupByKey(string key);
+        Task<Lookup> GetLookupListByKey(string[] key);
     }
 }
 
