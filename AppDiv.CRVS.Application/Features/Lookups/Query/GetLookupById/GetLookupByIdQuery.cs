@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupById
         public async Task<Lookup> Handle(GetLookupByIdQuery request, CancellationToken cancellationToken)
         {
             var lookups = await _mediator.Send(new GetAllLookupQuery());
-            var selectedlookup = lookups.FirstOrDefault(x => x.Key == request.Id);
+            var selectedlookup = lookups.FirstOrDefault(x => x.id == request.Id);
             return CustomMapper.Mapper.Map<Lookup>(selectedlookup);
             // return selectedCustomer;
         }

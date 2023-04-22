@@ -27,6 +27,8 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<UserGroup> UserGroups { get; set; }
         public DbSet<Address> Addresses { get; set; }
 
+        public DbSet<AuditLog> AuditLogs { get; set; }
+
 
 
 

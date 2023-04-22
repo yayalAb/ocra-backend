@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace AppDiv.CRVS.Infrastructure.Services
 {
-    public class UserResolverService: IUserResolverService
+    public class UserResolverService : IUserResolverService
     {
         private readonly IHttpContextAccessor httpContext;
 
@@ -20,7 +20,12 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         public Guid GetUserId()
         {
-            return new Guid(httpContext.HttpContext.User?.Claims?.SingleOrDefault(p => p.Type == "UserId")?.Value);
+            var guid = httpContext.HttpContext.User?.Claims?.SingleOrDefault(p => p.Type == "UserId")?.Value;
+            if (guid == null || guid == string.Empty)
+            {
+                return Guid.Empty;
+            }
+            return new Guid(guid);
         }
 
         public string GetLocale()
