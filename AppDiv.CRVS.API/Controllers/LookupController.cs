@@ -6,7 +6,10 @@ using AppDiv.CRVS.Application.Features.Customers.Query;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupById;
+using AppDiv.CRVS.Application.Features.Lookups.Command.Delete;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Features.Lookups.Command.Update;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -47,9 +50,53 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<Lookup> Get(String id)
+        public async Task<Lookup> Get(string id)
         {
             return await _mediator.Send(new GetLookupByIdQuery(id));
+        }
+
+        [HttpPut("Edit/{id}")]
+        public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateLookupCommand command)
+        {
+            try
+            {
+                if (command.Id == id)
+                {
+                    var result = await _mediator.Send(command);
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult> DeleteCustomer(Guid id)
+        {
+            try
+            {
+                string result = string.Empty;
+                result = await _mediator.Send(new DeleteLookupCommand(id));
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+
+        [HttpGet("List")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ListOfLookupDTO> Get(string[] key)
+        {
+            return await _mediator.Send(new GetListOfLookupQuery(key));
         }
 
 

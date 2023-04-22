@@ -14,9 +14,9 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupById
     // Customer GetLookupByIdQuery with  response
     public class GetLookupByIdQuery : IRequest<Lookup>
     {
-        public String Id { get; private set; }
+        public string Id { get; private set; }
 
-        public GetLookupByIdQuery(String Id)
+        public GetLookupByIdQuery(string Id)
         {
             this.Id = Id;
         }
