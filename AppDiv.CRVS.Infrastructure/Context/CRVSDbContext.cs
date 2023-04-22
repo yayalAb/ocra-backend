@@ -16,13 +16,15 @@ using Microsoft.AspNetCore.Identity;
 
 namespace AppDiv.CRVS.Infrastructure
 {
-    public class CRVSDbContext:AuditIdentityDbContext<ApplicationUser>, ICRVSDbContext
+    public class CRVSDbContext : AuditIdentityDbContext<ApplicationUser>, ICRVSDbContext
     {
         private readonly IUserResolverService userResolverService;
 
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Gender> Genders { get; set; }
         public DbSet<Suffix> Suffixes { get; set; }
+        public DbSet<LookupModel> Lookups { get; set; }
+
         public CRVSDbContext(DbContextOptions<CRVSDbContext> options, IUserResolverService userResolverService) : base(options)
         {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -33,15 +35,15 @@ namespace AppDiv.CRVS.Infrastructure
         {
             base.OnConfiguring(optionsBuilder);
             // To run sql scripts, example alter database to set collation, create stored procedure, function, view ....
-            optionsBuilder.ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>();
+            // optionsBuilder.ReplaceService<IMigrationsSqlGenerator, CustomSqlServerMigrationsSqlGenerator>();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-           
+
             #region Entity Configuration
             {
-              //  modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
+                //  modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new GenderEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new SuffixEntityConfiguration());
             }
@@ -103,10 +105,10 @@ namespace AppDiv.CRVS.Infrastructure
                 Formatting = Newtonsoft.Json.Formatting.Indented
             };
         }
-       
+
         public Guid GetCurrentUserId()
         {
-           return userResolverService.GetUserId();
+            return userResolverService.GetUserId();
         }
     }
 }

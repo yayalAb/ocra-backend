@@ -2,7 +2,7 @@
 using AppDiv.CRVS.Domain.Base;
 
 namespace AppDiv.CRVS.Domain.Entities{
-    public class Lookup : BaseAuditableEntity{
+    public class LookupModel : BaseAuditableEntity{
         public string Key { get ; set; }
         public string valueStr { get; set; }
         public string descriptionStr {get; set; }

@@ -1,6 +1,7 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Customers.Command.Create;
 using AppDiv.CRVS.Application.Features.Customers.Command.Update;
+using AppDiv.CRVS.Application.Features.Lookup.Command.Create;
 using AppDiv.CRVS.Domain.Entities;
 using AutoMapper;
 using System;
@@ -11,13 +12,19 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
-    internal class CRVSMappingProfile:Profile
+    internal class CRVSMappingProfile : Profile
     {
-        public CRVSMappingProfile() {
+        public CRVSMappingProfile()
+        {
 
             CreateMap<Customer, CustomerResponseDTO>().ReverseMap();
             CreateMap<Customer, CreateCustomerCommand>().ReverseMap();
             CreateMap<Customer, EditCustomerCommand>().ReverseMap();
+
+            CreateMap<LookupModel, LookupDTO>().ReverseMap();
+            CreateMap<LookupModel, CreateLookupCommand>().ReverseMap();
+
+
         }
     }
 }
