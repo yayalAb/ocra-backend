@@ -13,6 +13,8 @@ using AppDiv.CRVS.Infrastructure.Seed;
 using Audit.EntityFramework;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using AppDiv.CRVS.Domain.Configuration;
+using AppDiv.CRVS.Domain.Configurations;
 
 namespace AppDiv.CRVS.Infrastructure
 {
@@ -20,10 +22,14 @@ namespace AppDiv.CRVS.Infrastructure
     {
         private readonly IUserResolverService userResolverService;
 
-        public DbSet<AuditLog> AuditLogs { get; set; }
-        public DbSet<Gender> Genders { get; set; }
-        public DbSet<Suffix> Suffixes { get; set; }
-        public DbSet<LookupModel> Lookups { get; set; }
+        public DbSet<Lookup> Lookups { get; set; }
+        public DbSet<PersonalInfo> PersonalInfos { get; set; }
+        public DbSet<UserGroup> UserGroups { get; set; }
+        public DbSet<Address> Addresses { get; set; }
+
+
+
+
 
         public CRVSDbContext(DbContextOptions<CRVSDbContext> options, IUserResolverService userResolverService) : base(options)
         {
@@ -43,9 +49,11 @@ namespace AppDiv.CRVS.Infrastructure
 
             #region Entity Configuration
             {
-                //  modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
-                modelBuilder.ApplyConfiguration(new GenderEntityConfiguration());
-                modelBuilder.ApplyConfiguration(new SuffixEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new UserGroupEntityConfiguration());
+
+
+
             }
             #endregion
             base.OnModelCreating(modelBuilder);
