@@ -28,7 +28,7 @@ namespace AppDiv.CRVS.Infrastructure
             options.UseMySql(configuration.GetConnectionString("CRVSConnectionString"),
                   Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.29-mysql"),
                   mySqlOptions => mySqlOptions.EnableRetryOnFailure()));
-          
+
             services.AddIdentity<ApplicationUser, IdentityRole>()
                       .AddEntityFrameworkStores<CRVSDbContext>()
                       .AddDefaultTokenProviders();
@@ -53,8 +53,8 @@ namespace AppDiv.CRVS.Infrastructure
                 options.User.RequireUniqueEmail = true;
             });
 
-           // services.Configure<RabbitMQConfiguration>(configuration.GetSection(RabbitMQConfiguration.CONFIGURATION_SECTION));
-           // services.Configure<SMTPServerConfiguration>(configuration.GetSection(SMTPServerConfiguration.CONFIGURATION_SECTION));
+            // services.Configure<RabbitMQConfiguration>(configuration.GetSection(RabbitMQConfiguration.CONFIGURATION_SECTION));
+            // services.Configure<SMTPServerConfiguration>(configuration.GetSection(SMTPServerConfiguration.CONFIGURATION_SECTION));
 
             services.AddSingleton<IUserResolverService, UserResolverService>();
             services.AddSingleton<IMailService, MailKitService>();
@@ -64,6 +64,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddScoped<ILookupRepository, LookupRepository>();
 
             #endregion Repositories DI
 
