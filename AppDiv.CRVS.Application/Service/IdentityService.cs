@@ -24,9 +24,9 @@ namespace AppDiv.CRVS.Application.Service
             _logger = logger;
             // _tokenGeneratorService = tokenGeneratorService;
         }
-        public async Task<(Result result, IList<string>? roles, ApplicationUser? user)> AuthenticateUser(string email, string password)
+        public async Task<(Result result, IList<string>? roles, ApplicationUser? user)> AuthenticateUser(string userName, string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(userName);
 
 
             if (user != null && await _userManager.CheckPasswordAsync(user, password))
@@ -49,9 +49,9 @@ namespace AppDiv.CRVS.Application.Service
 
             return user.UserName;
         }
-        public string GetUserGroupId(string userId){
-            return  _userManager.Users.First(u => u.Id == userId).UserGroupId;
-        }
+        // public string GetUserGroupId(string userId){
+        //     return  _userManager.Users.First(u => u.Id == userId).UserGroupId;
+        // }
         public async Task<(Result, string)> createUser(string userName, string email,  string personalInfoId, string userGroupId)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
@@ -68,7 +68,7 @@ namespace AppDiv.CRVS.Application.Service
             {
                 UserName = userName,
                 Email = email,
-                UserGroupId = userGroupId,
+                // UserGroupId = userGroupId,
                 PersonalInfoId = personalInfoId
             };
             string password = GeneratePassword();
@@ -134,7 +134,7 @@ namespace AppDiv.CRVS.Application.Service
           
             user.UserName = userName;
             user.Email = email;
-            user.UserGroupId = userGroupId;
+            // user.UserGroupId = userGroupId;
             user.PersonalInfoId = personalInfoId;
 
             var response = await _userManager.UpdateAsync(user);

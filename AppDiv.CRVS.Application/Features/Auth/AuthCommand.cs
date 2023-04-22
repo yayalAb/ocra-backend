@@ -36,9 +36,10 @@ namespace AppDiv.CRVS.Application.Features.Auth
                 throw new InvalidLoginException(string.Join(",", response.result.Errors));
             }
 
-            // var (userId, fullName, userName, email, roles) = await _identityService.GetUserDetailsAsync(await _identityService.GetUserIdAsync(request.UserName));
+           
 
             string token = _tokenGenerator.GenerateJWTToken((response.user.Id, response.user.UserName, response.roles));
+            
 
             return new AuthResponseDTO()
             {

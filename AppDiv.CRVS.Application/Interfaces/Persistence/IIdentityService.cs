@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         Task<Result> UpdateUser(string id, string userName, string email, string personalInfoId, string userGroupId);
         IQueryable<ApplicationUser> AllUsers();
         Task<Result> DeleteUser(string userId);
-        string GetUserGroupId(string userId);
+        // string GetUserGroupId(string userId);
     }
 }
 
