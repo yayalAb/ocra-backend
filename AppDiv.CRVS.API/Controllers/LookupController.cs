@@ -3,9 +3,9 @@ using AppDiv.CRVS.Application.Features.Customers.Command.Create;
 using AppDiv.CRVS.Application.Features.Customers.Command.Delete;
 using AppDiv.CRVS.Application.Features.Customers.Command.Update;
 using AppDiv.CRVS.Application.Features.Customers.Query;
-using AppDiv.CRVS.Application.Features.Lookup.Command.Create;
-using AppDiv.CRVS.Application.Features.Lookup.Query.GetAllLookup;
-using AppDiv.CRVS.Application.Features.Lookup.Query.GetLookupById;
+using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupById;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -47,7 +47,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<LookupModel> Get(String id)
+        public async Task<Lookup> Get(String id)
         {
             return await _mediator.Send(new GetLookupByIdQuery(id));
         }

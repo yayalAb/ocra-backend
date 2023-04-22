@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.Lookup.Command.Update
+namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
 {
     // Customer create command with CustomerResponse
     public class UpdateLookupCommand : IRequest<LookupDTO>
@@ -39,8 +39,8 @@ namespace AppDiv.CRVS.Application.Features.Lookup.Command.Update
             {
                 Id = request.Id,
                 Key = request.Key,
-                valueStr = request.valueStr,
-                descriptionStr = request.descriptionStr,
+                ValueStr = request.valueStr,
+                DescriptionStr = request.descriptionStr,
                 StatisticCode = request.StatisticCode,
                 Code = request.Code,
             };

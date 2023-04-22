@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.Lookup.Command.Delete
+namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
 {
     // Customer create command with string response
     public class DeleteLookupCommand : IRequest<String>
