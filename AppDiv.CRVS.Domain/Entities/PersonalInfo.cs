@@ -11,16 +11,16 @@ namespace AppDiv.CRVS.Domain.Entities{
         public string? LastNameStr { get; set;}
         public DateTime? BirthDate { get; set; }
         public string NationalId { get; set; }
-        public string SexLookupId { get; set; }
-        public string? PlaceOfBirthLookupId { get; set; }
-        public string NationalityLookupId { get; set; }
-        public string? TitleLookupId { get; set; }
-        public string? ReligionLookupId { get; set; }
-        public string? EducationalStatusLookupId { get; set;}
-        public string? TypeOfWorkLookupId { get; set;}
-        public string MarriageStatusLookupId { get; set;}
-        public string AddressId { get; set; }
-        public string? NationLookupId { get; set; }
+        public Guid SexLookupId { get; set; }
+        public Guid? PlaceOfBirthLookupId { get; set; }
+        public Guid NationalityLookupId { get; set; }
+        public Guid? TitleLookupId { get; set; }
+        public Guid? ReligionLookupId { get; set; }
+        public Guid? EducationalStatusLookupId { get; set;}
+        public Guid? TypeOfWorkLookupId { get; set;}
+        public Guid MarriageStatusLookupId { get; set;}
+        public Guid AddressId { get; set; }
+        public Guid? NationLookupId { get; set; }
         [NotMapped]
         public JObject FirstName
         {
@@ -69,6 +69,7 @@ namespace AppDiv.CRVS.Domain.Entities{
         public virtual Lookup MarraigeStatusLookup { get;set;}
         public virtual Lookup NationLookup { get;set;}
         public virtual ApplicationUser ApplicationUser { get;set;}
+        public virtual ContactInfo ContactInfo { get; set; }
 
 
 

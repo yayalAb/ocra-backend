@@ -9,9 +9,9 @@ namespace AppDiv.CRVS.Domain.Entities{
         public string AddressNameStr { get ; set; }
         public string StatisticCode { get; set; }
         public string Code { get; set; }
-        public string AdminLevelLookupId { get; set;}
-        public string AreaTypeLookupId { get; set; }
-        public string? ParentAddressId { get; set; }
+        public Guid AdminLevelLookupId { get; set;}
+        public Guid AreaTypeLookupId { get; set; }
+        public Guid? ParentAddressId { get; set; }
         [NotMapped]
         public JObject AddressName
         {

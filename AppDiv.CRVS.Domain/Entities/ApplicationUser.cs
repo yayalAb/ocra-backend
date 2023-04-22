@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Domain
     {
         public string? Otp { get; set; }
         public DateTime? OtpExpiredDate { get; set; }
-        public string PersonalInfoId { get;set;}
+        public Guid PersonalInfoId { get;set;}
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
     }
