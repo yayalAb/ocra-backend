@@ -65,11 +65,13 @@ namespace AppDiv.CRVS.Infrastructure
             }
             #endregion
             base.OnModelCreating(modelBuilder);
+            
             // SeedData.SeedRoles(modelBuilder);
             // SeedData.SeedUsers(modelBuilder);
             // SeedData.SeedUserRoles(modelBuilder);
             // SeedData.SeedGender(modelBuilder);
             // SeedData.SeedSuffix(modelBuilder);
+
 
             #region Audit Config
             Audit.Core.Configuration.Setup()

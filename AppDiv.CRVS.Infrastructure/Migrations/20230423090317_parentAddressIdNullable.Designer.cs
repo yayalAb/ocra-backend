@@ -3,6 +3,7 @@ using System;
 using AppDiv.CRVS.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    partial class CRVSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230423090317_parentAddressIdNullable")]
+    partial class parentAddressIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -286,6 +288,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("EducationalStatusLookupId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("FirstNameStr")
@@ -309,6 +312,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("NationLookupId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("NationalId")
@@ -319,18 +323,22 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("PlaceOfBirthLookupId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("ReligionLookupId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("SexLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("TitleLookupId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("TypeOfWorkLookupId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -592,15 +600,21 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "EducationalStatusLookup")
                         .WithMany("PersonEducationalStatusNavigation")
-                        .HasForeignKey("EducationalStatusLookupId");
+                        .HasForeignKey("EducationalStatusLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "MarraigeStatusLookup")
                         .WithMany("PersonMarriageStatusNavigation")
-                        .HasForeignKey("MarriageStatusLookupId");
+                        .HasForeignKey("MarriageStatusLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "NationLookup")
                         .WithMany("PersonNationNavigation")
-                        .HasForeignKey("NationLookupId");
+                        .HasForeignKey("NationLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "NationalityLookup")
                         .WithMany("PersonNationalityNavigation")
@@ -610,11 +624,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "PlaceOfBirthLookup")
                         .WithMany("PersonPlaceOfBirthNavigation")
-                        .HasForeignKey("PlaceOfBirthLookupId");
+                        .HasForeignKey("PlaceOfBirthLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "ReligionLookup")
                         .WithMany("PersonReligionNavigation")
-                        .HasForeignKey("ReligionLookupId");
+                        .HasForeignKey("ReligionLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "SexLookup")
                         .WithMany("PersonSexNavigation")
@@ -624,11 +642,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "TitleLookup")
                         .WithMany("PersonTitleNavigation")
-                        .HasForeignKey("TitleLookupId");
+                        .HasForeignKey("TitleLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "TypeOfWorkLookup")
                         .WithMany("PersonTypeOfWorkNavigation")
-                        .HasForeignKey("TypeOfWorkLookupId");
+                        .HasForeignKey("TypeOfWorkLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Address");
 

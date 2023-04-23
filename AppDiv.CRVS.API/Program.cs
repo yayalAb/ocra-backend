@@ -99,6 +99,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
    app.MigrateDatabase();
+       using (var scope = app.Services.CreateScope())
+    {
+        var initialiser = scope.ServiceProvider.GetRequiredService<CRVSDbContextInitializer>();
+        await initialiser.InitialiseAsync();
+        await initialiser.SeedAsync();
+    }
     app.UseSwagger();
     app.UseSwaggerUI();
 }

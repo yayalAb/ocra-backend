@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces
     public interface IIdentityService
     {
       Task<string> GetUserNameAsync(string userId);
-        Task<(Result result, IList<string>? roles, ApplicationUser? user)> AuthenticateUser(string email, string password);
+        Task<(Result result, IList<string>? roles, string? userId)> AuthenticateUser(string email, string password);
         Task<(Result result, string password)> createUser( string userName, string email, Guid personalInfoId, Guid userGroupId);
         Task<(Result result, string resetToken)> ForgotPassword(string email);
         Task<Result> ResetPassword(string email, string password, string token);

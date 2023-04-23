@@ -11,7 +11,7 @@ using System.Text;
 
 namespace AppDiv.CRVS.Application.Service
 {
-  public class IdentityService : IIdentityService
+    public class IdentityService : IIdentityService
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<IdentityService> _logger;
@@ -24,21 +24,21 @@ namespace AppDiv.CRVS.Application.Service
             _logger = logger;
             // _tokenGeneratorService = tokenGeneratorService;
         }
-        public async Task<(Result result, IList<string>? roles, ApplicationUser? user)> AuthenticateUser(string userName, string password)
+        public async Task<(Result result, IList<string>? roles, string? userId)> AuthenticateUser(string userName, string password)
         {
             var user = await _userManager.FindByNameAsync(userName);
 
 
             if (user != null && await _userManager.CheckPasswordAsync(user, password))
             {
-               var userRoles = await _userManager.GetRolesAsync(user); 
-                // var tokenString = _tokenGeneratorService.GenerateJWTToken((userId:user.Id , userName:user.UserName , roles:userRoles));
-                return (Result.Success(), userRoles, user);
+                var userRoles = await _userManager.GetRolesAsync(user);
+                return (Result.Success(), userRoles, user.Id);
 
 
             }
             string[] errors = new string[] { "Invalid login" };
-            return (Result.Failure(errors),null, null);
+
+            return (Result.Failure(errors), null, null);
 
         }
 
@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Application.Service
         // public string GetUserGroupId(string userId){
         //     return  _userManager.Users.First(u => u.Id == userId).UserGroupId;
         // }
-        public async Task<(Result, string)> createUser(string userName, string email,  Guid personalInfoId, Guid userGroupId)
+        public async Task<(Result, string)> createUser(string userName, string email, Guid personalInfoId, Guid userGroupId)
         {
             var existingUser = await _userManager.FindByEmailAsync(email);
             if (existingUser != null)
@@ -122,7 +122,8 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(string id, string userName, string email,  Guid personalInfoId, Guid userGroupId){
+        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, Guid userGroupId)
+        {
 
             var user = await _userManager.FindByIdAsync(id.ToString());
 
@@ -131,7 +132,7 @@ namespace AppDiv.CRVS.Application.Service
                 return Result.Failure(new string[] { "could not find user with the given id" });
             }
 
-          
+
             user.UserName = userName;
             user.Email = email;
             // user.UserGroupId = userGroupId;
@@ -163,7 +164,7 @@ namespace AppDiv.CRVS.Application.Service
 
             return Result.Success();
         }
-   
+
         private string GeneratePassword()
         {
             var options = _userManager.Options.Password;

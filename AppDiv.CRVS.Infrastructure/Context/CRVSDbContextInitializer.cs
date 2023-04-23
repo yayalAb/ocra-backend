@@ -1,23 +1,65 @@
-﻿using AppDiv.CRVS.Application.Contracts.DTOs;
-using AppDiv.CRVS.Domain;
+﻿
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Entities.Settings;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Infrastructure.Seed
+namespace AppDiv.CRVS.Infrastructure
 {
-    internal class SeedData
+    public class CRVSDbContextInitializer
     {
-        internal static void SeedUsers(ModelBuilder builder)
+        private readonly ILogger<CRVSDbContextInitializer> _logger;
+        private readonly CRVSDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+
+        public CRVSDbContextInitializer(ILogger<CRVSDbContextInitializer> logger, CRVSDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        {
+            _logger = logger;
+            _context = context;
+            _userManager = userManager;
+            _roleManager = roleManager;
+        }
+
+        public async Task InitialiseAsync()
+        {
+            try
+            {
+
+                await _context.Database.MigrateAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while initialising the database.");
+                throw;
+            }
+        }
+
+        public async Task SeedAsync()
+        {
+            try
+            {
+                await TrySeedAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while seeding the database.");
+                throw;
+            }
+        }
+
+
+        public async Task TrySeedAsync()
+        {
+            // await SeedUser();
+
+
+        }
+        public async Task SeedUser()
         {
             List<UserGroup> groups = new List<UserGroup>();
             List<RoleDto> roles = new List<RoleDto>{
@@ -43,7 +85,36 @@ namespace AppDiv.CRVS.Infrastructure.Seed
                         Page = "death",
                         Title = "death",
                         CanAdd = true,
+                        CanDelete = false,
+                        CanView = true,
+                        CanViewDetail = true,
+                        CanUpdate = true
+                        }
+                };
+                    List<RoleDto> roles2 = new List<RoleDto>{
+                    new RoleDto{
+                        Page = "dashboard",
+                        Title = "dashboard",
+                        CanAdd = true,
+                        CanDelete = false,
+                        CanView = true,
+                        CanViewDetail = true,
+                        CanUpdate = true
+                        },
+                        new RoleDto{
+                        Page = "birth",
+                        Title = "birth",
+                        CanAdd = false,
                         CanDelete = true,
+                        CanView = true,
+                        CanViewDetail = true,
+                        CanUpdate = true
+                        },
+                        new RoleDto{
+                        Page = "death",
+                        Title = "death",
+                        CanAdd = true,
+                        CanDelete = false,
                         CanView = true,
                         CanViewDetail = true,
                         CanUpdate = true
@@ -52,13 +123,31 @@ namespace AppDiv.CRVS.Infrastructure.Seed
             var groupId = new Guid("67998869-cebb-4d3f-a241-fb96b350993f");
             groups.Add(new UserGroup
             {
-                Id = groupId,
+                // Id = groupId,
                 GroupName = "adminGroup",
-
                 Roles = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(roles))
-            });
+            }
+            );
+            groups.Add(new UserGroup
+            {
+                // Id = groupId,
+                GroupName = "registrarGroup",
+                Roles = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(roles2))
+            }
+            );
             var personalInfoId = new Guid("67998869-cebb-4d3f-a241-fb96b350993f");
-            var personalInfo  = new PersonalInfo
+
+
+            ApplicationUser user = new ApplicationUser()
+            {
+                Id = "b74ddd14-6340-4840-95c2-db12554843e5",
+                UserName = "Admin",
+                NormalizedUserName = "ADMIN",
+                Email = "admin@gmail.com",
+                NormalizedEmail = "ADMIN@GMAIL.COM",
+                LockoutEnabled = false,
+                PhoneNumber = "1234567890",
+                PersonalInfo = new PersonalInfo
                 {
                     Id = personalInfoId,
                     FirstName = new JObject{
@@ -82,7 +171,7 @@ namespace AppDiv.CRVS.Infrastructure.Seed
                         {"en","Ethiopian"}
                       }
                     },
-                     EducationalStatusLookup = new Lookup
+                    EducationalStatusLookup = new Lookup
                     {
                         Key = "Edu",
                         Value = new JObject{
@@ -94,6 +183,13 @@ namespace AppDiv.CRVS.Infrastructure.Seed
                         Key = "MarriageStatus",
                         Value = new JObject{
                         {"en","single"}
+                      }
+                    },
+                    NationLookup = new Lookup
+                    {
+                        Key = "Nation",
+                        Value = new JObject{
+                        {"en","oromo"}
                       }
                     },
                     Address = new Address
@@ -121,79 +217,18 @@ namespace AppDiv.CRVS.Infrastructure.Seed
 
                     },
 
-                };
-            ApplicationUser user = new ApplicationUser()
-            {
-                Id = "b74ddd14-6340-4840-95c2-db12554843e5",
-                UserName = "Admin",
-                NormalizedUserName = "ADMIN",
-                Email = "admin@gmail.com",
-                NormalizedEmail = "ADMIN@GMAIL.COM",
-                LockoutEnabled = false,
-                PhoneNumber = "1234567890",
-                PersonalInfoId = personalInfoId,
+                },
+                UserGroups = groups
 
             };
 
             var passwordHasher = new PasswordHasher<ApplicationUser>();
             user.PasswordHash = passwordHasher.HashPassword(user, "Admin@123");
+            await _userManager.CreateAsync(user);
 
-            builder.Entity<PersonalInfo>().HasData(personalInfo);
-            // builder.Entity<UserGroup>().HasData(groups.First());
 
-            builder.Entity<ApplicationUser>().HasData(user);
-            
-            // }
-
-            // internal static void SeedRoles(ModelBuilder builder)
-            // {
-            //     builder.Entity<IdentityRole>().HasData(
-            //         new IdentityRole() { Id = "fab4fac1-c546-41de-aebc-a14da6895711", Name = "Admin", ConcurrencyStamp = "1", NormalizedName = "Admin" },
-            //         new IdentityRole() { Id = "c7b013f0-5201-4317-abd8-c211f91b7330", Name = "HR", ConcurrencyStamp = "2", NormalizedName = "Human Resource" }
-            //         );
-            // }
-
-            // internal static void SeedUserRoles(ModelBuilder builder)
-            // {
-            //     builder.Entity<IdentityUserRole<string>>().HasData(
-            //         new IdentityUserRole<string>() { RoleId = "fab4fac1-c546-41de-aebc-a14da6895711", UserId = "b74ddd14-6340-4840-95c2-db12554843e5" }
-            //         );
-            // }
-
-            // internal static void SeedGender(ModelBuilder builder)
-            // {
-            //     builder.Entity<Gender>().HasData(
-            //         new Gender()
-            //         {
-            //             Name = "Male",
-            //             Code = "M",
-            //             CreatedAt = DateTime.Now
-            //         },
-            //         new Gender()
-            //         {
-            //             Name = "Female",
-            //             Code = "F",
-            //             CreatedAt= DateTime.Now
-            //         }
-            //   );
-            // }
-            // internal static void SeedSuffix(ModelBuilder builder)
-            // {
-            //     builder.Entity<Suffix>().HasData(             
-
-            //         new Suffix()
-            //         {
-            //             Name = "Mr.",
-            //             CreatedAt= DateTime.Now,
-            //         },
-            //         new Suffix()
-            //         {
-            //             Name="Mrs.",
-            //             CreatedAt= DateTime.Now,
-
-            //         }
-
-            //   );
         }
+
+
     }
 }
