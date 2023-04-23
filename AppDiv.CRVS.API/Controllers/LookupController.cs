@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -26,9 +27,11 @@ namespace AppDiv.CRVS.API.Controllers
     public class LookupController : ControllerBase
     {
         private readonly ISender _mediator;
-        public LookupController(ISender mediator)
+        private readonly ILogger<LookupController> _Ilog;
+        public LookupController(ISender mediator, ILogger<LookupController> Ilog)
         {
             _mediator = mediator;
+            _Ilog = Ilog; ;
         }
 
 
@@ -92,11 +95,21 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("key")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<LookupDTO>> GetByKey([FromQuery] string Key)
+        {
+            return await _mediator.Send(new GetLookupByKeyQuery { Key = Key });
+        }
+
+
         [HttpGet("List")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ListOfLookupDTO> Get(string[] key)
+        public async Task<List<ListOfLookupDTO>> Get([FromQuery] string[] keys)
         {
-            return await _mediator.Send(new GetListOfLookupQuery(key));
+            _Ilog.LogCritical(keys[0]);
+            return await _mediator.Send(new GetListOfLookupQuery { list = keys });
         }
 
 

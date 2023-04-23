@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,39 +13,45 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
 {
     // Customer GetListOfLookupQuery with  response
-    public class GetListOfLookupQuery : IRequest<ListOfLookupDTO>
+    public class GetListOfLookupQuery : IRequest<List<ListOfLookupDTO>>
     {
-        public String[] list { get; private set; }
+        public String[] list { get; set; }
 
-        public GetListOfLookupQuery(String[] list)
-        {
-            this.list = list;
-        }
+        // public GetListOfLookupQuery(String[] list)
+        // {
+        //     this.list = list;
+        // }
 
     }
 
-    public class GetListOfLookupQueryHandler : IRequestHandler<GetListOfLookupQuery, ListOfLookupDTO>
+    public class GetListOfLookupQueryHandler : IRequestHandler<GetListOfLookupQuery, List<ListOfLookupDTO>>
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<GetListOfLookupQueryHandler> _logger;
 
-        public GetListOfLookupQueryHandler(IMediator mediator)
+
+
+
+        public GetListOfLookupQueryHandler(IMediator mediator, ILogger<GetListOfLookupQueryHandler> logger)
         {
             _mediator = mediator;
+            _logger = logger;
         }
-        public async Task<ListOfLookupDTO> Handle(GetListOfLookupQuery request, CancellationToken cancellationToken)
+        public async Task<List<ListOfLookupDTO>> Handle(GetListOfLookupQuery request, CancellationToken cancellationToken)
         {
-            var LookupList = new List<ListOfLookupDTO>();
-            var lookup = new ListOfLookupDTO();
+            List<ListOfLookupDTO> LookupList = new List<ListOfLookupDTO>();
             var lookups = await _mediator.Send(new GetAllLookupQuery());
-            for (int i = 0; i < request.list.Length; i++)
+            foreach (var key in request.list)
             {
-                var selectedlookup = lookups.Where(x => x.Key == request.list[i]);
-                lookup.Key = request.list[i];
-                lookup.Value = selectedlookup;
-                LookupList.Add(lookup);
+                _logger.LogCritical(key);
+                var selectedlookup = lookups.Where(x => x.Key == key);
+                LookupList.Add(new ListOfLookupDTO
+                {
+                    Key = key,
+                    Value = selectedlookup
+                });
             }
-
-            return CustomMapper.Mapper.Map<ListOfLookupDTO>(LookupList);
+            return CustomMapper.Mapper.Map<List<ListOfLookupDTO>>(LookupList);
 
         }
     }
