@@ -1,7 +1,10 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
+using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
 using AppDiv.CRVS.Application.Features.Customers.Command.Create;
 using AppDiv.CRVS.Application.Features.Customers.Command.Update;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
+using AppDiv.CRVS.Application.Features.Lookups.Command.Update;
 using AppDiv.CRVS.Domain.Entities;
 using AutoMapper;
 using System;
@@ -22,6 +25,13 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<Lookup, LookupDTO>().ReverseMap();
             CreateMap<Lookup, CreateLookupCommand>().ReverseMap();
+            CreateMap<Lookup, UpdateLookupCommand>().ReverseMap();
+
+            CreateMap<Address, AddressDTO>().ReverseMap();
+            CreateMap<Address, CreateAdderssCommand>().ReverseMap();
+            CreateMap<Address, UpdateaddressCommand>().ReverseMap();
+
+
 
         }
     }
