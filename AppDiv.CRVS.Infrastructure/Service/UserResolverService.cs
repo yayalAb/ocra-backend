@@ -20,9 +20,8 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         public Guid GetUserId()
         {
-            var guid = httpContext.HttpContext.User?.Claims?.SingleOrDefault(p => p.Type == "UserId")?.Value;
-            if (guid == null || guid == string.Empty)
-            {
+            var guid = httpContext.HttpContext?.User?.Claims?.SingleOrDefault(p => p.Type == "UserId")?.Value;
+            if(guid == null || guid == string.Empty){
                 return Guid.Empty;
             }
             return new Guid(guid);

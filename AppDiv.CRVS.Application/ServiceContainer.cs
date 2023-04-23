@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application
 
 
             services.AddScoped<IIdentityService, IdentityService>();
+  
 
 
             return services;

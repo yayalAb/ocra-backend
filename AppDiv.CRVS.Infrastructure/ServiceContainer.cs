@@ -65,7 +65,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
-            services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
+            services.AddTransient<IUserRepository, UserRepository>();
+            services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
 
             #endregion Repositories DI
 
