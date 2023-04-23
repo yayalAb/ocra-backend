@@ -41,6 +41,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
         {
             List<ListOfLookupDTO> LookupList = new List<ListOfLookupDTO>();
             var lookups = await _mediator.Send(new GetAllLookupQuery());
+            // var lookups1= lookups. Contains(x=>x.key,request.list);
             foreach (var key in request.list)
             {
                 _logger.LogCritical(key);
@@ -51,6 +52,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
                     Value = selectedlookup
                 });
             }
+
             return CustomMapper.Mapper.Map<List<ListOfLookupDTO>>(LookupList);
 
         }
