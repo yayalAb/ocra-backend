@@ -36,9 +36,11 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<AddressDTO>> CreateAddress([FromBody] CreateAdderssCommand command, CancellationToken token)
+        public async Task<ActionResult<AddressDTO>> CreateAddress([FromBody] CreateAdderssCommand command)
         {
-            var result = await _mediator.Send(command, token);
+            _Ilog.LogCritical(command.Address.Code);
+
+            var result = await _mediator.Send(command);
             return Ok(result);
         }
         [HttpGet("{id}")]
@@ -69,7 +71,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
+        [HttpDelete("Delete")]
         public async Task<ActionResult> DeleteAddress([FromQuery] Guid id)
         {
             try
