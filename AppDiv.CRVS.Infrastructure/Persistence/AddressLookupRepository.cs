@@ -22,9 +22,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return await base.GetAsync(key);
         }
 
-        Task<Address> IAddressLookupRepository.GetByIdAsync(Guid id)
+        async Task<Address> IAddressLookupRepository.GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            return await base.GetAsync(id);
         }
     }
 }

@@ -18,17 +18,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task<Customer> GetByIdAsync(Guid id)
         {
-           return await base.GetAsync(id);
+            return await base.GetAsync(id);
         }
 
         public Task<Customer> GetCustomerByEmail(string email)
         {
-            return base.GetFirstEntryAsync(x=>x.Email.Equals(email), q => q.Id, Utility.Contracts.SortingDirection.Ascending);
+            return base.GetFirstEntryAsync(x => x.Email.Equals(email), q => q.Id, Utility.Contracts.SortingDirection.Ascending);
         }
         public override async Task InsertAsync(Customer user, CancellationToken cancellationToken)
         {
             await base.InsertAsync(user, cancellationToken);
         }
-
     }
 }

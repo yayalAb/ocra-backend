@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
 using AppDiv.CRVS.Application.Features.Customers.Command.Create;
 using AppDiv.CRVS.Application.Features.Customers.Command.Update;
+using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Update;
 using AppDiv.CRVS.Application.Features.Settings.Commands.create;
@@ -36,6 +37,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Setting, SettingDTO>().ReverseMap();
             CreateMap<Setting, createSettingCommand>().ReverseMap();
             CreateMap<Setting, UpdateSettingCommand>().ReverseMap();
+
+            CreateMap<UserGroup, GroupDTO>().ReverseMap();
+            CreateMap<UserGroup, CreateGroupCommand>().ReverseMap();
 
 
 
