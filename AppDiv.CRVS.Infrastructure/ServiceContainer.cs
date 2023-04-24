@@ -10,7 +10,7 @@ using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Services;
-
+using Twilio.Clients;
 namespace AppDiv.CRVS.Infrastructure
 {
     public static class ServiceContainer
@@ -54,10 +54,18 @@ namespace AppDiv.CRVS.Infrastructure
             });
 
             // services.Configure<RabbitMQConfiguration>(configuration.GetSection(RabbitMQConfiguration.CONFIGURATION_SECTION));
-            // services.Configure<SMTPServerConfiguration>(configuration.GetSection(SMTPServerConfiguration.CONFIGURATION_SECTION));
+            services.Configure<SMTPServerConfiguration>(configuration.GetSection(SMTPServerConfiguration.CONFIGURATION_SECTION));
+            services.Configure<TwilioConfiguration>(configuration.GetSection(TwilioConfiguration.CONFIGURATION_SECTION));
+            
+
+
 
             services.AddSingleton<IUserResolverService, UserResolverService>();
             services.AddSingleton<IMailService, MailKitService>();
+            services.AddSingleton<ISmsService, TwilioService>();
+            
+
+
             #region Repositories DI         
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -67,7 +75,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
-
+            services.AddHttpClient<ITwilioRestClient, TwilioClient>();
             #endregion Repositories DI
 
             return services;
