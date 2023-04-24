@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
 
-namespace Application.User.Commands.ForgotPassword
+namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
 {
     public record ForgotPasswordCommand : IRequest<string>
     {

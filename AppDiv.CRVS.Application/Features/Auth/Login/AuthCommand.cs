@@ -6,7 +6,8 @@ using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Utility.Contracts;
 
-namespace AppDiv.CRVS.Application.Features.Auth
+namespace AppDiv.CRVS.Application.Features.Auth.Login
+
 {
     public class AuthCommand : IRequest<AuthResponseDTO>
     {

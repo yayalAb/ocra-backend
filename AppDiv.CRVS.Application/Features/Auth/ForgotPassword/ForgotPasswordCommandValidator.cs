@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Application.User.Commands.ForgotPassword
+namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
 {
     internal class ForgotPasswordCommandValidator : AbstractValidator<ForgotPasswordCommand>
     {

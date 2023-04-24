@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using AppDiv.CRVS.Application.Features.Auth;
 using AppDiv.CRVS.Application.Contracts.DTOs;
-using Application.User.Commands.ForgotPassword;
+using AppDiv.CRVS.Application.Features.Auth.Login;
+using AppDiv.CRVS.Application.Features.Auth.ForgotPassword;
 
 namespace AppDiv.CRVS.API.Controllers
 {
