@@ -28,6 +28,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<Address> Addresses { get; set; }
 
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<Setting> Settings { get; set; }
 
 
 
