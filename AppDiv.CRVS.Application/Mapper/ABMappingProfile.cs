@@ -5,6 +5,8 @@ using AppDiv.CRVS.Application.Features.Customers.Command.Create;
 using AppDiv.CRVS.Application.Features.Customers.Command.Update;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Update;
+using AppDiv.CRVS.Application.Features.Settings.Commands.create;
+using AppDiv.CRVS.Application.Features.Settings.Commands.Update;
 using AppDiv.CRVS.Domain.Entities;
 using AutoMapper;
 using System;
@@ -30,6 +32,10 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Address, AddressDTO>().ReverseMap();
             CreateMap<Address, CreateAdderssCommand>().ReverseMap();
             CreateMap<Address, UpdateaddressCommand>().ReverseMap();
+
+            CreateMap<Setting, SettingDTO>().ReverseMap();
+            CreateMap<Setting, createSettingCommand>().ReverseMap();
+            CreateMap<Setting, UpdateSettingCommand>().ReverseMap();
 
 
 
