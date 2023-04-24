@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +19,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
 
         public Guid Id { get; set; }
         public string Key { get; set; }
-        public string valueStr { get; set; }
-        public string descriptionStr { get; set; }
+        public JObject Value { get; set; }
+        public JObject Description { get; set; }
         public string StatisticCode { get; set; }
         public string Code { get; set; }
     }
@@ -39,8 +40,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
             {
                 Id = request.Id,
                 Key = request.Key,
-                ValueStr = request.valueStr,
-                DescriptionStr = request.descriptionStr,
+                Value = request.Value,
+                Description = request.Description,
                 StatisticCode = request.StatisticCode,
                 Code = request.Code,
             };

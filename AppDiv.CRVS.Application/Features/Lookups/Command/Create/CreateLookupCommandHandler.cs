@@ -44,8 +44,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Create
                 {
                     Id = Guid.NewGuid(),
                     Key = request.lookup.Key,
-                    ValueStr = request.lookup.valueStr,
-                    DescriptionStr = request.lookup.descriptionStr,
+                    Value = request.lookup.Value,
+                    Description = request.lookup.Description,
                     StatisticCode = request.lookup.StatisticCode,
                     Code = request.lookup.Code
                 };

@@ -7,6 +7,7 @@ using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
 {
@@ -14,9 +15,11 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
     public class CreateAdderssCommandHandler : IRequestHandler<CreateAdderssCommand, CreateAdderssCommandResponse>
     {
         private readonly IAddressLookupRepository _AddressRepository;
-        public CreateAdderssCommandHandler(IAddressLookupRepository AddresslookupRepository)
+        private readonly ILogger<CreateAdderssCommandHandler> _logger;
+        public CreateAdderssCommandHandler(IAddressLookupRepository AddresslookupRepository, ILogger<CreateAdderssCommandHandler> logger)
         {
             _AddressRepository = AddresslookupRepository;
+            _logger = logger;
         }
         public async Task<CreateAdderssCommandResponse> Handle(CreateAdderssCommand request, CancellationToken cancellationToken)
         {
@@ -37,13 +40,16 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
                     CreateAddressCommadResponse.ValidationErrors.Add(error.ErrorMessage);
                 CreateAddressCommadResponse.Message = CreateAddressCommadResponse.ValidationErrors[0];
             }
+            _logger.LogCritical(request.Address.Code);
             if (CreateAddressCommadResponse.Success)
             {
                 //can use this instead of automapper
+
                 var Address = new Address
                 {
                     Id = Guid.NewGuid(),
-                    StatisticCode = request.Address.AddressNameStr,
+                    AddressName = request.Address.AddressName,
+                    StatisticCode = request.Address.StatisticCode,
                     Code = request.Address.Code,
                     AdminLevelLookupId = request.Address.AdminLevelLookupId,
                     AreaTypeLookupId = request.Address.AreaTypeLookupId,

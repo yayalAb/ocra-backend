@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
     public class UpdateaddressCommand : IRequest<AddressDTO>
     {
         public Guid Id { get; set; }
-        public string AddressNameStr { get; set; }
+        public JObject AddressName { get; set; }
         public string StatisticCode { get; set; }
         public string Code { get; set; }
         public Guid AdminLevelLookupId { get; set; }
@@ -37,7 +38,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
             Address LookupEntity = new Address
             {
                 Id = request.Id,
-                AddressNameStr = request.AddressNameStr,
+                AddressName = request.AddressName,
                 StatisticCode = request.StatisticCode,
                 Code = request.Code,
                 AdminLevelLookupId = request.AdminLevelLookupId,
