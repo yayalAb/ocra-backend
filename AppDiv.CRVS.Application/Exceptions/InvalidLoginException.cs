@@ -1,8 +1,8 @@
 ﻿namespace AppDiv.CRVS.Application.Exceptions
 {
-    public class InvalidLoginException : Exception
+    public class AuthenticationException : Exception
     {
-        public InvalidLoginException(string errors) : base(errors)
+        public AuthenticationException(string errors) : base(errors)
         {
 
         }

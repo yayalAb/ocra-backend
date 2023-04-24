@@ -100,9 +100,11 @@ namespace AppDiv.CRVS.Application.Service
             return (Result.Success(), password);
         }
 
-        public async Task<(Result, string)> ForgotPassword(string email)
+        public async Task<(Result, string)> ForgotPassword(string? email , string? userName)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = email != null
+                            ? await _userManager.FindByEmailAsync(email)
+                            : await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
                 return (Result.Failure(new string[] { "could not find user with the given email" }), string.Empty);
@@ -111,9 +113,11 @@ namespace AppDiv.CRVS.Application.Service
 
             return (Result.Success(), token);
         }
-        public async Task<Result> ResetPassword(string email, string password, string token)
+        public async Task<Result> ResetPassword(string? email,string? userName, string password, string token)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = email !=null 
+                        ? await _userManager.FindByEmailAsync(email)
+                        :await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
                 return Result.Failure(new string[] { "user not found" });
@@ -238,7 +242,11 @@ namespace AppDiv.CRVS.Application.Service
 
             return await _userManager.FindByEmailAsync(email);
         }
+        public async Task<ApplicationUser> GetUserByName(string userName)
+        {
 
+            return await _userManager.FindByNameAsync(userName);
+        }
 
     }
 }

@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Utility.Contracts;
+using AppDiv.CRVS.Domain;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
 
@@ -37,7 +38,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
 
             if (!response.result.Succeeded)
             {
-                throw new InvalidLoginException(string.Join(",", response.result.Errors));
+                throw new AuthenticationException(string.Join(",", response.result.Errors));
             }
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {

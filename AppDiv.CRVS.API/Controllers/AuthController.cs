@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Auth.Login;
 using AppDiv.CRVS.Application.Features.Auth.ForgotPassword;
+using AppDiv.CRVS.Application.Features.Auth.ResetPassword;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -19,6 +20,12 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("forgotPassword")]
         // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+         [HttpPost("resetPassword")]
+        // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
