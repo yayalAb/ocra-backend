@@ -3,6 +3,12 @@ using AppDiv.CRVS.Application.Features.Customers.Command.Create;
 using AppDiv.CRVS.Application.Features.Customers.Command.Delete;
 using AppDiv.CRVS.Application.Features.Customers.Command.Update;
 using AppDiv.CRVS.Application.Features.Customers.Query;
+using AppDiv.CRVS.Application.Features.Settings.Commands.create;
+using AppDiv.CRVS.Application.Features.Settings.Commands.Update;
+using AppDiv.CRVS.Application.Features.Settings.create;
+using AppDiv.CRVS.Application.Features.Settings.Query.GetAllSettings;
+using AppDiv.CRVS.Application.Features.Settings.Query.GetSettingByKey;
+using AppDiv.CRVS.Application.Features.Settings.Query.GetSettingsById;
 using AppDiv.CRVS.Domain.Entities;
 
 using MediatR;
@@ -47,9 +53,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<Setting> Get(string id)
+        public async Task<Setting> Get(Guid id)
         {
-            return await _mediator.Send(new GetSettingByIdQuery(id));
+            return await _mediator.Send(new GetSettingByIdQuery { Id = id });
         }
 
         [HttpPut("Edit/{id}")]
@@ -80,7 +86,7 @@ namespace AppDiv.CRVS.API.Controllers
             try
             {
                 string result = string.Empty;
-                result = await _mediator.Send(new DeleteSettingCommand(id));
+                result = await _mediator.Send(new DeleteSettingCommand { Id = id });
                 return Ok(result);
             }
             catch (Exception exp)

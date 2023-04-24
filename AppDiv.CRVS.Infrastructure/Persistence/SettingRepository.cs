@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
         }
 
-        async Task<Setting> ISettingRepository.GetAddressByKey(string key)
+        async Task<Setting> ISettingRepository.GetSettingByKey(string key)
         {
             return await base.GetAsync(key);
         }

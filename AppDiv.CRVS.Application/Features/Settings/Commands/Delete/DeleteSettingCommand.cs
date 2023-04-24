@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.create
     // Customer create command with string response
     public class DeleteSettingCommand : IRequest<String>
     {
-        public Guid Id { get;  set; }
+        public Guid Id { get; set; }
 
     }
 
@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.create
     public class DeleteSettingCommandHandler : IRequestHandler<DeleteSettingCommand, String>
     {
         private readonly ISettingRepository _settingRepository;
-        public DeleteSettingCommandHandler(ILookupRepository settingRepository)
+        public DeleteSettingCommandHandler(ISettingRepository settingRepository)
         {
             _settingRepository = settingRepository;
         }

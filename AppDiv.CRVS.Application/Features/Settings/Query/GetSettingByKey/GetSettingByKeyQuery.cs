@@ -1,4 +1,5 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Features.Settings.Query.GetAllSettings;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
@@ -31,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.Query.GetSettingByKey
         }
         public async Task<List<SettingDTO>> Handle(GetSettingByKeyQuery request, CancellationToken cancellationToken)
         {
-            var Allsettings = await _mediator.Send(new GetAllLookupQuery());
+            var Allsettings = await _mediator.Send(new GetAllSettingQuery());
 
 
             var settings = CustomMapper.Mapper.Map<List<SettingDTO>>(Allsettings.Where(x => x.Key == request.Key));

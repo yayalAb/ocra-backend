@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.Commands.Update
 
         public Guid Id { get; set; }
         public string Key { get; set; }
-        public string Value { get; set; }
+        public JObject Value { get; set; }
     }
 
     public class UpdateSettingCommandHandler : IRequestHandler<UpdateSettingCommand, SettingDTO>
@@ -35,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.Commands.Update
             {
                 Id = request.Id,
                 Key = request.Key,
-                Value = request.valueStr,
+                Value = request.Value,
             };
             try
             {
