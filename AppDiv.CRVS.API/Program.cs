@@ -12,7 +12,8 @@ using AppDiv.CRVS.Api.Middleware;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(); ;
+
 
 // For authentication
 var _key = builder.Configuration["Jwt:Key"];
@@ -53,7 +54,7 @@ builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(
 builder.Services.AddApplication(builder.Configuration)
                 .AddInfrastructure(builder.Configuration);
 
-        
+
 
 builder.Services.AddCors(c =>
 {
@@ -100,8 +101,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-   app.MigrateDatabase();
-       using (var scope = app.Services.CreateScope())
+    app.MigrateDatabase();
+    using (var scope = app.Services.CreateScope())
     {
         var initialiser = scope.ServiceProvider.GetRequiredService<CRVSDbContextInitializer>();
         await initialiser.InitialiseAsync();
