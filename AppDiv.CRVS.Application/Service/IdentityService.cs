@@ -79,6 +79,26 @@ namespace AppDiv.CRVS.Application.Service
             }
             return (Result.Success(), password);
         }
+        public async Task<(Result, string)> createUser(ApplicationUser user )
+        {
+            var existingUser = await _userManager.FindByEmailAsync(user.Email);
+            if (existingUser != null)
+            {
+                return (Result.Failure(new string[] { "user with the given email already exists" }), string.Empty);
+            }
+            existingUser = await _userManager.FindByNameAsync(user.UserName);
+            if (existingUser != null)
+            {
+                return (Result.Failure(new string[] { "username is already taken" }), string.Empty);
+            }
+            string password = GeneratePassword();
+            var result = await _userManager.CreateAsync(user, password);
+            if (!result.Succeeded)
+            {
+                return (result.ToApplicationResult(), string.Empty);
+            }
+            return (Result.Success(), password);
+        }
 
         public async Task<(Result, string)> ForgotPassword(string email)
         {
@@ -122,7 +142,7 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp , DateTime? otpExpiredDate)
+        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp, DateTime? otpExpiredDate)
         {
 
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -215,10 +235,10 @@ namespace AppDiv.CRVS.Application.Service
 
         public async Task<ApplicationUser> GetUserByEmailAsync(string email)
         {
-            
-           return await  _userManager.FindByEmailAsync(email);
+
+            return await _userManager.FindByEmailAsync(email);
         }
 
-       
+
     }
 }
