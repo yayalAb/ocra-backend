@@ -43,7 +43,7 @@ namespace AppDiv.CRVS.Infrastructure
         {
             try
             {
-                await TrySeedAsync();
+                // await TrySeedAsync();
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@ namespace AppDiv.CRVS.Infrastructure
 
         public async Task TrySeedAsync()
         {
-            // await SeedUser();
+            await SeedUser();
 
 
         }

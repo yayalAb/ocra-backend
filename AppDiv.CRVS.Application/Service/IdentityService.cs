@@ -122,7 +122,7 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, Guid userGroupId)
+        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp , DateTime? otpExpiredDate)
         {
 
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -135,7 +135,8 @@ namespace AppDiv.CRVS.Application.Service
 
             user.UserName = userName;
             user.Email = email;
-            // user.UserGroupId = userGroupId;
+            user.Otp = otp;
+            user.OtpExpiredDate = otpExpiredDate;
             user.PersonalInfoId = personalInfoId;
 
             var response = await _userManager.UpdateAsync(user);
@@ -212,5 +213,12 @@ namespace AppDiv.CRVS.Application.Service
             return _userManager.Users;
         }
 
+        public async Task<ApplicationUser> GetUserByEmailAsync(string email)
+        {
+            
+           return await  _userManager.FindByEmailAsync(email);
+        }
+
+       
     }
 }

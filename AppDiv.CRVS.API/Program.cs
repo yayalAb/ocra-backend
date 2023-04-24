@@ -53,6 +53,8 @@ builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(
 builder.Services.AddApplication(builder.Configuration)
                 .AddInfrastructure(builder.Configuration);
 
+        
+
 builder.Services.AddCors(c =>
 {
     c.AddPolicy("CorsPolicy", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
