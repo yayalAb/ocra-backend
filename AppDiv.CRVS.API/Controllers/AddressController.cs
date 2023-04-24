@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<AddressDTO>> CreateCustomer([FromBody] CreateAdderssCommand command, CancellationToken token)
+        public async Task<ActionResult<AddressDTO>> CreateAddress([FromBody] CreateAdderssCommand command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
             return Ok(result);
