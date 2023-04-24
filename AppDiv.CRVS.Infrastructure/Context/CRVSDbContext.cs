@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Infrastructure
             }
             #endregion
             base.OnModelCreating(modelBuilder);
-            
+
             // SeedData.SeedRoles(modelBuilder);
             // SeedData.SeedUsers(modelBuilder);
             // SeedData.SeedUserRoles(modelBuilder);
