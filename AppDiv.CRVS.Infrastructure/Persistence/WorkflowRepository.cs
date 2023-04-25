@@ -11,5 +11,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
         }
 
+        async Task<Workflow> IWorkflowRepository.GetByIdAsync(Guid id)
+        {
+            return await base.GetAsync(id);
+        }
     }
 }

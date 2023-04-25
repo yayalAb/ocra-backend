@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IWorkflowRepository : IBaseRepository<Workflow>
     {
-
+        Task<Workflow> GetByIdAsync(Guid id);
     }
 }
 
