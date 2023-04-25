@@ -1,6 +1,5 @@
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
-using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
 using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -35,9 +34,9 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetWorkFlowById
         }
         public async Task<WorkflowDTO> Handle(GetWorkFlowByIdQuery request, CancellationToken cancellationToken)
         {
-            var lookups = await _mediator.Send(new GetAllWorkFlowQuery());
-            var selectedlookup = lookups.FirstOrDefault(x => x.id == request.Id);
-            return CustomMapper.Mapper.Map<WorkflowDTO>(selectedlookup);
+            var workflows = await _mediator.Send(new GetAllWorkFlowQuery());
+            var selectedworkflow = workflows.FirstOrDefault(x => x.id == request.Id);
+            return CustomMapper.Mapper.Map<WorkflowDTO>(selectedworkflow);
             // return selectedCustomer;
         }
     }

@@ -19,9 +19,9 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
 
         public Guid id { get; set; }
         public string workflowName { get; set; }
-
-        public ICollection<Step> Steps { get; set; }
         public JObject Descreption { get; set; }
+        public ICollection<StepDTO> Steps { get; set; }
+
     }
 
     public class UpdateWorkFlowCommandHandler : IRequestHandler<UpdateWorkFlowCommand, WorkflowDTO>
@@ -38,8 +38,9 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
             {
                 Id = request.id,
                 workflowName = request.workflowName,
-                Steps = request.Steps,
                 Descreption = request.Descreption,
+                Steps = CustomMapper.Mapper.Map<List<Step>>(request.Steps),
+
             };
             try
             {

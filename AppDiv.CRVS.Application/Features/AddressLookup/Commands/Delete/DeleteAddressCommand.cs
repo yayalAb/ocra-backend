@@ -13,6 +13,11 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
     public class DeleteAddressCommand : IRequest<String>
     {
         public Guid Id { get; set; }
+        public DeleteAddressCommand(Guid id)
+        {
+            this.Id = id;
+
+        }
 
     }
 

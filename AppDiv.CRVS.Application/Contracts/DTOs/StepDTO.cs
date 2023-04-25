@@ -9,6 +9,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public float Payment { get; set; }
         public float Status { get; set; }
         public JObject Descreption { get; set; }
-        public Guid workflowId { get; set; }
+        // public Guid workflowId { get; set; }
     }
 }

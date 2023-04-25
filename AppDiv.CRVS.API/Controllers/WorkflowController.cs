@@ -79,11 +79,12 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult> DeleteLookup(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<ActionResult> DeleteLookup([FromQuery] Guid id)
         {
             try
             {
+                _Ilog.LogCritical(id.ToString());
                 string result = string.Empty;
                 result = await _mediator.Send(new DeleteWorkFlowCommad { Id = id });
                 return Ok(result);
