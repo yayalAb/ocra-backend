@@ -5,16 +5,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Domain.Entities
-{
-    public class PersonalInfo : BaseAuditableEntity
-    {
-namespace AppDiv.CRVS.Domain.Entities
     {
         public class PersonalInfo : BaseAuditableEntity
         {
             public string FirstNameStr { get; set; }
             public string MiddleNameStr { get; set; }
-            public string? LastNameStr { get; set; }
             public string? LastNameStr { get; set; }
             public DateTime? BirthDate { get; set; }
             public string NationalId { get; set; }
@@ -23,9 +18,6 @@ namespace AppDiv.CRVS.Domain.Entities
             public Guid NationalityLookupId { get; set; }
             public Guid? TitleLookupId { get; set; }
             public Guid? ReligionLookupId { get; set; }
-            public Guid? EducationalStatusLookupId { get; set; }
-            public Guid? TypeOfWorkLookupId { get; set; }
-            public Guid MarriageStatusLookupId { get; set; }
             public Guid? EducationalStatusLookupId { get; set; }
             public Guid? TypeOfWorkLookupId { get; set; }
             public Guid MarriageStatusLookupId { get; set; }
@@ -70,10 +62,6 @@ namespace AppDiv.CRVS.Domain.Entities
             }
 
             public virtual Address Address { get; set; }
-            public virtual Lookup SexLookup { get; set; }
-            public virtual Lookup PlaceOfBirthLookup { get; set; }
-            public virtual Lookup NationalityLookup { get; set; }
-            public virtual Lookup TitleLookup { get; set; }
             public virtual Lookup SexLookup { get; set; }
             public virtual Lookup PlaceOfBirthLookup { get; set; }
             public virtual Lookup NationalityLookup { get; set; }
