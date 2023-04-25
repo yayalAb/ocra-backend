@@ -3,6 +3,7 @@ using System;
 using AppDiv.CRVS.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    partial class CRVSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230425092440_addWorkflowsAndStepsTable")]
+    partial class addWorkflowsAndStepsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -210,6 +212,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid>("PersonalInfoId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("Phone")
                         .HasColumnType("longtext");
 
@@ -217,6 +222,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PersonalInfoId")
+                        .IsUnique();
 
                     b.ToTable("ContactInfo");
                 });
@@ -272,9 +280,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("ContactInfoId")
-                        .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -333,8 +338,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AddressId");
-
-                    b.HasIndex("ContactInfoId");
 
                     b.HasIndex("EducationalStatusLookupId");
 
@@ -677,6 +680,17 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("ParentAddress");
                 });
 
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.ContactInfo", b =>
+                {
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
+                        .WithOne("ContactInfo")
+                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.ContactInfo", "PersonalInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PersonalInfo");
+                });
+
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
@@ -684,10 +698,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.ContactInfo", "ContactInfo")
-                        .WithMany()
-                        .HasForeignKey("ContactInfoId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "EducationalStatusLookup")
                         .WithMany("PersonEducationalStatusNavigation")
@@ -730,8 +740,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasForeignKey("TypeOfWorkLookupId");
 
                     b.Navigation("Address");
-
-                    b.Navigation("ContactInfo");
 
                     b.Navigation("EducationalStatusLookup");
 
@@ -864,6 +872,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
                 {
                     b.Navigation("ApplicationUser")
+                        .IsRequired();
+
+                    b.Navigation("ContactInfo")
                         .IsRequired();
                 });
 
