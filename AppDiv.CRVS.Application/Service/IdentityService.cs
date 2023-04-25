@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             return (Result.Success(), password);
         }
-        public async Task<(Result, string)> createUser(ApplicationUser user )
+        public async Task<(Result, string)> createUser(ApplicationUser user)
         {
             var existingUser = await _userManager.FindByEmailAsync(user.Email);
             if (existingUser != null)
@@ -100,7 +100,7 @@ namespace AppDiv.CRVS.Application.Service
             return (Result.Success(), password);
         }
 
-        public async Task<(Result, string)> ForgotPassword(string? email , string? userName)
+        public async Task<(Result, string)> ForgotPassword(string? email, string? userName)
         {
             var user = email != null
                             ? await _userManager.FindByEmailAsync(email)
@@ -113,11 +113,11 @@ namespace AppDiv.CRVS.Application.Service
 
             return (Result.Success(), token);
         }
-        public async Task<Result> ResetPassword(string? email,string? userName, string password, string token)
+        public async Task<Result> ResetPassword(string? email, string? userName, string password, string token)
         {
-            var user = email !=null 
+            var user = email != null
                         ? await _userManager.FindByEmailAsync(email)
-                        :await _userManager.FindByNameAsync(userName);
+                        : await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
                 return Result.Failure(new string[] { "user not found" });
@@ -164,6 +164,34 @@ namespace AppDiv.CRVS.Application.Service
             user.PersonalInfoId = personalInfoId;
 
             var response = await _userManager.UpdateAsync(user);
+
+            if (!response.Succeeded)
+            {
+                throw new Exception($"User Updating failed! \n {response.Errors}");
+            }
+
+            return Result.Success();
+
+        }
+
+        public async Task<Result> UpdateUserAsync(ApplicationUser user)
+        {
+
+            var existingUser = await _userManager.FindByIdAsync(user.Id.ToString());
+
+            if (existingUser == null)
+            {
+                return Result.Failure(new string[] { "could not find user with the given id" });
+            }
+
+
+            existingUser.UserName = user.UserName;
+            existingUser.Email = user.Email;
+            // existingUser.Otp = otp;
+            // existingUser.OtpExpiredDate = otpExpiredDate;
+            existingUser.PersonalInfo = user.PersonalInfo;
+
+            var response = await _userManager.UpdateAsync(existingUser);
 
             if (!response.Succeeded)
             {
@@ -236,16 +264,28 @@ namespace AppDiv.CRVS.Application.Service
         {
             return _userManager.Users;
         }
+        public async Task<IEnumerable<ApplicationUser>> AllUsersDetailAsync()
+        {
+            return await _userManager.Users.Include(u => u.PersonalInfo).ThenInclude(p => p.ContactInfo).ToListAsync();
+        }
 
         public async Task<ApplicationUser> GetUserByEmailAsync(string email)
         {
-
             return await _userManager.FindByEmailAsync(email);
         }
         public async Task<ApplicationUser> GetUserByName(string userName)
         {
 
+
+
             return await _userManager.FindByNameAsync(userName);
+        }
+        public Task<ApplicationUser> GetUserByIdAsync(string userId)
+        {
+            return _userManager.Users
+                                    .Where(u => u.Id == userId)
+                                    .Include(u => u.PersonalInfo)
+                                    .ThenInclude(p => p.ContactInfo).SingleOrDefaultAsync();
         }
 
     }

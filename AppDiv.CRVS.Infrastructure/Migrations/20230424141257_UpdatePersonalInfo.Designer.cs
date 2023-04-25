@@ -3,6 +3,7 @@ using System;
 using AppDiv.CRVS.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    partial class CRVSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230424141257_UpdatePersonalInfo")]
+    partial class UpdatePersonalInfo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -388,51 +390,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.ToTable("Settings");
                 });
 
-            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Step", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("DescreptionStr")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<float>("Payment")
-                        .HasColumnType("float");
-
-                    b.Property<string>("ResponsibleGroup")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<float>("Status")
-                        .HasColumnType("float");
-
-                    b.Property<int>("step")
-                        .HasColumnType("int");
-
-                    b.Property<Guid>("workflowId")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("workflowId");
-
-                    b.ToTable("Steps");
-                });
-
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.UserGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -465,37 +422,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("UserGroups");
-                });
-
-            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Workflow", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("DescreptionStr")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("workflowName")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Workflows");
                 });
 
             modelBuilder.Entity("ApplicationUserUserGroup", b =>
@@ -752,17 +678,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("TypeOfWorkLookup");
                 });
 
-            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Step", b =>
-                {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Workflow", "workflow")
-                        .WithMany("Steps")
-                        .HasForeignKey("workflowId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("workflow");
-                });
-
             modelBuilder.Entity("ApplicationUserUserGroup", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.ApplicationUser", null)
@@ -865,11 +780,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.Navigation("ApplicationUser")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Workflow", b =>
-                {
-                    b.Navigation("Steps");
                 });
 #pragma warning restore 612, 618
         }

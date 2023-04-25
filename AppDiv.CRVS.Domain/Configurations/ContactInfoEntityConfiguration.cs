@@ -10,10 +10,10 @@ namespace AppDiv.CRVS.Domain.Configuration
     {
         public void Configure(EntityTypeBuilder<ContactInfo> builder)
         {
-           
-            builder.HasOne(m => m.PersonalInfo)
-            .WithOne(n => n.ContactInfo)
-            .HasForeignKey<ContactInfo>(m => m.PersonalInfoId);
-        }           
+
+            // builder.HasOne(m => m.PersonalInfo)
+            // .WithOne(n => n.ContactInfo)
+            // .HasForeignKey<ContactInfo>(m => m.PersonalInfoId);
+        }
     }
 }
