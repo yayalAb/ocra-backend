@@ -11,6 +11,10 @@ using AppDiv.CRVS.Application.Features.Groups.Commands.Delete;
 using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create;
+using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetWorkFlowById;
+using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update;
+using AppDiv.CRVS.Application.Features.Lookups.Command.Delete;
+using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -46,49 +50,49 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(result);
         }
 
-        // [HttpGet("{id}")]
-        // [ProducesResponseType(StatusCodes.Status200OK)]
-        // public async Task<GroupDTO> Get(Guid id)
-        // {
-        //     return await _mediator.Send(new GetGroupbyId(id));
-        // }
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<WorkflowDTO> Get(Guid id)
+        {
+            return await _mediator.Send(new GetWorkFlowByIdQuery(id));
+        }
 
-        // [HttpPut("Edit/{id}")]
-        // public async Task<ActionResult> Edit(Guid id, [FromBody] GroupupdateCommands command)
-        // {
-        //     try
-        //     {
-        //         if (command.id == id)
-        //         {
-        //             var result = await _mediator.Send(command);
-        //             return Ok(result);
-        //         }
-        //         else
-        //         {
-        //             return BadRequest();
-        //         }
-        //     }
-        //     catch (Exception exp)
-        //     {
-        //         return BadRequest(exp.Message);
-        //     }
-        // }
+        [HttpPut("Edit/{id}")]
+        public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateWorkFlowCommand command)
+        {
+            try
+            {
+                if (command.id == id)
+                {
+                    var result = await _mediator.Send(command);
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
 
 
-        // [HttpDelete("Delete/{id}")]
-        // public async Task<ActionResult> DeleteLookup(Guid id)
-        // {
-        //     try
-        //     {
-        //         string result = string.Empty;
-        //         result = await _mediator.Send(new DeleteGroupCommands { Id = id });
-        //         return Ok(result);
-        //     }
-        //     catch (Exception exp)
-        //     {
-        //         return BadRequest(exp.Message);
-        //     }
-        // }
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult> DeleteLookup(Guid id)
+        {
+            try
+            {
+                string result = string.Empty;
+                result = await _mediator.Send(new DeleteWorkFlowCommad { Id = id });
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
 
 
 
