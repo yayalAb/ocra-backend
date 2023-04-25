@@ -16,6 +16,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey;
+using AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup;
+using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
+using AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById;
+using AppDiv.CRVS.Application.Features.Groups.Commands.Delete;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -24,11 +28,11 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class LookupController : ControllerBase
+    public class GroupController : ControllerBase
     {
         private readonly ISender _mediator;
-        private readonly ILogger<LookupController> _Ilog;
-        public LookupController(ISender mediator, ILogger<LookupController> Ilog)
+        private readonly ILogger<GroupController> _Ilog;
+        public GroupController(ISender mediator, ILogger<GroupController> Ilog)
         {
             _mediator = mediator;
             _Ilog = Ilog; ;
@@ -37,15 +41,15 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<LookupDTO>> Get()
+        public async Task<List<GroupDTO>> Get()
         {
-            return await _mediator.Send(new GetAllLookupQuery());
+            return await _mediator.Send(new GetAllGroupQuery());
         }
 
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<LookupDTO>> CreateLookup([FromBody] CreateLookupCommand command, CancellationToken token)
+        public async Task<ActionResult<GroupDTO>> CreateGroup([FromBody] CreateGroupCommand command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
             return Ok(result);
@@ -53,17 +57,17 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<LookupDTO> Get(string id)
+        public async Task<GroupDTO> Get(Guid id)
         {
-            return await _mediator.Send(new GetLookupByIdQuery(id));
+            return await _mediator.Send(new GetGroupbyId(id));
         }
 
         [HttpPut("Edit/{id}")]
-        public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateLookupCommand command)
+        public async Task<ActionResult> Edit(Guid id, [FromBody] GroupupdateCommands command)
         {
             try
             {
-                if (command.Id == id)
+                if (command.id == id)
                 {
                     var result = await _mediator.Send(command);
                     return Ok(result);
@@ -86,7 +90,7 @@ namespace AppDiv.CRVS.API.Controllers
             try
             {
                 string result = string.Empty;
-                result = await _mediator.Send(new DeleteLookupCommand(id));
+                result = await _mediator.Send(new DeleteGroupCommands { Id = id });
                 return Ok(result);
             }
             catch (Exception exp)
@@ -95,22 +99,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("key")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<LookupDTO>> GetByKey([FromQuery] string Key)
-        {
-            return await _mediator.Send(new GetLookupByKeyQuery { Key = Key });
-        }
 
-
-        [HttpGet("List")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<ListOfLookupDTO>> Get([FromQuery] string[] keys)
-        {
-            _Ilog.LogCritical(keys[0]);
-            return await _mediator.Send(new GetListOfLookupQuery { list = keys });
-        }
 
 
     }

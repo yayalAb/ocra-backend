@@ -8,76 +8,88 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class PersonalInfo : BaseAuditableEntity
     {
-        public string FirstNameStr { get; set; }
-        public string MiddleNameStr { get; set; }
-        public string? LastNameStr { get; set; }
-        public DateTime? BirthDate { get; set; }
-        public string NationalId { get; set; }
-        public Guid SexLookupId { get; set; }
-        public Guid? PlaceOfBirthLookupId { get; set; }
-        public Guid NationalityLookupId { get; set; }
-        public Guid? TitleLookupId { get; set; }
-        public Guid? ReligionLookupId { get; set; }
-        public Guid? EducationalStatusLookupId { get; set; }
-        public Guid? TypeOfWorkLookupId { get; set; }
-        public Guid MarriageStatusLookupId { get; set; }
-        public Guid AddressId { get; set; }
-        public Guid? NationLookupId { get; set; }
-        public Guid ContactInfoId { get; set; }
-        [NotMapped]
-        public JObject FirstName
+namespace AppDiv.CRVS.Domain.Entities
+    {
+        public class PersonalInfo : BaseAuditableEntity
         {
-            get
+            public string FirstNameStr { get; set; }
+            public string MiddleNameStr { get; set; }
+            public string? LastNameStr { get; set; }
+            public string? LastNameStr { get; set; }
+            public DateTime? BirthDate { get; set; }
+            public string NationalId { get; set; }
+            public Guid SexLookupId { get; set; }
+            public Guid? PlaceOfBirthLookupId { get; set; }
+            public Guid NationalityLookupId { get; set; }
+            public Guid? TitleLookupId { get; set; }
+            public Guid? ReligionLookupId { get; set; }
+            public Guid? EducationalStatusLookupId { get; set; }
+            public Guid? TypeOfWorkLookupId { get; set; }
+            public Guid MarriageStatusLookupId { get; set; }
+            public Guid? EducationalStatusLookupId { get; set; }
+            public Guid? TypeOfWorkLookupId { get; set; }
+            public Guid MarriageStatusLookupId { get; set; }
+            public Guid AddressId { get; set; }
+            public Guid? NationLookupId { get; set; }
+            public Guid ContactInfoId { get; set; }
+            [NotMapped]
+            public JObject FirstName
             {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(FirstNameStr) ? "{}" : FirstNameStr);
+                get
+                {
+                    return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(FirstNameStr) ? "{}" : FirstNameStr);
+                }
+                set
+                {
+                    FirstNameStr = value.ToString();
+                }
             }
-            set
+            [NotMapped]
+            public JObject MiddleName
             {
-                FirstNameStr = value.ToString();
+                get
+                {
+                    return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(MiddleNameStr) ? "{}" : MiddleNameStr);
+                }
+                set
+                {
+                    MiddleNameStr = value.ToString();
+                }
             }
+            [NotMapped]
+            public JObject LastName
+            {
+                get
+                {
+                    return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(LastNameStr) ? "{}" : LastNameStr);
+                }
+                set
+                {
+                    LastNameStr = value.ToString();
+                }
+            }
+
+            public virtual Address Address { get; set; }
+            public virtual Lookup SexLookup { get; set; }
+            public virtual Lookup PlaceOfBirthLookup { get; set; }
+            public virtual Lookup NationalityLookup { get; set; }
+            public virtual Lookup TitleLookup { get; set; }
+            public virtual Lookup SexLookup { get; set; }
+            public virtual Lookup PlaceOfBirthLookup { get; set; }
+            public virtual Lookup NationalityLookup { get; set; }
+            public virtual Lookup TitleLookup { get; set; }
+            public virtual Lookup ReligionLookup { get; set; }
+            public virtual Lookup EducationalStatusLookup { get; set; }
+            public virtual Lookup TypeOfWorkLookup { get; set; }
+            public virtual Lookup MarraigeStatusLookup { get; set; }
+            public virtual Lookup NationLookup { get; set; }
+            // public virtual ApplicationUser ApplicationUser { get; set; }
+            public virtual ContactInfo ContactInfo { get; set; }
+
+
+
+
+
+
         }
-        [NotMapped]
-        public JObject MiddleName
-        {
-            get
-            {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(MiddleNameStr) ? "{}" : MiddleNameStr);
-            }
-            set
-            {
-                MiddleNameStr = value.ToString();
-            }
-        }
-        [NotMapped]
-        public JObject LastName
-        {
-            get
-            {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(LastNameStr) ? "{}" : LastNameStr);
-            }
-            set
-            {
-                LastNameStr = value.ToString();
-            }
-        }
-
-        public virtual Address Address { get; set; }
-        public virtual Lookup SexLookup { get; set; }
-        public virtual Lookup PlaceOfBirthLookup { get; set; }
-        public virtual Lookup NationalityLookup { get; set; }
-        public virtual Lookup TitleLookup { get; set; }
-        public virtual Lookup ReligionLookup { get; set; }
-        public virtual Lookup EducationalStatusLookup { get; set; }
-        public virtual Lookup TypeOfWorkLookup { get; set; }
-        public virtual Lookup MarraigeStatusLookup { get; set; }
-        public virtual Lookup NationLookup { get; set; }
-        // public virtual ApplicationUser ApplicationUser { get; set; }
-        public virtual ContactInfo ContactInfo { get; set; }
-
-
-
-
-
-
     }
-}

@@ -2,6 +2,7 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Enums;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -43,7 +44,7 @@ namespace AppDiv.CRVS.Infrastructure
         {
             try
             {
-                // await TrySeedAsync();
+                await TrySeedAsync();
             }
             catch (Exception ex)
             {
@@ -55,71 +56,36 @@ namespace AppDiv.CRVS.Infrastructure
 
         public async Task TrySeedAsync()
         {
-            await SeedUser();
+            // await SeedUser();
 
 
         }
         public async Task SeedUser()
         {
             List<UserGroup> groups = new List<UserGroup>();
-            List<RoleDto> roles = new List<RoleDto>{
-                    new RoleDto{
-                        Page = "dashboard",
-                        Title = "dashboard",
+             List<RoleDto> roles = new List<RoleDto>();
+              List<RoleDto> roles2 = new List<RoleDto>();
+            Enum.GetNames(typeof(Page)).ToList().ForEach(page => {
+                roles.Add(new  RoleDto{
+                        Page = page,
+                        Title = page,
                         CanAdd = true,
                         CanDelete = true,
                         CanView = true,
                         CanViewDetail = true,
                         CanUpdate = true
-                        },
-                        new RoleDto{
-                        Page = "birth",
-                        Title = "birth",
+                        } );
+                roles2.Add(new  RoleDto{
+                        Page = page,
+                        Title = page,
                         CanAdd = true,
                         CanDelete = true,
                         CanView = true,
                         CanViewDetail = true,
                         CanUpdate = true
-                        },
-                        new RoleDto{
-                        Page = "death",
-                        Title = "death",
-                        CanAdd = true,
-                        CanDelete = false,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
-                        }
-                };
-                    List<RoleDto> roles2 = new List<RoleDto>{
-                    new RoleDto{
-                        Page = "dashboard",
-                        Title = "dashboard",
-                        CanAdd = true,
-                        CanDelete = false,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
-                        },
-                        new RoleDto{
-                        Page = "birth",
-                        Title = "birth",
-                        CanAdd = false,
-                        CanDelete = true,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
-                        },
-                        new RoleDto{
-                        Page = "death",
-                        Title = "death",
-                        CanAdd = true,
-                        CanDelete = false,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
-                        }
-                };
+                        } );
+            });
+                   
             var groupId = new Guid("67998869-cebb-4d3f-a241-fb96b350993f");
             groups.Add(new UserGroup
             {

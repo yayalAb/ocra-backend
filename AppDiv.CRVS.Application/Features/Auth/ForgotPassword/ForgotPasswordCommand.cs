@@ -13,9 +13,9 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
 {
     public record ForgotPasswordCommand : IRequest<string>
     {
-        public string Email { get; init; }
-        public string Type { get; set; }
-        public string? ClientURI { get; init; }
+        public string UserName { get; init; }
+        public string ClientURI { get; init; }
+    
     }
     public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, string>
     {
@@ -39,15 +39,11 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
         {
             try
             {
-                switch (request.Type.ToUpper())
-                {
-                    case "EMAIL":
-                        return await sendByEmailAsync(request, cancellationToken);
-                    case "OTP":
-                        return await sendOTP(request, cancellationToken);
-                    default:
-                        throw new BadRequestException("Invalid Type :type must be either email or otp");
-                }
+                   
+                await sendOTP(request, cancellationToken);
+                return "successfully sent password reset by email and phone";
+                  
+                
             }
             catch (Exception)
             {
@@ -56,31 +52,31 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
 
 
         }
-        private async Task<string> sendByEmailAsync(ForgotPasswordCommand request, CancellationToken cancellationToken)
+        // private async Task<bool> sendByEmailAsync(ForgotPasswordCommand request, CancellationToken cancellationToken)
+        // {
+        //     // var response = await _identityService.ForgotPassword(request.Email);
+        //     // if (!response.result.Succeeded)
+        //     // {
+        //     //     throw new Exception(response.result.Errors.ToString());
+        //     // }
+        //     // var token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(response.resetToken)); 
+        //     // var param = new Dictionary<string, string?>
+        //     // {
+        //     //     { "token" , token },
+        //     //     { "email" , request.Email }
+        //     // };
+
+        //     // var callback = QueryHelpers.AddQueryString(request.ClientURI, param);
+        //     // var emailContent = "Please use the link below to reset your password\n" + callback;
+        //     // var subject = "Reset Password";
+        //     // await _mailService.SendAsync(body: emailContent, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: request.Email, cancellationToken);
+        //     // return  true;
+
+
+        // }
+        private async Task<bool> sendOTP(ForgotPasswordCommand request, CancellationToken cancellationToken)
         {
-            var response = await _identityService.ForgotPassword(request.Email);
-            if (!response.result.Succeeded)
-            {
-                throw new Exception(response.result.Errors.ToString());
-            }
-            var token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(response.resetToken)); ;
-            var param = new Dictionary<string, string?>
-            {
-                { "token" , token },
-                { "email" , request.Email }
-            };
-
-            var callback = QueryHelpers.AddQueryString(request.ClientURI, param);
-            var emailContent = "Please use the link below to reset your password\n" + callback;
-            var subject = "Reset Password";
-            await _mailService.SendAsync(body: emailContent, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: request.Email, cancellationToken);
-            return "successfully sent password reset link by email";
-
-
-        }
-        private async Task<string> sendOTP(ForgotPasswordCommand request, CancellationToken cancellationToken)
-        {
-            var user = await _identityService.GetUserByEmailAsync(request.Email);
+            var user = await _identityService.GetUserByName(request.UserName);
             if (user == null)
             {
                 throw new NotFoundException("user not found");
@@ -93,9 +89,23 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
             {
                 throw new Exception(string.Join(",", updateResponse.Errors));
             }
-            // _smsService.SendSms(user.PhoneNumber , otpCode.ToString());
+            //send to email
+            var param = new Dictionary<string, string?>
+            {
+                { "otp" , otpCode.ToString() },
+                { "userName" , request.UserName }
+            };
 
-            return $"successfully sent password reset OTP";
+            var callback = QueryHelpers.AddQueryString(request.ClientURI, param);
+            var emailContent = "Please use the link below to reset your password\n" + callback;
+            var subject = "Reset Password";
+            await _mailService.SendAsync(body: emailContent, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: user.Email, cancellationToken);
+
+            //send to phone
+            // _smsService.SendSms(user.PhoneNumber , otpCode.ToString());
+        
+
+            return true;
 
         }
     }

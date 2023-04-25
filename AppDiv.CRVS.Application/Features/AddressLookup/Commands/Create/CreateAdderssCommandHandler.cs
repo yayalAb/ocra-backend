@@ -1,17 +1,10 @@
-using System.Linq;
-using AppDiv.CRVS.Application.Exceptions;
-using AppDiv.CRVS.Application.Contracts.DTOs;
-using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
-using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
 {
-
     public class CreateAdderssCommandHandler : IRequestHandler<CreateAdderssCommand, CreateAdderssCommandResponse>
     {
         private readonly IAddressLookupRepository _AddressRepository;

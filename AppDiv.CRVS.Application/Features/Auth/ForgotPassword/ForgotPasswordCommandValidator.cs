@@ -6,10 +6,13 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
     {
         public ForgotPasswordCommandValidator()
         {
-            RuleFor(u => u.Email)
+            RuleFor(u => u.UserName)
              .NotEmpty()
-             .NotNull()
-             .EmailAddress();
+             .NotNull();
+            RuleFor(u => u.ClientURI)
+             .NotEmpty()
+             .NotNull();
+            
         }
     }
 }
