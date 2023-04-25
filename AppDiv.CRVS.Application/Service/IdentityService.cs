@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             return (Result.Success(), password);
         }
-        public async Task<(Result, string)> createUser(ApplicationUser user )
+        public async Task<(Result, string)> createUser(ApplicationUser user)
         {
             var existingUser = await _userManager.FindByEmailAsync(user.Email);
             if (existingUser != null)
@@ -169,6 +169,34 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
 
         }
+
+        public async Task<Result> UpdateUserAsync(ApplicationUser user)
+        {
+
+            var existingUser = await _userManager.FindByIdAsync(user.Id.ToString());
+
+            if (existingUser == null)
+            {
+                return Result.Failure(new string[] { "could not find user with the given id" });
+            }
+
+
+            existingUser.UserName = user.UserName;
+            existingUser.Email = user.Email;
+            // existingUser.Otp = otp;
+            // existingUser.OtpExpiredDate = otpExpiredDate;
+            existingUser.PersonalInfo = user.PersonalInfo;
+
+            var response = await _userManager.UpdateAsync(existingUser);
+
+            if (!response.Succeeded)
+            {
+                throw new Exception($"User Updating failed! \n {response.Errors}");
+            }
+
+            return Result.Success();
+
+        }
         public async Task<Result> DeleteUser(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -232,11 +260,22 @@ namespace AppDiv.CRVS.Application.Service
         {
             return _userManager.Users;
         }
+        public async Task<IEnumerable<ApplicationUser>> AllUsersDetailAsync()
+        {
+            return await _userManager.Users.Include(u => u.PersonalInfo).ThenInclude(p => p.ContactInfo).ToListAsync();
+        }
 
         public async Task<ApplicationUser> GetUserByEmailAsync(string email)
         {
-
             return await _userManager.FindByEmailAsync(email);
+        }
+
+        public Task<ApplicationUser> GetUserByIdAsync(string userId)
+        {
+            return _userManager.Users
+                                    .Where(u => u.Id == userId)
+                                    .Include(u => u.PersonalInfo)
+                                    .ThenInclude(p => p.ContactInfo).SingleOrDefaultAsync();
         }
 
 

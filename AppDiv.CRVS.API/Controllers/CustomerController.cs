@@ -21,8 +21,8 @@ namespace AppDiv.CRVS.API.Controllers
     // [Authorize(AuthenticationSchemes = Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member")]
 
     // Authorize with a specific scheme
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class CustomerController : ControllerBase
     {
         private readonly ISender _mediator;
@@ -54,11 +54,11 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPost("Create")]
-      // [ProducesResponseType(StatusCodes.Status200OK)]
-      // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        public async Task<ActionResult<CustomerResponseDTO>> CreateCustomer([FromBody] CreateCustomerCommand command,CancellationToken token)
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<ActionResult<CustomerResponseDTO>> CreateCustomer([FromBody] CreateCustomerCommand command, CancellationToken token)
         {
-            var result = await _mediator.Send(command,token);
+            var result = await _mediator.Send(command, token);
             return Ok(result);
         }
 

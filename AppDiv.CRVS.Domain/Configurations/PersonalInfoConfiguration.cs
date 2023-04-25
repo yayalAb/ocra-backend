@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Domain.Configuration
     {
         public void Configure(EntityTypeBuilder<PersonalInfo> builder)
         {
-           
+
             builder.HasOne(m => m.Address)
                .WithMany(n => n.PersonalInfos)
                .HasForeignKey(m => m.AddressId);
@@ -48,9 +48,11 @@ namespace AppDiv.CRVS.Domain.Configuration
                .WithMany(n => n.PersonNationNavigation)
                .HasForeignKey(m => m.NationLookupId)
                .IsRequired(false);
-            
-            
-            
-        }           
+            //    builder.HasOne(m => m.ContactInfo)
+            //   .WithOne(n => n.PersonalInfo)
+            //   .HasForeignKey<PersonalInfo>(m => m.ContactInfoId);
+
+
+        }
     }
 }

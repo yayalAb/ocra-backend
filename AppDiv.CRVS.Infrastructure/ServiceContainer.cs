@@ -74,6 +74,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();
+            services.AddTransient<IPersonalInfoRepository, PersonalInfoRepository>();
+            services.AddTransient<IContactInfoRepository, ContactInfoRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
