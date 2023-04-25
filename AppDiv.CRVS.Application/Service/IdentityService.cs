@@ -126,7 +126,7 @@ namespace AppDiv.CRVS.Application.Service
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(e => e.Description);
-                throw new Exception($"password reset failed! \n {resetPassResult.Errors}");
+                throw new Exception($"password reset failed! \n {string.Join(",", errors)}\n {token}");
             }
             return Result.Success();
         }

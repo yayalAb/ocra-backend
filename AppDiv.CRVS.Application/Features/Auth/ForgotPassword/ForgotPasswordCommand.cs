@@ -11,13 +11,13 @@ using System.Text;
 
 namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
 {
-    public record ForgotPasswordCommand : IRequest<string>
+    public record ForgotPasswordCommand : IRequest<object>
     {
         public string UserName { get; init; }
         public string ClientURI { get; init; }
     
     }
-    public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, string>
+    public class ForgotPasswordCommandHandler : IRequestHandler<ForgotPasswordCommand, object>
     {
         private readonly IIdentityService _identityService;
         private readonly IMailService _mailService;
@@ -35,13 +35,13 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
             _config = config.Value;
             _logger = logger;
         }
-        public async Task<string> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<object> Handle(ForgotPasswordCommand request, CancellationToken cancellationToken)
         {
             try
             {
                    
                 await sendOTP(request, cancellationToken);
-                return "successfully sent password reset by email and phone";
+                return new {message = "successfully sent password reset by email and phone"};
                   
                 
             }

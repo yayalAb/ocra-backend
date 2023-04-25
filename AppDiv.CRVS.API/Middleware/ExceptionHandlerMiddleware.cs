@@ -79,6 +79,7 @@ namespace AppDiv.CRVS.Api.Middleware
                     exception.InnerException.Message.ToLower().Contains("the delete statement conflicted with the reference constraint") ? "The record you are trying to delete is being referenced by other items in the database. Please delete those items before." :
                     "Server Error",
                 ApplicationException applicationException => applicationException.Title,
+                AuthenticationException authException => "Authentication Error", 
                 _ => "Server Error"
             };
 

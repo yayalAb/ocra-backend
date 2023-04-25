@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Infrastructure
 
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<CertificateTemplate> CertificateTemplates { get; set; }
 
         public DbSet<Workflow> Workflows { get; set; }
         public DbSet<Step> Steps { get; set; }
