@@ -8,13 +8,10 @@ using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Update;
 using AppDiv.CRVS.Application.Features.Settings.Commands.create;
 using AppDiv.CRVS.Application.Features.Settings.Commands.Update;
+using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create;
 using AppDiv.CRVS.Domain.Entities;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -40,6 +37,15 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<UserGroup, GroupDTO>().ReverseMap();
             CreateMap<UserGroup, CreateGroupCommand>().ReverseMap();
+
+            CreateMap<Workflow, WorkflowDTO>().ReverseMap();
+            CreateMap<Workflow, CreateWorkFlowCommand>().ReverseMap();
+
+            CreateMap<Step, StepDTO>().ReverseMap();
+
+
+
+
 
 
 
