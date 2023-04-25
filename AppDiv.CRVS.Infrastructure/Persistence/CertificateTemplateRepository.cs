@@ -1,22 +1,23 @@
-using AppDiv.CRVS.Domain;
+
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
-using AppDiv.CRVS.Infrastructure.Context;
-using Org.BouncyCastle.Math.EC.Rfc7748;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
-    public class CertificateTemplateRepository : BaseRepository<ApplicationUser>, ICertificateTemplateRepository
+    public class CertificateTemplateRepository : BaseRepository<CertificateTemplate>, ICertificateTemplateRepository
     {
+        private readonly CRVSDbContext _dbContext;
+
         public CertificateTemplateRepository(CRVSDbContext dbContext) : base(dbContext)
         {
+            _dbContext = dbContext;
         }
 
-
+        public async Task<Guid> Add(CertificateTemplate certificateTemplate)
+        {
+           var cc = await  _dbContext.CertificateTemplates.AddAsync(certificateTemplate);
+           return cc.Entity.Id;
+        }
     }
 }

@@ -8,12 +8,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
+namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
 {
-    public class CreateCertificateTemplateCommandValidator : AbstractValidator<CreateCertificateTemplateCommand>
+    public class UpdateCertificateTemplateCommandValidator : AbstractValidator<UpdateCertificateTemplateCommand>
     {
         private readonly IAddressLookupRepository _repo;
-        public CreateCertificateTemplateCommandValidator(IAddressLookupRepository repo)
+        public UpdateCertificateTemplateCommandValidator(IAddressLookupRepository repo)
         {
             _repo = repo;
             RuleFor(p => p.CertificateTemplate.SvgFile)
