@@ -14,8 +14,14 @@ using AppDiv.CRVS.Application.Features.User.Command.Create;
 using AppDiv.CRVS.Application.Features.User.Command.Update;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
+using Application.Common.Mappings;
 using AutoMapper;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -23,6 +29,15 @@ namespace AppDiv.CRVS.Application.Mapper
     {
         public CRVSMappingProfile()
         {
+
+            ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+
+
+
+        }
+        private void ApplyMappingsFromAssembly(Assembly assembly)
+        {
+
             CreateMap<Customer, CustomerResponseDTO>().ReverseMap();
             CreateMap<Customer, CreateCustomerCommand>().ReverseMap();
             CreateMap<Customer, EditCustomerCommand>().ReverseMap();
@@ -64,8 +79,43 @@ namespace AppDiv.CRVS.Application.Mapper
 
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
+            var mapFromType = typeof(IMapFrom<>);
 
+            var mappingMethodName = nameof(IMapFrom<object>.Mapping);
 
+            bool HasInterface(Type t) => t.IsGenericType && t.GetGenericTypeDefinition() == mapFromType;
+
+            var types = assembly.GetExportedTypes().Where(t => t.GetInterfaces().Any(HasInterface)).ToList();
+
+            var argumentTypes = new Type[] { typeof(Profile) };
+
+            foreach (var type in types)
+            {
+
+                var instance = Activator.CreateInstance(type);
+
+                var methodInfo = type.GetMethod(mappingMethodName);
+
+                if (methodInfo != null)
+                {
+                    methodInfo.Invoke(instance, new object[] { this });
+                }
+                else
+                {
+                    var interfaces = type.GetInterfaces().Where(HasInterface).ToList();
+
+                    if (interfaces.Count > 0)
+                    {
+                        foreach (var @interface in interfaces)
+                        {
+                            var interfaceMethodInfo = @interface.GetMethod(mappingMethodName, argumentTypes);
+
+                            interfaceMethodInfo?.Invoke(instance, new object[] { this });
+                        }
+                    }
+                }
+
+            }
         }
     }
 }
