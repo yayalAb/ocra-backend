@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("GetByParent")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<AddressDTO>> GetByParent([FromQuery] Guid parentId)
+        public async Task<List<AddressForLookupDTO>> GetByParent([FromQuery] Guid parentId)
         {
             return await _mediator.Send(new GetAddressByParntId { Id = parentId });
         }
