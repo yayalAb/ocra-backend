@@ -1,3 +1,4 @@
+using System.Net.Cache;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain;
@@ -10,25 +11,20 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
     public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, CreateUserCommandResponse>
     {
         private readonly IIdentityService _identityService;
-        private readonly IPersonalInfoRepository _personalInfoRepository;
-        private readonly IContactInfoRepository _contactInfoRepository;
-        private readonly IUserRepository _userRepository;
+        private readonly IGroupRepository _groupRepository;
         public CreateUserCommandHandler(IIdentityService identityService,
-                                        IPersonalInfoRepository personalInfoRepository,
-                                        IContactInfoRepository contactInfoRepository,
-                                        IUserRepository userRepository)
+                                        IGroupRepository groupRepository)
         {
+            this._groupRepository = groupRepository;
             _identityService = identityService;
-            _userRepository = userRepository;
-            _personalInfoRepository = personalInfoRepository;
-            _contactInfoRepository = contactInfoRepository;
         }
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
 
+
             var CreateUserCommadResponse = new CreateUserCommandResponse();
 
-            var validator = new CreateUserCommandValidator(_userRepository);
+            var validator = new CreateUserCommandValidator(_identityService);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors
@@ -49,8 +45,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                     Phone = request.User.PersonalInfo.ContactInfo.Phone,
                     HouseNumber = request.User.PersonalInfo.ContactInfo.HouseNo,
                     Website = request.User.PersonalInfo.ContactInfo.Website,
-                    Linkdin = request.User.PersonalInfo.ContactInfo.Linkdin
+                    Linkdin = request.User.PersonalInfo.ContactInfo.Linkdin,
+                    CreatedAt = DateTime.Now
                 };
+                // request.User.userImage
                 var person = new PersonalInfo
                 {
                     Id = request.User.PersonalInfo.Id,
@@ -69,23 +67,25 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                     NationLookupId = request.User.PersonalInfo.NationLookupId,
                     TitleLookupId = request.User.PersonalInfo.TitleLookupId,
                     ReligionLookupId = request.User.PersonalInfo.ReligionId,
-                    ContactInfo = contact
+                    ContactInfo = contact,
+                    CreatedAt = DateTime.Now
 
                 };
+                var listGroup = new List<UserGroup>();
+                request.User.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
                 //can use this instead of automapper
                 var user = new ApplicationUser
                 {
                     UserName = request.User.UserName,
                     Email = request.User.Email,
+                    UserGroups = listGroup,
                     PersonalInfo = person,
 
                 };
                 var response = await _identityService.createUser(user);
+
             }
             return CreateUserCommadResponse;
-
-            // request.PersonalInfo.ContactInfo.
-            // request.PersonalInfo.
         }
     }
 }

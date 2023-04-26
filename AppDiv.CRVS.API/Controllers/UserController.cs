@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.API.Controllers
     {
 
         [HttpPost("Create")]
-        [ProducesDefaultResponseType(typeof(int))]
+        // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateUser(CreateUserCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -31,7 +31,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpGet("GetUserDetailsByUserName/{userName}")]
-        [ProducesDefaultResponseType(typeof(UserDetailsResponseDTO))]
+        [ProducesDefaultResponseType(typeof(UserResponseDTO))]
         public async Task<IActionResult> GetUserDetailsByUserName(string userName)
         {
             var result = await Mediator.Send(new GetUserDetailsByUserNameQuery() { UserName = userName });

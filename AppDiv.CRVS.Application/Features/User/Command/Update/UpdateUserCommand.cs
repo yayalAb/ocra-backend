@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace AppDiv.CRVS.Application.Features.User.Command.Update
 {
@@ -17,14 +19,18 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public string Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
+        public string userImage { get; set; }
+        public List<Guid> UserGroups { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }
     }
 
     public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserResponseDTO>
     {
         private readonly IIdentityService _identityService;
-        public UpdateUserCommandHandler(IIdentityService identityService)
+        private readonly IGroupRepository _groupRepository;
+        public UpdateUserCommandHandler(IIdentityService identityService, IGroupRepository groupRepository)
         {
+            this._groupRepository = groupRepository;
             _identityService = identityService;
         }
         public async Task<UserResponseDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
@@ -36,8 +42,12 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 Phone = request.PersonalInfo.ContactInfo.Phone,
                 HouseNumber = request.PersonalInfo.ContactInfo.HouseNo,
                 Website = request.PersonalInfo.ContactInfo.Website,
-                Linkdin = request.PersonalInfo.ContactInfo.Linkdin
+                Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
+                ModifiedAt = DateTime.Now
             };
+            // 2e946713-6676-49ff-8a64-5b43772a6574 group
+            // 15911d9e-2196-47b0-845d-bd99ca25467f addres
+            // 16f8409c-1bbc-4d5e-a530-30aec3076772 lookup
 
             var person = new PersonalInfo
             {
@@ -57,17 +67,20 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 NationLookupId = request.PersonalInfo.NationLookupId,
                 TitleLookupId = request.PersonalInfo.TitleLookupId,
                 ReligionLookupId = request.PersonalInfo.ReligionId,
+                ModifiedAt = DateTime.Now,
                 ContactInfo = contact
 
             };
-
+            var listGroup = new List<UserGroup>();
+            request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
             //can use this instead of automapper
             var user = new ApplicationUser
             {
                 Id = request.Id,
                 UserName = request.UserName,
                 Email = request.Email,
-                PersonalInfo = person,
+                UserGroups = listGroup,
+                PersonalInfo = person
 
             };
 
