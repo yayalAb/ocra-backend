@@ -44,5 +44,6 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
 
             // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
         }
+
     }
 }
