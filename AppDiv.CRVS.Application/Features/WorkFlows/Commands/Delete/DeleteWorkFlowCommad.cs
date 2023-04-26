@@ -38,10 +38,11 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
         {
             try
             {
-                _Ilog.LogCritical(request.Id.ToString());
                 var workFlowEntity = await _workflowRepository.GetByIdAsync(request.Id);
 
                 await _workflowRepository.DeleteAsync(request.Id);
+                await _workflowRepository.SaveChangesAsync(cancellationToken);
+
             }
             catch (Exception exp)
             {

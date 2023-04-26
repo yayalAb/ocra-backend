@@ -12,12 +12,12 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
     // Customer create command with string response
     public class DeleteLookupCommand : IRequest<String>
     {
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
-        public DeleteLookupCommand(Guid Id)
-        {
-            this.Id = Id;
-        }
+        // public DeleteLookupCommand(Guid Id)
+        // {
+        //     this.Id = Id;
+        // }
     }
 
     // Customer delete command handler with string response as output
@@ -36,6 +36,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
                 var customerEntity = await _lookupRepository.GetByIdAsync(request.Id);
 
                 await _lookupRepository.DeleteAsync(customerEntity);
+                await _lookupRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {

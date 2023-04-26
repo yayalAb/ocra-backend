@@ -13,11 +13,6 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
     public class DeleteAddressCommand : IRequest<String>
     {
         public Guid Id { get; set; }
-        public DeleteAddressCommand(Guid id)
-        {
-            this.Id = id;
-
-        }
 
     }
 
@@ -35,8 +30,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
             try
             {
                 var addressEntity = await _addressRepository.GetByIdAsync(request.Id);
-
                 await _addressRepository.DeleteAsync(addressEntity);
+                await _addressRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {
