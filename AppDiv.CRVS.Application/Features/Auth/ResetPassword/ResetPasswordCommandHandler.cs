@@ -9,21 +9,21 @@ using Microsoft.AspNetCore.WebUtilities;
 namespace AppDiv.CRVS.Application.Features.Auth.ResetPassword
 {
 
-    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, string>
+    public class ResetPasswordCommandHandler : IRequestHandler<ResetPasswordCommand, object>
     {
         private readonly IIdentityService _identityService;
         public ResetPasswordCommandHandler(IIdentityService identityService)
         {
             _identityService = identityService;
         }
-        public async Task<string> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
+        public async Task<object> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
             var user = await _identityService.GetUserByName(request.resetPassword.UserName);
             if (user == null)
             {
                 throw new NotFoundException("user not found");
             }
-            if (user.OtpExpiredDate == null || DateTime.Compare((DateTime)user.OtpExpiredDate, DateTime.Now) > 0 && user.Otp != request.resetPassword.Otp)
+            if (user.OtpExpiredDate == null || DateTime.Compare((DateTime)user.OtpExpiredDate, DateTime.Now) < 0 || user.Otp != request.resetPassword.Otp)
             {
                 throw new AuthenticationException("could not authenticate user");
             }
@@ -32,13 +32,12 @@ namespace AppDiv.CRVS.Application.Features.Auth.ResetPassword
             {
                 throw new Exception(forgotPasswordRes.result.Errors.ToString());
             }
-            var token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(forgotPasswordRes.resetToken));
-            var resetPasswordRes = await _identityService.ResetPassword(email: null, user.UserName, request.resetPassword.Password, token);
+            var resetPasswordRes = await _identityService.ResetPassword(email: null, user.UserName, request.resetPassword.Password, forgotPasswordRes.resetToken);
             if (!resetPasswordRes.Succeeded)
             {
                 throw new Exception();
             }
-            return "password reset successful";
+            return new {message="password reset successful"};
 
         }
     }

@@ -79,6 +79,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IWorkflowRepository, WorkflowRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();
+
             services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
             #endregion Repositories DI

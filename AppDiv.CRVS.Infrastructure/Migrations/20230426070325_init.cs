@@ -33,6 +33,74 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "AuditLogs",
+                columns: table => new
+                {
+                    AuditId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AuditData = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Action = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Enviroment = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    EntityType = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AuditDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    AuditUserId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    TablePk = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuditLogs", x => x.AuditId);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "CertificateTemplates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CertificateType = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CertificateTemplates", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "ContactInfo",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Email = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Phone = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    HouseNumber = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Website = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Linkdin = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ContactInfo", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "Lookups",
                 columns: table => new
                 {
@@ -59,6 +127,26 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "Settings",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Key = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ValueStr = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Settings", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "UserGroups",
                 columns: table => new
                 {
@@ -77,6 +165,26 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_UserGroups", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Workflows",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    workflowName = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    DescreptionStr = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Workflows", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -118,7 +226,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     AdminLevelLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     AreaTypeLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ParentAddressId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ParentAddressId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -131,8 +239,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         name: "FK_Addresses_Addresses_ParentAddressId",
                         column: x => x.ParentAddressId,
                         principalTable: "Addresses",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Addresses_Lookups_AdminLevelLookupId",
                         column: x => x.AdminLevelLookupId,
@@ -143,6 +250,36 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         name: "FK_Addresses_Lookups_AreaTypeLookupId",
                         column: x => x.AreaTypeLookupId,
                         principalTable: "Lookups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "Steps",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    step = table.Column<int>(type: "int", nullable: false),
+                    ResponsibleGroup = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    Payment = table.Column<float>(type: "float", nullable: false),
+                    Status = table.Column<float>(type: "float", nullable: false),
+                    DescreptionStr = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    workflowId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Steps", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Steps_Workflows_workflowId",
+                        column: x => x.workflowId,
+                        principalTable: "Workflows",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -163,16 +300,16 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     NationalId = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     SexLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    PlaceOfBirthLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PlaceOfBirthLookupId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     NationalityLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TitleLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ReligionLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    EducationalStatusLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TypeOfWorkLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    TitleLookupId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ReligionLookupId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    EducationalStatusLookupId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    TypeOfWorkLookupId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     MarriageStatusLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     AddressId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    NationLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    TitleLookupId1 = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    NationLookupId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ContactInfoId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -188,17 +325,21 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
+                        name: "FK_PersonalInfos_ContactInfo_ContactInfoId",
+                        column: x => x.ContactInfoId,
+                        principalTable: "ContactInfo",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_PersonalInfos_Lookups_EducationalStatusLookupId",
                         column: x => x.EducationalStatusLookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PersonalInfos_Lookups_MarriageStatusLookupId",
                         column: x => x.MarriageStatusLookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PersonalInfos_Lookups_NationalityLookupId",
                         column: x => x.NationalityLookupId,
@@ -209,20 +350,17 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         name: "FK_PersonalInfos_Lookups_NationLookupId",
                         column: x => x.NationLookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PersonalInfos_Lookups_PlaceOfBirthLookupId",
                         column: x => x.PlaceOfBirthLookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PersonalInfos_Lookups_ReligionLookupId",
                         column: x => x.ReligionLookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_PersonalInfos_Lookups_SexLookupId",
                         column: x => x.SexLookupId,
@@ -233,14 +371,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         name: "FK_PersonalInfos_Lookups_TitleLookupId",
                         column: x => x.TitleLookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_PersonalInfos_Lookups_TitleLookupId1",
-                        column: x => x.TitleLookupId1,
+                        name: "FK_PersonalInfos_Lookups_TypeOfWorkLookupId",
+                        column: x => x.TypeOfWorkLookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -471,8 +607,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_PersonalInfoId",
                 table: "AspNetUsers",
-                column: "PersonalInfoId",
-                unique: true);
+                column: "PersonalInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -484,6 +619,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "IX_PersonalInfos_AddressId",
                 table: "PersonalInfos",
                 column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PersonalInfos_ContactInfoId",
+                table: "PersonalInfos",
+                column: "ContactInfoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersonalInfos_EducationalStatusLookupId",
@@ -526,9 +666,14 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 column: "TitleLookupId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PersonalInfos_TitleLookupId1",
+                name: "IX_PersonalInfos_TypeOfWorkLookupId",
                 table: "PersonalInfos",
-                column: "TitleLookupId1");
+                column: "TypeOfWorkLookupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Steps_workflowId",
+                table: "Steps",
+                column: "workflowId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -552,6 +697,18 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "AuditLogs");
+
+            migrationBuilder.DropTable(
+                name: "CertificateTemplates");
+
+            migrationBuilder.DropTable(
+                name: "Settings");
+
+            migrationBuilder.DropTable(
+                name: "Steps");
+
+            migrationBuilder.DropTable(
                 name: "UserGroups");
 
             migrationBuilder.DropTable(
@@ -561,10 +718,16 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
+                name: "Workflows");
+
+            migrationBuilder.DropTable(
                 name: "PersonalInfos");
 
             migrationBuilder.DropTable(
                 name: "Addresses");
+
+            migrationBuilder.DropTable(
+                name: "ContactInfo");
 
             migrationBuilder.DropTable(
                 name: "Lookups");
