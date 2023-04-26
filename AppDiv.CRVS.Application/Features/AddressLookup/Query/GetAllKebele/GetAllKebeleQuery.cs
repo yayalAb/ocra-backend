@@ -39,6 +39,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
                 Zone = co.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
                 Region = co.ParentAddress?.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
                 Country = co.ParentAddress?.ParentAddress?.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
+                Code = co.Code,
+                StatisticCode = co.StatisticCode
+
             });
 
             // var lookups = CustomMapper.Mapper.Map<List<KebeleDTO>>(AddressList);

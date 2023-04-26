@@ -37,6 +37,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
                 Zone = co.AddressName["en"].ToString(),
                 Region = co.ParentAddress?.AddressName["en"].ToString(),
                 Country = co.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
+                Code = co.Code,
+                StatisticCode = co.StatisticCode
 
             });
 

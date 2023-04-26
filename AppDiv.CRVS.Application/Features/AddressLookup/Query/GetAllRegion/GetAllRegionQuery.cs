@@ -37,6 +37,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
                 id = co.Id,
                 Region = co.AddressName["en"].ToString(),
                 Country = co.ParentAddress?.AddressName["en"].ToString(),
+                Code = co.Code,
+                StatisticCode = co.StatisticCode
             });
 
             // var lookups = CustomMapper.Mapper.Map<List<RegionDTO>>(AddressList);

@@ -38,6 +38,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda
                 Zone = co.ParentAddress?.AddressName["en"].ToString(),
                 Region = co.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
                 Country = co.ParentAddress?.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
+                Code = co.Code,
+                StatisticCode = co.StatisticCode
             });
 
             // var lookups = CustomMapper.Mapper.Map<List<WoredaDTO>>(AddressList);

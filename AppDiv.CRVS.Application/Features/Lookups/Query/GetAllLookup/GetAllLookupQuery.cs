@@ -35,6 +35,17 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
             return lookups;
 
             // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
+
+            // var formatedLookup = LookupList.Select(lo => new LookupForGridDTO
+            // {
+            //     id = lo.Id,
+            //     Key = lo.Key,
+            //     Value = lo.Value["en"].ToString(),
+            //     StatisticCode = lo.StatisticCode,
+            //     Code = lo.Code
+
+
+            // });
         }
     }
 }
