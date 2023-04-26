@@ -8,5 +8,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<IEnumerable<Address>> GetAllAsync();
         Task<Address> GetByIdAsync(Guid id);
         Task<Address> GetAddressByKey(string key);
+        Task<Address> GetAddressAdminstrativeLevel(Guid id);
     }
 }

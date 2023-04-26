@@ -18,7 +18,5 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
-
-
     }
 }

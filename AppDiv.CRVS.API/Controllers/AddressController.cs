@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressbyAdminstrativeLevel;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParent;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
@@ -92,6 +93,16 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(new GetAddressByParntId { Id = parentId });
         }
+
+        [HttpGet]
+        [Route("administrativeLavel")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<AddressDTO>> administrativeLavel([FromQuery] Guid AdminLevelId)
+        {
+            return await _mediator.Send(new GetByAdminstrativeLevelQuery());
+        }
+
+
 
     }
 }

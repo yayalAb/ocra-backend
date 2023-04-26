@@ -17,6 +17,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
         }
 
+        Task<Address> IAddressLookupRepository.GetAddressAdminstrativeLevel(Guid id)
+        {
+            return base.GetFirstEntryAsync(x => x.Id.Equals(id), q => q.Id, Utility.Contracts.SortingDirection.Ascending);
+        }
+
         async Task<Address> IAddressLookupRepository.GetAddressByKey(string key)
         {
             return await base.GetAsync(key);

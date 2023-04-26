@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
         public async Task<WorkflowDTO> Handle(UpdateWorkFlowCommand request, CancellationToken cancellationToken)
         {
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request);
-            Workflow groupEntity = new Workflow
+            Workflow WorkflowEntity = new Workflow
             {
                 Id = request.id,
                 workflowName = request.workflowName,
@@ -44,15 +44,15 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
             };
             try
             {
-                await _workflowRepository.UpdateAsync(groupEntity, x => x.Id);
+                await _workflowRepository.UpdateAsync(WorkflowEntity, x => x.Id);
             }
             catch (Exception exp)
             {
                 throw new ApplicationException(exp.Message);
             }
-            var modifiedLookup = await _workflowRepository.GetByIdAsync(request.id);
-            var LookupResponse = CustomMapper.Mapper.Map<WorkflowDTO>(modifiedLookup);
-            return LookupResponse;
+            var modifiedworkflow = await _workflowRepository.GetByIdAsync(request.id);
+            var workflowResponse = CustomMapper.Mapper.Map<WorkflowDTO>(modifiedworkflow);
+            return workflowResponse;
         }
     }
 }
