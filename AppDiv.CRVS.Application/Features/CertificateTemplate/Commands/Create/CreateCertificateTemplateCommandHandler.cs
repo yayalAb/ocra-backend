@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
         {
             var certificateTemplate = new CertificateTemplate
             {
-                CertificateType = request.CertificateTemplate.CertificateType,
+                CertificateType = request.CertificateType,
 
             };
             try
@@ -27,8 +27,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
                 var certificateId = await _certificateTemplateRepository.Add(certificateTemplate);
                 await _certificateTemplateRepository.SaveChangesAsync(cancellationToken);
 
-                var file = request.CertificateTemplate.SvgFile;
-                var folderName = Path.Combine("Resources", "CertificateTemplates", $"{request.CertificateTemplate.CertificateType}");
+                var file = request.SvgFile;
+                var folderName = Path.Combine("Resources", "CertificateTemplates", $"{request.CertificateType}");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (file.Length > 0)

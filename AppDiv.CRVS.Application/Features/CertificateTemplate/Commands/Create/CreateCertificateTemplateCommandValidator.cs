@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
         public CreateCertificateTemplateCommandValidator(IAddressLookupRepository repo)
         {
             _repo = repo;
-            RuleFor(p => p.CertificateTemplate.SvgFile)
+            RuleFor(p => p.SvgFile)
             .NotEmpty()
             .NotNull()
             .Must(BeSvgFile).WithMessage("the certificate template file must be svg format");
