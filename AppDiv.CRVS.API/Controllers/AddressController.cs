@@ -2,10 +2,12 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressbyAdminstrativeLevel;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParent;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -102,7 +104,21 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(new GetByAdminstrativeLevelQuery());
         }
 
+        [HttpGet]
+        [Route("Country")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<CountryDTO>> GetAllCountry()
+        {
+            return await _mediator.Send(new GetAllCountryQuery());
+        }
 
+        [HttpGet]
+        [Route("Region")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<RegionDTO>> GetAllRegion()
+        {
+            return await _mediator.Send(new GetAllRegionQuery());
+        }
 
     }
 }
