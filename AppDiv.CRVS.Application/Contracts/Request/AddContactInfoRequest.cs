@@ -13,12 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string? Phone { get; set; }
         public string? HouseNo { get; set; }
         public string? Linkdin { get; set; }
-        public DateTime CreatedDate { get; set; }
+        // public DateTime CreatedDate { get; set; }
         // public Guid PersonId { get; set; }
-
-        public AddContactInfoRequest()
-        {
-            CreatedDate = DateTime.Now;
-        }
     }
 }

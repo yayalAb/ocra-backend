@@ -9,22 +9,22 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class PersonalInfoDTO
     {
         public Guid Id { get; set; }
-        public JObject FirstName { get; set; }
-        public JObject MiddleName { get; set; }
-        public JObject? LastName { get; set; }
+        public string? FirstName { get; set; }
+        public string? MiddleName { get; set; }
+        public string? LastName { get; set; }
         public DateTime? BirthDate { get; set; }
-        public string NationalId { get; set; }
-        public Guid PlaceOfBirthLookupId { get; set; }
-        public Guid NationalityLookupId { get; set; }
-        public Guid TitleLookupId { get; set; }
-        public Guid? ReligionLookupId { get; set; }
-        public Guid EducationalStatusLookupId { get; set; }
-        public Guid TypeOfWorkLookupId { get; set; }
-        public Guid MarriageStatusLookupId { get; set; }
-        public Guid AddressId { get; set; }
-        public Guid NationLookupId { get; set; }
+        public string? NationalId { get; set; }
+        public string? PlaceOfBirthLookup { get; set; }
+        public string? NationalityLookup { get; set; }
+        public string? TitleLookup { get; set; }
+        public string? ReligionLookup { get; set; }
+        public string? EducationalStatusLookup { get; set; }
+        public string? TypeOfWorkLookup { get; set; }
+        public string? MarraigeStatusLookup { get; set; }
+        // public AddressDTO? Address { get; set; }
+        public string? NationLookup { get; set; }
         public DateTime CreatedDate { get; set; }
-        public Guid ContactInfoId { get; set; }
+        // public string ContactInfo { get; set; }
         public ContactInfoDTO ContactInfo { get; set; }
 
     }

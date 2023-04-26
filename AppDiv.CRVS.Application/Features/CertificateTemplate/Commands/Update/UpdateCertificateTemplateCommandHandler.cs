@@ -25,6 +25,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
                 if(certificate == null){
                     throw new NotFoundException($"certificateTemplate with id {request.CertificateTemplate.Id} is not found");
                 }
+                await _certificateTemplateRepository.UpdateAsync(certificate,  x => x.Id);
+                await _certificateTemplateRepository.SaveChangesAsync(cancellationToken);
                 var file = request.CertificateTemplate.SvgFile;
                 var folderName = Path.Combine("Resources", "CertificateTemplates", $"{request.CertificateTemplate.CertificateType}");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);

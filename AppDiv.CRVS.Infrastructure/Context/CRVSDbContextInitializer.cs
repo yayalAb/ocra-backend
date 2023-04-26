@@ -161,6 +161,9 @@ namespace AppDiv.CRVS.Infrastructure
                         {"en","oromo"}
                       }
                     },
+                    ContactInfo = new ContactInfo{
+                        Email = "admin@gmail.com"
+                    },
                     Address = new Address
                     {
                         AddressName = new JObject{
@@ -180,7 +183,8 @@ namespace AppDiv.CRVS.Infrastructure
                     },
 
                 },
-                UserGroups = groups
+                UserGroups = groups,
+                
 
             };
 

@@ -12,5 +12,6 @@ namespace AppDiv.CRVS.Domain.Repositories
     public interface ICertificateTemplateRepository : IBaseRepository<CertificateTemplate>
     {
         public Task<Guid> Add(CertificateTemplate certificateTemplate);
+        public new IQueryable<CertificateTemplate> GetAllAsync();
     }
 }
