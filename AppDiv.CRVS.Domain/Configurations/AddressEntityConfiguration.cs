@@ -10,18 +10,15 @@ namespace AppDiv.CRVS.Domain.Configuration
     {
         public void Configure(EntityTypeBuilder<Address> builder)
         {
-           builder.HasOne(m => m.AdminLevelLookup)
-               .WithMany(n => n.AddressAdminLevelNavigation)
-               .HasForeignKey(m => m.AdminLevelLookupId);
-           builder.HasOne(m => m.AreaTypeLookup)
-               .WithMany(n => n.AddressAreaTypeNavigation)
-               .HasForeignKey(m => m.AreaTypeLookupId);
-           builder.HasOne(m => m.ParentAddress)
-               .WithMany(n => n.ChildAddresses)
-               .HasForeignKey(m => m.ParentAddressId)
-               .IsRequired(false);
-            
-            
-        }           
+            builder.HasOne(m => m.AreaTypeLookup)
+                .WithMany(n => n.AddressAreaTypeNavigation)
+                .HasForeignKey(m => m.AreaTypeLookupId);
+            builder.HasOne(m => m.ParentAddress)
+                .WithMany(n => n.ChildAddresses)
+                .HasForeignKey(m => m.ParentAddressId)
+                .IsRequired(false);
+
+
+        }
     }
 }

@@ -7,7 +7,10 @@ using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressbyAdminstra
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParent;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -118,6 +121,30 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<List<RegionDTO>> GetAllRegion()
         {
             return await _mediator.Send(new GetAllRegionQuery());
+        }
+
+        [HttpGet]
+        [Route("Zone")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<ZoneDTO>> GetAllZone()
+        {
+            return await _mediator.Send(new GetAllZoneQuery());
+        }
+
+        [HttpGet]
+        [Route("Woreda")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<WoredaDTO>> GetAllWoreda()
+        {
+            return await _mediator.Send(new GetAllWoredaQuery());
+        }
+
+        [HttpGet]
+        [Route("Kebele")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<KebeleDTO>> GetAllKebele()
+        {
+            return await _mediator.Send(new GetAllKebeleQuery());
         }
 
     }
