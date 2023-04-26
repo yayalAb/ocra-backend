@@ -1,6 +1,7 @@
 
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
+using AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetAllCertificateTemplates;
 using AppDiv.CRVS.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -19,13 +20,18 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return Ok(await Mediator.Send(command));
         }
-                [HttpPost("Update")]
+        [HttpPost("Update")]
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> UpdateCertificateTemplate([FromForm] UpdateCertificateTemplateCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
-
+        [HttpGet]
+        // [ProducesDefaultResponseType(typeof(int))]
+        public async Task<ActionResult> Get([FromQuery] GetAllCertificateTemplatesQuery query)
+        {
+            return Ok(await Mediator.Send(query));
+        }
 
     }
 }
