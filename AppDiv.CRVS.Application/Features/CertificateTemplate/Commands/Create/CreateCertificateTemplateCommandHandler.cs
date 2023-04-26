@@ -25,6 +25,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
             try
             {
                 var certificateId = await _certificateTemplateRepository.Add(certificateTemplate);
+                await _certificateTemplateRepository.SaveChangesAsync(cancellationToken);
+
                 var file = request.CertificateTemplate.SvgFile;
                 var folderName = Path.Combine("Resources", "CertificateTemplates", $"{request.CertificateTemplate.CertificateType}");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);

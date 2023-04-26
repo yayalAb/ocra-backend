@@ -2,18 +2,18 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
 using AppDiv.CRVS.Application.Mapper;
 using MediatR;
-
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParent
 {
     // Customer GetAddressByParntId with  response
-    public class GetAddressByParntId : IRequest<List<AddressDTO>>
+    public class GetAddressByParntId : IRequest<List<AddressForLookupDTO>>
     {
         public Guid Id { get; set; }
 
     }
 
-    public class GetAddressByParntIdHandler : IRequestHandler<GetAddressByParntId, List<AddressDTO>>
+    public class GetAddressByParntIdHandler : IRequestHandler<GetAddressByParntId, List<AddressForLookupDTO>>
     {
         private readonly IMediator _mediator;
 
@@ -21,11 +21,19 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParen
         {
             _mediator = mediator;
         }
-        public async Task<List<AddressDTO>> Handle(GetAddressByParntId request, CancellationToken cancellationToken)
+        public async Task<List<AddressForLookupDTO>> Handle(GetAddressByParntId request, CancellationToken cancellationToken)
         {
             var Addresss = await _mediator.Send(new GetAllAddressQuery());
             var selectedAddress = Addresss.Where(x => x.ParentAddressId == request.Id);
-            return CustomMapper.Mapper.Map<List<AddressDTO>>(selectedAddress);
+            // var lng = "";
+            var formatedAddress = selectedAddress.Select(an => new AddressForLookupDTO
+            {
+                id = an.id,
+                ParentAddressId = an.ParentAddressId,
+                AddressName = an.AddressName["en"].ToString()
+            });
+
+            return formatedAddress.ToList();            //CustomMapper.Mapper.Map<List<AddressForLookupDTO>>(formatedAddress);
             // return selectedCustomer;
         }
     }

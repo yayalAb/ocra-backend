@@ -42,7 +42,10 @@ public enum Page{
    FacilityTypeLookup,
    EducationStatusLookup,
    TypeOfWorkLookup,
-   NationalityLookup
+   NationalityLookup,
+   SexLookup,
+   PlaceOfBirthLookup,
+   MartialStatusLookup
 
 
 

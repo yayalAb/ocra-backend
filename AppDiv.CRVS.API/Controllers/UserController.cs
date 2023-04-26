@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+﻿using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser;
 using AppDiv.CRVS.Application.Features.User.Command.Create;
 using AppDiv.CRVS.Application.Features.User.Command.Delete;
@@ -14,11 +15,6 @@ using System.Data;
 
 namespace AppDiv.CRVS.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    // [Authorize(Roles = "Admin, Management")]
     public class UserController : ApiControllerBase
     {
 
@@ -40,7 +36,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<UserResponseDTO>> Get()
+        public async Task<PaginatedList<UserResponseDTO>> Get()
         {
             return await Mediator.Send(new GetAllUserQuery());
         }

@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? opt, DateTime? otpExpiredDate);
         Task<Result> UpdateUserAsync(ApplicationUser user);
         IQueryable<ApplicationUser> AllUsers();
-        Task<IEnumerable<ApplicationUser>> AllUsersDetailAsync();
+        IQueryable<ApplicationUser> AllUsersDetail();
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<Result> DeleteUser(string userId);
         // string GetUserGroupId(string userId);

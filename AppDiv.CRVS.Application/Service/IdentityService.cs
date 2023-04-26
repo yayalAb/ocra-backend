@@ -264,9 +264,19 @@ namespace AppDiv.CRVS.Application.Service
         {
             return _userManager.Users;
         }
-        public async Task<IEnumerable<ApplicationUser>> AllUsersDetailAsync()
+        public IQueryable<ApplicationUser> AllUsersDetail()
         {
-            return await _userManager.Users.Include(u => u.PersonalInfo).ThenInclude(p => p.ContactInfo).ToListAsync();
+            return  _userManager.Users
+            .Include(u => u.PersonalInfo)
+            .Include(p => p.PersonalInfo.Address)
+            .Include(p => p.PersonalInfo.PlaceOfBirthLookup)
+            .Include(p => p.PersonalInfo.NationalityLookup)
+            .Include(p => p.PersonalInfo.TitleLookup)
+            .Include(p => p.PersonalInfo.ReligionLookup)
+            .Include(p => p.PersonalInfo.EducationalStatusLookup)
+            .Include(p => p.PersonalInfo.TypeOfWorkLookup)
+            .Include(p => p.PersonalInfo.MarraigeStatusLookup)
+            .Include(p => p.PersonalInfo.NationLookup);
         }
 
         public async Task<ApplicationUser> GetUserByEmailAsync(string email)

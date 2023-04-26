@@ -47,6 +47,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Lookup, UpdateLookupCommand>().ReverseMap();
 
             CreateMap<Address, AddressDTO>().ReverseMap();
+            // CreateMap<AddressDTO, AddressForLookupDTO>().ReverseMap();
+
             CreateMap<Address, CreateAdderssCommand>().ReverseMap();
             CreateMap<Address, UpdateaddressCommand>().ReverseMap();
 
@@ -61,7 +63,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Workflow, CreateWorkFlowCommand>().ReverseMap();
 
             CreateMap<Step, StepDTO>().ReverseMap();
-
+        
 
 
 
@@ -70,8 +72,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<ApplicationUser, CreateUserCommand>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
 
-            CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
-            CreateMap<ContactInfo, ContactInfoDTO>().ReverseMap();
+            // CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
+            // CreateMap<ContactInfo, ContactInfoDTO>().ReverseMap();
 
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();

@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressbyAdmin
 
                                                 };
             // var userData = await _userRepository.GetWithAsync(explicitLoadedProperties);
-            var Addresss = await _AddresslookupRepository.GetAllWithAsync("explicitLoadedProperties");
+            var Addresss = await _AddresslookupRepository.GetAllWithAsync("ParentAddress");
             // var selectedAddress = Addresss.Where(x => x.AdminLevelLookupId == request.Id);
             return CustomMapper.Mapper.Map<List<AddressDTO>>(Addresss);
             // return selectedCustomer;
