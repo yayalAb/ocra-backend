@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda
         public async Task<List<WoredaDTO>> Handle(GetAllWoredaQuery request, CancellationToken cancellationToken)
         {
             var AddressList = await _AddresslookupRepository.GetAllAsync();
-            var WoredaList = AddressList.Where(x => x.AdminLevel <= 4);
+            var WoredaList = AddressList.Where(x => x.AdminLevel == 4);
             var FormatedWoreda = WoredaList.Select(co => new WoredaDTO
             {
                 id = co.Id,
