@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<LookupForGridDTO>> Get()
+        public async Task<List<LookupDTO>> Get()
         {
             return await _mediator.Send(new GetAllLookupQuery());
         }
