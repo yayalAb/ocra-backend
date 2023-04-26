@@ -63,29 +63,32 @@ namespace AppDiv.CRVS.Infrastructure
         public async Task SeedUser()
         {
             List<UserGroup> groups = new List<UserGroup>();
-             List<RoleDto> roles = new List<RoleDto>();
-              List<RoleDto> roles2 = new List<RoleDto>();
-            Enum.GetNames(typeof(Page)).ToList().ForEach(page => {
-                roles.Add(new  RoleDto{
-                        Page = page,
-                        Title = page,
-                        CanAdd = true,
-                        CanDelete = true,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
-                        } );
-                roles2.Add(new  RoleDto{
-                        Page = page,
-                        Title = page,
-                        CanAdd = true,
-                        CanDelete = true,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
-                        } );
+            List<RoleDto> roles = new List<RoleDto>();
+            List<RoleDto> roles2 = new List<RoleDto>();
+            Enum.GetNames(typeof(Page)).ToList().ForEach(page =>
+            {
+                roles.Add(new RoleDto
+                {
+                    Page = page,
+                    Title = page,
+                    CanAdd = true,
+                    CanDelete = true,
+                    CanView = true,
+                    CanViewDetail = true,
+                    CanUpdate = true
+                });
+                roles2.Add(new RoleDto
+                {
+                    Page = page,
+                    Title = page,
+                    CanAdd = true,
+                    CanDelete = true,
+                    CanView = true,
+                    CanViewDetail = true,
+                    CanUpdate = true
+                });
             });
-                   
+
             var groupId = new Guid("67998869-cebb-4d3f-a241-fb96b350993f");
             groups.Add(new UserGroup
             {
@@ -165,14 +168,7 @@ namespace AppDiv.CRVS.Infrastructure
                       },
                         StatisticCode = "code34726746",
                         Code = "cc8989890809",
-                        AdminLevelLookup = new Lookup
-                        {
-                            Key = "AdminLevel",
-                            Value = new JObject{
-                        {"en",1}
-                      },
-
-                        },
+                        AdminLevel = 1,
                         AreaTypeLookup = new Lookup
                         {
                             Key = "AreaType",

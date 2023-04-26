@@ -13,14 +13,12 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
 {
 
-    public class GetLookupByKeyQuery : IRequest<List<LookupDTO>>
+    public class GetLookupByKeyQuery : IRequest<List<LookupByKeyDTO>>
     {
         public string Key { get; set; }
-
-
     }
 
-    public class GetLookupByKeyQueryHandler : IRequestHandler<GetLookupByKeyQuery, List<LookupDTO>>
+    public class GetLookupByKeyQueryHandler : IRequestHandler<GetLookupByKeyQuery, List<LookupByKeyDTO>>
     {
         private readonly IMediator _mediator;
 
@@ -30,14 +28,18 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
             _mediator = mediator;
 
         }
-        public async Task<List<LookupDTO>> Handle(GetLookupByKeyQuery request, CancellationToken cancellationToken)
+        public async Task<List<LookupByKeyDTO>> Handle(GetLookupByKeyQuery request, CancellationToken cancellationToken)
         {
             var AllLookups = await _mediator.Send(new GetAllLookupQuery());
+            var lookups = AllLookups.Where(x => x.Key == request.Key);
+            var formatedLookup = lookups.Select(lo => new LookupByKeyDTO
+            {
+                id = lo.id,
+                Key = lo.Key,
+                Value = lo.Value["en"].ToString()
+            });
 
-
-            var lookups = CustomMapper.Mapper.Map<List<LookupDTO>>(AllLookups.Where(x => x.Key == request.Key));
-
-            return lookups;
+            return formatedLookup.ToList();
         }
     }
 }

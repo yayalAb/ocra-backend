@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Domain.Entities
                 ValueStr = value.ToString();
             }
         }
-        public virtual ICollection<Address> AddressAdminLevelNavigation { get; set; }
+        // public virtual ICollection<Address> AddressAdminLevelNavigation { get; set; }
         public virtual ICollection<Address> AddressAreaTypeNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonSexNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonPlaceOfBirthNavigation { get; set; }

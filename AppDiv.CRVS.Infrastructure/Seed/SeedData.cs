@@ -58,70 +58,63 @@ namespace AppDiv.CRVS.Infrastructure.Seed
                 Roles = JsonConvert.DeserializeObject<JArray>(JsonConvert.SerializeObject(roles))
             });
             var personalInfoId = new Guid("67998869-cebb-4d3f-a241-fb96b350993f");
-            var personalInfo  = new PersonalInfo
-                {
-                    Id = personalInfoId,
-                    FirstName = new JObject{
+            var personalInfo = new PersonalInfo
+            {
+                Id = personalInfoId,
+                FirstName = new JObject{
                       {"en","admin"} ,
                     },
-                    MiddleName = new JObject{
+                MiddleName = new JObject{
                         {"en","admin"}
                     },
-                    NationalId = "jwpi897587348",
-                    SexLookup = new Lookup
-                    {
-                        Key = "sex",
-                        Value = new JObject{
+                NationalId = "jwpi897587348",
+                SexLookup = new Lookup
+                {
+                    Key = "sex",
+                    Value = new JObject{
                         {"en","male"}
                       }
-                    },
-                    NationalityLookup = new Lookup
-                    {
-                        Key = "nationality",
-                        Value = new JObject{
+                },
+                NationalityLookup = new Lookup
+                {
+                    Key = "nationality",
+                    Value = new JObject{
                         {"en","Ethiopian"}
                       }
-                    },
-                     EducationalStatusLookup = new Lookup
-                    {
-                        Key = "Edu",
-                        Value = new JObject{
+                },
+                EducationalStatusLookup = new Lookup
+                {
+                    Key = "Edu",
+                    Value = new JObject{
                         {"en","Ethiopian"}
                       }
-                    },
-                    MarraigeStatusLookup = new Lookup
-                    {
-                        Key = "MarriageStatus",
-                        Value = new JObject{
+                },
+                MarraigeStatusLookup = new Lookup
+                {
+                    Key = "MarriageStatus",
+                    Value = new JObject{
                         {"en","single"}
                       }
-                    },
-                    Address = new Address
-                    {
-                        AddressName = new JObject{
+                },
+                Address = new Address
+                {
+                    AddressName = new JObject{
                         {"en","some place"}
                       },
-                        StatisticCode = "code34726746",
-                        Code = "cc8989890809",
-                        AdminLevelLookup = new Lookup
-                        {
-                            Key = "AdminLevel",
-                            Value = new JObject{
-                        {"en",1}
-                      },
-
-                        },
-                        AreaTypeLookup = new Lookup
-                        {
-                            Key = "AreaType",
-                            Value = new JObject{
+                    StatisticCode = "code34726746",
+                    Code = "cc8989890809",
+                    AdminLevel = 1,
+                    AreaTypeLookup = new Lookup
+                    {
+                        Key = "AreaType",
+                        Value = new JObject{
                         {"en","zone"}
                       }
-                        },
-
                     },
 
-                };
+                },
+
+            };
             ApplicationUser user = new ApplicationUser()
             {
                 Id = "b74ddd14-6340-4840-95c2-db12554843e5",
@@ -142,7 +135,7 @@ namespace AppDiv.CRVS.Infrastructure.Seed
             // builder.Entity<UserGroup>().HasData(groups.First());
 
             builder.Entity<ApplicationUser>().HasData(user);
-            
+
             // }
 
             // internal static void SeedRoles(ModelBuilder builder)

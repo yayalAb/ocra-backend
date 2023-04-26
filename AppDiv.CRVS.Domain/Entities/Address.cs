@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string AddressNameStr { get; set; }
         public string StatisticCode { get; set; }
         public string Code { get; set; }
-        public Guid AdminLevelLookupId { get; set; }
+        public int AdminLevel { get; set; } = 1;
         public Guid AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
         [NotMapped]
@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.Domain.Entities
                 AddressNameStr = value.ToString();
             }
         }
-        public virtual Lookup AdminLevelLookup { get; set; }
+        // public virtual Lookup AdminLevelLookup { get; set; }
         public virtual Lookup AreaTypeLookup { get; set; }
         public virtual Address ParentAddress { get; set; }
         public virtual ICollection<Address> ChildAddresses { get; set; }
