@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
     {
         public string UserName { get; set; }
         public string Email { get; set; }
-        public string userImage { get; set; }
+        public string UserImage { get; set; }
 
         public List<Guid> UserGroups { get; set; }
         // public string Password { get; set; }

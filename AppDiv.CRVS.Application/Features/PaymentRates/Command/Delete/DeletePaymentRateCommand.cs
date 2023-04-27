@@ -39,6 +39,10 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
                     await _paymentRateRepository.DeleteAsync(request.Id);
                     await _paymentRateRepository.SaveChangesAsync(cancellationToken);
                 }
+                else
+                {
+                    return "There is no payment rate with the specified id";
+                }
 
 
             }
