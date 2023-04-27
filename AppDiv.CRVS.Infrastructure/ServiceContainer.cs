@@ -80,6 +80,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IWorkflowRepository, WorkflowRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();
+            services.AddTransient<IPaymentRateRepository, PaymentRateRepository>();
 
             services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
