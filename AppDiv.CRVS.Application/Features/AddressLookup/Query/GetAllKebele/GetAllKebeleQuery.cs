@@ -57,12 +57,6 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
 
                                }).ToList()
                                , request.PageCount ?? 1, request.PageSize ?? 10);
-
-
-            // var lookups = CustomMapper.Mapper.Map<List<KebeleDTO>>(AddressList);
-            // return FormatedRegion.ToList();
-
-            // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
         }
 
     }

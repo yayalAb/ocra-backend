@@ -43,7 +43,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<UserResponseDTO> Get(string id)
+        public async Task<FetchSingleUserResponseDTO> Get(string id)
         {
             return await Mediator.Send(new GetUserByIdQuery(id));
         }

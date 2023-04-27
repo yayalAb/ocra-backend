@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey;
+using AppDiv.CRVS.Application.Common;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -37,7 +38,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<LookupForGridDTO>> Get()
+        public async Task<PaginatedList<LookupForGridDTO>> Get()
         {
             return await _mediator.Send(new GetAllLookupQuery());
         }
@@ -53,7 +54,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<LookupForGridDTO> Get(Guid id)
+        public async Task<Lookup> Get(Guid id)
         {
             return await _mediator.Send(new GetLookupByIdQuery(id));
         }

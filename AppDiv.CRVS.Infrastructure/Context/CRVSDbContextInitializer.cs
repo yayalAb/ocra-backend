@@ -109,7 +109,7 @@ namespace AppDiv.CRVS.Infrastructure
 
             ApplicationUser user = new ApplicationUser()
             {
-                Id = "b74ddd14-6340-4840-95c2-db12554843e5",
+                // Id = "b74ddd14-6340-4840-95c2-db12554843e5",
                 UserName = "Admin",
                 NormalizedUserName = "ADMIN",
                 Email = "admin@gmail.com",
@@ -118,7 +118,7 @@ namespace AppDiv.CRVS.Infrastructure
                 PhoneNumber = "1234567890",
                 PersonalInfo = new PersonalInfo
                 {
-                    Id = personalInfoId,
+                    // Id = personalInfoId,
                     FirstName = new JObject{
                       {"en","admin"} ,
                     },

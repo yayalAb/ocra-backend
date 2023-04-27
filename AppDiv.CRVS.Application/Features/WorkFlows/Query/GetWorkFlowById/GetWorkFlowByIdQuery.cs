@@ -1,8 +1,10 @@
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Utility.Contracts;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -26,17 +28,22 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetWorkFlowById
 
     public class GetWorkFlowByIdQueryHandler : IRequestHandler<GetWorkFlowByIdQuery, WorkflowDTO>
     {
-        private readonly IMediator _mediator;
+        private readonly IWorkflowRepository _workflowRepository;
 
-        public GetWorkFlowByIdQueryHandler(IMediator mediator)
+        public GetWorkFlowByIdQueryHandler(IWorkflowRepository workflowRepository)
         {
-            _mediator = mediator;
+            _workflowRepository = workflowRepository;
         }
         public async Task<WorkflowDTO> Handle(GetWorkFlowByIdQuery request, CancellationToken cancellationToken)
         {
-            var workflows = await _mediator.Send(new GetAllWorkFlowQuery());
-            var selectedworkflow = workflows.FirstOrDefault(x => x.id == request.Id);
-            return CustomMapper.Mapper.Map<WorkflowDTO>(selectedworkflow);
+            var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
+                                                {
+                                                    { "Steps", NavigationPropertyType.COLLECTION }
+
+                                                };
+            var workflows = await _workflowRepository.GetWithAsync(request.Id, explicitLoadedProperties);
+            // var selectedworkflow = workflows.FirstOrDefault(x => x.Id == request.Id);
+            return CustomMapper.Mapper.Map<WorkflowDTO>(workflows);
             // return selectedCustomer;
         }
     }

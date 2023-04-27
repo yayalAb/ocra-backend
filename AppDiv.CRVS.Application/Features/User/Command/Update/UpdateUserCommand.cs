@@ -103,7 +103,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
 
             var modifiedUser = await _identityService.GetUserByIdAsync(request.Id);
 
-            var userResponse = CustomMapper.Mapper.Map<UserResponseDTO>(modifiedUser);
+            // var userResponse = CustomMapper.Mapper.Map<UserResponseDTO>(modifiedUser);
+            var userResponse = new UserResponseDTO{
+
+            };
             return userResponse;
         }
     }

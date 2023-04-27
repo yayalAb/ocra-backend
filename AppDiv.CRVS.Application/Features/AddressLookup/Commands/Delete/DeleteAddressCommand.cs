@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
@@ -9,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
 {
-    // Customer create command with string response
-    public class DeleteAddressCommand : IRequest<String>
+    // Customer create command with BaseResponse response
+    public class DeleteAddressCommand : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
 
     }
 
-    // Customer delete command handler with string response as output
-    public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand, String>
+    // Customer delete command handler with BaseResponse response as output
+    public class DeleteAddressCommandHandler : IRequestHandler<DeleteAddressCommand, BaseResponse>
     {
         private readonly IAddressLookupRepository _addressRepository;
         public DeleteAddressCommandHandler(IAddressLookupRepository addressRepository)
@@ -25,7 +26,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
             _addressRepository = addressRepository;
         }
 
-        public async Task<string> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -37,8 +38,13 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
             {
                 throw (new ApplicationException(exp.Message));
             }
+            var res = new BaseResponse
+            {
+                Message = "Lookup information has been deleted!"
+            };
 
-            return "Lookup information has been deleted!";
+
+            return res;
         }
     }
 }

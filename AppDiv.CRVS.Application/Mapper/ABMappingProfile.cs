@@ -62,13 +62,15 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<UserGroup, CreateGroupCommand>().ReverseMap();
 
             CreateMap<Workflow, WorkflowDTO>().ReverseMap();
+            CreateMap<Workflow, GetAllWorkFlowDTO>().ReverseMap();
             CreateMap<Workflow, CreateWorkFlowCommand>().ReverseMap();
+
 
             CreateMap<Step, StepDTO>().ReverseMap();
             CreateMap<PaymentRate, PaymentRateDTO>().ReverseMap();
             CreateMap<PaymentRate, CreatePaymentRateCommand>().ReverseMap();
             CreateMap<PaymentRate, UpdatePaymentRateCommand>().ReverseMap();
-        
+
 
 
 
@@ -77,8 +79,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<ApplicationUser, CreateUserCommand>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
 
-            // CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
-            // CreateMap<ContactInfo, ContactInfoDTO>().ReverseMap();
+            CreateMap<ApplicationUser, FetchSingleUserResponseDTO>().ReverseMap();
+            CreateMap<ContactInfo, ContactInfoDTO>().ReverseMap();
 
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();
