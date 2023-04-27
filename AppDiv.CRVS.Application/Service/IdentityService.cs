@@ -79,25 +79,26 @@ namespace AppDiv.CRVS.Application.Service
             }
             return (Result.Success(), password);
         }
-        public async Task<(Result, string)> createUser(ApplicationUser user)
+        public async Task<(Result, string, string)> createUser(ApplicationUser user)
         {
             var existingUser = await _userManager.FindByEmailAsync(user.Email);
             if (existingUser != null)
             {
-                return (Result.Failure(new string[] { "user with the given email already exists" }), string.Empty);
+                return (Result.Failure(new string[] { "user with the given email already exists" }), string.Empty, string.Empty);
             }
             existingUser = await _userManager.FindByNameAsync(user.UserName);
             if (existingUser != null)
             {
-                return (Result.Failure(new string[] { "username is already taken" }), string.Empty);
+                return (Result.Failure(new string[] { "username is already taken" }), string.Empty, string.Empty);
             }
             string password = GeneratePassword();
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
-                return (result.ToApplicationResult(), string.Empty);
+                return (result.ToApplicationResult(), string.Empty, string.Empty);
             }
-            return (Result.Success(), password);
+            string userId = await _userManager.GetUserIdAsync(user);
+            return (Result.Success(), password, userId);
         }
 
         public async Task<(Result, string)> ForgotPassword(string? email, string? userName)

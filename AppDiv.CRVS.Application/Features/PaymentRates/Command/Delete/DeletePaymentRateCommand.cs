@@ -37,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
                 if (paymentRateEntity != null)
                 {
                     await _paymentRateRepository.DeleteAsync(request.Id);
+                    await _paymentRateRepository.SaveChangesAsync(cancellationToken);
                 }
 
 
