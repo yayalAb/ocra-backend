@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
         {
             return await PaginatedList<LookupByKeyDTO>
                             .CreateAsync(
-                                 _lookupRepository.GetAll()
+                                 _lookupRepository.GetAll().Where(x => x.Key == request.Key)
                                 .Select(lo => new LookupByKeyDTO
                                 {
                                     id = lo.Id,
