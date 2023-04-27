@@ -41,10 +41,11 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
                 Id = request.Id,
                 Key = request.Key,
                 Value = request.Value,
-                Description = request.Description,
-                StatisticCode = request.StatisticCode,
-                Code = request.Code,
+                Description = request?.Description,
+                StatisticCode = request?.StatisticCode,
+                Code = request?.Code,
             };
+            // var customerEntity = CustomMapper.Mapper.Map<LookupDTO>(request);
             try
             {
                 await _lookupRepository.UpdateAsync(LookupEntity, x => x.Id);
