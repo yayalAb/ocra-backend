@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence.Base
         Task DeleteAsync(object id);
         Task DeleteAsync(object[] id);
         Task<IEnumerable<T>> GetAllAsync();
+         IQueryable<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate = null);
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, object>> orderBy, int skip, int limit);
         Task<IEnumerable<T>> GetAllWithAsync(Expression<Func<T, bool>> predicate = null, params string[] eagerLoadedProperties);
