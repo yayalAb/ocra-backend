@@ -22,6 +22,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Features.PaymentRates.Command.Create;
+using AppDiv.CRVS.Application.Features.PaymentRates.Command.Update;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -63,6 +65,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Workflow, CreateWorkFlowCommand>().ReverseMap();
 
             CreateMap<Step, StepDTO>().ReverseMap();
+            CreateMap<PaymentRate, PaymentRateDTO>().ReverseMap();
+            CreateMap<PaymentRate, CreatePaymentRateCommand>().ReverseMap();
+            CreateMap<PaymentRate, UpdatePaymentRateCommand>().ReverseMap();
         
 
 

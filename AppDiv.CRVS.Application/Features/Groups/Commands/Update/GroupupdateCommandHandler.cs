@@ -1,4 +1,5 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -13,32 +14,24 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
 {
-    // Customer create command with CustomerResponse
-    public class GroupupdateCommands : IRequest<GroupDTO>
-    {
+ 
 
-        public Guid id { get; set; }
-        public string GroupName { get; set; }
-        public JObject Description { get; set; }
-        public JArray Roles { get; set; }
-    }
-
-    public class GroupupdateCommandsHandler : IRequestHandler<GroupupdateCommands, GroupDTO>
+    public class GroupUpdateCommandsHandler : IRequestHandler<GroupUpdateCommand, GroupDTO>
     {
         private readonly IGroupRepository _groupRepository;
-        public GroupupdateCommandsHandler(IGroupRepository groupRepository)
+        public GroupUpdateCommandsHandler(IGroupRepository groupRepository)
         {
             _groupRepository = groupRepository;
         }
-        public async Task<GroupDTO> Handle(GroupupdateCommands request, CancellationToken cancellationToken)
+        public async Task<GroupDTO> Handle(GroupUpdateCommand request, CancellationToken cancellationToken)
         {
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request);
             UserGroup groupEntity = new UserGroup
             {
-                Id = request.id,
-                GroupName = request.GroupName,
-                Description = request.Description,
-                Roles = request.Roles,
+                Id = request.group.Id,
+                GroupName = request.group.GroupName,
+                Description = request.group.Description,
+                Roles = request.group.Roles,
             };
             try
             {
@@ -49,7 +42,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
             {
                 throw new ApplicationException(exp.Message);
             }
-            var modifiedLookup = await _groupRepository.GetByIdAsync(request.id);
+            var modifiedLookup = await _groupRepository.GetByIdAsync(request.group.Id);
             var LookupResponse = CustomMapper.Mapper.Map<GroupDTO>(modifiedLookup);
             return LookupResponse;
         }

@@ -12,11 +12,15 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
     {
         private readonly IIdentityService _identityService;
         private readonly IGroupRepository _groupRepository;
+        private readonly IFileService _fileService;
         public CreateUserCommandHandler(IIdentityService identityService,
-                                        IGroupRepository groupRepository)
+                                        IGroupRepository groupRepository,
+                                        IFileService fileService)
         {
             this._groupRepository = groupRepository;
             _identityService = identityService;
+            _fileService = fileService;
+
         }
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
@@ -83,6 +87,13 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
 
                 };
                 var response = await _identityService.createUser(user);
+
+                var file = request.User.UserImage;
+                var folderName = Path.Combine("Resources", "UserProfiles");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var fileName = response.id;
+
+                _fileService.UploadBase64File(file, fileName, pathToSave, FileMode.Create);
 
             }
             return CreateUserCommadResponse;

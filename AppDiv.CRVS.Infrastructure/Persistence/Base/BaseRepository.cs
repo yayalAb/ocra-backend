@@ -32,6 +32,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await _dbContext.Set<T>().ToListAsync();
         }
+        public virtual IQueryable<T> GetAll()
+        {
+            return _dbContext.Set<T>().AsQueryable();
+        }
 
         public virtual async Task<IEnumerable<T>> GetAllWithAsync(params string[] eagerLoadedProperties)
         {

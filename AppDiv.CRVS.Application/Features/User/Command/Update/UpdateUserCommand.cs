@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public string Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
-        public string userImage { get; set; }
+        public string UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }
     }
@@ -28,8 +28,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
     {
         private readonly IIdentityService _identityService;
         private readonly IGroupRepository _groupRepository;
-        public UpdateUserCommandHandler(IIdentityService identityService, IGroupRepository groupRepository)
+        private readonly IFileService _fileService;
+        public UpdateUserCommandHandler(IIdentityService identityService, IGroupRepository groupRepository, IFileService fileService)
         {
+            this._fileService = fileService;
             this._groupRepository = groupRepository;
             _identityService = identityService;
         }
@@ -87,6 +89,12 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             try
             {
                 await _identityService.UpdateUserAsync(user);
+                var file = request.UserImage;
+                var folderName = Path.Combine("Resources", "UserProfiles");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var fileName = request.Id;
+
+                _fileService.UploadBase64File(file, fileName, pathToSave, FileMode.Create);
             }
             catch (Exception exp)
             {
