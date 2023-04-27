@@ -8,8 +8,15 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.User.Command.Create
 {
-    public record CreateUserCommand(AddUserRequest User) : IRequest<CreateUserCommandResponse>
+    public record CreateUserCommand: IRequest<CreateUserCommandResponse>
     {
+        public string UserName { get; set; }
+        public string Email { get; set; }
+        public string userImage { get; set; }
+
+        public List<Guid> UserGroups { get; set; }
+        // public string Password { get; set; }
+        public AddPersonalInfoRequest PersonalInfo { get; set; }
 
     }
 }

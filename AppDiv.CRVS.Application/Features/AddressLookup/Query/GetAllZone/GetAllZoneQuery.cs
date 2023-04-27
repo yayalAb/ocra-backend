@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -14,12 +15,13 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
 
 {
     // Customer query with List<Customer> response
-    public record GetAllZoneQuery : IRequest<List<ZoneDTO>>
+    public record GetAllZoneQuery : IRequest<PaginatedList<ZoneDTO>>
     {
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllZoneQueryHandler : IRequestHandler<GetAllZoneQuery, List<ZoneDTO>>
+    public class GetAllZoneQueryHandler : IRequestHandler<GetAllZoneQuery, PaginatedList<ZoneDTO>>
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
 
@@ -27,25 +29,26 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
         {
             _AddresslookupRepository = AddresslookupRepository;
         }
-        public async Task<List<ZoneDTO>> Handle(GetAllZoneQuery request, CancellationToken cancellationToken)
-        {
-            var AddressList = await _AddresslookupRepository.GetAllAsync();
-            var ZoneList = AddressList.Where(x => x.AdminLevel == 3);
-            var FormatedZone = ZoneList.Select(co => new ZoneDTO
+        public async Task<PaginatedList<ZoneDTO>> Handle(GetAllZoneQuery request, CancellationToken cancellationToken)
+        {   
+              return await PaginatedList<ZoneDTO>
+                .CreateAsync(
+                     _AddresslookupRepository.GetAll()
+                    .Where(a => a.AdminLevel == 3)
+                    .Select(a => new ZoneDTO
             {
-                id = co.Id,
-                Zone = co.AddressName["en"].ToString(),
-                Region = co.ParentAddress?.AddressName["en"].ToString(),
-                Country = co.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
-                Code = co.Code,
-                StatisticCode = co.StatisticCode
+                Id = a.Id,
+                Zone = a.AddressName.Value<string>("en"),
+                Region = a.ParentAddress != null? a.ParentAddress.AddressName.Value<string>("en"): null,
+                Country = a.ParentAddress !=null  && a.ParentAddress.ParentAddress !=null
+                                ? a.ParentAddress.ParentAddress.AddressName.Value<string>("en")
+                                :null,
+                Code = a.Code,
+                StatisticCode = a.StatisticCode
 
-            });
+            }).ToList()
+                    , request.PageCount ?? 1, request.PageSize ?? 10);
 
-            // var lookups = CustomMapper.Mapper.Map<List<ZoneDTO>>(AddressList);
-            return FormatedZone.ToList();
-
-            // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
         }
 
     }

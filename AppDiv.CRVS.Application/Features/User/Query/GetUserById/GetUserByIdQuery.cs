@@ -10,7 +10,7 @@ using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
 {
-    public class GetUserByIdQuery : IRequest<UserResponseDTO>
+    public class GetUserByIdQuery : IRequest<FetchSingleUserResponseDTO>
     {
         public string Id { get; private set; }
 
@@ -21,7 +21,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
 
     }
 
-    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, UserResponseDTO>
+    public class GetUserByIdQueryHandler : IRequestHandler<GetUserByIdQuery, FetchSingleUserResponseDTO>
     {
         private readonly IIdentityService _identityService;
 
@@ -29,11 +29,11 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
         {
             _identityService = identityService;
         }
-        public async Task<UserResponseDTO> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
+        public async Task<FetchSingleUserResponseDTO> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
             // var users = await _identityService.Send(new GetAllUserQuery());
             var user = await _identityService.GetUserByIdAsync(request.Id.ToString());
-            return CustomMapper.Mapper.Map<UserResponseDTO>(user);
+            return CustomMapper.Mapper.Map<FetchSingleUserResponseDTO>(user);
             // return user;
         }
     }
