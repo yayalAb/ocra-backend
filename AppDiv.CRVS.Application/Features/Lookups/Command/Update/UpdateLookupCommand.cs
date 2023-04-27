@@ -21,9 +21,9 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
         public Guid Id { get; set; }
         public string Key { get; set; }
         public JObject Value { get; set; }
-        public JObject Description { get; set; }
-        public string StatisticCode { get; set; }
-        public string Code { get; set; }
+        public JObject? Description { get; set; }
+        public string? StatisticCode { get; set; }
+        public string? Code { get; set; }
     }
 
     public class UpdateLookupCommandHandler : IRequestHandler<UpdateLookupCommand, LookupDTO>
