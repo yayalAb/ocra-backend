@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -28,13 +29,15 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
     public class UpdateLookupCommandHandler : IRequestHandler<UpdateLookupCommand, LookupDTO>
     {
         private readonly ILookupRepository _lookupRepository;
-        private readonly ILookupRepository _LookupQueryRepository;
-        public UpdateLookupCommandHandler(ILookupRepository _lookupRepository)
+        private readonly ILogger<UpdateLookupCommandHandler> _log;
+        public UpdateLookupCommandHandler(ILookupRepository _lookupRepository, ILogger<UpdateLookupCommandHandler> log)
         {
             _lookupRepository = _lookupRepository;
+            _log = log;
         }
         public async Task<LookupDTO> Handle(UpdateLookupCommand request, CancellationToken cancellationToken)
         {
+            // _log.LogCritical(request.Value.ToString());
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request);
             Lookup LookupEntity = new Lookup
             {
@@ -45,18 +48,17 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
                 StatisticCode = request?.StatisticCode,
                 Code = request?.Code,
             };
-            // var customerEntity = CustomMapper.Mapper.Map<LookupDTO>(request);
             try
             {
                 await _lookupRepository.UpdateAsync(LookupEntity, x => x.Id);
-                await _LookupQueryRepository.SaveChangesAsync(cancellationToken);
+                await _lookupRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {
-                throw new ApplicationException(exp.Message);
+                throw;
             }
-            var modifiedLookup = await _LookupQueryRepository.GetByIdAsync(request.Id);
-            var LookupResponse = CustomMapper.Mapper.Map<LookupDTO>(modifiedLookup);
+            // var modifiedLookup = await _lookupRepository.GetByIdAsync(request.Id);
+            var LookupResponse = CustomMapper.Mapper.Map<LookupDTO>(LookupEntity);
             return LookupResponse;
         }
     }

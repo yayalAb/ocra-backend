@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<WorkflowDTO>> Get()
+        public async Task<List<GetAllWorkFlowDTO>> Get()
         {
             return await _mediator.Send(new GetAllWorkFlowQuery());
         }
