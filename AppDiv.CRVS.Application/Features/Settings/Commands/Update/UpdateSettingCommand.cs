@@ -41,6 +41,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.Commands.Update
             try
             {
                 await _settingRepository.UpdateAsync(settingEntity, x => x.Id);
+                await _settingRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {
