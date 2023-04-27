@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
             try
             {
                 var addressEntity = await _addressRepository.GetByIdAsync(request.Id);
-                await _addressRepository.DeleteAsync(addressEntity);
+                await _addressRepository.DeleteAsync(request.Id);
                 await _addressRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)

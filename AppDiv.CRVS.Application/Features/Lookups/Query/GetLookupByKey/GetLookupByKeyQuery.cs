@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
             {
                 id = lo.id,
                 Key = lo.Key,
-                Value = lo.Value["en"].ToString()
+                Value = lo.Value
             });
 
             return formatedLookup.ToList();

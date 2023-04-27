@@ -1,6 +1,7 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,9 +34,10 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
         {
             try
             {
-                var customerEntity = await _lookupRepository.GetByIdAsync(request.Id);
+                // _Ilog.lo
+                var LookupEntity = await _lookupRepository.GetByIdAsync(request.Id);
 
-                await _lookupRepository.DeleteAsync(customerEntity);
+                await _lookupRepository.DeleteAsync(request.Id);
                 await _lookupRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)

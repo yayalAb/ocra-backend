@@ -15,12 +15,12 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
 
 {
     // Customer query with List<Customer> response
-    public record GetAllLookupQuery : IRequest<List<LookupDTO>>
+    public record GetAllLookupQuery : IRequest<List<LookupForGridDTO>>
     {
 
     }
 
-    public class GetAllLookupQueryHandler : IRequestHandler<GetAllLookupQuery, List<LookupDTO>>
+    public class GetAllLookupQueryHandler : IRequestHandler<GetAllLookupQuery, List<LookupForGridDTO>>
     {
         private readonly ILookupRepository _lookupRepository;
 
@@ -28,24 +28,25 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
         {
             _lookupRepository = lookupQueryRepository;
         }
-        public async Task<List<LookupDTO>> Handle(GetAllLookupQuery request, CancellationToken cancellationToken)
+        public async Task<List<LookupForGridDTO>> Handle(GetAllLookupQuery request, CancellationToken cancellationToken)
         {
             var LookupList = await _lookupRepository.GetAllAsync();
             var lookups = CustomMapper.Mapper.Map<List<LookupDTO>>(LookupList);
-            return lookups;
+            // return lookups;
 
             // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
 
-            // var formatedLookup = LookupList.Select(lo => new LookupForGridDTO
-            // {
-            //     id = lo.Id,
-            //     Key = lo.Key,
-            //     Value = lo.Value["en"].ToString(),
-            //     StatisticCode = lo.StatisticCode,
-            //     Code = lo.Code
+            var formatedLookup = lookups.Select(lo => new LookupForGridDTO
+            {
+                id = lo.Id,
+                Key = lo.Key,
+                Value = lo?.Value["en"]?.ToString(),
+                StatisticCode = lo?.StatisticCode,
+                Code = lo?.Code
 
 
-            // });
+            });
+            return formatedLookup.ToList();
         }
     }
 }
