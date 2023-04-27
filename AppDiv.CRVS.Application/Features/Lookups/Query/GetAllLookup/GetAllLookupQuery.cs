@@ -1,4 +1,5 @@
 
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -15,12 +16,13 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
 
 {
     // Customer query with List<Customer> response
-    public record GetAllLookupQuery : IRequest<List<LookupForGridDTO>>
+    public record GetAllLookupQuery : IRequest<PaginatedList<LookupForGridDTO>>
     {
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllLookupQueryHandler : IRequestHandler<GetAllLookupQuery, List<LookupForGridDTO>>
+    public class GetAllLookupQueryHandler : IRequestHandler<GetAllLookupQuery, PaginatedList<LookupForGridDTO>>
     {
         private readonly ILookupRepository _lookupRepository;
 
@@ -28,25 +30,21 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
         {
             _lookupRepository = lookupQueryRepository;
         }
-        public async Task<List<LookupForGridDTO>> Handle(GetAllLookupQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<LookupForGridDTO>> Handle(GetAllLookupQuery request, CancellationToken cancellationToken)
         {
-            var LookupList = await _lookupRepository.GetAllAsync();
-            var lookups = CustomMapper.Mapper.Map<List<LookupDTO>>(LookupList);
-            // return lookups;
 
-            // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
-
-            var formatedLookup = lookups.Select(lo => new LookupForGridDTO
-            {
-                id = lo.Id,
-                Key = lo.Key,
-                Value = lo?.Value["en"]?.ToString(),
-                StatisticCode = lo?.StatisticCode,
-                Code = lo?.Code
-
-
-            });
-            return formatedLookup.ToList();
+            return await PaginatedList<LookupForGridDTO>
+                            .CreateAsync(
+                                 _lookupRepository.GetAll()
+                                .Select(lo => new LookupForGridDTO
+                                {
+                                    id = lo.Id,
+                                    Key = lo.Key,
+                                    Value = lo.Value.Value<string>("en"),
+                                    StatisticCode = lo.StatisticCode,
+                                    Code = lo.Code
+                                }).ToList()
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

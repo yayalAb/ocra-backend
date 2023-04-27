@@ -15,6 +15,7 @@ using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetWorkFlowById;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Delete;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete;
+using AppDiv.CRVS.Application.Common;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -36,7 +37,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<GetAllWorkFlowDTO>> Get()
+        public async Task<PaginatedList<GetAllWorkFlowDTO>> Get()
         {
             return await _mediator.Send(new GetAllWorkFlowQuery());
         }

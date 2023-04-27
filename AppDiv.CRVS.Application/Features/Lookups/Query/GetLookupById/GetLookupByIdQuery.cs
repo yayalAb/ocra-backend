@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupById
 {
     // Customer GetLookupByIdQuery with  response
-    public class GetLookupByIdQuery : IRequest<LookupForGridDTO>
+    public class GetLookupByIdQuery : IRequest<Lookup>
     {
         public Guid Id { get; private set; }
 
@@ -25,22 +25,20 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupById
 
     }
 
-    public class GetLookupByIdQueryHandler : IRequestHandler<GetLookupByIdQuery, LookupForGridDTO>
+    public class GetLookupByIdQueryHandler : IRequestHandler<GetLookupByIdQuery, Lookup>
     {
 
         private readonly ILookupRepository _lookupRepository;
-        private readonly IMediator _mediator;
 
-        public GetLookupByIdQueryHandler(IMediator mediator, ILookupRepository lookupQueryRepository)
+        public GetLookupByIdQueryHandler(ILookupRepository lookupQueryRepository)
         {
-            _mediator = mediator;
             _lookupRepository = lookupQueryRepository;
         }
-        public async Task<LookupForGridDTO> Handle(GetLookupByIdQuery request, CancellationToken cancellationToken)
+        public async Task<Lookup> Handle(GetLookupByIdQuery request, CancellationToken cancellationToken)
         {
-            var lookups = await _mediator.Send(new GetAllLookupQuery());
-            var selectedlookup = lookups.FirstOrDefault(x => x.id == request.Id);
-            return selectedlookup;
+            // var lookups = await _mediator.Send(new GetAllLookupQuery());
+            var selectedlookup = await _lookupRepository.GetAsync(request.Id);
+            return CustomMapper.Mapper.Map<Lookup>(selectedlookup);
             // return selectedCustomer;
         }
     }

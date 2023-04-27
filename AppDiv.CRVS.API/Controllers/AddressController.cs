@@ -79,13 +79,11 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete")]
-        public async Task<ActionResult> DeleteAddress([FromQuery] Guid id)
+        public async Task<Object> DeleteAddress([FromQuery] Guid id)
         {
             try
             {
-                string result = string.Empty;
-                result = await _mediator.Send(new DeleteAddressCommand { Id = id });
-                return Ok(result);
+                return await _mediator.Send(new DeleteAddressCommand { Id = id });
             }
             catch (Exception exp)
             {

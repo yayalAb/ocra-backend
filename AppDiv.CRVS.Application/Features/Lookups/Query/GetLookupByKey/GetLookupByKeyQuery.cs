@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
@@ -20,23 +21,21 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
 
     public class GetLookupByKeyQueryHandler : IRequestHandler<GetLookupByKeyQuery, List<LookupByKeyDTO>>
     {
-        private readonly IMediator _mediator;
+        private readonly ILookupRepository _lookupRepository;
 
-
-        public GetLookupByKeyQueryHandler(IMediator mediator)
+        public GetLookupByKeyQueryHandler(ILookupRepository lookupQueryRepository)
         {
-            _mediator = mediator;
-
+            _lookupRepository = lookupQueryRepository;
         }
         public async Task<List<LookupByKeyDTO>> Handle(GetLookupByKeyQuery request, CancellationToken cancellationToken)
         {
-            var AllLookups = await _mediator.Send(new GetAllLookupQuery());
-            var lookups = AllLookups.Where(x => x.Key == request.Key);
+            var lookups = await _lookupRepository.GetAllWithAsync(x => x.Key == request.Key);
+            // var lookups = AllLookups.Where(x => x.Key == request.Key);
             var formatedLookup = lookups.Select(lo => new LookupByKeyDTO
             {
-                id = lo.id,
+                id = lo.Id,
                 Key = lo.Key,
-                Value = lo.Value
+                Value = lo.Value.Value<string>("en")
             });
 
             return formatedLookup.ToList();

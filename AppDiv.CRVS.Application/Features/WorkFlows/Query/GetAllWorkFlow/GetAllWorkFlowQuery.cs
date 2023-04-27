@@ -1,4 +1,5 @@
 
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -16,12 +17,13 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
 
 {
     // Customer query with List<Customer> response
-    public record GetAllWorkFlowQuery : IRequest<List<GetAllWorkFlowDTO>>
+    public record GetAllWorkFlowQuery : IRequest<PaginatedList<GetAllWorkFlowDTO>>
     {
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllWorkFlowQueryHandler : IRequestHandler<GetAllWorkFlowQuery, List<GetAllWorkFlowDTO>>
+    public class GetAllWorkFlowQueryHandler : IRequestHandler<GetAllWorkFlowQuery, PaginatedList<GetAllWorkFlowDTO>>
     {
         private readonly IStepRepository _workflowRepository;
 
@@ -29,19 +31,21 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
         {
             _workflowRepository = workflowRepository;
         }
-        public async Task<List<GetAllWorkFlowDTO>> Handle(GetAllWorkFlowQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<GetAllWorkFlowDTO>> Handle(GetAllWorkFlowQuery request, CancellationToken cancellationToken)
         {
-            var LookupList = await _workflowRepository.GetAllWithAsync("workflow");
-            var workflow = LookupList.Select(wf => new GetAllWorkFlowDTO
-            {
-                id = wf.Id,
-                workflowName = wf.workflow.workflowName,
-                step = wf.step,
-                payment = wf.Payment,
-                responsibleGroup = wf.ResponsibleGroup,
-                status = wf.Status
-            });
-            return workflow.ToList();
+            return await PaginatedList<GetAllWorkFlowDTO>
+                            .CreateAsync(
+                                 _workflowRepository.GetAll()
+                                .Select(wf => new GetAllWorkFlowDTO
+                                {
+                                    id = wf.workflow.Id,
+                                    workflowName = wf.workflow.workflowName,
+                                    step = wf.step,
+                                    payment = wf.Payment,
+                                    responsibleGroup = wf.ResponsibleGroup,
+                                    status = wf.Status
+                                }).ToList()
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

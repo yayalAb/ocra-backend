@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
@@ -26,21 +27,16 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
 
     public class GetListOfLookupQueryHandler : IRequestHandler<GetListOfLookupQuery, List<ListOfLookupDTO>>
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<GetListOfLookupQueryHandler> _logger;
+        private readonly ILookupRepository _lookupRepository;
 
-
-
-
-        public GetListOfLookupQueryHandler(IMediator mediator, ILogger<GetListOfLookupQueryHandler> logger)
+        public GetListOfLookupQueryHandler(ILookupRepository lookupQueryRepository)
         {
-            _mediator = mediator;
-            _logger = logger;
+            _lookupRepository = lookupQueryRepository;
         }
         public async Task<List<ListOfLookupDTO>> Handle(GetListOfLookupQuery request, CancellationToken cancellationToken)
         {
             List<ListOfLookupDTO> LookupList = new List<ListOfLookupDTO>();
-            var lookups = await _mediator.Send(new GetAllLookupQuery());
+            var lookups = await _lookupRepository.GetAllAsync();
             // var lookups1= lookups. Contains(x=>x.key,request.list);
             foreach (var key in request.list)
             {
@@ -49,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
                 LookupList.Add(new ListOfLookupDTO
                 {
                     Key = key,
-                    Value = selectedlookup
+                    Value = CustomMapper.Mapper.Map<List<LookupDTO>>(selectedlookup)
                 });
             }
 
