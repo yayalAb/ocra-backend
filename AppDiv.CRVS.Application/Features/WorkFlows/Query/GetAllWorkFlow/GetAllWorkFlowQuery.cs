@@ -23,37 +23,26 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
 
     public class GetAllWorkFlowQueryHandler : IRequestHandler<GetAllWorkFlowQuery, List<GetAllWorkFlowDTO>>
     {
-        private readonly IWorkflowRepository _workflowRepository;
+        private readonly IStepRepository _workflowRepository;
 
-        public GetAllWorkFlowQueryHandler(IWorkflowRepository workflowRepository)
+        public GetAllWorkFlowQueryHandler(IStepRepository workflowRepository)
         {
             _workflowRepository = workflowRepository;
         }
         public async Task<List<GetAllWorkFlowDTO>> Handle(GetAllWorkFlowQuery request, CancellationToken cancellationToken)
         {
-            var LookupList = await _workflowRepository.GetAllWithAsync("Steps");
-
-            // var LookupList = await _workflowRepository.GetAllAsync();
+            var LookupList = await _workflowRepository.GetAllWithAsync("workflow");
             var workflow = LookupList.Select(wf => new GetAllWorkFlowDTO
             {
                 id = wf.Id,
-                workflowName = wf.workflowName,
+                workflowName = wf.workflow.workflowName,
+                step = wf.step,
+                payment = wf.Payment,
+                responsibleGroup = wf.ResponsibleGroup,
+                status = wf.Status
             });
-            var lookups = CustomMapper.Mapper.Map<List<GetAllWorkFlowDTO>>(LookupList);
             return workflow.ToList();
-
-            // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
         }
     }
 }
 
-//  public class GetAllGetAllWorkFlowDTO
-//     {
-//         public Guid id { get; set; }
-//         public string workflowName { get; set; }
-//         public int step { get; set; }
-//         public string responsibleGroup { get; set; }
-//         public string payment { get; set; }
-//         public Boolean status { get; set; }
-
-//     }

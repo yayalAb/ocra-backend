@@ -83,6 +83,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IWorkflowRepository, WorkflowRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
+            services.AddTransient<IStepRepository, StepRepository>();
+
+
             services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();
             services.AddTransient<IPaymentRateRepository, PaymentRateRepository>();
 

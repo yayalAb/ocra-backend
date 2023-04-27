@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParen
             {
                 id = an.id,
                 ParentAddressId = an.ParentAddressId,
-                AddressName = an.AddressName["en"].ToString()
+                AddressName = an.AddressName.Value<string>("en")
             });
 
             return formatedAddress.ToList();            //CustomMapper.Mapper.Map<List<AddressForLookupDTO>>(formatedAddress);
