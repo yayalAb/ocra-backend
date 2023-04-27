@@ -1,12 +1,13 @@
 using Newtonsoft.Json.Linq;
 
-namespace AppDiv.CRVS.Application.Contracts.DTOs
+namespace AppDiv.CRVS.Application.Contracts.Request
 {
-    public class GroupDTO
+    public class UpdateGroupRequest
     {
-        public Guid Id { get; set; }
+        public Guid Id { get; set;}
         public string GroupName { get; set; }
         public JObject Description { get; set; }
         public JArray Roles { get; set; }
+
     }
 }

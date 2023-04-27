@@ -2,6 +2,7 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
@@ -27,16 +28,17 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById
 
     public class GetGroupbyIdHandler : IRequestHandler<GetGroupbyId, GroupDTO>
     {
-        private readonly IMediator _mediator;
+        private readonly IGroupRepository _groupRepository;
 
-        public GetGroupbyIdHandler(IMediator mediator)
+        public GetGroupbyIdHandler(IGroupRepository groupRepository)
         {
-            _mediator = mediator;
+            
+            _groupRepository = groupRepository;
         }
         public async Task<GroupDTO> Handle(GetGroupbyId request, CancellationToken cancellationToken)
         {
-            var groups = await _mediator.Send(new GetAllGroupQuery());
-            var selectedGroup = groups.FirstOrDefault(x => x.id == request.Id);
+            // var groups = await _mediator.Send(new GetAllGroupQuery());
+            var selectedGroup = await _groupRepository.GetAsync(request.Id);
             return CustomMapper.Mapper.Map<GroupDTO>(selectedGroup);
             // return selectedCustomer;
         }

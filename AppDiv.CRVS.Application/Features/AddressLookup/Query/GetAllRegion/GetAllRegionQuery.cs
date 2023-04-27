@@ -1,26 +1,20 @@
 
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
-using AppDiv.CRVS.Application.Mapper;
-using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
 
 {
     // Customer query with List<Customer> response
-    public record GetAllRegionQuery : IRequest<List<RegionDTO>>
+    public record GetAllRegionQuery : IRequest<PaginatedList<RegionDTO>>
     {
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllRegionQueryHandler : IRequestHandler<GetAllRegionQuery, List<RegionDTO>>
+    public class GetAllRegionQueryHandler : IRequestHandler<GetAllRegionQuery, PaginatedList<RegionDTO>>
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
 
@@ -28,23 +22,21 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
         {
             _AddresslookupRepository = AddresslookupRepository;
         }
-        public async Task<List<RegionDTO>> Handle(GetAllRegionQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<RegionDTO>> Handle(GetAllRegionQuery request, CancellationToken cancellationToken)
         {
-            var AddressList = await _AddresslookupRepository.GetAllAsync();
-            var countryList = AddressList.Where(x => x.AdminLevel == 2);
-            var FormatedRegion = countryList.Select(co => new RegionDTO
-            {
-                id = co.Id,
-                Region = co.AddressName["en"].ToString(),
-                Country = co.ParentAddress?.AddressName["en"].ToString(),
-                Code = co.Code,
-                StatisticCode = co.StatisticCode
-            });
-
-            // var lookups = CustomMapper.Mapper.Map<List<RegionDTO>>(AddressList);
-            return FormatedRegion.ToList();
-
-            // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
+            return await PaginatedList<RegionDTO>
+                .CreateAsync(
+                     _AddresslookupRepository.GetAll()
+                    .Where(a => a.AdminLevel == 2)
+                    .Select(c => new  RegionDTO
+                    {
+                        Id = c.Id,
+                        Region = c.AddressName.Value<string>("en"),
+                        Country = c.ParentAddress !=null? c.ParentAddress.AddressName.Value<string>("en"):null,
+                        Code = c.Code,
+                        StatisticCode = c.StatisticCode
+                    }).ToList()
+                    , request.PageCount ?? 1, request.PageSize ?? 10);
         }
 
     }
