@@ -88,7 +88,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 };
                 var response = await _identityService.createUser(user);
 
-                var file = request.User.UserImage;
+                var file = request.UserImage;
                 var folderName = Path.Combine("Resources", "UserProfiles");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 var fileName = response.id;
