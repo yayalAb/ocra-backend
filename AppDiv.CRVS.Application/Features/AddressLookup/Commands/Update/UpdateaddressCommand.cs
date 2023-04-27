@@ -48,6 +48,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
             try
             {
                 await _addressLookupRepository.UpdateAsync(LookupEntity, x => x.Id);
+                await _addressLookupRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {

@@ -48,6 +48,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
             try
             {
                 await _lookupRepository.UpdateAsync(LookupEntity, x => x.Id);
+                await _LookupQueryRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {

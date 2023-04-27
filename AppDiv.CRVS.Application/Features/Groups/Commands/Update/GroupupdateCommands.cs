@@ -43,6 +43,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
             try
             {
                 await _groupRepository.UpdateAsync(groupEntity, x => x.Id);
+                await _groupRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {
