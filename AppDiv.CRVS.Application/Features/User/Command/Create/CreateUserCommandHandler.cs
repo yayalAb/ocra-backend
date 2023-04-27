@@ -44,44 +44,44 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
             {
                 var contact = new ContactInfo
                 {
-                    Id = request.User.PersonalInfo.ContactInfo.Id,
-                    Email = request.User.Email,
-                    Phone = request.User.PersonalInfo.ContactInfo.Phone,
-                    HouseNumber = request.User.PersonalInfo.ContactInfo.HouseNo,
-                    Website = request.User.PersonalInfo.ContactInfo.Website,
-                    Linkdin = request.User.PersonalInfo.ContactInfo.Linkdin,
+                    Id = request.PersonalInfo.ContactInfo.Id,
+                    Email = request.Email,
+                    Phone = request.PersonalInfo.ContactInfo.Phone,
+                    HouseNumber = request.PersonalInfo.ContactInfo.HouseNo,
+                    Website = request.PersonalInfo.ContactInfo.Website,
+                    Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
                     CreatedAt = DateTime.Now
                 };
-                // request.User.userImage
+                // request.userImage
                 var person = new PersonalInfo
                 {
-                    Id = request.User.PersonalInfo.Id,
-                    FirstName = request.User.PersonalInfo.FirstName,
-                    MiddleName = request.User.PersonalInfo.MiddleName,
-                    LastName = request.User.PersonalInfo.LastName,
-                    BirthDate = request.User.PersonalInfo.BirthDate,
-                    NationalId = request.User.PersonalInfo.NationalId,
-                    NationalityLookupId = request.User.PersonalInfo.NationalityLookupId,
-                    SexLookupId = request.User.PersonalInfo.SexLookupId,
-                    PlaceOfBirthLookupId = request.User.PersonalInfo.PlaceOfBirthLookupId,
-                    EducationalStatusLookupId = request.User.PersonalInfo.EducationalStatusLookupId,
-                    TypeOfWorkLookupId = request.User.PersonalInfo.TypeOfWorkLookupId,
-                    MarriageStatusLookupId = request.User.PersonalInfo.MarriageStatusId,
-                    AddressId = request.User.PersonalInfo.AddressId,
-                    NationLookupId = request.User.PersonalInfo.NationLookupId,
-                    TitleLookupId = request.User.PersonalInfo.TitleLookupId,
-                    ReligionLookupId = request.User.PersonalInfo.ReligionId,
+                    Id = request.PersonalInfo.Id,
+                    FirstName = request.PersonalInfo.FirstName,
+                    MiddleName = request.PersonalInfo.MiddleName,
+                    LastName = request.PersonalInfo.LastName,
+                    BirthDate = request.PersonalInfo.BirthDate,
+                    NationalId = request.PersonalInfo.NationalId,
+                    NationalityLookupId = request.PersonalInfo.NationalityLookupId,
+                    SexLookupId = request.PersonalInfo.SexLookupId,
+                    PlaceOfBirthLookupId = request.PersonalInfo.PlaceOfBirthLookupId,
+                    EducationalStatusLookupId = request.PersonalInfo.EducationalStatusLookupId,
+                    TypeOfWorkLookupId = request.PersonalInfo.TypeOfWorkLookupId,
+                    MarriageStatusLookupId = request.PersonalInfo.MarriageStatusId,
+                    AddressId = request.PersonalInfo.AddressId,
+                    NationLookupId = request.PersonalInfo.NationLookupId,
+                    TitleLookupId = request.PersonalInfo.TitleLookupId,
+                    ReligionLookupId = request.PersonalInfo.ReligionId,
                     ContactInfo = contact,
                     CreatedAt = DateTime.Now
 
                 };
                 var listGroup = new List<UserGroup>();
-                request.User.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
+                request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
                 //can use this instead of automapper
                 var user = new ApplicationUser
                 {
-                    UserName = request.User.UserName,
-                    Email = request.User.Email,
+                    UserName = request.UserName,
+                    Email = request.Email,
                     UserGroups = listGroup,
                     PersonalInfo = person,
 
