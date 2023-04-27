@@ -31,12 +31,14 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
         public async Task<List<RegionDTO>> Handle(GetAllRegionQuery request, CancellationToken cancellationToken)
         {
             var AddressList = await _AddresslookupRepository.GetAllAsync();
-            var countryList = AddressList.Where(x => x.AdminLevel <= 2 && x.AdminLevel >= 1);
+            var countryList = AddressList.Where(x => x.AdminLevel == 2);
             var FormatedRegion = countryList.Select(co => new RegionDTO
             {
                 id = co.Id,
                 Region = co.AddressName["en"].ToString(),
                 Country = co.ParentAddress?.AddressName["en"].ToString(),
+                Code = co.Code,
+                StatisticCode = co.StatisticCode
             });
 
             // var lookups = CustomMapper.Mapper.Map<List<RegionDTO>>(AddressList);

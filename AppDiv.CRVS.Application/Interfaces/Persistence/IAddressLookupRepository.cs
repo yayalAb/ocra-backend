@@ -9,5 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<Address> GetByIdAsync(Guid id);
         Task<Address> GetAddressByKey(string key);
         Task<Address> GetAddressAdminstrativeLevel(Guid id);
+        // Task<string> DeleteAsync(Address entities);
+
     }
 }

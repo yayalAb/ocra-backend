@@ -13,9 +13,17 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class AddressLookupRepository : BaseRepository<Address>, IAddressLookupRepository
     {
+        private readonly CRVSDbContext _DbContext;
         public AddressLookupRepository(CRVSDbContext dbContext) : base(dbContext)
         {
+            _DbContext = dbContext;
         }
+
+        // Task<Address> IAddressLookupRepository.DeleteAsync(Address entities)
+        // {
+        //     _DbContext.Remove(entities);
+        //     return entities;
+        // }
 
         Task<Address> IAddressLookupRepository.GetAddressAdminstrativeLevel(Guid id)
         {

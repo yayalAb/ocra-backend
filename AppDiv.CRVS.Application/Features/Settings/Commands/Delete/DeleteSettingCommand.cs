@@ -31,7 +31,8 @@ namespace AppDiv.CRVS.Application.Features.Settings.create
             {
                 var settingEntity = await _settingRepository.GetByIdAsync(request.Id);
 
-                await _settingRepository.DeleteAsync(settingEntity);
+                await _settingRepository.DeleteAsync(request.Id);
+                await _settingRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {

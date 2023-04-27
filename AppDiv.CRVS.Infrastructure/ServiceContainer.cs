@@ -11,6 +11,8 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Services;
 using Twilio.Clients;
+using AppDiv.CRVS.Application.Interfaces;
+
 namespace AppDiv.CRVS.Infrastructure
 {
     public static class ServiceContainer
@@ -61,6 +63,8 @@ namespace AppDiv.CRVS.Infrastructure
 
 
             services.AddSingleton<IUserResolverService, UserResolverService>();
+            services.AddSingleton<IFileService, FileService>();
+
             services.AddSingleton<IMailService, MailKitService>();
             services.AddSingleton<ISmsService, TwilioService>();
 

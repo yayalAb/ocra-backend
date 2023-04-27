@@ -30,13 +30,15 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
         public async Task<List<ZoneDTO>> Handle(GetAllZoneQuery request, CancellationToken cancellationToken)
         {
             var AddressList = await _AddresslookupRepository.GetAllAsync();
-            var ZoneList = AddressList.Where(x => x.AdminLevel <= 3);
+            var ZoneList = AddressList.Where(x => x.AdminLevel == 3);
             var FormatedZone = ZoneList.Select(co => new ZoneDTO
             {
                 id = co.Id,
                 Zone = co.AddressName["en"].ToString(),
                 Region = co.ParentAddress?.AddressName["en"].ToString(),
                 Country = co.ParentAddress?.ParentAddress?.AddressName["en"].ToString(),
+                Code = co.Code,
+                StatisticCode = co.StatisticCode
 
             });
 

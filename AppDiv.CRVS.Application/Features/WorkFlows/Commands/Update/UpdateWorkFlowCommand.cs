@@ -45,6 +45,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
             try
             {
                 await _workflowRepository.UpdateAsync(WorkflowEntity, x => x.Id);
+                await _workflowRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {

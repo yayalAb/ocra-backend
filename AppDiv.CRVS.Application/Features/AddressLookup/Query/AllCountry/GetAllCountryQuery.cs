@@ -34,10 +34,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
             var FormatedCounry = countryList.Select(co => new CountryDTO
             {
                 id = co.Id,
-                Country = co.AddressName["en"].ToString()
-
-
-
+                Country = co.AddressName["en"].ToString(),
+                Code = co.Code,
+                StatisticCode = co.StatisticCode
             });
 
             // var lookups = CustomMapper.Mapper.Map<List<CountryDTO>>(AddressList);

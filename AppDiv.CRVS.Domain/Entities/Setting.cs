@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Domain.Entities
     public class Setting : BaseAuditableEntity
     {
         public string Key { get; set; }
-        public  string ValueStr { get; set; }
+        public string ValueStr { get; set; }
         [NotMapped]
         public JObject Value
         {

@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
             // var lookups1= lookups. Contains(x=>x.key,request.list);
             foreach (var key in request.list)
             {
-                _logger.LogCritical(key);
+                // _logger.LogCritical(key);
                 var selectedlookup = lookups.Where(x => x.Key == key);
                 LookupList.Add(new ListOfLookupDTO
                 {

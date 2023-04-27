@@ -21,20 +21,20 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
 
             try
             {
-                var certificate = await _certificateTemplateRepository.GetAsync(request.CertificateTemplate.Id);
+                var certificate = await _certificateTemplateRepository.GetAsync(request.Id);
                 if(certificate == null){
-                    throw new NotFoundException($"certificateTemplate with id {request.CertificateTemplate.Id} is not found");
+                    throw new NotFoundException($"certificateTemplate with id {request.Id} is not found");
                 }
                 await _certificateTemplateRepository.UpdateAsync(certificate,  x => x.Id);
                 await _certificateTemplateRepository.SaveChangesAsync(cancellationToken);
-                var file = request.CertificateTemplate.SvgFile;
-                var folderName = Path.Combine("Resources", "CertificateTemplates", $"{request.CertificateTemplate.CertificateType}");
+                var file = request.SvgFile;
+                var folderName = Path.Combine("Resources", "CertificateTemplates", $"{request.CertificateType}");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
                 if (file.Length > 0)
                 {
                     var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName = $"{request.CertificateTemplate.Id}{fileExtension}";
+                    var fileName = $"{request.Id}{fileExtension}";
                     var fullPath = Path.Combine(pathToSave, fileName);
                     using (var stream = new FileStream(fullPath, FileMode.Truncate))
                     {

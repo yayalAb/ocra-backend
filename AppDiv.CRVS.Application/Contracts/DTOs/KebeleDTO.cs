@@ -9,5 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? Zone { get; set; }
         public string? Woreda { get; set; }
         public string? Kebele { get; set; }
+        public string StatisticCode { get; set; }
+        public string Code { get; set; }
     }
 }
