@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -14,12 +15,13 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
 
 {
     // Customer query with List<Customer> response
-    public record GetAllCountryQuery : IRequest<List<CountryDTO>>
+    public record GetAllCountryQuery : IRequest<PaginatedList<CountryDTO>>
     {
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllCountryQueryHandler : IRequestHandler<GetAllCountryQuery, List<CountryDTO>>
+    public class GetAllCountryQueryHandler : IRequestHandler<GetAllCountryQuery, PaginatedList<CountryDTO>>
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
 
@@ -27,22 +29,21 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
         {
             _AddresslookupRepository = AddresslookupRepository;
         }
-        public async Task<List<CountryDTO>> Handle(GetAllCountryQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<CountryDTO>> Handle(GetAllCountryQuery request, CancellationToken cancellationToken)
         {
-            var AddressList = await _AddresslookupRepository.GetAllAsync();
-            var countryList = AddressList.Where(x => x.ParentAddressId == null);
-            var FormatedCounry = countryList.Select(co => new CountryDTO
-            {
-                id = co.Id,
-                Country = co.AddressName["en"].ToString(),
-                Code = co.Code,
-                StatisticCode = co.StatisticCode
-            });
+            return await PaginatedList<CountryDTO>
+                            .CreateAsync(
+                                 _AddresslookupRepository.GetAll()
+                                .Where(a => a.ParentAddress == null)
+                                .Select(c => new CountryDTO
+                                        {
+                                            Id = c.Id,
+                                            Country = c.AddressName.Value<string>("en"),
+                                            Code = c.Code,
+                                            StatisticCode = c.StatisticCode
+                                        }).ToList()
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
 
-            // var lookups = CustomMapper.Mapper.Map<List<CountryDTO>>(AddressList);
-            return FormatedCounry.ToList();
-
-            // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
         }
     }
 }

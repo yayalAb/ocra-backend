@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -14,12 +15,13 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup
 
 {
     // Customer query with List<Customer> response
-    public record GetAllGroupQuery : IRequest<List<GroupDTO>>
+    public record GetAllGroupQuery : IRequest<PaginatedList<FetchGroupDTO>>
     {
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllGroupQueryHandler : IRequestHandler<GetAllGroupQuery, List<GroupDTO>>
+    public class GetAllGroupQueryHandler : IRequestHandler<GetAllGroupQuery, PaginatedList<FetchGroupDTO>>
     {
         private readonly IGroupRepository _groupRepository;
 
@@ -27,13 +29,19 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup
         {
             _groupRepository = groupRepository;
         }
-        public async Task<List<GroupDTO>> Handle(GetAllGroupQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<FetchGroupDTO>> Handle(GetAllGroupQuery request, CancellationToken cancellationToken)
         {
-            var grouplist = await _groupRepository.GetAllAsync();
-            var groups = CustomMapper.Mapper.Map<List<GroupDTO>>(grouplist);
-            return groups;
+            var grouplist = _groupRepository.GetAll();
+            return await PaginatedList<FetchGroupDTO>
+                            .CreateAsync(
+                                _groupRepository.GetAll().Select(g => new FetchGroupDTO
+                                {
+                                    Id = g.Id,
+                                    GroupName = g.GroupName,
+                                    Description = g.Description.Value<string>("eng")
+                                }).ToList()
 
-            // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

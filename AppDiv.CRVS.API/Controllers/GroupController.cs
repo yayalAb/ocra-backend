@@ -20,6 +20,7 @@ using AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup;
 using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
 using AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById;
 using AppDiv.CRVS.Application.Features.Groups.Commands.Delete;
+using AppDiv.CRVS.Application.Common;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -41,9 +42,15 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<GroupDTO>> Get()
+        public async Task<PaginatedList<FetchGroupDTO>> Get()
         {
             return await _mediator.Send(new GetAllGroupQuery());
+        }
+        [HttpGet("lookup")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<DropDownDto>> GetDropdown()
+        {
+            return await _mediator.Send(new GetDropDownGroups());
         }
 
         [HttpPost("Create")]
@@ -63,11 +70,11 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPut("Edit/{id}")]
-        public async Task<ActionResult> Edit(Guid id, [FromBody] GroupupdateCommands command)
+        public async Task<ActionResult> Edit(Guid id, [FromBody] GroupUpdateCommand command)
         {
             try
             {
-                if (command.id == id)
+                if (command.group.Id == id)
                 {
                     var result = await _mediator.Send(command);
                     return Ok(result);

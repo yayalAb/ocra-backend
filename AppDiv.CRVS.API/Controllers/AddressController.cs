@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete;
@@ -110,7 +111,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Country")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<CountryDTO>> GetAllCountry()
+        public async Task<PaginatedList<CountryDTO>> GetAllCountry()
         {
             return await _mediator.Send(new GetAllCountryQuery());
         }
@@ -118,7 +119,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Region")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<RegionDTO>> GetAllRegion()
+        public async Task<PaginatedList<RegionDTO>> GetAllRegion()
         {
             return await _mediator.Send(new GetAllRegionQuery());
         }
@@ -142,7 +143,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Kebele")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<KebeleDTO>> GetAllKebele()
+        public async Task<PaginatedList<KebeleDTO>> GetAllKebele()
         {
             return await _mediator.Send(new GetAllKebeleQuery());
         }
