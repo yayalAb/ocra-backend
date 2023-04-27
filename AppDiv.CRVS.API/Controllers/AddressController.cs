@@ -127,7 +127,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Zone")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<ZoneDTO>> GetAllZone()
+        public async Task<PaginatedList<ZoneDTO>> GetAllZone()
         {
             return await _mediator.Send(new GetAllZoneQuery());
         }
@@ -135,7 +135,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Woreda")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<WoredaDTO>> GetAllWoreda()
+        public async Task<PaginatedList<WoredaDTO>> GetAllWoreda()
         {
             return await _mediator.Send(new GetAllWoredaQuery());
         }

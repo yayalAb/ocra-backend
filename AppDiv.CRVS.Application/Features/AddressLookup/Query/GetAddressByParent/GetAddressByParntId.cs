@@ -24,7 +24,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParen
         public async Task<List<AddressForLookupDTO>> Handle(GetAddressByParntId request, CancellationToken cancellationToken)
         {
             var Addresss = await _mediator.Send(new GetAllAddressQuery());
-            var selectedAddress = Addresss.Where(x => x.ParentAddressId == request.Id);
+            var selectedAddress = Addresss.Where(x => x.ParentAddressId == (Guid.Equals(request.Id , Guid.Empty)?null:request.Id));
             // var lng = "";
             var formatedAddress = selectedAddress.Select(an => new AddressForLookupDTO
             {
