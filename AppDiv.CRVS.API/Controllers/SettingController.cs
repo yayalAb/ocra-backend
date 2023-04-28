@@ -80,8 +80,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete")]
-        public async Task<ActionResult> DeleteSetting([FromQuery] Guid id)
+        [HttpDelete("Delete/{id}")]
+        public async Task<ActionResult> DeleteSetting(Guid id)
         {
             try
             {
