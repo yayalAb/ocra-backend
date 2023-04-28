@@ -48,9 +48,10 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
                 {
                     Id = Guid.NewGuid(),
                     workflowName = request.workflow.workflowName,
-                    Descreption = request.workflow.Descreption,
+                    Description = request.workflow.Description,
                     Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.workflow.Steps)
                 };
+                var workflow1 = CustomMapper.Mapper.Map<ICollection<Workflow>>(request.workflow);
                 //
                 await _workflowRepository.InsertAsync(workflow, cancellationToken);
                 var result = await _workflowRepository.SaveChangesAsync(cancellationToken);

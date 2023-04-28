@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<Lookup> Get(Guid id)
+        public async Task<LookupDTO> Get(Guid id)
         {
             return await _mediator.Send(new GetLookupByIdQuery(id));
         }

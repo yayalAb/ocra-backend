@@ -13,9 +13,9 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class UserGroup : BaseAuditableEntity
     {
-      public string GroupName { get; set; }
-      public string? DescriptionStr { get; set; }
-      public string RolesStr { get; set; }
+        public string GroupName { get; set; }
+        public string? DescriptionStr { get; set; }
+        public string RolesStr { get; set; }
         [NotMapped]
         public JObject Description
         {
@@ -41,5 +41,6 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
+        public virtual ICollection<Step> Steps { get; set; }
     }
 }

@@ -9,7 +9,6 @@ namespace AppDiv.CRVS.Domain.Entities
     public class Step : BaseAuditableEntity
     {
         public int step { get; set; }
-        public string ResponsibleGroup { get; set; }
         public decimal Payment { get; set; }
         public bool Status { get; set; }
         public string DescreptionStr { get; set; }
@@ -29,6 +28,7 @@ namespace AppDiv.CRVS.Domain.Entities
         }
         public Guid workflowId { get; set; }
         public Workflow workflow { get; set; }
+        public virtual ICollection<UserGroup> UserGroups { get; set; }
 
     }
 }

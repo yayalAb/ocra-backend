@@ -42,7 +42,6 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
                                     workflowName = wf.workflow.workflowName,
                                     step = wf.step,
                                     payment = wf.Payment,
-                                    responsibleGroup = wf.ResponsibleGroup,
                                     status = wf.Status
                                 }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);

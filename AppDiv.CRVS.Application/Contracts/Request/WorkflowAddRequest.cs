@@ -6,7 +6,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class WorkflowAddRequest
     {
         public string workflowName { get; set; }
-        public JObject Descreption { get; set; }
+        public JObject Description { get; set; }
         public ICollection<StepDTO> Steps { get; set; }
     }
 }

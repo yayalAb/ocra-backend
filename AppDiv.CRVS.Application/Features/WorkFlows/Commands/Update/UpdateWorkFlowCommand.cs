@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
 
         public Guid id { get; set; }
         public string workflowName { get; set; }
-        public JObject Descreption { get; set; }
+        public JObject Description { get; set; }
         public ICollection<StepDTO> Steps { get; set; }
 
     }
@@ -38,7 +38,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
             {
                 Id = request.id,
                 workflowName = request.workflowName,
-                Descreption = request.Descreption,
+                Description = request.Description,
                 Steps = CustomMapper.Mapper.Map<List<Step>>(request.Steps),
 
             };

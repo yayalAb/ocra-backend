@@ -10,20 +10,20 @@ namespace AppDiv.CRVS.Domain.Entities
     public class Workflow : BaseAuditableEntity
     {
         public string workflowName { get; set; }
-        public string DescreptionStr { get; set; }
+        public string DescriptionStr { get; set; }
 
         public ICollection<Step> Steps { get; set; }
         [NotMapped]
-        public JObject Descreption
+        public JObject Description
         {
 
             get
             {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(DescreptionStr) ? "{}" : DescreptionStr);
+                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(DescriptionStr) ? "{}" : DescriptionStr);
             }
             set
             {
-                DescreptionStr = value.ToString();
+                DescriptionStr = value.ToString();
             }
         }
 
