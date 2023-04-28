@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
         private readonly IIdentityService _identityService;
         // private readonly IMapper _mapper;
 
-        public GetAllUserQueryHandler(IIdentityService identityService )
+        public GetAllUserQueryHandler(IIdentityService identityService)
         {
             _identityService = identityService;
             // _mapper = mapper;
@@ -41,31 +41,33 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
              .CreateAsync(
                  _identityService
                 .AllUsersDetail()
-                .Select(user => new UserResponseDTO{
-                    Id = user.Id ,
+                .Select(user => new UserResponseDTO
+                {
+                    Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
-                    PersonalInfo = new PersonalInfoDTO{
+                    PersonalInfo = new PersonalInfoDTO
+                    {
                         Id = user.PersonalInfo.Id,
-                        FirstName = user.PersonalInfo.FirstName.Value<string>("en"),
-                        MiddleName = user.PersonalInfo.MiddleName.Value<string>("en"),
-                        // LastName = user.PersonalInfo.LastName.Value<string>("en"),
+                        FirstName = user.PersonalInfo.FirstNameLang,
+                        MiddleName = user.PersonalInfo.MiddleNameLang,
+                        // LastName = user.PersonalInfo.LastNameLang,
                         BirthDate = user.PersonalInfo.BirthDate,
                         NationalId = user.PersonalInfo.NationalId,
-                        // PlaceOfBirthLookup = user.PersonalInfo.PlaceOfBirthLookup.Value.Value<string>("en"),
-                        NationalityLookup = user.PersonalInfo.NationalityLookup.Value.Value<string>("en"),
-                        // TitleLookup = user.PersonalInfo.TitleLookup.Value.Value<string>("en"),
-                        // ReligionLookup = user.PersonalInfo.ReligionLookup.Value.Value<string>("en"),
-                        EducationalStatusLookup = user.PersonalInfo.EducationalStatusLookup.Value.Value<string>("en"),
-                        // TypeOfWorkLookup = user.PersonalInfo.TypeOfWorkLookup.Value.Value<string>("en"),
-                        MarraigeStatusLookup = user.PersonalInfo.MarraigeStatusLookup.Value.Value<string>("en"),
-                        NationLookup = user.PersonalInfo.NationLookup.Value.Value<string>("en"),
+                        // PlaceOfBirthLookup = user.PersonalInfo.PlaceOfBirthLookup.ValueLang,
+                        NationalityLookup = user.PersonalInfo.NationalityLookup.ValueLang,
+                        // TitleLookup = user.PersonalInfo.TitleLookup.ValueLang,
+                        // ReligionLookup = user.PersonalInfo.ReligionLookup.ValueLang,
+                        EducationalStatusLookup = user.PersonalInfo.EducationalStatusLookup.ValueLang,
+                        // TypeOfWorkLookup = user.PersonalInfo.TypeOfWorkLookup.ValueLang,
+                        MarraigeStatusLookup = user.PersonalInfo.MarraigeStatusLookup.ValueLang,
+                        NationLookup = user.PersonalInfo.NationLookup.ValueLang,
                         CreatedDate = user.PersonalInfo.CreatedAt,
                         // ContactInfo = _mapper.Map<ContactInfoDTO>(user.PersonalInfo.ContactInfo)
 
                     }
                 }).ToList()
-                
+
                 , request.PageCount ?? 1, request.PageSize ?? 10);
 
 

@@ -36,6 +36,15 @@ namespace AppDiv.CRVS.Domain.Entities
                 FirstNameStr = value.ToString();
             }
         }
+
+        [NotMapped]
+        public string? FirstNameLang
+        {
+            get
+            {
+                return FirstName.Value<string>(lang);
+            }
+        }
         [NotMapped]
         public JObject MiddleName
         {
@@ -49,6 +58,14 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
         [NotMapped]
+        public string? MiddleNameLang
+        {
+            get
+            {
+                return MiddleName.Value<string>(lang);
+            }
+        }
+        [NotMapped]
         public JObject LastName
         {
             get
@@ -58,6 +75,14 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 LastNameStr = value.ToString();
+            }
+        }
+        [NotMapped]
+        public string? LastNameLang
+        {
+            get
+            {
+                return LastName.Value<string>(lang);
             }
         }
 

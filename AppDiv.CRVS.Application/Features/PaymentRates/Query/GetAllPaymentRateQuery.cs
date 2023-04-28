@@ -47,11 +47,11 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
                                 {
                                     Id = pr.Id,
                                     PaymentTypeId = pr.PaymentTypeLookupId,
-                                    PaymentType = pr.PaymentTypeLookup.Value.Value<string>("en"),
+                                    PaymentType = pr.PaymentTypeLookup.ValueLang != null ? pr.PaymentTypeLookup.ValueLang : "",
                                     EventId = pr.EventLookupId,
-                                    Event = pr.EventLookup.Value.Value<string>("en"),
+                                    Event = pr.EventLookup.ValueLang != null ? pr.EventLookup.ValueLang : "",
                                     AddressId = pr.AddressId,
-                                    Address = pr.Address.AddressName.Value<string>("en"),
+                                    Address = pr.Address.AddressNameLang != null ? pr.Address.AddressNameLang : "",
                                     Amount = pr.Amount,
                                     Status = pr.Status
                                     // Description = g.Description.Value<string>("eng")
