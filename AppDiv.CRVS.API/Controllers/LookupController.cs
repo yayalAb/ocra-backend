@@ -113,6 +113,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(new GetListOfLookupQuery { list = keys });
         }
 
+        [HttpPost("GetListofLookup")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<ActionResult<object>> GetListLookup([FromBody] string[] command, CancellationToken token)
+        {
+            return await _mediator.Send(new GetListOfLookupQuery { list = command });
+        }
 
     }
 }
