@@ -28,7 +28,8 @@ namespace AppDiv.CRVS.Domain.Entities
         }
         public Guid workflowId { get; set; }
         public Workflow workflow { get; set; }
-        public virtual ICollection<UserGroup> UserGroups { get; set; }
+        public virtual Guid? UserGroupId { get; set; }
+        public virtual UserGroup UserGroup { get; set; }
 
     }
 }

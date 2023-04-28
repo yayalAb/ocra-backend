@@ -43,7 +43,9 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
             {
                 //can use this instead of automapper
 
+                List<Guid> UserGroups = new List<Guid>();
 
+                // UserGroups=request.workflow.Steps.
                 var workflow = new Workflow
                 {
                     Id = Guid.NewGuid(),
@@ -51,8 +53,6 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
                     Description = request.workflow.Description,
                     Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.workflow.Steps)
                 };
-                var workflow1 = CustomMapper.Mapper.Map<ICollection<Workflow>>(request.workflow);
-                //
                 await _workflowRepository.InsertAsync(workflow, cancellationToken);
                 var result = await _workflowRepository.SaveChangesAsync(cancellationToken);
 

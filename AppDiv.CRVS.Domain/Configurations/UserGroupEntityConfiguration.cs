@@ -7,10 +7,13 @@ namespace AppDiv.CRVS.Domain.Configurations
     public class UserGroupEntityConfiguration : IEntityTypeConfiguration<UserGroup>
     {
         public void Configure(EntityTypeBuilder<UserGroup> builder)
-        {     
+        {
             builder.HasMany(m => m.ApplicationUsers)
                .WithMany(n => n.UserGroups);
+
+            builder.HasMany(m => m.Steps)
+               .WithOne(n => n.UserGroup).HasForeignKey(n => n.UserGroupId);
         }
-       
+
     }
 }

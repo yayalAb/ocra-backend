@@ -8,7 +8,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public decimal Payment { get; set; }
         public bool Status { get; set; }
         public JObject Descreption { get; set; }
-        public List<Guid> UserGroups { get; set; }
-        // public Guid workflowId { get; set; }
+        public Guid UserGroupId { get; set; }
     }
 }
