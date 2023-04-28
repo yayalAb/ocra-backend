@@ -49,8 +49,12 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<PersonalInfo> PersonMarriageStatusNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonNationNavigation { get; set; }
         // public virtual ICollection<PaymentRate> PaymentRateNationNavigation { get; set; }
+        [NotMapped]
+        public string? ValueLang {
+            get{
+                return Value.Value<string>(lang) ;
+            }
+        }
 
-
-
-    }
+    }     
 }

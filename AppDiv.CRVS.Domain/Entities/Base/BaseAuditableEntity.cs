@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Primitives;
 
 namespace AppDiv.CRVS.Domain.Base
 {
@@ -20,10 +22,17 @@ namespace AppDiv.CRVS.Domain.Base
 
         public virtual Guid? CreatedBy { get; set; }
         public virtual Guid? ModifiedBy { get; set; }
+        [NotMapped]
+        protected string? lang { get; set; }
         public BaseAuditableEntity()
         {
             this.CreatedAt = DateTime.Now;
-            this.Id=Guid.NewGuid();
+            this.Id = Guid.NewGuid();
+            var httpContext = new HttpContextAccessor().HttpContext;
+             httpContext.Request.Headers.TryGetValue("lang", out StringValues headerValue);
+           this.lang =  headerValue.FirstOrDefault();
+
+
         }
     }
 }
