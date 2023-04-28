@@ -29,11 +29,9 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
     public class UpdateLookupCommandHandler : IRequestHandler<UpdateLookupCommand, LookupDTO>
     {
         private readonly ILookupRepository _lookupRepository;
-        private readonly ILogger<UpdateLookupCommandHandler> _log;
-        public UpdateLookupCommandHandler(ILookupRepository _lookupRepository, ILogger<UpdateLookupCommandHandler> log)
+        public UpdateLookupCommandHandler(ILookupRepository lookupRepository)
         {
-            _lookupRepository = _lookupRepository;
-            _log = log;
+            _lookupRepository = lookupRepository;
         }
         public async Task<LookupDTO> Handle(UpdateLookupCommand request, CancellationToken cancellationToken)
         {
