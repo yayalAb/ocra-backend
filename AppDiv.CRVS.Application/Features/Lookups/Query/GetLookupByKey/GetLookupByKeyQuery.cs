@@ -46,14 +46,6 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
     }
 }
 
-// var lookups = await _lookupRepository.GetAllWithAsync(x => x.Key == request.Key);
-// // var lookups = AllLookups.Where(x => x.Key == request.Key);
-// var formatedLookup = lookups.Select(lo => new LookupByKeyDTO
-// {
-//     id = lo.Id,
-//     Key = lo.Key,
-//     Value = lo.Value.Value<string>("en")
-// });
 
 
 

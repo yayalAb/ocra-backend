@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
@@ -14,18 +15,12 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
 {
     // Customer GetListOfLookupQuery with  response
-    public class GetListOfLookupQuery : IRequest<List<ListOfLookupDTO>>
+    public class GetListOfLookupQuery : IRequest<object>
     {
         public String[] list { get; set; }
-
-        // public GetListOfLookupQuery(String[] list)
-        // {
-        //     this.list = list;
-        // }
-
     }
 
-    public class GetListOfLookupQueryHandler : IRequestHandler<GetListOfLookupQuery, List<ListOfLookupDTO>>
+    public class GetListOfLookupQueryHandler : IRequestHandler<GetListOfLookupQuery, object>
     {
         private readonly ILookupRepository _lookupRepository;
 
@@ -33,24 +28,38 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
         {
             _lookupRepository = lookupQueryRepository;
         }
-        public async Task<List<ListOfLookupDTO>> Handle(GetListOfLookupQuery request, CancellationToken cancellationToken)
+        public async Task<object> Handle(GetListOfLookupQuery request, CancellationToken cancellationToken)
         {
-            List<ListOfLookupDTO> LookupList = new List<ListOfLookupDTO>();
-            var lookups = await _lookupRepository.GetAllAsync();
-            // var lookups1= lookups. Contains(x=>x.key,request.list);
-            foreach (var key in request.list)
+            var sss = _lookupRepository.GetAll().Where(x => request.list.Contains(x.Key)).AsEnumerable().GroupBy(x => x.Key).ToDictionary(group => group.Key, group => group.Select(li => new ListLookupDto
             {
-                // _logger.LogCritical(key);
-                var selectedlookup = lookups.Where(x => x.Key == key);
-                LookupList.Add(new ListOfLookupDTO
-                {
-                    Key = key,
-                    Value = CustomMapper.Mapper.Map<List<LookupDTO>>(selectedlookup)
-                });
-            }
+                Id = li.Id,
+                Value = li.Value.Value<string>("en")
+            }));
 
-            return CustomMapper.Mapper.Map<List<ListOfLookupDTO>>(LookupList);
+            return sss;
 
         }
     }
 }
+
+
+
+
+
+// object LookupList = new object();
+// List<Object> LookupList1 = new List<Object>();
+// foreach (var key in request.list)
+// {
+//     var selectedlookup = _lookupRepository.GetAll().Where(x => x.Key == key).Select(lo => new ListLookupDto
+//     {
+//         Id = lo.Id,
+//         Value = lo.Value.Value<string>("en")
+//     });
+//     LookupList.Add(new LookupDTO
+//     {
+//         Key = key,
+//         Value = CustomMapper.Mapper.Map<List<ListLookupDto>>(selectedlookup)
+//     });
+// }
+
+// CustomMapper.Mapper.Map<object>(sss);

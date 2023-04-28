@@ -10,8 +10,8 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public int step { get; set; }
         public string ResponsibleGroup { get; set; }
-        public float Payment { get; set; }
-        public float Status { get; set; }
+        public decimal Payment { get; set; }
+        public bool Status { get; set; }
         public string DescreptionStr { get; set; }
 
         [NotMapped]

@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string StatisticCode { get; set; }
         public string Code { get; set; }
         public int AdminLevel { get; set; }
-        public Guid AreaTypeLookupId { get; set; }
+        public Guid? AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
 
     }

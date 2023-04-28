@@ -107,7 +107,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("List")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<ListOfLookupDTO>> Get([FromQuery] string[] keys)
+        public async Task<object> Get([FromQuery] string[] keys)
         {
             _Ilog.LogCritical(keys[0]);
             return await _mediator.Send(new GetListOfLookupQuery { list = keys });

@@ -21,7 +21,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
         public string StatisticCode { get; set; }
         public string Code { get; set; }
         public int AdminLevel { get; set; }
-        public Guid AreaTypeLookupId { get; set; }
+        public Guid? AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
     }
 
@@ -42,8 +42,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
                 StatisticCode = request.StatisticCode,
                 Code = request.Code,
                 AdminLevel = request.AdminLevel,
-                AreaTypeLookupId = request.AreaTypeLookupId,
-                ParentAddressId = request.ParentAddressId,
+                AreaTypeLookupId = request?.AreaTypeLookupId,
+                ParentAddressId = request?.ParentAddressId,
             };
             try
             {

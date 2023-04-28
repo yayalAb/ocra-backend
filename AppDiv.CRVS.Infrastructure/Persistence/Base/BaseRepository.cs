@@ -37,6 +37,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return _dbContext.Set<T>().AsQueryable();
         }
 
+        // public virtual IQueryable<T> GetAllIN(string key, string[] keys)
+        // {
+        //     return _dbContext.Set<T>().Where(key in);
+        // }
+
         public virtual async Task<IEnumerable<T>> GetAllWithAsync(params string[] eagerLoadedProperties)
         {
             var list = _dbContext.Set<T>().AsQueryable();

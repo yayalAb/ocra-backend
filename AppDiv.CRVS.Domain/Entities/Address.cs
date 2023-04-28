@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string StatisticCode { get; set; }
         public string Code { get; set; }
         public int AdminLevel { get; set; } = 1;
-        public Guid AreaTypeLookupId { get; set; }
+        public Guid? AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
         [NotMapped]
         public JObject AddressName
