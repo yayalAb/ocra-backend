@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
                                 {
                                     id = lo.Id,
                                     Key = lo.Key,
-                                    Value = lo.Value.Value<string>("en")
+                                    Value = lo.ValueLang
                                 }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }

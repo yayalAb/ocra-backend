@@ -28,11 +28,11 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
                 .CreateAsync(
                      _AddresslookupRepository.GetAll()
                     .Where(a => a.AdminLevel == 2)
-                    .Select(c => new  RegionDTO
+                    .Select(c => new RegionDTO
                     {
                         Id = c.Id,
-                        Region = c.AddressName.Value<string>("en"),
-                        Country = c.ParentAddress !=null? c.ParentAddress.AddressName.Value<string>("en"):null,
+                        Region = c.AddressNameLang,
+                        Country = c.ParentAddress != null ? c.ParentAddress.AddressNameLang : null,
                         Code = c.Code,
                         StatisticCode = c.StatisticCode
                     }).ToList()

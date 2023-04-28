@@ -34,19 +34,19 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda
             return await PaginatedList<WoredaDTO>
                 .CreateAsync(
                      _AddresslookupRepository.GetAll()
-                    .Where(a => a.ParentAddress == null)
+                    .Where(a => a.AdminLevel == 4)
                     .Select(a => new WoredaDTO
                     {
                         Id = a.Id,
-                        Woreda = a.AddressName.Value<string>("en"),
+                        Woreda = a.AddressNameLang,
                         Zone = a.ParentAddress != null && a.ParentAddress.ParentAddress != null
-                                            ? a.ParentAddress.ParentAddress.AddressName.Value<string>("en")
+                                            ? a.ParentAddress.AddressNameLang
                                             : null,
                         Region = a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null
-                                            ? a.ParentAddress.ParentAddress.ParentAddress.AddressName.Value<string>("en")
+                                            ? a.ParentAddress.ParentAddress.AddressNameLang
                                             : null,
-                        Country = a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress.ParentAddress != null
-                                            ? a.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressName.Value<string>("en")
+                        Country = a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null
+                                            ? a.ParentAddress.ParentAddress.ParentAddress.AddressNameLang
                                             : null,
                         Code = a.Code,
                         StatisticCode = a.StatisticCode

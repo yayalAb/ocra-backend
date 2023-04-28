@@ -27,5 +27,12 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
 
+        //  [NotMapped]
+        // public string? ValueLang {
+        //     get{
+        //         return Value.Value<string>(lang) ;
+        //     }
+        // }
+
     }
 }

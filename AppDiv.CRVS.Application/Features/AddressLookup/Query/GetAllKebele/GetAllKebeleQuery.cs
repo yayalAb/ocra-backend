@@ -41,17 +41,17 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
                                .Select(a => new KebeleDTO
                                {
                                    Id = a.Id,
-                                   Kebele = a.AddressName.Value<string>("en"),
-                                   Woreda = a.ParentAddress != null? a.ParentAddress.AddressName.Value<string>("en"):null,
-                                   Zone = a.ParentAddress !=null && a.ParentAddress.ParentAddress != null
-                                            ? a.ParentAddress.ParentAddress.AddressName.Value<string>("en")
-                                            :null,
-                                   Region = a.ParentAddress !=null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress !=null
-                                            ? a.ParentAddress.ParentAddress.ParentAddress.AddressName.Value<string>("en")
-                                            :null,
-                                   Country = a.ParentAddress !=null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress !=null && a.ParentAddress.ParentAddress.ParentAddress.ParentAddress !=null
-                                            ? a.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressName.Value<string>("en")
-                                            :null,
+                                   Kebele = a.AddressNameLang,
+                                   Woreda = a.ParentAddress != null ? a.ParentAddress.AddressNameLang : null,
+                                   Zone = a.ParentAddress != null && a.ParentAddress.ParentAddress != null
+                                            ? a.ParentAddress.ParentAddress.AddressNameLang
+                                            : null,
+                                   Region = a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null
+                                            ? a.ParentAddress.ParentAddress.ParentAddress.AddressNameLang
+                                            : null,
+                                   Country = a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress.ParentAddress != null
+                                            ? a.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressNameLang
+                                            : null,
                                    Code = a.Code,
                                    StatisticCode = a.StatisticCode
 

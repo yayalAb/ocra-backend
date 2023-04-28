@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup
             var sss = _lookupRepository.GetAll().Where(x => request.list.Contains(x.Key)).AsEnumerable().GroupBy(x => x.Key).ToDictionary(group => group.Key, group => group.Select(li => new ListLookupDto
             {
                 Id = li.Id,
-                Value = li.Value.Value<string>("en")
+                Value = li.ValueLang
             }));
 
             return sss;

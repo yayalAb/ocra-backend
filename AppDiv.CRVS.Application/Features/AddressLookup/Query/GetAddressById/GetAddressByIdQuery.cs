@@ -1,6 +1,7 @@
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
@@ -26,16 +27,15 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 
     public class GetAddressByIdQueryHandler : IRequestHandler<GetAddressByIdQuery, AddressDTO>
     {
-        private readonly IMediator _mediator;
+        private readonly IAddressLookupRepository _AddresslookupRepository;
 
-        public GetAddressByIdQueryHandler(IMediator mediator)
+        public GetAddressByIdQueryHandler(IAddressLookupRepository AddresslookupRepository)
         {
-            _mediator = mediator;
+            _AddresslookupRepository = AddresslookupRepository;
         }
         public async Task<AddressDTO> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
         {
-            var Addresss = await _mediator.Send(new GetAllAddressQuery());
-            var selectedAddress = Addresss.FirstOrDefault(x => x.id == request.Id);
+            var selectedAddress = _AddresslookupRepository.GetAll().Where(x => x.Id == request.Id);
             return CustomMapper.Mapper.Map<AddressDTO>(selectedAddress);
             // return selectedCustomer;
         }

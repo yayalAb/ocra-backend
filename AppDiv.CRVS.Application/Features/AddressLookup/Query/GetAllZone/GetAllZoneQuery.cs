@@ -30,24 +30,24 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
             _AddresslookupRepository = AddresslookupRepository;
         }
         public async Task<PaginatedList<ZoneDTO>> Handle(GetAllZoneQuery request, CancellationToken cancellationToken)
-        {   
-              return await PaginatedList<ZoneDTO>
-                .CreateAsync(
-                     _AddresslookupRepository.GetAll()
-                    .Where(a => a.AdminLevel == 3)
-                    .Select(a => new ZoneDTO
-            {
-                Id = a.Id,
-                Zone = a.AddressName.Value<string>("en"),
-                Region = a.ParentAddress != null? a.ParentAddress.AddressName.Value<string>("en"): null,
-                Country = a.ParentAddress !=null  && a.ParentAddress.ParentAddress !=null
-                                ? a.ParentAddress.ParentAddress.AddressName.Value<string>("en")
-                                :null,
-                Code = a.Code,
-                StatisticCode = a.StatisticCode
+        {
+            return await PaginatedList<ZoneDTO>
+              .CreateAsync(
+                   _AddresslookupRepository.GetAll()
+                  .Where(a => a.AdminLevel == 3)
+                  .Select(a => new ZoneDTO
+                  {
+                      Id = a.Id,
+                      Zone = a.AddressNameLang,
+                      Region = a.ParentAddress != null ? a.ParentAddress.AddressNameLang : null,
+                      Country = a.ParentAddress != null && a.ParentAddress.ParentAddress != null
+                              ? a.ParentAddress.ParentAddress.AddressNameLang
+                              : null,
+                      Code = a.Code,
+                      StatisticCode = a.StatisticCode
 
-            }).ToList()
-                    , request.PageCount ?? 1, request.PageSize ?? 10);
+                  }).ToList()
+                  , request.PageCount ?? 1, request.PageSize ?? 10);
 
         }
 

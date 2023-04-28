@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
         }
         public async Task<PaginatedList<LookupForGridDTO>> Handle(GetAllLookupQuery request, CancellationToken cancellationToken)
         {
-            
+
 
             return await PaginatedList<LookupForGridDTO>
                             .CreateAsync(
