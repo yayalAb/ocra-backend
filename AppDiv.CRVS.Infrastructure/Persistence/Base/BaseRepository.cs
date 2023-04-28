@@ -52,6 +52,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return await list.ToListAsync();
         }
 
+        public virtual async Task<IEnumerable<T>> GetAllWithAsyncIQueryable(params string[] eagerLoadedProperties)
+        {
+            var list = _dbContext.Set<T>().AsQueryable();
+            foreach (var nav_property in eagerLoadedProperties)
+            {
+                list = list.Include(nav_property);
+            }
+            return list;
+        }
+
         public virtual async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate = null)
         {
             return await _dbContext.Set<T>().Where(predicate).ToListAsync();

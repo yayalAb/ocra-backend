@@ -42,10 +42,11 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
                                     workflowName = wf.workflow.workflowName,
                                     step = wf.step,
                                     payment = wf.Payment,
-                                    status = wf.Status
+                                    status = wf.Status,
                                 }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }
 
+//                                     ResiponsbleGroup = wf.UserGroup.GroupName

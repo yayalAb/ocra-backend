@@ -39,8 +39,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
                 Id = request.id,
                 workflowName = request.workflowName,
                 Description = request.Description,
-                Steps = CustomMapper.Mapper.Map<List<Step>>(request.Steps),
-
+                Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.Steps)
             };
             try
             {

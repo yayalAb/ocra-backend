@@ -7,6 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid id { get; set; }
         public string workflowName { get; set; }
+        public string? ResiponsbleGroup { get; set; }
         public int step { get; set; }
         public decimal payment { get; set; }
         public bool status { get; set; }
