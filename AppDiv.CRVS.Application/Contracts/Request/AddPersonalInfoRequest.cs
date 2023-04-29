@@ -21,10 +21,10 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid? PlaceOfBirthLookupId { get; set; }
         public Guid NationalityLookupId { get; set; }
         public Guid? TitleLookupId { get; set; }
-        public Guid? ReligionId { get; set; }
+        public Guid? ReligionLookupId { get; set; }
         public Guid? EducationalStatusLookupId { get; set; }
         public Guid? TypeOfWorkLookupId { get; set; }
-        public Guid MarriageStatusId { get; set; }
+        public Guid MarriageStatusLookupId { get; set; }
         public Guid AddressId { get; set; }
         public Guid? NationLookupId { get; set; }
         public AddContactInfoRequest ContactInfo { get; set; }

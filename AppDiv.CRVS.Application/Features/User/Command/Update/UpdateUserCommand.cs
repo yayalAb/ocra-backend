@@ -69,11 +69,11 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 PlaceOfBirthLookupId = request.PersonalInfo.PlaceOfBirthLookupId,
                 EducationalStatusLookupId = request.PersonalInfo.EducationalStatusLookupId,
                 TypeOfWorkLookupId = request.PersonalInfo.TypeOfWorkLookupId,
-                MarriageStatusLookupId = request.PersonalInfo.MarriageStatusId,
+                MarriageStatusLookupId = request.PersonalInfo.MarriageStatusLookupId,
                 AddressId = request.PersonalInfo.AddressId,
                 NationLookupId = request.PersonalInfo.NationLookupId,
                 TitleLookupId = request.PersonalInfo.TitleLookupId,
-                ReligionLookupId = request.PersonalInfo.ReligionId,
+                ReligionLookupId = request.PersonalInfo.ReligionLookupId,
                 ModifiedAt = DateTime.Now,
                 ContactInfo = contact
 
