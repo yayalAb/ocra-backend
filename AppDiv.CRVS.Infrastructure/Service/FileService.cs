@@ -57,7 +57,8 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
                 // Convert the Base64 string to a byte array.
                 string myString = base64String.Substring(base64String.IndexOf(',') + 1);
-                byte[] bytes = Convert.FromBase64String(base64String);
+            //    _logger.LogCritical(myString);
+                byte[] bytes = Convert.FromBase64String(myString);
                 var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
                 var fullPath = Path.Combine(pathToSave, fileName + extension);
                 File.WriteAllBytes(fullPath, bytes);
