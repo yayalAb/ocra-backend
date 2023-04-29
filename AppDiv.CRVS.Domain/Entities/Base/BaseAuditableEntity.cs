@@ -29,15 +29,15 @@ namespace AppDiv.CRVS.Domain.Base
             this.CreatedAt = DateTime.Now;
             this.Id = Guid.NewGuid();
             var httpContext = new HttpContextAccessor().HttpContext;
-            this.lang = "en";
-            // if (httpContext.Request.Headers.TryGetValue("lang", out StringValues headerValue))
-            // {
-            //     this.lang = headerValue.FirstOrDefault();
-            // }
-            // else
-            // {
-            //     this.lang = "en";
-            // }
+            if (httpContext.Request.Headers.ContainsKey("lang"))
+            {
+                httpContext.Request.Headers.TryGetValue("lang", out StringValues headerValue);
+                this.lang = headerValue.FirstOrDefault();
+            }
+            else
+            {
+                this.lang = "en";
+            }
 
         }
     }
