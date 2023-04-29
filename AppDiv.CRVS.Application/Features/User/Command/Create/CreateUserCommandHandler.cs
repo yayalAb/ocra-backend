@@ -79,6 +79,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
 
                 // request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetAsync(g)));
                 //can use this instead of automapper
+                listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
                 var user = new ApplicationUser
                 {
                     UserName = request.UserName,
@@ -89,11 +90,11 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 };
                 var response = await _identityService.createUser(user);
 
-                // var file = request.UserImage;
-                // var folderName = Path.Combine("Resources", "UserProfiles");
-                // var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                // var fileName = response.id;
-                // _fileService.UploadBase64File(file, fileName, pathToSave, FileMode.Create);
+                var file = request.UserImage;
+                var folderName = Path.Combine("Resources", "UserProfiles");
+                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                var fileName = response.id;
+                _fileService.UploadBase64File(file, fileName, pathToSave, FileMode.Create);
 
             }
             return CreateUserCommadResponse;
