@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
 {
@@ -11,10 +12,13 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
     {
         private readonly ICertificateTemplateRepository _certificateTemplateRepository;
         private readonly ILogger<UpdateCertificateTemplateCommandHandler> _logger;
-        public UpdateCertificateTemplateCommandHandler(ICertificateTemplateRepository certificateTemplateRepository, ILogger<UpdateCertificateTemplateCommandHandler> logger)
+        private readonly IFileService _fileService;
+
+        public UpdateCertificateTemplateCommandHandler(ICertificateTemplateRepository certificateTemplateRepository, ILogger<UpdateCertificateTemplateCommandHandler> logger , IFileService fileService)
         {
             _certificateTemplateRepository = certificateTemplateRepository;
             _logger = logger;
+            _fileService = fileService;
         }
         public async Task<object> Handle(UpdateCertificateTemplateCommand request, CancellationToken cancellationToken)
         {
@@ -28,21 +32,17 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
                 await _certificateTemplateRepository.UpdateAsync(certificate,  x => x.Id);
                 await _certificateTemplateRepository.SaveChangesAsync(cancellationToken);
                 var file = request.SvgFile;
-                var folderName = Path.Combine("Resources", "CertificateTemplates", $"{request.CertificateType}");
+                var folderName = Path.Combine("Resources", "CertificateTemplates");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-                if (file.Length > 0)
-                {
-                    var fileExtension = Path.GetExtension(file.FileName);
-                    var fileName = $"{request.Id}{fileExtension}";
-                    var fullPath = Path.Combine(pathToSave, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Truncate))
-                    {
-                        file.CopyTo(stream);
-                    }
-                }
+                var fileExtension = Path.GetExtension(file.FileName);
+                var fileName = $"{request.Id}{fileExtension}";
 
-                return new UpdateCertificateTemplateResponse();
+                _fileService.UploadFormFile(file,fileName,pathToSave,FileMode.Create);
+
+                return new UpdateCertificateTemplateResponse{
+                    Message = "certificate template updated successfully"
+                };
 
 
 

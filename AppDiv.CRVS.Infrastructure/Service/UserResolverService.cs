@@ -1,19 +1,24 @@
 ﻿
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+// using AppDiv.CRVS.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Infrastructure.Services
 {
-    public class UserResolverService : IUserResolverService
+    public class UserResolverService : IUserResolverService 
+    
     {
         private readonly IHttpContextAccessor httpContext;
         private readonly ILogger<UserResolverService> _logger;
-
         public UserResolverService(IHttpContextAccessor httpContext, ILogger<UserResolverService> logger)
         {
             this.httpContext = httpContext;
             _logger = logger;
+
+           
+
         }
 
         public string GetUserEmail()
@@ -40,14 +45,5 @@ namespace AppDiv.CRVS.Infrastructure.Services
             return string.Empty;
         }
 
-        public string GetSelectedLanguage()
-        {
-            if (httpContext.HttpContext != null && httpContext.HttpContext.Request.Query.ContainsKey("lang"))
-            {
-                _logger.LogCritical(httpContext.HttpContext.Request.Query["lang"]);
-                return httpContext.HttpContext.Request.Query["lang"];
-            }
-            return "en";
-        }
     }
 }

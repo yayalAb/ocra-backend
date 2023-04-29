@@ -42,7 +42,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
             {
                 throw new ApplicationException(exp.Message);
             }
-            var modifiedLookup = await _groupRepository.GetByIdAsync(request.group.Id);
+            var modifiedLookup = await _groupRepository.GetAsync(request.group.Id);
             var LookupResponse = CustomMapper.Mapper.Map<GroupDTO>(modifiedLookup);
             return LookupResponse;
         }

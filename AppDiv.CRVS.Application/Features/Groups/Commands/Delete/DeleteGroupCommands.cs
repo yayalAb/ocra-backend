@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
         {
             try
             {
-                var groupEntity = await _groupRepository.GetByIdAsync(request.Id);
+                var groupEntity = await _groupRepository.GetAsync(request.Id);
 
                 await _groupRepository.DeleteAsync(request.Id);
                 await _groupRepository.SaveChangesAsync(cancellationToken);

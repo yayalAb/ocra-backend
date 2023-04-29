@@ -11,5 +11,6 @@ namespace AppDiv.CRVS.Domain
         public Guid PersonalInfoId { get;set;}
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
+        
     }
 }

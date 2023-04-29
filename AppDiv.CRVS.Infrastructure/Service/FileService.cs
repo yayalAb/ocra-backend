@@ -1,7 +1,7 @@
 
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
-// using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp.Formats;
@@ -24,9 +24,14 @@ namespace AppDiv.CRVS.Infrastructure.Services
             {
                 if (file.Length > 0)
                 {
+                    var matchingFiles = Directory.GetFiles(pathToSave, fileName + "*");
+                    //removing file with the same id but different extension 
+                    matchingFiles.ToList().ForEach(file => {
+                        //TODO: delete the file
+                    });
                     var fileExtension = Path.GetExtension(file.FileName);
                     var fullPath = Path.Combine(pathToSave, fileName);
-                    using (var stream = new FileStream(fullPath, FileMode.Create))
+                    using (var stream = new FileStream(fullPath, fileMode))
                     {
                         file.CopyTo(stream);
                     }
@@ -50,9 +55,9 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
                 // Convert the Base64 string to a byte array.
                 byte[] bytes = Convert.FromBase64String(base64String);
-                var extension = getFileExtension(bytes)?? ".png";
+                var extension = getFileExtension(bytes) ?? ".png";
 
-                var fullPath = Path.Combine(pathToSave, fileName +extension);
+                var fullPath = Path.Combine(pathToSave, fileName + extension);
                 File.WriteAllBytes(fullPath, bytes);
                 return true;
 
@@ -89,13 +94,13 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         }
 
-        private string? getFileExtension(byte[]bytes)
+        private string? getFileExtension(byte[] bytes)
         {
             // Use ImageSharp to identify the image format
             IImageFormat format = Image.DetectFormat(bytes);
 
             // Get the file extension from the image format
-            return  format?.FileExtensions.FirstOrDefault();
+            return format?.FileExtensions.FirstOrDefault();
 
         }
 
