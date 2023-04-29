@@ -41,7 +41,6 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
                 Description = request.Description,
                 Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.Steps)
             };
-            var Workflow1 = CustomMapper.Mapper.Map<ICollection<Step>>(request.Steps);
 
             try
             {
@@ -52,8 +51,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
             {
                 throw new ApplicationException(exp.Message);
             }
-            var modifiedworkflow = await _workflowRepository.GetByIdAsync(request.id);
-            var workflowResponse = CustomMapper.Mapper.Map<WorkflowDTO>(modifiedworkflow);
+            var workflowResponse = CustomMapper.Mapper.Map<WorkflowDTO>(WorkflowEntity);
             return workflowResponse;
         }
     }

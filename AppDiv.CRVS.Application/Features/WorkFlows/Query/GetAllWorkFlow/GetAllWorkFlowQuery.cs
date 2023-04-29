@@ -41,6 +41,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
                                     id = wf.workflow.Id,
                                     workflowName = wf.workflow.workflowName,
                                     step = wf.step,
+                                    ResiponsbleGroup = wf.UserGroup.GroupName != null ? wf.UserGroup.GroupName : "",
                                     payment = wf.Payment,
                                     status = wf.Status,
                                 }).ToList()
@@ -49,4 +50,3 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
     }
 }
 
-//                                     ResiponsbleGroup = wf.UserGroup.GroupName

@@ -79,6 +79,27 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
+        [HttpPut("StepEdit/{id}")]
+        public async Task<ActionResult> StepUpdate(Guid id, [FromBody] UpdateStepCommand command)
+        {
+            try
+            {
+                if (command.Id == id)
+                {
+                    var result = await _mediator.Send(command);
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+
 
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult> DeleteLookup(Guid id)
@@ -88,6 +109,21 @@ namespace AppDiv.CRVS.API.Controllers
                 _Ilog.LogCritical(id.ToString());
                 string result = string.Empty;
                 result = await _mediator.Send(new DeleteWorkFlowCommad { Id = id });
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+        [HttpDelete("StepDelete/{id}")]
+        public async Task<ActionResult> DeleteStep(Guid id)
+        {
+            try
+            {
+                _Ilog.LogCritical(id.ToString());
+                string result = string.Empty;
+                result = await _mediator.Send(new DeleteStepCommand { Id = id });
                 return Ok(result);
             }
             catch (Exception exp)
