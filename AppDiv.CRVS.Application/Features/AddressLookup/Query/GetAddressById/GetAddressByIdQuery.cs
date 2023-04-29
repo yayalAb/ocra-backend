@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 {
     // Customer GetAddressByIdQuery with  response
-    public class GetAddressByIdQuery : IRequest<object>
+    public class GetAddressByIdQuery : IRequest<List<AddressDTO>>
     {
         public Guid Id { get; private set; }
 
@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 
     }
 
-    public class GetAddressByIdQueryHandler : IRequestHandler<GetAddressByIdQuery, object>
+    public class GetAddressByIdQueryHandler : IRequestHandler<GetAddressByIdQuery, List<AddressDTO>>
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
 
@@ -33,24 +33,11 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
         {
             _AddresslookupRepository = AddresslookupRepository;
         }
-        public async Task<object> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
+        public async Task<List<AddressDTO>> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
         {
-            // var selectedAddress = _AddresslookupRepository.GetAll().Where(x => x.Id == request.Id);
-
-
-
-            var selectedAddress = _AddresslookupRepository.GetAll().Where(x => x.Id == request.Id).Select(ad => new AddressDTO
-            {
-                id = ad.Id,
-                AddressName = ad.AddressName,
-                StatisticCode = ad.StatisticCode,
-                Code = ad.Code,
-                AdminLevel = ad.AdminLevel,
-                AreaTypeLookupId = ad.AreaTypeLookupId,
-                ParentAddressId = ad.AreaTypeLookupId,
-                ParentAddress = CustomMapper.Mapper.Map<AddressDTO>(ad.ParentAddress)
-            });
-            return CustomMapper.Mapper.Map<object>(selectedAddress);
+            var LookupList = await _AddresslookupRepository.GetAllAsync();
+            var lookups = CustomMapper.Mapper.Map<List<AddressDTO>>(LookupList.Where(x => x.Id == request.Id));
+            return lookups;
             // return selectedCustomer;
         }
     }
