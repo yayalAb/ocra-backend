@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
                     //removing file with the same id but different extension 
                     matchingFiles.ToList().ForEach(file => {
                         //TODO: delete the file
+                        System.IO.File.Delete(file);
                     });
                     var fileExtension = Path.GetExtension(file.FileName);
                     var fullPath = Path.Combine(pathToSave, fileName);
@@ -55,7 +56,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
             {
 
                 // Convert the Base64 string to a byte array.
-                string base64String = myString.Substring(base64String.IndexOf(',') + 1);
+                string myString = base64String.Substring(base64String.IndexOf(',') + 1);
                 byte[] bytes = Convert.FromBase64String(base64String);
                 var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
                 var fullPath = Path.Combine(pathToSave, fileName + extension);
