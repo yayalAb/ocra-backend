@@ -38,7 +38,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
                                  _workflowRepository.GetAll()
                                 .Select(wf => new GetAllWorkFlowDTO
                                 {
-                                    id = wf.workflow.Id,
+                                    id = wf.Id,
                                     workflowName = wf.workflow.workflowName,
                                     step = wf.step,
                                     ResiponsbleGroup = wf.UserGroup.GroupName != null ? wf.UserGroup.GroupName : "",
