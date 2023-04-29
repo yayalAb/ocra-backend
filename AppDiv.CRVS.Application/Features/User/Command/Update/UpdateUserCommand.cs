@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -11,6 +12,7 @@ using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.User.Command.Update
 {
@@ -19,7 +21,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public string Id { get; set; }
         public string UserName { get; set; }
         public string Email { get; set; }
-        public string UserImage { get; set; }
+        public string? UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }
     }
@@ -29,9 +31,12 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         private readonly IIdentityService _identityService;
         private readonly IGroupRepository _groupRepository;
         private readonly IFileService _fileService;
-        public UpdateUserCommandHandler(IIdentityService identityService, IGroupRepository groupRepository, IFileService fileService)
+        private readonly ILogger<UpdateUserCommandHandler> logger;
+
+        public UpdateUserCommandHandler(IIdentityService identityService, IGroupRepository groupRepository, IFileService fileService , ILogger<UpdateUserCommandHandler> logger)
         {
             this._fileService = fileService;
+            this.logger = logger;
             this._groupRepository = groupRepository;
             _identityService = identityService;
         }
@@ -73,8 +78,9 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 ContactInfo = contact
 
             };
-            var listGroup = new List<UserGroup>();
-            request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
+            var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
+
+            // request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
             //can use this instead of automapper
             var user = new ApplicationUser
             {
@@ -89,16 +95,18 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             try
             {
                 await _identityService.UpdateUserAsync(user);
+
                 var file = request.UserImage;
                 var folderName = Path.Combine("Resources", "UserProfiles");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 var fileName = request.Id;
+                logger.LogCritical(file);
 
                 _fileService.UploadBase64File(file, fileName, pathToSave, FileMode.Create);
             }
             catch (Exception exp)
             {
-                throw new ApplicationException(exp.Message);
+                throw new System.ApplicationException(exp.Message);
             }
 
             var modifiedUser = await _identityService.GetUserByIdAsync(request.Id);
