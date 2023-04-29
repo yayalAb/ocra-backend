@@ -1,4 +1,5 @@
 
+using System;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 // using AppDiv.CRVS.Application.Interfaces.Persistence;
@@ -49,10 +50,10 @@ namespace AppDiv.CRVS.Infrastructure.Services
             {
 
                 // Convert the Base64 string to a byte array.
+                string base64String = myString.Substring(base64String.IndexOf(',') + 1);
                 byte[] bytes = Convert.FromBase64String(base64String);
-                var extension = getFileExtension(bytes)?? ".png";
-
-                var fullPath = Path.Combine(pathToSave, fileName +extension);
+                var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
+                var fullPath = Path.Combine(pathToSave, fileName + extension);
                 File.WriteAllBytes(fullPath, bytes);
                 return true;
 
