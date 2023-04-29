@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<AddressDTO> Get(Guid id)
+        public async Task<object> Get(Guid id)
         {
             return await _mediator.Send(new GetAddressByIdQuery(id));
         }

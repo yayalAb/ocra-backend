@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
-    public partial class init : Migration
+    public partial class databaseUpdate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -175,7 +175,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     workflowName = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    DescreptionStr = table.Column<string>(type: "longtext", nullable: false)
+                    DescriptionStr = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -224,7 +224,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     Code = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
-                    AdminLevelLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AdminLevel = table.Column<int>(type: "int", nullable: false),
                     AreaTypeLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     ParentAddressId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -241,12 +241,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         principalTable: "Addresses",
                         principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Addresses_Lookups_AdminLevelLookupId",
-                        column: x => x.AdminLevelLookupId,
-                        principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_Addresses_Lookups_AreaTypeLookupId",
                         column: x => x.AreaTypeLookupId,
                         principalTable: "Lookups",
@@ -261,13 +255,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     step = table.Column<int>(type: "int", nullable: false),
-                    ResponsibleGroup = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    Payment = table.Column<float>(type: "float", nullable: false),
-                    Status = table.Column<float>(type: "float", nullable: false),
-                    DescreptionStr = table.Column<string>(type: "longtext", nullable: false)
+                    Payment = table.Column<decimal>(type: "decimal(65,30)", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    DescriptionStr = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     workflowId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    UserGroupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -277,9 +270,54 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     table.PrimaryKey("PK_Steps", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Steps_UserGroups_UserGroupId",
+                        column: x => x.UserGroupId,
+                        principalTable: "UserGroups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
                         name: "FK_Steps_Workflows_workflowId",
                         column: x => x.workflowId,
                         principalTable: "Workflows",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "PaymentRates",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PaymentTypeLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    EventLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AddressId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    Amount = table.Column<float>(type: "float", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentRates", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaymentRates_Addresses_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PaymentRates_Lookups_EventLookupId",
+                        column: x => x.EventLookupId,
+                        principalTable: "Lookups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PaymentRates_Lookups_PaymentTypeLookupId",
+                        column: x => x.PaymentTypeLookupId,
+                        principalTable: "Lookups",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 })
@@ -554,11 +592,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Addresses_AdminLevelLookupId",
-                table: "Addresses",
-                column: "AdminLevelLookupId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Addresses_AreaTypeLookupId",
                 table: "Addresses",
                 column: "AreaTypeLookupId");
@@ -616,6 +649,21 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_PaymentRates_AddressId",
+                table: "PaymentRates",
+                column: "AddressId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentRates_EventLookupId",
+                table: "PaymentRates",
+                column: "EventLookupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentRates_PaymentTypeLookupId",
+                table: "PaymentRates",
+                column: "PaymentTypeLookupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PersonalInfos_AddressId",
                 table: "PersonalInfos",
                 column: "AddressId");
@@ -671,6 +719,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 column: "TypeOfWorkLookupId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Steps_UserGroupId",
+                table: "Steps",
+                column: "UserGroupId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Steps_workflowId",
                 table: "Steps",
                 column: "workflowId");
@@ -703,19 +756,22 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "CertificateTemplates");
 
             migrationBuilder.DropTable(
+                name: "PaymentRates");
+
+            migrationBuilder.DropTable(
                 name: "Settings");
 
             migrationBuilder.DropTable(
                 name: "Steps");
 
             migrationBuilder.DropTable(
-                name: "UserGroups");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "UserGroups");
 
             migrationBuilder.DropTable(
                 name: "Workflows");

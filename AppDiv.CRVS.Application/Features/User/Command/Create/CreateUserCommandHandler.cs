@@ -75,8 +75,9 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                     CreatedAt = DateTime.Now
 
                 };
-                var listGroup = new List<UserGroup>();
-                request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetAsync(g)));
+                var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
+
+                // request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetAsync(g)));
                 //can use this instead of automapper
                 var user = new ApplicationUser
                 {

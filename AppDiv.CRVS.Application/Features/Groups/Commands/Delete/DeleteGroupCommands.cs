@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
                 throw (new ApplicationException(exp.Message));
             }
 
-            return "Lookup information has been deleted!";
+            return "Group  information has been deleted!";
         }
     }
 }

@@ -469,7 +469,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("DescreptionStr")
+                    b.Property<string>("DescriptionStr")
                         .IsRequired()
                         .HasColumnType("longtext");
 

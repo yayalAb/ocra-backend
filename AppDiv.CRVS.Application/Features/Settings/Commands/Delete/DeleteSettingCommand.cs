@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.create
                 throw (new ApplicationException(exp.Message));
             }
 
-            return "Lookup information has been deleted!";
+            return "Setting information has been deleted!";
         }
     }
 }

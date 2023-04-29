@@ -4,7 +4,7 @@
 
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
-    public partial class updateWorkflowStep : Migration
+    public partial class seeduser : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {

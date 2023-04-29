@@ -11,19 +11,19 @@ namespace AppDiv.CRVS.Domain.Entities
         public int step { get; set; }
         public decimal Payment { get; set; }
         public bool Status { get; set; }
-        public string DescreptionStr { get; set; }
+        public string DescriptionStr { get; set; }
 
         [NotMapped]
-        public JObject Descreption
+        public JObject Description
         {
 
             get
             {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(DescreptionStr) ? "{}" : DescreptionStr);
+                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(DescriptionStr) ? "{}" : DescriptionStr);
             }
             set
             {
-                DescreptionStr = value.ToString();
+                DescriptionStr = value.ToString();
             }
         }
         public Guid workflowId { get; set; }

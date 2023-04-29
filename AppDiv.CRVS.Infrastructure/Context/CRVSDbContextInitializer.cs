@@ -56,7 +56,7 @@ namespace AppDiv.CRVS.Infrastructure
 
         public async Task TrySeedAsync()
         {
-            // await SeedUser();
+            await SeedUser();
 
 
         }
@@ -161,7 +161,8 @@ namespace AppDiv.CRVS.Infrastructure
                         {"en","oromo"}
                       }
                     },
-                    ContactInfo = new ContactInfo{
+                    ContactInfo = new ContactInfo
+                    {
                         Email = "admin@gmail.com"
                     },
                     Address = new Address
@@ -184,7 +185,7 @@ namespace AppDiv.CRVS.Infrastructure
 
                 },
                 UserGroups = groups,
-                
+
 
             };
 

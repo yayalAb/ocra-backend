@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    [Migration("20230426125121_removeAdminstrativeLavellookup")]
-    partial class removeAdminstrativeLavellookup
+    [Migration("20230429075729_seeduser")]
+    partial class seeduser
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -109,7 +109,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<int>("AdminLevel")
                         .HasColumnType("int");
 
-                    b.Property<Guid>("AreaTypeLookupId")
+                    b.Property<Guid?>("AreaTypeLookupId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Code")
@@ -287,6 +288,50 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.ToTable("Lookups");
                 });
 
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<float>("Amount")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("EventLookupId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("PaymentTypeLookupId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
+
+                    b.HasIndex("EventLookupId");
+
+                    b.HasIndex("PaymentTypeLookupId");
+
+                    b.ToTable("PaymentRates");
+                });
+
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
                 {
                     b.Property<Guid>("Id")
@@ -426,7 +471,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("DescreptionStr")
+                    b.Property<string>("DescriptionStr")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -436,15 +481,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<float>("Payment")
-                        .HasColumnType("float");
+                    b.Property<decimal>("Payment")
+                        .HasColumnType("decimal(65,30)");
 
-                    b.Property<string>("ResponsibleGroup")
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid?>("UserGroupId")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<float>("Status")
-                        .HasColumnType("float");
+                        .HasColumnType("char(36)");
 
                     b.Property<int>("step")
                         .HasColumnType("int");
@@ -453,6 +498,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserGroupId");
 
                     b.HasIndex("workflowId");
 
@@ -505,7 +552,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<string>("DescreptionStr")
+                    b.Property<string>("DescriptionStr")
                         .IsRequired()
                         .HasColumnType("longtext");
 
@@ -695,6 +742,33 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("ParentAddress");
                 });
 
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
+                {
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
+                        .WithMany()
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "EventLookup")
+                        .WithMany()
+                        .HasForeignKey("EventLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "PaymentTypeLookup")
+                        .WithMany()
+                        .HasForeignKey("PaymentTypeLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
+
+                    b.Navigation("EventLookup");
+
+                    b.Navigation("PaymentTypeLookup");
+                });
+
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
@@ -774,11 +848,19 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Step", b =>
                 {
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.UserGroup", "UserGroup")
+                        .WithMany("Steps")
+                        .HasForeignKey("UserGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Workflow", "workflow")
                         .WithMany("Steps")
                         .HasForeignKey("workflowId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("UserGroup");
 
                     b.Navigation("workflow");
                 });
@@ -877,6 +959,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("PersonTitleNavigation");
 
                     b.Navigation("PersonTypeOfWorkNavigation");
+                });
+
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.UserGroup", b =>
+                {
+                    b.Navigation("Steps");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Workflow", b =>

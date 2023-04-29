@@ -34,16 +34,16 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
             return await PaginatedList<CountryDTO>
                             .CreateAsync(
                                  _AddresslookupRepository.GetAll()
-                                .Where(a => a.ParentAddress == null)
+                                .Where(a => a.AdminLevel == 1)
                                 .Select(c => new CountryDTO
-                                        {
-                                            Id = c.Id,
-                                            Country = c.AddressName.Value<string>("en"),
-                                            Code = c.Code,
-                                            StatisticCode = c.StatisticCode
-                                        }).ToList()
+                                {
+                                    Id = c.Id,
+                                    Country = c.AddressNameLang,
+                                    Code = c.Code,
+                                    StatisticCode = c.StatisticCode
+                                }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
 
         }
     }
-} 
+}

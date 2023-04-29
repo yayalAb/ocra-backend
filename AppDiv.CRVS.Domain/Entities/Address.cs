@@ -32,14 +32,14 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<Address> ChildAddresses { get; set; }
         public virtual ICollection<PersonalInfo> PersonalInfos { get; }
 
-        [NotMapped]
-        public string? AddressNameLang
-        {
-            get
-            {
-                return AddressName.Value<string>(lang);
-            }
-        }
+        // [NotMapped]
+        // public string? AddressNameLang
+        // {
+        //     get
+        //     {
+        //         return AddressName.Value<string>(lang);
+        //     }
+        // }
 
     }
 }

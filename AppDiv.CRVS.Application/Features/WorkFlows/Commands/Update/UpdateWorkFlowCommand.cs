@@ -41,6 +41,8 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
                 Description = request.Description,
                 Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.Steps)
             };
+            var Workflow1 = CustomMapper.Mapper.Map<ICollection<Step>>(request.Steps);
+
             try
             {
                 await _workflowRepository.UpdateAsync(WorkflowEntity, x => x.Id);

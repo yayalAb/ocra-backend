@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 {
     // Customer GetAddressByIdQuery with  response
-    public class GetAddressByIdQuery : IRequest<AddressDTO>
+    public class GetAddressByIdQuery : IRequest<object>
     {
         public Guid Id { get; private set; }
 
@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 
     }
 
-    public class GetAddressByIdQueryHandler : IRequestHandler<GetAddressByIdQuery, AddressDTO>
+    public class GetAddressByIdQueryHandler : IRequestHandler<GetAddressByIdQuery, object>
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
 
@@ -33,10 +33,24 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
         {
             _AddresslookupRepository = AddresslookupRepository;
         }
-        public async Task<AddressDTO> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
+        public async Task<object> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
         {
-            var selectedAddress = _AddresslookupRepository.GetAll().Where(x => x.Id == request.Id);
-            return CustomMapper.Mapper.Map<AddressDTO>(selectedAddress);
+            // var selectedAddress = _AddresslookupRepository.GetAll().Where(x => x.Id == request.Id);
+
+
+
+            var selectedAddress = _AddresslookupRepository.GetAll().Where(x => x.Id == request.Id).Select(ad => new AddressDTO
+            {
+                id = ad.Id,
+                AddressName = ad.AddressName,
+                StatisticCode = ad.StatisticCode,
+                Code = ad.Code,
+                AdminLevel = ad.AdminLevel,
+                AreaTypeLookupId = ad.AreaTypeLookupId,
+                ParentAddressId = ad.AreaTypeLookupId,
+                ParentAddress = CustomMapper.Mapper.Map<AddressDTO>(ad.ParentAddress)
+            });
+            return CustomMapper.Mapper.Map<object>(selectedAddress);
             // return selectedCustomer;
         }
     }
