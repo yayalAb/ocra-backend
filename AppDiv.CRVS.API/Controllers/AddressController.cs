@@ -35,9 +35,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<AddressDTO>> Get()
+        public async Task<List<AddressDTO>> Get([FromQuery] GetAllAddressQuery query)
         {
-            return await _mediator.Send(new GetAllAddressQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpPost("Create")]
@@ -115,41 +115,41 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Country")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<CountryDTO>> GetAllCountry()
+        public async Task<PaginatedList<CountryDTO>> GetAllCountry([FromQuery] GetAllCountryQuery query)
         {
-            return await _mediator.Send(new GetAllCountryQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpGet]
         [Route("Region")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<RegionDTO>> GetAllRegion()
+        public async Task<PaginatedList<RegionDTO>> GetAllRegion([FromQuery] GetAllRegionQuery query)
         {
-            return await _mediator.Send(new GetAllRegionQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpGet]
         [Route("Zone")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<ZoneDTO>> GetAllZone()
+        public async Task<PaginatedList<ZoneDTO>> GetAllZone([FromQuery] GetAllZoneQuery query)
         {
-            return await _mediator.Send(new GetAllZoneQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpGet]
         [Route("Woreda")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<WoredaDTO>> GetAllWoreda()
+        public async Task<PaginatedList<WoredaDTO>> GetAllWoreda([FromQuery] GetAllWoredaQuery query)
         {
-            return await _mediator.Send(new GetAllWoredaQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpGet]
         [Route("Kebele")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<KebeleDTO>> GetAllKebele()
+        public async Task<PaginatedList<KebeleDTO>> GetAllKebele([FromQuery] GetAllKebeleQuery query)
         {
-            return await _mediator.Send(new GetAllKebeleQuery());
+            return await _mediator.Send(query);
         }
 
     }

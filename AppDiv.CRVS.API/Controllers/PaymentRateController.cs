@@ -32,9 +32,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<FetchPaymentRateDTO>> Get()
+        public async Task<PaginatedList<FetchPaymentRateDTO>> Get([FromQuery] GetAllPaymentRateQuery query)
         {
-            return await Mediator.Send(new GetAllPaymentRateQuery());
+            return await Mediator.Send(query);
         }
 
         [HttpGet("{id}")]

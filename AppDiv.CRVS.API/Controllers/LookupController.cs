@@ -38,9 +38,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<LookupForGridDTO>> Get()
+        public async Task<PaginatedList<LookupForGridDTO>> Get([FromQuery] GetAllLookupQuery query)
         {
-            return await _mediator.Send(new GetAllLookupQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpPost("Create")]

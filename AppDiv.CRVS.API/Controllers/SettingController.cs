@@ -38,9 +38,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<SettingDTO>> Get()
+        public async Task<List<SettingDTO>> Get([FromQuery] GetAllSettingQuery query)
         {
-            return await _mediator.Send(new GetAllSettingQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpPost("Create")]

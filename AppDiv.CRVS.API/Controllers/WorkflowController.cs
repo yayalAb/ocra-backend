@@ -29,9 +29,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<GetAllWorkFlowDTO>> Get()
+        public async Task<PaginatedList<GetAllWorkFlowDTO>> Get([FromQuery] GetAllWorkFlowQuery query)
         {
-            return await _mediator.Send(new GetAllWorkFlowQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpPost("Create")]

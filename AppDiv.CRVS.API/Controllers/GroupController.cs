@@ -30,9 +30,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<FetchGroupDTO>> Get()
+        public async Task<PaginatedList<FetchGroupDTO>> Get([FromQuery] GetAllGroupQuery query)
         {
-            return await _mediator.Send(new GetAllGroupQuery());
+            return await _mediator.Send(query);
         }
         [HttpGet("lookup")]
         [ProducesResponseType(StatusCodes.Status200OK)]
