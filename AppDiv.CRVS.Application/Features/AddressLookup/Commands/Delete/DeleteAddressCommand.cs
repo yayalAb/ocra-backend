@@ -40,6 +40,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
             }
             var res = new BaseResponse
             {
+                Success = true,
                 Message = "Address information has been deleted!"
             };
 

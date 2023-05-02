@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Customers.Command.Create;
 using AppDiv.CRVS.Application.Features.Customers.Command.Delete;
@@ -81,17 +82,22 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult> DeleteSetting(Guid id)
+        public async Task<BaseResponse> DeleteSetting(Guid id)
         {
             try
             {
                 string result = string.Empty;
-                result = await _mediator.Send(new DeleteSettingCommand { Id = id });
-                return Ok(result);
+                return await _mediator.Send(new DeleteSettingCommand { Id = id });
+
             }
             catch (Exception exp)
             {
-                return BadRequest(exp.Message);
+                var res = new BaseResponse
+                {
+                    Success = false,
+                    Message = exp.Message
+                };
+                return res;
             }
         }
 

@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
@@ -10,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
 {
-    // Customer create command with string response
-    public class DeleteLookupCommand : IRequest<String>
+    // Customer create command with BaseResponse response
+    public class DeleteLookupCommand : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
 
@@ -21,8 +22,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
         // }
     }
 
-    // Customer delete command handler with string response as output
-    public class DeleteLookupCommandHandler : IRequestHandler<DeleteLookupCommand, String>
+    // Customer delete command handler with BaseResponse response as output
+    public class DeleteLookupCommandHandler : IRequestHandler<DeleteLookupCommand, BaseResponse>
     {
         private readonly ILookupRepository _lookupRepository;
         public DeleteLookupCommandHandler(ILookupRepository lookupRepository)
@@ -30,7 +31,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
             _lookupRepository = lookupRepository;
         }
 
-        public async Task<string> Handle(DeleteLookupCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteLookupCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -45,7 +46,14 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
                 throw (new ApplicationException(exp.Message));
             }
 
-            return "Lookup information has been deleted!";
+            var res = new BaseResponse
+            {
+                Success = true,
+                Message = "Lookup information has been deleted!"
+            };
+
+
+            return res;
         }
     }
 }

@@ -1,21 +1,9 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
-using AppDiv.CRVS.Application.Features.Customers.Command.Create;
-using AppDiv.CRVS.Application.Features.Customers.Command.Delete;
-using AppDiv.CRVS.Application.Features.Customers.Command.Update;
-using AppDiv.CRVS.Application.Features.Customers.Query;
-using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
-using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
-using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupById;
-using AppDiv.CRVS.Application.Features.Lookups.Command.Delete;
-using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Application.Features.Lookups.Command.Update;
-using AppDiv.CRVS.Application.Features.Lookups.Query.GetListOfLookup;
+
 using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey;
 using AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup;
 using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
 using AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById;
@@ -92,17 +80,21 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult> DeleteLookup(Guid id)
+        public async Task<BaseResponse> DeleteLookup(Guid id)
         {
             try
             {
                 string result = string.Empty;
-                result = await _mediator.Send(new DeleteGroupCommands { Id = id });
-                return Ok(result);
+                return await _mediator.Send(new DeleteGroupCommands { Id = id });
             }
             catch (Exception exp)
             {
-                return BadRequest(exp.Message);
+                var res = new BaseResponse
+                {
+                    Success = false,
+                    Message = exp.Message
+                };
+                return res;
             }
         }
 

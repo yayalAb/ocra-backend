@@ -87,7 +87,13 @@ namespace AppDiv.CRVS.API.Controllers
             }
             catch (Exception exp)
             {
-                return BadRequest(exp.Message);
+                var res = new BaseResponse
+                {
+                    Success = false,
+                    Message = exp.Message
+                };
+
+                return res;
             }
         }
         [HttpGet]

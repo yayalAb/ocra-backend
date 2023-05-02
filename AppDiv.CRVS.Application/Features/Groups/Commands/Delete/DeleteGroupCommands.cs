@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
@@ -11,14 +12,14 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
 {
     // Customer create command with UserGroup response
-    public class DeleteGroupCommands : IRequest<String>
+    public class DeleteGroupCommands : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
 
     }
 
     // Customer delete command handler with UserGroup response as output
-    public class DeleteGroupCommandsHandler : IRequestHandler<DeleteGroupCommands, String>
+    public class DeleteGroupCommandsHandler : IRequestHandler<DeleteGroupCommands, BaseResponse>
     {
         private readonly IGroupRepository _groupRepository;
         public DeleteGroupCommandsHandler(IGroupRepository groupRepository)
@@ -26,7 +27,7 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
             _groupRepository = groupRepository;
         }
 
-        public async Task<String> Handle(DeleteGroupCommands request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteGroupCommands request, CancellationToken cancellationToken)
         {
             try
             {
@@ -39,8 +40,12 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
             {
                 throw (new ApplicationException(exp.Message));
             }
-
-            return "Group  information has been deleted!";
+            var res = new BaseResponse
+            {
+                Success = true,
+                Message = "Group  information has been deleted!"
+            };
+            return res;
         }
     }
 }
