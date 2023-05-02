@@ -132,17 +132,17 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> ChangePassword(string email, string oldPassword, string newPassword)
+        public async Task<Result> ChangePassword(string userName, string oldPassword, string newPassword)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                return Result.Failure(new string[] { "could not find user with the given email" });
+                return Result.Failure(new string[] { "could not find user with the given username" });
             }
             var response = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
             if (!response.Succeeded)
             {
-                throw new Exception($"Change password failed! \n {response.Errors}");
+                throw new Exception($"Change password failed! ");
             }
             return Result.Success();
         }

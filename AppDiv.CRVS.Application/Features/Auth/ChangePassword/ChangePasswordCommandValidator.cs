@@ -6,10 +6,9 @@ namespace AppDiv.CRVS.Application.Features.Auth.ChangePassword
     {
         public ChangePasswordCommandValidator()
         {
-            RuleFor(u => u.Email)
+            RuleFor(u => u.UserName)
                 .NotEmpty()
-                .NotNull()
-                .EmailAddress();
+                .NotNull();
 
             RuleFor(u => u.NewPassword)
              .NotEmpty()

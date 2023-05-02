@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 
         Task<(Result result, string resetToken)> ForgotPassword(string? email, string? userName);
         Task<Result> ResetPassword(string? email, string? userName, string password, string token);
-        Task<Result> ChangePassword(string email, string oldPassword, string newPassword);
+        Task<Result> ChangePassword(string userName, string oldPassword, string newPassword);
         Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? opt, DateTime? otpExpiredDate);
         Task<Result> UpdateUserAsync(ApplicationUser user);
         IQueryable<ApplicationUser> AllUsers();
