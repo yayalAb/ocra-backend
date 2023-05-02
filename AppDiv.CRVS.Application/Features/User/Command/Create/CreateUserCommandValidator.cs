@@ -14,7 +14,20 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         public CreateUserCommandValidator(IIdentityService repo)
         {
             this._repo = repo;
-
+            RuleFor(u => u.UserName)
+            .NotNull()
+            .NotEmpty()
+            .MustAsync(BeUniqueUsername).WithMessage("userName already exists ")
+            .Matches("^[a-zA-Z0-9-._@+]+$").WithMessage("invalid user name:\n user name cannot have spaces or special characters except -._@+");
         }
+
+        private async Task<bool> BeUniqueUsername(string username, CancellationToken cancellationToken)
+        {
+            var user = await _repo.GetUserByName(username);
+
+            return user == null;
+        }
+
+
     }
 }
