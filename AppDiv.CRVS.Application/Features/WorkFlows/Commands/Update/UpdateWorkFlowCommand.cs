@@ -34,6 +34,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
         public async Task<WorkflowDTO> Handle(UpdateWorkFlowCommand request, CancellationToken cancellationToken)
         {
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request);
+
             Workflow WorkflowEntity = new Workflow
             {
                 Id = request.id,
@@ -44,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
 
             try
             {
-                await _workflowRepository.UpdateAsync(WorkflowEntity, x => x.Id);
+                _workflowRepository.Update(WorkflowEntity);
                 await _workflowRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
