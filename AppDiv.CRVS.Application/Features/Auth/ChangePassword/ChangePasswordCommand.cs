@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.ChangePassword
 {
     public record ChangePasswordCommand : IRequest<BaseResponse>
     {
-        public string Email { get; init; }
+        public string UserName { get; init; }
         public string OldPassword { get; init; }
         public string NewPassword { get; init; }
 
@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.ChangePassword
         }
         public async Task<BaseResponse> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
         {
-            var response = await _identityService.ChangePassword(request.Email, request.OldPassword, request.NewPassword);
+            var response = await _identityService.ChangePassword(request.UserName, request.OldPassword, request.NewPassword);
             if (!response.Succeeded)
             {
                 throw new BadRequestException($"could not change password {string.Join(",",response.Errors)}");

@@ -77,7 +77,9 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
             CreateMap<ApplicationUser, UserResponseDTO>().ReverseMap();
-            CreateMap<ApplicationUser, CreateUserCommand>().ReverseMap();
+            CreateMap<CreateUserCommand, ApplicationUser>()
+            .ForMember(x => x.UserGroups, opt => opt.Ignore())
+            .ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
 
             // CreateMap<ApplicationUser, FetchSingleUserResponseDTO>().ReverseMap();
