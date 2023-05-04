@@ -116,7 +116,7 @@ namespace AppDiv.CRVS.Domain.Entities
         [NotMapped]
         public string tihprop {get; set; }
 
-        public int MyPropedrtyss { get; set; }
+        public int vvvvvvv { get; set; }
         public int MyPropedrtdfyss { get; set; }
 
 
