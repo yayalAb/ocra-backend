@@ -113,17 +113,5 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual MarriageApplication MarriageApplicationBrideInfo { get; set; }
         public virtual MarriageApplication MarriageApplicationGroomInfo { get; set; }
         public virtual MarriageApplication MarriageApplicationCivilRegOfficer { get; set; }
-        [NotMapped]
-        public string tihprop { get; set; }
-
-        public int vvvvvvv { get; set; }
-        public int MyPropedrtdfyss { get; set; }
-        public int MyPropedrtyss12 { get; set; }
-        public int MyPropedrtdfyss12 { get; set; }
-
-
-
-
-
     }
 }
