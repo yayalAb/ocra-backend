@@ -1,6 +1,8 @@
+using AppDiv.CRVS.Domain.Base;
+
 namespace AppDiv.CRVS.Domain.Entities
 {
-    public class DivorceEvent
+    public class DivorceEvent : BaseAuditableEntity
     {
         public Guid DivorcedWifeId { get; set; }
         public DateTime DataOfMarriage { get; set; }
@@ -9,9 +11,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid CourtCaseId { get; set; }
         public int NumberChildren { get; set; }
         public Guid EventId { get; set; }
-
         public virtual PersonalInfo DivorcedWife { get; set; }
         public virtual CourtCase CourtCase { get; set; }
         public virtual Event Event { get; set; }
+
     }
 }
