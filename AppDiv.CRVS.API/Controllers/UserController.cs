@@ -36,9 +36,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<UserResponseDTO>> Get()
+        public async Task<PaginatedList<UserResponseDTO>> Get([FromQuery] GetAllUserQuery query)
         {
-            return await Mediator.Send(new GetAllUserQuery());
+            return await Mediator.Send(query);
         }
 
         [HttpGet("{id}")]

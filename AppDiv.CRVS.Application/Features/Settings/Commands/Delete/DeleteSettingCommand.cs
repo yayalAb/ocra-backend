@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
@@ -9,15 +10,15 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.Settings.create
 {
-    // Customer create command with string response
-    public class DeleteSettingCommand : IRequest<String>
+    // Customer create command with BaseResponse response
+    public class DeleteSettingCommand : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
 
     }
 
-    // Customer delete command handler with string response as output
-    public class DeleteSettingCommandHandler : IRequestHandler<DeleteSettingCommand, String>
+    // Customer delete command handler with BaseResponse response as output
+    public class DeleteSettingCommandHandler : IRequestHandler<DeleteSettingCommand, BaseResponse>
     {
         private readonly ISettingRepository _settingRepository;
         public DeleteSettingCommandHandler(ISettingRepository settingRepository)
@@ -25,7 +26,7 @@ namespace AppDiv.CRVS.Application.Features.Settings.create
             _settingRepository = settingRepository;
         }
 
-        public async Task<string> Handle(DeleteSettingCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteSettingCommand request, CancellationToken cancellationToken)
         {
             try
             {
@@ -39,7 +40,14 @@ namespace AppDiv.CRVS.Application.Features.Settings.create
                 throw (new ApplicationException(exp.Message));
             }
 
-            return "Setting information has been deleted!";
+            var res = new BaseResponse
+            {
+                Success = true,
+                Message = "Setting information has been deleted!"
+            };
+
+
+            return res;
         }
     }
 }

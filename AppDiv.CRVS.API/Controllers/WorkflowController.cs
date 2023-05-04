@@ -1,19 +1,11 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
-
-using AppDiv.CRVS.Application.Features.Lookups.Command.Update;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup;
-using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
-using AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById;
-using AppDiv.CRVS.Application.Features.Groups.Commands.Delete;
 using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow;
-using AppDiv.CRVS.Application.Features.Lookups.Command.Create;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create;
 using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetWorkFlowById;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update;
-using AppDiv.CRVS.Application.Features.Lookups.Command.Delete;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete;
 using AppDiv.CRVS.Application.Common;
 
@@ -37,9 +29,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<GetAllWorkFlowDTO>> Get()
+        public async Task<PaginatedList<GetAllWorkFlowDTO>> Get([FromQuery] GetAllWorkFlowQuery query)
         {
-            return await _mediator.Send(new GetAllWorkFlowQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpPost("Create")]
@@ -102,33 +94,38 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult> DeleteLookup(Guid id)
+        public async Task<BaseResponse> DeleteLookup(Guid id)
         {
             try
             {
                 _Ilog.LogCritical(id.ToString());
                 string result = string.Empty;
-                result = await _mediator.Send(new DeleteWorkFlowCommad { Id = id });
-                return Ok(result);
+                return await _mediator.Send(new DeleteWorkFlowCommad { Id = id });
+
             }
             catch (Exception exp)
             {
-                return BadRequest(exp.Message);
+                return new BaseResponse
+                {
+                    Message = exp.Message,
+                    Success = false
+                };
             }
         }
         [HttpDelete("StepDelete/{id}")]
-        public async Task<ActionResult> DeleteStep(Guid id)
+        public async Task<BaseResponse> DeleteStep(Guid id)
         {
             try
             {
-                _Ilog.LogCritical(id.ToString());
-                string result = string.Empty;
-                result = await _mediator.Send(new DeleteStepCommand { Id = id });
-                return Ok(result);
+                return await _mediator.Send(new DeleteStepCommand { Id = id });
             }
             catch (Exception exp)
             {
-                return BadRequest(exp.Message);
+                return new BaseResponse
+                {
+                    Message = exp.Message,
+                    Success = false
+                };
             }
         }
 

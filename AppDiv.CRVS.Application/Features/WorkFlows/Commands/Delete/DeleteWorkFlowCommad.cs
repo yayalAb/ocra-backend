@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
@@ -10,8 +11,8 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
 {
-    // Customer create command with string response
-    public class DeleteWorkFlowCommad : IRequest<String>
+    // Customer create command with BaseResponse response
+    public class DeleteWorkFlowCommad : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
         // public DeleteWorkFlowCommad(Guid id)
@@ -22,8 +23,8 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
 
     }
 
-    // Customer delete command handler with string response as output
-    public class DeleteWorkFlowCommadHandler : IRequestHandler<DeleteWorkFlowCommad, String>
+    // Customer delete command handler with BaseResponse response as output
+    public class DeleteWorkFlowCommadHandler : IRequestHandler<DeleteWorkFlowCommad, BaseResponse>
     {
         private readonly IWorkflowRepository _workflowRepository;
         private readonly ILogger<DeleteWorkFlowCommadHandler> _Ilog;
@@ -34,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
             _Ilog = Ilog;
         }
 
-        public async Task<string> Handle(DeleteWorkFlowCommad request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteWorkFlowCommad request, CancellationToken cancellationToken)
         {
             try
             {
@@ -48,8 +49,13 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
             {
                 throw (new ApplicationException(exp.Message));
             }
+            var res = new BaseResponse
+            {
+                Success = true,
+                Message = "Step information has been deleted!"
+            };
 
-            return "Workflow information has been deleted!";
+            return res;
         }
     }
 }

@@ -38,9 +38,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<LookupForGridDTO>> Get()
+        public async Task<PaginatedList<LookupForGridDTO>> Get([FromQuery] GetAllLookupQuery query)
         {
-            return await _mediator.Send(new GetAllLookupQuery());
+            return await _mediator.Send(query);
         }
 
         [HttpPost("Create")]
@@ -82,17 +82,21 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult> DeleteLookup(Guid id)
+        public async Task<BaseResponse> DeleteLookup(Guid id)
         {
             try
             {
                 string result = string.Empty;
-                result = await _mediator.Send(new DeleteLookupCommand { Id = id });
-                return Ok(result);
+                return await _mediator.Send(new DeleteLookupCommand { Id = id });
             }
             catch (Exception exp)
             {
-                return BadRequest(exp.Message);
+                var res = new BaseResponse
+                {
+                    Success = false,
+                    Message = exp.Message
+                };
+                return res;
             }
         }
 

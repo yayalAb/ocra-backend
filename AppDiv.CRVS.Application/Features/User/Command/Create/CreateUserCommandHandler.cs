@@ -1,4 +1,6 @@
+using System.Linq;
 using System.Net.Cache;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain;
@@ -85,9 +87,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 };
                 var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
 
-                // request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetAsync(g)));
-                //can use this instead of automapper
-                listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
+
                 var user = new ApplicationUser
                 {
                     UserName = request.UserName,
@@ -97,7 +97,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
 
                 };
                 var response = await _identityService.createUser(user);
-
+                if (!response.result.Succeeded)
+                {
+                    throw new BadRequestException($"could not create user \n{string.Join(",",response.result.Errors)}");
+                }
 
                 // save profile image
                 var file = request.UserImage;
