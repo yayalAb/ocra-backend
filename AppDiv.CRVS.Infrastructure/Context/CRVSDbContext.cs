@@ -68,6 +68,7 @@ namespace AppDiv.CRVS.Infrastructure
                 modelBuilder.ApplyConfiguration(new BirthEventEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new BirthNotficationEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new EventEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new DeathEventEntityConfiguration());
 
 
             }
