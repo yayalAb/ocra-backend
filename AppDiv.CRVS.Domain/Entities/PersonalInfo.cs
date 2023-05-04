@@ -109,6 +109,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public AdoptionEvent AdoptiveMotherNavigation { get; set; }
         public AdoptionEvent AdoptiveFatherNavigation { get; set; }
         public int MyProperty { get; set; }
+        public int MyPropertyss { get; set; }
 
 
 
