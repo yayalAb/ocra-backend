@@ -68,6 +68,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<Step, StepDTO>().ReverseMap();
             CreateMap<PaymentRate, PaymentRateDTO>().ReverseMap();
+            CreateMap<PaymentRate, AddPaymentRateRequest>().ReverseMap();
             CreateMap<PaymentRate, CreatePaymentRateCommand>().ReverseMap();
             CreateMap<PaymentRate, UpdatePaymentRateCommand>().ReverseMap();
 

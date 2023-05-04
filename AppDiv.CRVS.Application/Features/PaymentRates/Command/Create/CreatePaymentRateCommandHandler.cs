@@ -38,18 +38,9 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Create
             }
             if (createPaymentCommandResponse.Success)
             {
-                //can use this instead of automapper
-                var paymentRate = new PaymentRate()
-                {
-                    Id = Guid.NewGuid(),
-                    PaymentTypeLookupId = request.PaymentRate.PaymentTypeLookupId,
-                    EventLookupId = request.PaymentRate.EventLookupId,
-                    AddressId = request.PaymentRate.AddressId,
-                    Amount = request.PaymentRate.Amount,
-                    Status = request.PaymentRate.Status,
-                    CreatedAt = DateTime.Now
-                };
-                //
+
+                var paymentRate = CustomMapper.Mapper.Map<PaymentRate>(request.PaymentRate);
+
                 await _paymentRateRepository.InsertAsync(paymentRate, cancellationToken);
                 var result = await _paymentRateRepository.SaveChangesAsync(cancellationToken);
 
