@@ -28,6 +28,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual PaymentRequest EventPaymentRequest { get; set; }
         public virtual ICollection<Certificate> EventCertificates { get; set; }
 
+        public virtual MarriageEvent MarriageEvent { get; set; }
 
     }
 }

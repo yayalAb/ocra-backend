@@ -64,6 +64,15 @@ namespace AppDiv.CRVS.Infrastructure
                 modelBuilder.ApplyConfiguration(new PersonalInfoEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new LookupEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new AddressEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new MarriageEventEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new MarriageApplicationEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new WitnessEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new PaymentEntityConfiguration());
+
+                
+
+
+
                 modelBuilder.ApplyConfiguration(new AdoptionEventEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new BirthEventEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new BirthNotficationEntityConfiguration());

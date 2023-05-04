@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<BirthEvent> AddressBirthPlaceNavigation { get; set; }
         public AdoptionEvent BeforeAdoptionAddressNavigation { get; set; }
         public virtual Court CourtAddress { get; set; }
-
+        public virtual ICollection<MarriageApplication> MarriageApplications {get; set;}
 
         [NotMapped]
         public string? AddressNameLang
