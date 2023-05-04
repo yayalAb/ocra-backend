@@ -24,6 +24,10 @@ namespace AppDiv.CRVS.Domain.Configurations
                  .WithOne(n => n.AdoptionEventCourtCase)
                  .HasForeignKey<AdoptionEvent>(m => m.CourtCaseId);
 
+            builder.HasOne(m => m.Event)
+            .WithOne(n => n.AdoptionEvent)
+            .HasForeignKey<AdoptionEvent>(m => m.EventId);
+
         }
     }
 

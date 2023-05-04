@@ -15,9 +15,14 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.EventOwener)
                 .WithMany(n => n.Events)
                 .HasForeignKey(m => m.EventOwenerId);
+
             builder.HasOne(m => m.EventAddress)
                .WithMany(n => n.EventAddresses)
                .HasForeignKey(m => m.EventAddressId);
+
+            builder.HasOne(m => m.InformantTypeLookup)
+                .WithMany(n => n.EventInformantTypeNavigation)
+                .HasForeignKey(m => m.InformantTypeLookupId);
         }
     }
 
