@@ -96,10 +96,10 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup TypeOfWorkLookup { get; set; }
         public virtual Lookup MarraigeStatusLookup { get; set; }
         public virtual Lookup NationLookup { get; set; }
+        public virtual ContactInfo ContactInfo { get; set; }
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Event> EventCivilRegOfficers { get; set; }
         // public virtual ApplicationUser ApplicationUser { get; set; }
-        public virtual ContactInfo ContactInfo { get; set; }
         public virtual BirthEvent BirthFatherNavigation { get; set; }
         public virtual BirthEvent BirthMotherNavigation { get; set; }
         public virtual Registrar RegistrarPersonalInfoNavigation { get; set; }
@@ -108,8 +108,13 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public AdoptionEvent AdoptiveMotherNavigation { get; set; }
         public AdoptionEvent AdoptiveFatherNavigation { get; set; }
-        public int MyProperty { get; set; }
-        public int MyPropertyss { get; set; }
+        public virtual Witness Witness { get; set; }
+        public virtual MarriageEvent MarriageEventBrideInfo { get; set; }
+        public virtual MarriageApplication MarriageApplicationBrideInfo { get; set; }
+        public virtual MarriageApplication MarriageApplicationGroomInfo { get; set;}
+        public virtual MarriageApplication MarriageApplicationCivilRegOfficer { get; set;}
+        [NotMapped]
+        public string tihprop {get; set; }
 
         public int MyPropedrtyss { get; set; }
         public int MyPropedrtdfyss { get; set; }
