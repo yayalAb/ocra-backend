@@ -58,7 +58,7 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public virtual ICollection<DeathEvent> DeathFacilityTypeNavigation { get; set; }
         public virtual ICollection<DeathEvent> DeathFacilityNavigation { get; set; }
-        public virtual ICollection<DeathNotification> CouseOfDeathInfoTypeNavigation { get; set; }
+        public virtual ICollection<DeathNotification> CauseOfDeathInfoTypeNavigation { get; set; }
         // public virtual ICollection<PaymentRate> PaymentRateNationNavigation { get; set; }
         [NotMapped]
         public string? ValueLang
