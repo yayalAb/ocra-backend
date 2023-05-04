@@ -20,5 +20,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup InformantTypeLookup { get; set; }
         public virtual Registrar EventRegistrar { get; set; }
 
+        public virtual DeathEvent DeathEventNavigation { get; set; }
+        public virtual AdoptionEvent AdoptionEvent { get; set; }
+        public virtual DivorceEvent DivorceEvent { get; set; }
     }
 }
