@@ -48,13 +48,22 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<PersonalInfo> PersonTypeOfWorkNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonMarriageStatusNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonNationNavigation { get; set; }
+        public virtual ICollection<BirthEvent> BirthFacilityTypeNavigation { get; set; }
+        public virtual ICollection<BirthEvent> BirthFacilityNavigation { get; set; }
+        public virtual ICollection<BirthEvent> BirthTypeOfBirthNavigation { get; set; }
+        public virtual ICollection<Event> EventInformantTypeNavigation { get; set; }
+        public virtual ICollection<BirthNotification> DeliveryTypeNavigation { get; set; }
+        public virtual ICollection<BirthNotification> SkilledProfNavigation { get; set; }
+        public virtual ICollection<Registrar> RelationshipNavigation { get; set; }
         // public virtual ICollection<PaymentRate> PaymentRateNationNavigation { get; set; }
         [NotMapped]
-        public string? ValueLang {
-            get{
-                return Value.Value<string>(lang) ;
+        public string? ValueLang
+        {
+            get
+            {
+                return Value.Value<string>(lang);
             }
         }
 
-    }     
+    }
 }

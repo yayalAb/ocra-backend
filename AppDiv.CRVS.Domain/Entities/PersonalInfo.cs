@@ -96,8 +96,13 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup TypeOfWorkLookup { get; set; }
         public virtual Lookup MarraigeStatusLookup { get; set; }
         public virtual Lookup NationLookup { get; set; }
+        public virtual ICollection<Event> Events { get; set; }
+        public virtual ICollection<Event> EventCivilRegOfficers { get; set; }
         // public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual ContactInfo ContactInfo { get; set; }
+        public virtual BirthEvent BirthFather { get; set; }
+        public virtual BirthEvent BirthMother { get; set; }
+        public virtual Registrar RegistrarPersonalInfo { get; set; }
 
 
 

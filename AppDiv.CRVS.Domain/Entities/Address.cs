@@ -29,8 +29,11 @@ namespace AppDiv.CRVS.Domain.Entities
         // public virtual Lookup AdminLevelLookup { get; set; }
         public virtual Lookup AreaTypeLookup { get; set; }
         public virtual Address ParentAddress { get; set; }
+        public virtual ICollection<Event> EventAddresses { get; set; }
         public virtual ICollection<Address> ChildAddresses { get; set; }
         public virtual ICollection<PersonalInfo> PersonalInfos { get; }
+        public virtual ICollection<BirthEvent> AddressBirthPlaceNavigation { get; set; }
+
 
         [NotMapped]
         public string? AddressNameLang

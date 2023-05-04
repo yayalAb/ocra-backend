@@ -36,7 +36,8 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
         {
             try
             {
-
+                var workFlowEntity = await _stepRepository.GetAsync(request.Id);
+                // if(workFlowEntity.workflow.Id)
                 await _stepRepository.DeleteAsync(request.Id);
                 await _stepRepository.SaveChangesAsync(cancellationToken);
 
