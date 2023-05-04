@@ -112,6 +112,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public int MyPropertyss { get; set; }
 
         public int MyPropedrtyss { get; set; }
+        public int MyPropedrtdfyss { get; set; }
 
 
 
