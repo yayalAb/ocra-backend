@@ -41,11 +41,11 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
 
-        public Address BeforeAdoptionAddress { get; set; }
-        public PersonalInfo AdoptiveMother { get; set; }
+        public virtual Address BeforeAdoptionAddress { get; set; }
+        public virtual PersonalInfo AdoptiveMother { get; set; }
         public PersonalInfo AdoptiveFather { get; set; }
-        public CourtCase CourtCase { get; set; }
-        public Event Event { get; set; }
+        public virtual CourtCase CourtCase { get; set; }
+        public virtual Event Event { get; set; }
 
 
     }

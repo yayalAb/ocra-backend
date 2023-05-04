@@ -9,11 +9,12 @@ namespace AppDiv.CRVS.Domain.Entities
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
         public Guid EventAddressId { get; set; }
-        public Address EventAddress { get; set; }
+
         public Guid InformantTypeLookupId { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
         public bool IsCertified { get; set; } = false;
+        public virtual Address EventAddress { get; set; }
         public virtual PersonalInfo EventOwener { get; set; }
         public virtual PersonalInfo CivilRegOfficer { get; set; }
         public virtual BirthEvent BirthEvent { get; set; }
@@ -21,5 +22,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Registrar EventRegistrar { get; set; }
         public virtual AdoptionEvent AdoptionEvent { get; set; }
         public virtual DivorceEvent DivorceEvent { get; set; }
+        public virtual PaymentExamption EventPaymentExamptionNavigation { get; set; }
+        public virtual PaymentRequest EventPaymentRequest { get; set; }
     }
 }
