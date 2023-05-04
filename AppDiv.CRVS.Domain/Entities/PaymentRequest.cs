@@ -14,7 +14,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid PaymentId { get; set; }
 
         public virtual Event Event { get; set; }
-        public virtual PaymentRate Payment { get; set; }
+        public virtual PaymentRate PaymentRate { get; set; }
+        public virtual Payment Payment { get; set; }
 
 
         [NotMapped]
