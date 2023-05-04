@@ -50,7 +50,8 @@ namespace AppDiv.CRVS.Domain.Configuration
                .IsRequired(false);
             //    builder.HasOne(m => m.ContactInfo)
             //   .WithOne(n => n.PersonalInfo)
-            //   .HasForeignKey<PersonalInfo>(m => m.ContactInfoId);
+            //   .HasForeignKey<PersonalInfo>(m => m.ContactInfoId)
+            //   ;
 
 
         }

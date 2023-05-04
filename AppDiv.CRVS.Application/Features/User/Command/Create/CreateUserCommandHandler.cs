@@ -3,6 +3,7 @@ using System.Net.Cache;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
@@ -52,50 +53,13 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
             }
             if (CreateUserCommadResponse.Success)
             {
-                var contact = new ContactInfo
-                {
-                    Id = request.PersonalInfo.ContactInfo.Id,
-                    Email = request.Email,
-                    Phone = request.PersonalInfo.ContactInfo.Phone,
-                    HouseNumber = request.PersonalInfo.ContactInfo.HouseNo,
-                    Website = request.PersonalInfo.ContactInfo.Website,
-                    Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
-                    CreatedAt = DateTime.Now
-                };
-                // request.userImage
-                var person = new PersonalInfo
-                {
-                    Id = request.PersonalInfo.Id,
-                    FirstName = request.PersonalInfo.FirstName,
-                    MiddleName = request.PersonalInfo.MiddleName,
-                    LastName = request.PersonalInfo.LastName,
-                    BirthDate = request.PersonalInfo.BirthDate,
-                    NationalId = request.PersonalInfo.NationalId,
-                    NationalityLookupId = request.PersonalInfo.NationalityLookupId,
-                    SexLookupId = request.PersonalInfo.SexLookupId,
-                    PlaceOfBirthLookupId = request.PersonalInfo.PlaceOfBirthLookupId,
-                    EducationalStatusLookupId = request.PersonalInfo.EducationalStatusLookupId,
-                    TypeOfWorkLookupId = request.PersonalInfo.TypeOfWorkLookupId,
-                    MarriageStatusLookupId = request.PersonalInfo.MarriageStatusLookupId,
-                    AddressId = request.PersonalInfo.AddressId,
-                    NationLookupId = request.PersonalInfo.NationLookupId,
-                    TitleLookupId = request.PersonalInfo.TitleLookupId,
-                    ReligionLookupId = request.PersonalInfo.ReligionLookupId,
-                    ContactInfo = contact,
-                    CreatedAt = DateTime.Now
-
-                };
+           
                 var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
 
+              
+                var user =  CustomMapper.Mapper.Map<ApplicationUser>(request);
+                user.UserGroups = listGroup;
 
-                var user = new ApplicationUser
-                {
-                    UserName = request.UserName,
-                    Email = request.Email,
-                    UserGroups = listGroup,
-                    PersonalInfo = person,
-
-                };
                 var response = await _identityService.createUser(user);
                 if (!response.result.Succeeded)
                 {
