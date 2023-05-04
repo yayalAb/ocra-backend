@@ -33,6 +33,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<Address> ChildAddresses { get; set; }
         public virtual ICollection<PersonalInfo> PersonalInfos { get; }
         public virtual ICollection<BirthEvent> AddressBirthPlaceNavigation { get; set; }
+        public AdoptionEvent BeforeAdoptionAddress { get; set; }
+        public virtual Court CourtAddress { get; set; }
 
 
         [NotMapped]

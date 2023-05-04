@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<Workflow> Workflows { get; set; }
         public DbSet<Step> Steps { get; set; }
         public DbSet<PaymentRate> PaymentRates { get; set; }
-        public DbSet<DeathEvent> DeathEvents { get; set; }
+        // public DbSet<DeathEvent> DeathEvents { get; set; }
 
 
 

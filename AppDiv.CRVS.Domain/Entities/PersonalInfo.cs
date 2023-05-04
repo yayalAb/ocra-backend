@@ -104,6 +104,11 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual BirthEvent BirthMother { get; set; }
         public virtual Registrar RegistrarPersonalInfo { get; set; }
 
+        public virtual DivorceEvent DivorceWife { get; set; }
+
+        public AdoptionEvent AdoptiveMother { get; set; }
+        public AdoptionEvent AdoptiveFather { get; set; }
+
 
 
 
