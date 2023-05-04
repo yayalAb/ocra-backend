@@ -111,13 +111,13 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Witness Witness { get; set; }
         public virtual MarriageEvent MarriageEventBrideInfo { get; set; }
         public virtual MarriageApplication MarriageApplicationBrideInfo { get; set; }
-        public virtual MarriageApplication MarriageApplicationGroomInfo { get; set;}
-        public virtual MarriageApplication MarriageApplicationCivilRegOfficer { get; set;}
+        public virtual MarriageApplication MarriageApplicationGroomInfo { get; set; }
+        public virtual MarriageApplication MarriageApplicationCivilRegOfficer { get; set; }
         [NotMapped]
-        public string tihprop {get; set; }
+        public string tihprop { get; set; }
 
-        public int MyPropedrtyss { get; set; }
-        public int MyPropedrtdfyss { get; set; }
+        public int MyPropedrtyss12 { get; set; }
+        public int MyPropedrtdfyss12 { get; set; }
 
 
 
