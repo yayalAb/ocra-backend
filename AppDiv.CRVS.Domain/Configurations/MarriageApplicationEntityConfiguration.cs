@@ -25,10 +25,10 @@ namespace AppDiv.CRVS.Domain.Configuration
             //with personalInfo table
             builder.HasOne(m =>m.CivilRegOfficer)
             .WithOne(n => n.MarriageApplicationCivilRegOfficer )
-            .HasForeignKey<MarriageApplication>(m => m.GroomInfoId);            
+            .HasForeignKey<MarriageApplication>(m => m.CivilRegOfficerId);
 
 
-        
+
 
 
         }
