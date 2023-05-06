@@ -30,10 +30,37 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<AuditLog> AuditLogs { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<CertificateTemplate> CertificateTemplates { get; set; }
-
         public DbSet<Workflow> Workflows { get; set; }
         public DbSet<Step> Steps { get; set; }
+        
+        public DbSet<AdoptionEvent> AdoptionEvents { get; set; }
+        public DbSet<BirthEvent> birthEvents { get; set; }
+        public DbSet<BirthNotification> BirthNotifications { get; set; }
+        public DbSet<Certificate> Certificates { get; set; }
+        public DbSet<Court> Courts { get; set; }
+        public DbSet<CourtCase> CourtCases { get; set; }
+        public DbSet<DeathEvent> DeathEvents { get; set; }
+        public DbSet<DeathNotification> DeathNotifications { get; set; }
+        public DbSet<DivorceEvent> DivorceEvents { get; set; }
+        public DbSet<Event> Events { get; set; } 
         public DbSet<PaymentRate> PaymentRates { get; set; }
+        public DbSet<MarriageEvent> MarriageEvents { get; set; }
+        public DbSet<MarriageApplication> MarriageApplications { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<PaymentExamption> PaymentExamptions { get; set; }
+        public DbSet<PaymentExamptionRequest> PaymentExamptionRequests { get; set; }
+        public DbSet<PaymentRequest> PaymentRequests { get; set; }
+        public DbSet<Registrar> Registrars { get; set; }
+        public DbSet<SupportingDocument> SupportingDocuments { get; set; }
+        public DbSet<Witness> Witnesses { get; set; }
+
+
+        
+
+        
+
+
+
         // public DbSet<DeathEvent> DeathEvents { get; set; }
 
 
@@ -69,7 +96,7 @@ namespace AppDiv.CRVS.Infrastructure
                 modelBuilder.ApplyConfiguration(new WitnessEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new PaymentEntityConfiguration());
 
-                
+
 
 
 

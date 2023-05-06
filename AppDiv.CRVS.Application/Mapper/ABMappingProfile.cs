@@ -24,6 +24,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Features.PaymentRates.Command.Create;
 using AppDiv.CRVS.Application.Features.PaymentRates.Command.Update;
+using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -88,6 +89,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
+
+
+            CreateMap<CreateMarriageApplicationCommand, MarriageApplication>();
 
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
