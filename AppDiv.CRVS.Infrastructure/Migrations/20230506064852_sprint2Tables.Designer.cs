@@ -3,6 +3,7 @@ using System;
 using AppDiv.CRVS.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    partial class CRVSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230506064852_sprint2Tables")]
+    partial class sprint2Tables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1285,42 +1287,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.ToTable("Steps");
                 });
 
-            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.SupportingDocument", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("char(36)");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("DocumentUrl")
-                        .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<Guid>("EventId")
-                        .HasColumnType("char(36)");
-
-                    b.Property<DateTime>("ModifiedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<Guid?>("ModifiedBy")
-                        .HasColumnType("char(36)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EventId");
-
-                    b.ToTable("SupportingDocument");
-                });
-
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.UserGroup", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2138,17 +2104,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("workflow");
                 });
 
-            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.SupportingDocument", b =>
-                {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Event", "Event")
-                        .WithMany("EventSupportingDocuments")
-                        .HasForeignKey("EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Event");
-                });
-
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Witness", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.MarriageEvent", "MarriageEvent")
@@ -2298,8 +2253,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Navigation("EventRegistrar")
                         .IsRequired();
-
-                    b.Navigation("EventSupportingDocuments");
 
                     b.Navigation("MarriageEvent")
                         .IsRequired();

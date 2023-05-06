@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid EventId { get; set; }
         public float Amount { get; set; }
         public bool status { get; set; }
-        public Guid PaymentId { get; set; }
+        public Guid PaymentRateId { get; set; }
 
         public virtual Event Event { get; set; }
         public virtual PaymentRate PaymentRate { get; set; }
