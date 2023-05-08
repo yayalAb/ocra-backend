@@ -9,8 +9,8 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IMarriageApplicationRepository : IBaseRepository<MarriageApplication>
     {
-         public IQueryable<MarriageApplication> GetAllQueryableAsync();
-        
+        public IQueryable<MarriageApplication> GetAllQueryableAsync();
+        public void EFUpdate(MarriageApplication marriageApplication);
         public bool exists(Guid id);
     }
 }

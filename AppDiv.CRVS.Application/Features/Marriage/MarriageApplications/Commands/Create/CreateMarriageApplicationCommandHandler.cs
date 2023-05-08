@@ -25,6 +25,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
                 await _marriageApplicationRepository.InsertAsync(
                     CustomMapper.Mapper.Map<MarriageApplication>(request), 
                     cancellationToken);
+                await _marriageApplicationRepository.SaveChangesAsync(cancellationToken);
 
             }
             catch (System.Exception)

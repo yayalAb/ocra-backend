@@ -47,7 +47,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 Id = request.PersonalInfo.ContactInfo.Id,
                 Email = request.Email,
                 Phone = request.PersonalInfo.ContactInfo.Phone,
-                HouseNumber = request.PersonalInfo.ContactInfo.HouseNo,
+                HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
                 Website = request.PersonalInfo.ContactInfo.Website,
                 Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
                 ModifiedAt = DateTime.Now

@@ -9,15 +9,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.MarriageEvent.Command.Create
+namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 {
     // Customer create command with CustomerResponse
     public record CreateMarriageEventCommand(): IRequest<CreateMarriageEventCommandResponse>
     {
         public Guid MarriageTypeId { get; set; }
         public Guid ApplicationId { get; set; }
-        public virtual PersonalInfo BrideInfo { get; set; }
-        public virtual Event Event { get;set;}
-        public virtual ICollection<Witness> Witnesses { get; }
+        public virtual UpdatePersonalInfoRequest BrideInfo { get; set; }
+        public virtual AddEventRequest Event { get;set;}
+        public virtual ICollection<AddWitnessRequest> Witnesses { get; }
     }
     }

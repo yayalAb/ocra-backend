@@ -14,7 +14,13 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.Event)
                 .WithMany(n => n.EventSupportingDocuments)
-                .HasForeignKey(m => m.EventId);
+                .HasForeignKey(m => m.EventId)
+                .IsRequired(false);
+
+            builder.HasOne(m => m.PaymentExamption)
+                .WithMany(n => n.SupportingDocuments)
+                .HasForeignKey(m => m.PaymentExamptionId)
+                .IsRequired(false);
         }
     }
 }

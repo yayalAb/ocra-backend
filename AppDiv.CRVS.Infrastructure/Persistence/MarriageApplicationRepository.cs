@@ -16,12 +16,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return dbContext.MarriageApplications.AsQueryable();
         }
-        // public override Update(MarriageApplication marriageApplication)
-        // {
-        //     dbContext.MarriageApplications.Update(marriageApplication);
-        // }
-        public bool exists(Guid id){
-            return dbContext.MarriageApplications.Where(m =>m.Id == id).Any();
+        public void EFUpdate(MarriageApplication marriageApplication)
+        {
+            dbContext.MarriageApplications.Update(marriageApplication);
+        }
+        public bool exists(Guid id)
+        {
+            return dbContext.MarriageApplications.Where(m => m.Id == id).Any();
         }
     }
 }

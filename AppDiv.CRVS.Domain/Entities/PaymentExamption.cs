@@ -9,5 +9,6 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public virtual PaymentExamptionRequest ExamptionRequest { get; set; }
         public virtual Event Event { get; set; }
+        public virtual ICollection<SupportingDocument> SupportingDocuments { get; set; }
     }
 }

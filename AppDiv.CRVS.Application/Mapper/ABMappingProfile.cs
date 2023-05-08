@@ -25,6 +25,7 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Features.PaymentRates.Command.Create;
 using AppDiv.CRVS.Application.Features.PaymentRates.Command.Update;
 using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create;
+using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Update;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
 
@@ -90,6 +91,8 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();
+            CreateMap<PersonalInfo, UpdatePersonalInfoRequest>().ReverseMap();
+            CreateMap<ContactInfo, UpdateContactInfoRequest>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
 
             CreateMap<DeathEvent, DeathEventDTO>().ReverseMap();
@@ -129,8 +132,20 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestDTO>().ReverseMap();
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestRequest>().ReverseMap();
 
-            CreateMap<Registrar, AddRegistrarRequest>().ReverseMap();
-            // CreateMap<Registrar, RegistrarDTO>().ReverseMap();
+            CreateMap<CreateMarriageApplicationCommand, MarriageApplication>();
+            CreateMap<MarriageApplication, MarriageApplicationGridDTO>();
+            CreateMap<UpdateMarriageApplicationCommand, MarriageApplication>().ReverseMap();
+
+            CreateMap<AddEventRequest, Event>();
+            CreateMap<AddWitnessRequest, Witness>();
+            CreateMap<AddRegistrarRequest, Registrar>();
+            CreateMap<AddSupportingDocumentRequest, SupportingDocument>();
+            CreateMap<AddPaymentExamptionDTO, PaymentExamption>();
+
+
+
+
+
 
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 

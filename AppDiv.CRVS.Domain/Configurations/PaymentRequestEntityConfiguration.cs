@@ -13,7 +13,6 @@ namespace AppDiv.CRVS.Domain.Configuration
             builder.HasOne(m =>m.PaymentRate)
             .WithOne(n => n.PaymentRatePaymentRequest )
             .HasForeignKey<PaymentRequest>(m => m.PaymentRateId);
-
             
 
 

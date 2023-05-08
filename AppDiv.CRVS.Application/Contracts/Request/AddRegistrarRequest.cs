@@ -1,16 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AppDiv.CRVS.Domain.Entities;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class AddRegistrarRequest
     {
         public Guid RelationshipId { get; set; }
-        public Guid RegistrarInfoId { get; set; }
-        // public Guid EventId { get; set; }
-        // public virtual AddLookupRequest Relationship { get; set; }
-        public virtual AddPersonalInfoRequest RegistrarInfo { get; set; }
+        public virtual UpdatePersonalInfoRequest RegistrarInfo { get; set; }
+
+
+
     }
 }

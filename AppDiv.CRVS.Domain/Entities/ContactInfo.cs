@@ -1,13 +1,4 @@
 using AppDiv.CRVS.Domain.Base;
-using AppDiv.CRVS.Domain.Entities.Settings;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Domain.Entities
 {

@@ -7,10 +7,10 @@ using AppDiv.CRVS.Domain.Entities;
 
 namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
-    public interface IPersonalInfoRepository : IBaseRepository<PersonalInfo>
+    public interface IMarriageEventRepository : IBaseRepository<MarriageEvent>
     {
-        Task<IEnumerable<PersonalInfo>> GetAllAsync();
-        Task<PersonalInfo> GetByIdAsync(Guid id);
-         public void EFUpdate(PersonalInfo personalInfo);
+        public IQueryable<MarriageEvent> GetAllQueryableAsync();
+        public void EFUpdate(MarriageEvent marriageEvent);
+        public bool exists(Guid id);
     }
 }

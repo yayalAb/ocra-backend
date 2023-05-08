@@ -23,6 +23,10 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.InformantTypeLookup)
                 .WithMany(n => n.EventInformantTypeNavigation)
                 .HasForeignKey(m => m.InformantTypeLookupId);
+            builder.HasOne(m => m.PaymentExamption)
+            .WithOne(n => n.Event)
+            .HasForeignKey<PaymentExamption>(n => n.EventId);
+            
         }
     }
 

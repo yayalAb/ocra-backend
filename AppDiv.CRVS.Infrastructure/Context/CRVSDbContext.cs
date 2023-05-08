@@ -15,6 +15,7 @@ using AppDiv.CRVS.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using AppDiv.CRVS.Domain.Configuration;
 using AppDiv.CRVS.Domain.Configurations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure
 {

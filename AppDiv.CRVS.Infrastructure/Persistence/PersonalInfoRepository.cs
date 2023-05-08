@@ -9,9 +9,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class PersonalInfoRepository : BaseRepository<PersonalInfo>, IPersonalInfoRepository
     {
+        private readonly CRVSDbContext dbContext;
+
         public PersonalInfoRepository(CRVSDbContext dbContext) : base(dbContext)
         {
-
+            this.dbContext = dbContext;
         }
 
         public async Task<PersonalInfo> GetByIdAsync(Guid id)
@@ -24,6 +26,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             await base.InsertAsync(person, cancellationToken);
 
 
+        }
+        public void EFUpdate(PersonalInfo personalInfo)
+        {
+            dbContext.PersonalInfos.Update(personalInfo);
         }
     }
 }

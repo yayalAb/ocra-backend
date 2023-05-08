@@ -88,6 +88,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IPaymentExamptionRequestRepository, PaymentExamptionRequestRepository>();
 
             services.AddTransient<IMarriageApplicationRepository, MarriageApplicationRepository>();
+            services.AddTransient<IMarriageEventRepository, MarriageEventRepository>();
+
 
 
 

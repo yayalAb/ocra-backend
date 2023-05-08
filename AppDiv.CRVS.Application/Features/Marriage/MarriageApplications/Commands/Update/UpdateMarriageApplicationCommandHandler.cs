@@ -22,13 +22,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Update
         {
             try
             {
-               var marriageApplication = _marriageApplicationRepository.GetAsync(request.Id);
+            //    var marriageApplication = _marriageApplicationRepository.GetAsync(request.Id);
                if(!_marriageApplicationRepository.exists(request.Id)){
                 throw new NotFoundException($"marriage application with {request.Id} is not found");
                }
-                // await _marriageApplicationRepository.Update(
-                //     CustomMapper.Mapper.Map<MarriageApplication>(request)
-                //     );
+                 _marriageApplicationRepository.EFUpdate(CustomMapper.Mapper.Map<MarriageApplication>(request));
+                await _marriageApplicationRepository.SaveChangesAsync(cancellationToken);
 
             }
             catch (System.Exception)
