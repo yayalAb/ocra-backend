@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                 deathEvent.Event.EventType = "DeathEvent";
 
-                await _deathEventRepository.InsertAsync(deathEvent, cancellationToken);
+                await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
 
                 var files = request.DeathEvent.Event.Attachments.Select(doc => doc.FileStr).ToList();
@@ -61,7 +61,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                 {
                     string examptionPath = Path.Combine(pathToSave, "PaymentExamptions");
                     await _fileService.UploadBase64FileAsync(paymentExamption,
-                                                request.DeathEvent.Event.PaymentExamption.ExamptionRequestId.ToString(),
+                                                request.DeathEvent.Event.PaymentExamption.Id.ToString(),
                                                 examptionPath,
                                                 FileMode.Create);
                 }

@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
         public Guid EventAddressId { get; set; }
+        public Guid RegistrarInfoId { get; set; }
         public AddRegistrarRequest RegistrarInfo { get; set; }
         public AddPaymentExamptionRequest PaymentExamption { get; set; }
         public Guid InformantTypeLookupId { get; set; }

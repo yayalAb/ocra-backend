@@ -18,15 +18,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
     {
 
         public Guid Id { get; set; }
-        public string FacilityType { get; set; }
-        public string Facility { get; set; }
+        public Guid FacilityTypeId { get; set; }
+        public Guid FacilityId { get; set; }
         public string DuringDeath { get; set; }
         public string PlaceOfFuneral { get; set; }
         public AddDeathNotificationRequest DeathNotification { get; set; }
-        public AddPaymentExamptionRequest PaymentExamption { get; set; }
-        public AddPersonalInfoRequest RegistrarInfo { get; set; }
-        public AddEventRequest EventInfo { get; set; }
-        public ICollection<SupportingDocumentRequest> Attachments { get; set; }
+        public AddEventRequest Event { get; set; }
     }
 
     public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, DeathEventDTO>

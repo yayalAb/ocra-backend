@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 
         public SupportingDocumentRequest()
         {
-            this.Id = new Guid();
+            this.Id = Guid.NewGuid();
             this.DocumentUrl = "demo";
         }
     }

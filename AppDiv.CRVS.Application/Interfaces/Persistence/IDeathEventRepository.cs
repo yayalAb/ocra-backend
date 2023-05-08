@@ -10,5 +10,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface IDeathEventRepository : IBaseRepository<DeathEvent>
     {
         Task<DeathEvent> GetWithAsync(Guid id);
+        Task InsertOrUpdateAsync(DeathEvent entity, CancellationToken cancellationToken);
     }
 }
