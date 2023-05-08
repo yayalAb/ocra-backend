@@ -126,6 +126,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Certificate, CertificateDTO>().ReverseMap();
             CreateMap<Certificate, CertificateRequest>().ReverseMap();
 
+            CreateMap<PaymentExamptionRequest, PaymentExamptionRequestDTO>().ReverseMap();
+            CreateMap<PaymentExamptionRequest, PaymentExamptionRequestRequest>().ReverseMap();
+
             CreateMap<Registrar, AddRegistrarRequest>().ReverseMap();
             // CreateMap<Registrar, RegistrarDTO>().ReverseMap();
 
