@@ -102,7 +102,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 var fileName = request.Id;
                 logger.LogCritical(file);
 
-                _fileService.UploadBase64File(file, fileName, pathToSave, FileMode.Create);
+                await _fileService.UploadBase64FileAsync(file, fileName, pathToSave, FileMode.Create);
             }
             catch (Exception exp)
             {

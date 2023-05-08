@@ -24,6 +24,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Features.PaymentRates.Command.Create;
 using AppDiv.CRVS.Application.Features.PaymentRates.Command.Update;
+using AppDiv.CRVS.Application.Features.DeathEvents.Command.Create;
+using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -88,6 +90,41 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
+
+
+            CreateMap<DeathEvent, DeathEventDTO>().ReverseMap();
+            CreateMap<DeathEvent, AddDeathEventRequest>().ReverseMap();
+            CreateMap<DeathEvent, CreateDeathEventCommand>().ReverseMap();
+            CreateMap<DeathEvent, UpdateDeathEventCommand>().ReverseMap();
+
+            CreateMap<DeathNotification, AddDeathNotificationRequest>().ReverseMap();
+            CreateMap<DeathNotification, DeathNotificationDTO>().ReverseMap();
+
+            CreateMap<Event, EventDTO>()
+                .ForMember(dest => dest.PaymentExamption,
+                           opt => opt.MapFrom(src => src.EventPaymentExamptionNavigation))
+                .ForMember(dest => dest.Attachments,
+                           opt => opt.MapFrom(src => src.EventSupportingDocuments))
+                .ForMember(dest => dest.RegistrarInfo,
+                           opt => opt.MapFrom(src => src.EventRegistrar))
+                .ReverseMap();
+            CreateMap<Event, AddEventRequest>()
+                .ForMember(dest => dest.PaymentExamption,
+                           opt => opt.MapFrom(src => src.EventPaymentExamptionNavigation))
+                .ForMember(dest => dest.Attachments,
+                           opt => opt.MapFrom(src => src.EventSupportingDocuments))
+                .ForMember(dest => dest.RegistrarInfo,
+                           opt => opt.MapFrom(src => src.EventRegistrar))
+                .ReverseMap();
+
+            CreateMap<PaymentExamption, PaymentExamptionDTO>().ReverseMap();
+            CreateMap<PaymentExamption, AddPaymentExamptionRequest>().ReverseMap();
+
+            CreateMap<SupportingDocument, SupportingDocumentDTO>().ReverseMap();
+            CreateMap<SupportingDocument, SupportingDocumentRequest>().ReverseMap();
+
+            CreateMap<Registrar, AddRegistrarRequest>().ReverseMap();
+            // CreateMap<Registrar, RegistrarDTO>().ReverseMap();
 
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 

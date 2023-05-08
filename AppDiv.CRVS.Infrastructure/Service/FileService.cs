@@ -48,7 +48,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
 
         }
-        public bool UploadBase64File(string base64String, string fileName, string pathToSave, FileMode? fileMode = FileMode.Create)
+        public async Task<bool> UploadBase64FileAsync(string base64String, string fileName, string pathToSave, FileMode? fileMode = FileMode.Create)
         {
 
 
@@ -61,7 +61,38 @@ namespace AppDiv.CRVS.Infrastructure.Services
                 byte[] bytes = Convert.FromBase64String(myString);
                 var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
                 var fullPath = Path.Combine(pathToSave, fileName + extension);
-                File.WriteAllBytes(fullPath, bytes);
+                await File.WriteAllBytesAsync(fullPath, bytes);
+                return true;
+
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
+
+        }
+
+        public async Task<bool> UploadBase64FilesAsync(IList<string> base64Strings, IList<Guid> fileNames, string pathToSave, FileMode? fileMode = FileMode.Create)
+        {
+
+
+            try
+            {
+                //    _logger.LogCritical(myString);
+                var count = 0;
+                foreach (var file in base64Strings)
+                {
+                    // exclude unwanted characters
+                    // string myString = file.Substring(file.IndexOf(',') + 1);
+                    // // Convert the Base64 string to a byte array.
+                    // byte[] bytes = Convert.FromBase64String(file);
+                    // var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
+                    // var fullPath = Path.Combine(pathToSave, $"{fileNames[count++]}{extension}");
+                    // await File.WriteAllBytesAsync(fullPath, bytes);
+                    await UploadBase64FileAsync(file, fileNames[count++].ToString(), pathToSave, FileMode.Create);
+
+                }
                 return true;
 
             }
