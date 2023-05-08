@@ -8,8 +8,10 @@ using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.Request
 {
-    public record AddPersonalInfoRequest
+    public record UpdatePersonalInfoRequest
     {
+        public Guid Id { get; set; }
+
         public JObject FirstName { get; set; }
         public JObject MiddleName { get; set; }
         public JObject? LastName { get; set; }
@@ -25,6 +27,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid MarriageStatusLookupId { get; set; }
         public Guid AddressId { get; set; }
         public Guid? NationLookupId { get; set; }
-        public AddContactInfoRequest ContactInfo { get; set; }
+        public UpdateContactInfoRequest ContactInfo { get; set; }
     }
 }

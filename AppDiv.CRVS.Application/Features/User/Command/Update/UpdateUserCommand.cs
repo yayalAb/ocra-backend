@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public string Email { get; set; }
         public string? UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
-        public AddPersonalInfoRequest PersonalInfo { get; set; }
+        public UpdatePersonalInfoRequest PersonalInfo { get; set; }
     }
 
     public class UpdateUserCommandHandler : IRequestHandler<UpdateUserCommand, UserResponseDTO>
