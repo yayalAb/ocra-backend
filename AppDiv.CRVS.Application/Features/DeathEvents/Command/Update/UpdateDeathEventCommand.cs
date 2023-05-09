@@ -37,18 +37,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
         {
             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
 
-            // var deathEvent = new DeathEvent()
-            // {
-            //     Id = request.Id,
-            //     // PaymentTypeLookupId = request.PaymentTypeLookupId,
-            //     // EventLookupId = request.EventLookupId,
-            //     // AddressId = request.AddressId,
-            //     // Amount = request.Amount,
-            //     // Status = request.Status,
-            //     // ModifiedAt = DateTime.Now
-            // };
-
-
             try
             {
                 await _deathEventRepository.UpdateAsync(deathEvent, x => x.Id);

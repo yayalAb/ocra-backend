@@ -49,22 +49,29 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                 await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
 
-                var files = request.DeathEvent.Event.Attachments.Select(doc => doc.FileStr).ToList();
-                var fileNames = request.DeathEvent.Event.Attachments.Select(doc => doc.Id).ToList();
+                var files = request.DeathEvent.Event.EventSupportingDocuments.Select(doc => doc.base64String).ToList();
+                var fileNames = request.DeathEvent.Event.EventSupportingDocuments.Select(doc => doc.Id).ToList();
                 var folderName = Path.Combine("Resources", "SupportingDocuments", "DeathEvents");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-                await _fileService.UploadBase64FilesAsync(files, fileNames, pathToSave, FileMode.Create);
+                // await _fileService.UploadBase64FilesAsync(files, fileNames, pathToSave, FileMode.Create);
 
-                var paymentExamption = request.DeathEvent.Event.PaymentExamption.Document;
-                if (paymentExamption != null)
-                {
-                    string examptionPath = Path.Combine(pathToSave, "PaymentExamptions");
-                    await _fileService.UploadBase64FileAsync(paymentExamption,
-                                                request.DeathEvent.Event.PaymentExamption.Id.ToString(),
-                                                examptionPath,
-                                                FileMode.Create);
-                }
+                var paymentExamption = request.DeathEvent.Event.PaymentExamption.SupportingDocuments.Select(doc => doc.base64String).ToList();
+                var paymentExamptionIds = request.DeathEvent.Event.PaymentExamption.SupportingDocuments.Select(doc => doc.Id).ToList();
+                // await _fileService.UploadBase64FilesAsync(paymentExamption, paymentExamptionIds, pathToSave, FileMode.Create);
+
+                var allDocs = files.Concat(paymentExamption).ToList();
+                var allNames = fileNames.Concat(paymentExamptionIds).ToList();
+                await _fileService.UploadBase64FilesAsync(allDocs, allNames, pathToSave, FileMode.Create);
+
+                // if (paymentExamption != null)
+                // {
+                //     string examptionPath = Path.Combine(pathToSave, "PaymentExamptions");
+                //     await _fileService.UploadBase64FileAsync(paymentExamption,
+                //                                 request.DeathEvent.Event.EventPaymentExamptionNavigation.Id.ToString(),
+                //                                 examptionPath,
+                //                                 FileMode.Create);
+                // }
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
                 // createCustomerCommandResponse.Customer = customerResponse;          
             }

@@ -69,11 +69,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
             eventSupportingDocuments.ToList().ForEach(doc =>
             {
-                _fileService.UploadBase64File(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
+                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
             });
             examptionSupportingDocuments.ToList().ForEach(doc =>
             {
-                _fileService.UploadBase64File(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
+                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
             });
 
             return new CreateMarriageEventCommandResponse{Message = "Marriage Event created Successfully"};
