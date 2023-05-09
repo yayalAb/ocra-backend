@@ -21,7 +21,7 @@ namespace AppDiv.CRVS.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
             services.AddScoped<IIdentityService, IdentityService>();
-  
+            services.AddScoped<IEventDocumentService , EventDocumentService>();
 
 
             return services;

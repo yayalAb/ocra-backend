@@ -3,8 +3,9 @@ using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.Request
 {
-    public class AddEventRequest
+    public class UpdateEventRequest
     {
+        public Guid Id { get; set; }
         public string EventType { get; set; }
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
@@ -14,9 +15,9 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
          public  UpdatePersonalInfoRequest EventOwener { get; set; }
-        public  AddRegistrarRequest EventRegistrar { get; set; }
-        public  ICollection<AddSupportingDocumentRequest> EventSupportingDocuments { get; set; }
-        public AddPaymentExamptionRequest? PaymentExamption { get; set; }
+        public  UpdateRegistrarRequest EventRegistrar { get; set; }
+        public  ICollection<UpdateSupportingDocumentRequest> EventSupportingDocuments { get; set; }
+        public UpdatePaymentExamptionRequest PaymentExamption { get; set; }
         
 
 

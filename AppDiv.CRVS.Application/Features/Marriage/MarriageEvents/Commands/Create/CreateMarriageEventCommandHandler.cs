@@ -45,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 marriageEvent.Event.EventRegistrar.RegistrarInfo = null;
             }
 
-            marriageEvent.Witnesses.ToList().ForEach(async witness =>
+            marriageEvent.Witnesses?.ToList().ForEach(async witness =>
             {
                 if (witness.WitnessPersonalInfo.Id != null)
                 {
@@ -60,18 +60,18 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
 
             var eventSupportingDocuments = marriageEvent.Event.EventSupportingDocuments;
-            var examptionSupportingDocuments = marriageEvent.Event.PaymentExamption.SupportingDocuments;
+            var examptionSupportingDocuments = marriageEvent.Event.PaymentExamption?.SupportingDocuments;
             var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", "Marriage");
             var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", "Marriage");
             var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
             var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
 
 
-            eventSupportingDocuments.ToList().ForEach(doc =>
+            eventSupportingDocuments?.ToList().ForEach(doc =>
             {
                 _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
             });
-            examptionSupportingDocuments.ToList().ForEach(doc =>
+            examptionSupportingDocuments?.ToList().ForEach(doc =>
             {
                 _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
             });
