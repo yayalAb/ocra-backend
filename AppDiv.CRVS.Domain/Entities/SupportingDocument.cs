@@ -20,5 +20,10 @@ namespace AppDiv.CRVS.Domain.Entities
 
         [NotMapped] 
         public string base64String { get; set; }
+
+        public SupportingDocument()
+        {
+            this.DocumentUrl = "Url";
+        }
     }
 }

@@ -94,6 +94,7 @@ namespace AppDiv.CRVS.Infrastructure
 
 
             services.AddTransient<IDeathEventRepository, DeathEventRepository>();
+            services.AddTransient<IBirthEventRepository, BirthEventRepository>();
 
 
             services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();

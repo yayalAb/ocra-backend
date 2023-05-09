@@ -92,6 +92,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();
             CreateMap<PersonalInfo, UpdatePersonalInfoRequest>().ReverseMap();
+            CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
             CreateMap<ContactInfo, UpdateContactInfoRequest>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
 
@@ -103,22 +104,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<DeathNotification, AddDeathNotificationRequest>().ReverseMap();
             CreateMap<DeathNotification, DeathNotificationDTO>().ReverseMap();
 
-            CreateMap<Event, EventDTO>()
-                .ForMember(dest => dest.PaymentExamption,
-                           opt => opt.MapFrom(src => src.EventPaymentExamptionNavigation))
-                .ForMember(dest => dest.Attachments,
-                           opt => opt.MapFrom(src => src.EventSupportingDocuments))
-                .ForMember(dest => dest.RegistrarInfo,
-                           opt => opt.MapFrom(src => src.EventRegistrar))
-                .ReverseMap();
-            CreateMap<Event, AddEventRequest>()
-                .ForMember(dest => dest.PaymentExamption,
-                           opt => opt.MapFrom(src => src.EventPaymentExamptionNavigation))
-                .ForMember(dest => dest.Attachments,
-                           opt => opt.MapFrom(src => src.EventSupportingDocuments))
-                .ForMember(dest => dest.RegistrarInfo,
-                           opt => opt.MapFrom(src => src.EventRegistrar))
-                .ReverseMap();
+            CreateMap<Event, EventDTO>().ReverseMap();
+            CreateMap<Event, AddEventRequest>().ReverseMap();
 
             CreateMap<PaymentExamption, PaymentExamptionDTO>().ReverseMap();
             CreateMap<PaymentExamption, AddPaymentExamptionRequest>().ReverseMap();
@@ -141,6 +128,11 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddRegistrarRequest, Registrar>();
             CreateMap<AddSupportingDocumentRequest, SupportingDocument>();
             CreateMap<AddPaymentExamptionDTO, PaymentExamption>();
+            CreateMap<BirthEvent, AddBirthEventRequest>().ReverseMap();
+            CreateMap<BirthEvent, BirthEventDTO>().ReverseMap();
+
+            CreateMap<BirthNotification, AddBirthNotificationRequest>().ReverseMap();
+            CreateMap<BirthNotification, BirthNotificationDTO>().ReverseMap();
 
 
 
