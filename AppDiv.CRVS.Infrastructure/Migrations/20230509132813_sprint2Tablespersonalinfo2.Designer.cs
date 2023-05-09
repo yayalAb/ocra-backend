@@ -3,6 +3,7 @@ using System;
 using AppDiv.CRVS.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    partial class CRVSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230509132813_sprint2Tablespersonalinfo2")]
+    partial class sprint2Tablespersonalinfo2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,11 +152,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("AdoptiveFatherId")
-                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("AdoptiveMotherId")
-                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("ApprovedNameStr")
@@ -165,7 +165,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("CourtCaseId")
-                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -175,7 +174,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("EventId")
-                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -1610,33 +1608,23 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "AdoptiveFather")
                         .WithOne("AdoptiveFatherNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "AdoptiveFatherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "AdoptiveFatherId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "AdoptiveMother")
                         .WithOne("AdoptiveMotherNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "AdoptiveMotherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "AdoptiveMotherId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "BeforeAdoptionAddress")
                         .WithOne("BeforeAdoptionAddressNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "BeforeAdoptionAddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "BeforeAdoptionAddressId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.CourtCase", "CourtCase")
                         .WithOne("AdoptionEventCourtCase")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "CourtCaseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "CourtCaseId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Event", "Event")
                         .WithOne("AdoptionEvent")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "EventId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "EventId");
 
                     b.Navigation("AdoptiveFather");
 

@@ -9,23 +9,23 @@ namespace AppDiv.CRVS.Domain.Entities
     public class PersonalInfo : BaseAuditableEntity
     {
         public string FirstNameStr { get; set; }
-        public string MiddleNameStr { get; set; }
+        public string? MiddleNameStr { get; set; }
         public string? LastNameStr { get; set; }
         public DateTime? BirthDate { get; set; }
-        public string NationalId { get; set; }
+        public string? NationalId { get; set; }
         public Guid SexLookupId { get; set; }
         public Guid? PlaceOfBirthLookupId { get; set; }
-        public Guid NationalityLookupId { get; set; }
+        public Guid? NationalityLookupId { get; set; }
         public Guid? TitleLookupId { get; set; }
         public Guid? ReligionLookupId { get; set; }
         public Guid? EducationalStatusLookupId { get; set; }
         public Guid? TypeOfWorkLookupId { get; set; }
-        public Guid MarriageStatusLookupId { get; set; }
-        public Guid AddressId { get; set; }
+        public Guid? MarriageStatusLookupId { get; set; }
+        public Guid? AddressId { get; set; }
         public Guid? NationLookupId { get; set; }
-        public Guid ContactInfoId { get; set; }
+        public Guid? ContactInfoId { get; set; }
         [NotMapped]
-        public JObject FirstName
+        public JObject? FirstName
         {
             get
             {
@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
         [NotMapped]
-        public JObject MiddleName
+        public JObject? MiddleName
         {
             get
             {
@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
         [NotMapped]
-        public JObject LastName
+        public JObject? LastName
         {
             get
             {
@@ -111,8 +111,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Witness Witness { get; set; }
         public virtual MarriageEvent MarriageEventBrideInfo { get; set; }
         public virtual MarriageApplication MarriageApplicationBrideInfo { get; set; }
-        public virtual MarriageApplication MarriageApplicationGroomInfo { get; set;}
-        public virtual MarriageApplication MarriageApplicationCivilRegOfficer { get; set;}
+        public virtual MarriageApplication MarriageApplicationGroomInfo { get; set; }
+        public virtual MarriageApplication MarriageApplicationCivilRegOfficer { get; set; }
 
 
 

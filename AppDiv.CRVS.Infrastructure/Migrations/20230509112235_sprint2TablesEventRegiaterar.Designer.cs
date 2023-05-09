@@ -3,6 +3,7 @@ using System;
 using AppDiv.CRVS.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    partial class CRVSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230509112235_sprint2TablesEventRegiaterar")]
+    partial class sprint2TablesEventRegiaterar
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -149,12 +151,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("AdoptiveFatherId")
-                        .IsRequired()
+                    b.Property<Guid>("AdoptiveFatherId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("AdoptiveMotherId")
-                        .IsRequired()
+                    b.Property<Guid>("AdoptiveMotherId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("ApprovedNameStr")
@@ -164,8 +164,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("BeforeAdoptionAddressId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("CourtCaseId")
-                        .IsRequired()
+                    b.Property<Guid>("CourtCaseId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -174,8 +173,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("EventId")
-                        .IsRequired()
+                    b.Property<Guid>("EventId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -1081,13 +1079,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid?>("AddressId")
+                    b.Property<Guid>("AddressId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid?>("ContactInfoId")
+                    b.Property<Guid>("ContactInfoId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1106,10 +1104,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<string>("LastNameStr")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("MarriageStatusLookupId")
+                    b.Property<Guid>("MarriageStatusLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("MiddleNameStr")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -1122,9 +1121,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("NationalId")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid?>("NationalityLookupId")
+                    b.Property<Guid>("NationalityLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("PlaceOfBirthLookupId")
@@ -2030,11 +2030,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
                         .WithMany("PersonalInfos")
-                        .HasForeignKey("AddressId");
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.ContactInfo", "ContactInfo")
                         .WithMany()
-                        .HasForeignKey("ContactInfoId");
+                        .HasForeignKey("ContactInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "EducationalStatusLookup")
                         .WithMany("PersonEducationalStatusNavigation")
@@ -2050,7 +2054,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "NationalityLookup")
                         .WithMany("PersonNationalityNavigation")
-                        .HasForeignKey("NationalityLookupId");
+                        .HasForeignKey("NationalityLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "PlaceOfBirthLookup")
                         .WithMany("PersonPlaceOfBirthNavigation")
@@ -2062,7 +2068,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "SexLookup")
                         .WithMany("PersonSexNavigation")
-                        .HasForeignKey("SexLookupId");
+                        .HasForeignKey("SexLookupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "TitleLookup")
                         .WithMany("PersonTitleNavigation")
