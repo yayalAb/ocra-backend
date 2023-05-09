@@ -13,6 +13,6 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup MarriageType { get; set; }
         public virtual Event Event { get;set;}
         public virtual MarriageApplication Application {get; set; }
-        public virtual ICollection<Witness> Witnesses { get; }
+        public virtual ICollection<Witness> Witnesses { get; set;}
     }
 }
