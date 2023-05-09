@@ -92,7 +92,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();
             CreateMap<PersonalInfo, UpdatePersonalInfoRequest>().ReverseMap();
-            CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
+            // CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
             CreateMap<ContactInfo, UpdateContactInfoRequest>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
 

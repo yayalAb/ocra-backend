@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Domain.Entities;
+using Application.Common.Mappings;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
-    public class MarriageApplicationGridDTO
+    public class MarriageApplicationGridDTO :IMapFrom<MarriageApplication>
     {
         public Guid Id { get; set; }
         public DateTime ApplicationDate { get; set; }
