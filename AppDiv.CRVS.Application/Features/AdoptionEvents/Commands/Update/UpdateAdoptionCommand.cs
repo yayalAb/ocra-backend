@@ -46,27 +46,31 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
     }
     public async Task<UpdateAdoptionCommandResponse> Handle(UpdateAdoptionCommand request, CancellationToken cancellationToken)
     {
-        var marriageEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
-        await _adoptionEventRepository.UpdateAsync(marriageEvent, x => x.Id);
-        await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
-
-        var eventSupportingDocuments = marriageEvent.Event.EventSupportingDocuments;
-        var examptionSupportingDocuments = marriageEvent.Event.PaymentExamption.SupportingDocuments;
-        var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", "Adoption");
-        var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", "Adoption");
-        var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
-        var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
-
-
-        eventSupportingDocuments.ToList().ForEach(doc =>
+        try
         {
-            _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
-        });
-        examptionSupportingDocuments.ToList().ForEach(doc =>
-        {
-            _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
-        });
+            var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
+            await _adoptionEventRepository.UpdateAsync(adoptionEvent, x => x.Id);
+            await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+            var eventSupportingDocuments = adoptionEvent.Event.EventSupportingDocuments;
+            var examptionSupportingDocuments = adoptionEvent.Event.PaymentExamption.SupportingDocuments;
+            var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", "Adoption");
+            var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", "Adoption");
+            var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
+            var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
+            eventSupportingDocuments.ToList().ForEach(doc =>
+            {
+                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
+            });
+            examptionSupportingDocuments.ToList().ForEach(doc =>
+            {
+                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
+            });
+            return new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
 
-        return new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
+        }
+        catch (Exception ex)
+        {
+            return new UpdateAdoptionCommandResponse { Message = ex.Message };
+        }
     }
 }

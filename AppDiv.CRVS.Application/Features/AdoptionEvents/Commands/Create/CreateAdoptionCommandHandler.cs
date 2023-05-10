@@ -30,49 +30,55 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
-            var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
-
-
-            // if (adoptionEvent.AdoptiveFather.Id != null && adoptionEvent.AdoptiveFather.Id != Guid.Empty)
-            // {
-            //     _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.AdoptiveFather));
-            //     adoptionEvent.AdoptiveFatherId = adoptionEvent.AdoptiveFather.Id;
-            //     adoptionEvent.AdoptiveFather = null;
-            // }
-            // if (adoptionEvent.Event.EventOwener.Id != null && adoptionEvent.Event.EventOwener.Id != Guid.Empty)
-            // {
-            //     _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.Event.EventOwener));
-            //     adoptionEvent.Event.EventOwenerId = adoptionEvent.Event.EventOwener.Id;
-            //     adoptionEvent.Event.EventOwener = null;
-            // }
-            // if (adoptionEvent.Event.EventRegistrar.RegistrarInfo.Id != null && adoptionEvent.Event.EventRegistrar.RegistrarInfo.Id != Guid.Empty)
-            // {
-            //     _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.Event.EventRegistrar.RegistrarInfo));
-            //     adoptionEvent.Event.EventRegistrar.RegistrarInfoId = adoptionEvent.Event.EventRegistrar.RegistrarInfo.Id;
-            //     adoptionEvent.Event.EventRegistrar.RegistrarInfo = null;
-            // }
-            _logger.LogCritical(request.Adoption.BeforeAdoptionAddressId.ToString());
-            _logger.LogCritical(adoptionEvent.BeforeAdoptionAddressId.ToString());
-
-            await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
-            await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
-
-            var eventSupportingDocuments = adoptionEvent.Event.EventSupportingDocuments;
-            var examptionSupportingDocuments = adoptionEvent.Event.PaymentExamption.SupportingDocuments;
-            var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", "Adoption");
-            var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", "Adoption");
-            var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
-            var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
-            eventSupportingDocuments.ToList().ForEach(doc =>
+            try
             {
-                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
-            });
-            examptionSupportingDocuments.ToList().ForEach(doc =>
-            {
-                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
-            });
+                var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
+                if (adoptionEvent.AdoptiveFather.Id != null && adoptionEvent.AdoptiveFather.Id != Guid.Empty)
+                {
+                    _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.AdoptiveFather));
+                    adoptionEvent.AdoptiveFatherId = adoptionEvent.AdoptiveFather.Id;
+                    adoptionEvent.AdoptiveFather = null;
+                }
+                if (adoptionEvent.Event.EventOwener.Id != null && adoptionEvent.Event.EventOwener.Id != Guid.Empty)
+                {
+                    _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.Event.EventOwener));
+                    adoptionEvent.Event.EventOwenerId = adoptionEvent.Event.EventOwener.Id;
+                    adoptionEvent.Event.EventOwener = null;
+                }
+                if (adoptionEvent.Event.EventRegistrar.RegistrarInfo.Id != null && adoptionEvent.Event.EventRegistrar.RegistrarInfo.Id != Guid.Empty)
+                {
+                    _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.Event.EventRegistrar.RegistrarInfo));
+                    adoptionEvent.Event.EventRegistrar.RegistrarInfoId = adoptionEvent.Event.EventRegistrar.RegistrarInfo.Id;
+                    adoptionEvent.Event.EventRegistrar.RegistrarInfo = null;
+                }
+                _logger.LogCritical(request.Adoption.BeforeAdoptionAddressId.ToString());
+                _logger.LogCritical(adoptionEvent.BeforeAdoptionAddressId.ToString());
 
-            return new CreateAdoptionCommandResponse { Message = "Adoption Event created Successfully" };
+                await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
+                await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
+
+                var eventSupportingDocuments = adoptionEvent.Event.EventSupportingDocuments;
+                var examptionSupportingDocuments = adoptionEvent.Event.PaymentExamption.SupportingDocuments;
+                var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", "Adoption");
+                var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", "Adoption");
+                var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
+                var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
+                eventSupportingDocuments.ToList().ForEach(doc =>
+                {
+                    _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
+                });
+                examptionSupportingDocuments.ToList().ForEach(doc =>
+                {
+                    _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
+                });
+
+                return new CreateAdoptionCommandResponse { Message = "Adoption Event created Successfully" };
+
+            }
+            catch (Exception ex)
+            {
+                return new CreateAdoptionCommandResponse { Message = ex.Message };
+            }
 
         }
     }
