@@ -1,4 +1,6 @@
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create;
+using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
+using AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -25,5 +27,18 @@ namespace AppDiv.CRVS.API.Controllers
             var result = await _mediator.Send(command);
             return Ok(result);
         }
+
+        [HttpPut]
+        public async Task<IActionResult> update([FromBody] UpdateAdoptionCommand command)
+        {
+            return Ok(await _mediator.Send(command));
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAdoptionEventById([FromBody] AdoptionEventGetByIdQuery query)
+        {
+
+            return Ok(await _mediator.Send(query));
+        }
+
     }
 }
