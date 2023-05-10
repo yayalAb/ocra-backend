@@ -1,5 +1,6 @@
 ﻿using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -39,12 +40,15 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Query
                                     Id = de.Id,
                                     FatherId = de.FatherId,           // Father = CustomMapper.Mapper.Map<PersonalInfoDTO>(de.Father),
                                     MotherId = de.MotherId,           // Father = CustomMapper.Mapper.Map<PersonalInfoDTO>(de.Father),
-                                    // Mother = CustomMapper.Mapper.Map<PersonalInfoDTO>(de.Mother),
-                                    // BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(de.BirthPlace),
+                                    Mother = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Mother),
+                                    Father = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Father),
+                                    BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(de.BirthPlace),
                                     TypeOfBirth = CustomMapper.Mapper.Map<LookupDTO>(de.TypeOfBirth),
                                     EventId = de.EventId,
-                                    // Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
-                                    // BirthNotification = CustomMapper.Mapper.Map<BirthNotificationDTO>(de.BirthNotification),
+                                    Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
+                                    BirthNotification = CustomMapper.Mapper.Map<BirthNotificationDTO>(de.BirthNotification),
+                                    FacilityTypeId = de.FacilityTypeId,
+                                    FacilityId = de.FacilityId,
                                     FacilityType = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityType),
                                     Facility = CustomMapper.Mapper.Map<LookupDTO>(de.Facility)
                                 }).ToList()

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Contracts.Request;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
@@ -15,8 +16,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid BirthPlaceId { get; set; }
         public Guid TypeOfBirthId { get; set; }
         public Guid EventId { get; set; }
-        public virtual PersonalInfoDTO Father { get; set; }
-        public virtual PersonalInfoDTO Mother { get; set; }
+        public virtual UpdatePersonalInfoRequest Father { get; set; }
+        public virtual UpdatePersonalInfoRequest Mother { get; set; }
         public virtual LookupDTO FacilityType { get; set; }
         public virtual LookupDTO Facility { get; set; }
         public virtual LookupDTO TypeOfBirth { get; set; }

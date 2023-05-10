@@ -53,7 +53,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                 var fileNames = request.BirthEvent.Event.EventSupportingDocuments.Select(doc => doc.Id).ToList();
                 var folderName = Path.Combine("Resources", "SupportingDocuments", "BirthEvents");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
                 // await _fileService.UploadBase64FilesAsync(files, fileNames, pathToSave, FileMode.Create);
 
                 var paymentExamption = request.BirthEvent.Event.PaymentExamption.SupportingDocuments.Select(doc => doc.base64String).ToList();
@@ -64,16 +63,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                 var allNames = fileNames.Concat(paymentExamptionIds).ToList();
                 await _fileService.UploadBase64FilesAsync(allDocs, allNames, pathToSave, FileMode.Create);
 
-                // if (paymentExamption != null)
-                // {
-                //     string examptionPath = Path.Combine(pathToSave, "PaymentExamptions");
-                //     await _fileService.UploadBase64FileAsync(paymentExamption,
-                //                                 request.BirthEvent.Event.EventPaymentExamptionNavigation.Id.ToString(),
-                //                                 examptionPath,
-                //                                 FileMode.Create);
-                // }
-                //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
-                // createCustomerCommandResponse.Customer = customerResponse;          
             }
             return createPaymentCommandResponse;
         }

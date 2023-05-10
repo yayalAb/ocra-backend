@@ -23,25 +23,25 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Delete
     // Customer delete command handler with string response as output
     public class DeleteBirthEventCommmandHandler : IRequestHandler<DeleteBirthEventCommand, String>
     {
-        private readonly IBirthEventRepository _paymentRateRepository;
-        public DeleteBirthEventCommmandHandler(IBirthEventRepository paymentRateRepository)
+        private readonly IBirthEventRepository _birthEventRepository;
+        public DeleteBirthEventCommmandHandler(IBirthEventRepository birthEventRepository)
         {
-            _paymentRateRepository = paymentRateRepository;
+            _birthEventRepository = birthEventRepository;
         }
 
         public async Task<string> Handle(DeleteBirthEventCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var paymentRateEntity = await _paymentRateRepository.GetAsync(request.Id);
+                var paymentRateEntity = await _birthEventRepository.GetAsync(request.Id);
                 if (paymentRateEntity != null)
                 {
-                    await _paymentRateRepository.DeleteAsync(request.Id);
-                    await _paymentRateRepository.SaveChangesAsync(cancellationToken);
+                    await _birthEventRepository.DeleteAsync(request.Id);
+                    await _birthEventRepository.SaveChangesAsync(cancellationToken);
                 }
                 else
                 {
-                    return "There is no payment rate with the specified id";
+                    return "There is no birth event with the specified id";
                 }
 
 
@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Delete
                 throw (new ApplicationException(exp.Message));
             }
 
-            return "Payment Rate information has been deleted!";
+            return "Birth Event information has been deleted!";
         }
     }
 }

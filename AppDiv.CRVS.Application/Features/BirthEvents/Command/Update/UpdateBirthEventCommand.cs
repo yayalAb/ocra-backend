@@ -16,7 +16,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
     // Customer create command with CustomerResponse
     public class UpdateBirthEventCommand : IRequest<BirthEventDTO>
     {
-
         public Guid Id { get; set; }
         public Guid FatherId { get; set; }
         public Guid MotherId { get; set; }
@@ -26,33 +25,34 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         public Guid TypeOfBirthId { get; set; }
         public Guid EventId { get; set; }
 
-        public virtual AddPersonalInfoRequest Father { get; set; }
-        public virtual AddPersonalInfoRequest Mother { get; set; }
+        public virtual UpdatePersonalInfoRequest Father { get; set; }
+        public virtual UpdatePersonalInfoRequest Mother { get; set; }
         public virtual AddEventRequest Event { get; set; }
+        public virtual AddBirthNotificationRequest BirthNotification { get; set; }
     }
 
     public class UpdateBirthEventCommandHandler : IRequestHandler<UpdateBirthEventCommand, BirthEventDTO>
     {
-        private readonly IBirthEventRepository _BirthEventRepository;
-        public UpdateBirthEventCommandHandler(IBirthEventRepository BirthEventRepository)
+        private readonly IBirthEventRepository _birthEventRepository;
+        public UpdateBirthEventCommandHandler(IBirthEventRepository birthEventRepository)
         {
-            _BirthEventRepository = BirthEventRepository;
+            _birthEventRepository = birthEventRepository;
         }
         public async Task<BirthEventDTO> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
         {
-            var BirthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
+            var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
 
             try
             {
-                await _BirthEventRepository.UpdateAsync(BirthEvent, x => x.Id);
-                var result = await _BirthEventRepository.SaveChangesAsync(cancellationToken);
+                await _birthEventRepository.UpdateAsync(birthEvent, x => x.Id);
+                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
             {
                 throw new ApplicationException(exp.Message);
             }
 
-            var modifiedBirthEvent = await _BirthEventRepository.GetAsync(request.Id);
+            var modifiedBirthEvent = await _birthEventRepository.GetAsync(request.Id);
             var paymentRateResponse = CustomMapper.Mapper.Map<BirthEventDTO>(modifiedBirthEvent);
 
             return paymentRateResponse;
