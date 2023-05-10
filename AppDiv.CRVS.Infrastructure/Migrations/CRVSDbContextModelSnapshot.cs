@@ -140,7 +140,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("ParentAddressId");
 
-                    b.ToTable("Addresses");
+                    b.ToTable("Addresses", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.AdoptionEvent", b =>
@@ -205,7 +205,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.ToTable("AdoptionEvents");
+                    b.ToTable("AdoptionEvents", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Audit.AuditLog", b =>
@@ -242,7 +242,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("AuditId");
 
-                    b.ToTable("AuditLogs");
+                    b.ToTable("AuditLogs", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.BirthEvent", b =>
@@ -303,7 +303,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("TypeOfBirthId");
 
-                    b.ToTable("birthEvents");
+                    b.ToTable("birthEvents", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.BirthNotification", b =>
@@ -349,7 +349,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("SkilledProfId");
 
-                    b.ToTable("BirthNotifications");
+                    b.ToTable("BirthNotifications", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Certificate", b =>
@@ -394,7 +394,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Certificates");
+                    b.ToTable("Certificates", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CertificateTemplate", b =>
@@ -421,7 +421,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CertificateTemplates");
+                    b.ToTable("CertificateTemplates", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.ContactInfo", b =>
@@ -460,7 +460,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContactInfo");
+                    b.ToTable("ContactInfo", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Court", b =>
@@ -496,7 +496,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("AddressId")
                         .IsUnique();
 
-                    b.ToTable("Courts");
+                    b.ToTable("Courts", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CourtCase", b =>
@@ -531,7 +531,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("CourtId");
 
-                    b.ToTable("CourtCases");
+                    b.ToTable("CourtCases", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.DeathEvent", b =>
@@ -578,7 +578,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("FacilityTypeId");
 
-                    b.ToTable("DeathEvents");
+                    b.ToTable("DeathEvents", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.DeathNotification", b =>
@@ -620,7 +620,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("DeathEventId")
                         .IsUnique();
 
-                    b.ToTable("DeathNotifications");
+                    b.ToTable("DeathNotifications", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.DivorceEvent", b =>
@@ -674,7 +674,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.ToTable("DivorceEvents");
+                    b.ToTable("DivorceEvents", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Event", b =>
@@ -733,7 +733,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("InformantTypeLookupId");
 
-                    b.ToTable("Events");
+                    b.ToTable("Events", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Lookup", b =>
@@ -773,7 +773,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookups");
+                    b.ToTable("Lookups", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.MarriageApplication", b =>
@@ -822,7 +822,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("GroomInfoId")
                         .IsUnique();
 
-                    b.ToTable("MarriageApplications");
+                    b.ToTable("MarriageApplications", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.MarriageEvent", b =>
@@ -868,7 +868,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("MarriageTypeId");
 
-                    b.ToTable("MarriageEvents");
+                    b.ToTable("MarriageEvents", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Payment", b =>
@@ -906,7 +906,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("PaymentWayLookupId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamption", b =>
@@ -941,7 +941,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("ExamptionRequestId")
                         .IsUnique();
 
-                    b.ToTable("PaymentExamptions");
+                    b.ToTable("PaymentExamptions", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", b =>
@@ -983,7 +983,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentExamptionRequests");
+                    b.ToTable("PaymentExamptionRequests", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
@@ -1027,7 +1027,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("PaymentTypeLookupId");
 
-                    b.ToTable("PaymentRates");
+                    b.ToTable("PaymentRates", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRequest", b =>
@@ -1072,7 +1072,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("PaymentRateId")
                         .IsUnique();
 
-                    b.ToTable("PaymentRequests");
+                    b.ToTable("PaymentRequests", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
@@ -1166,7 +1166,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("TypeOfWorkLookupId");
 
-                    b.ToTable("PersonalInfos");
+                    b.ToTable("PersonalInfos", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Registrar", b =>
@@ -1206,7 +1206,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("RelationshipId");
 
-                    b.ToTable("Registrars");
+                    b.ToTable("Registrars", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Setting", b =>
@@ -1237,7 +1237,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Settings");
+                    b.ToTable("Settings", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Step", b =>
@@ -1284,7 +1284,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("workflowId");
 
-                    b.ToTable("Steps");
+                    b.ToTable("Steps", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.SupportingDocument", b =>
@@ -1329,7 +1329,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("PaymentExamptionId");
 
-                    b.ToTable("SupportingDocuments");
+                    b.ToTable("SupportingDocuments", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.UserGroup", b =>
@@ -1363,7 +1363,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserGroups");
+                    b.ToTable("UserGroups", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Witness", b =>
@@ -1401,7 +1401,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("WitnessPersonalInfoId")
                         .IsUnique();
 
-                    b.ToTable("Witnesses");
+                    b.ToTable("Witnesses", (string)null);
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Workflow", b =>
@@ -1432,7 +1432,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workflows");
+                    b.ToTable("Workflows", (string)null);
                 });
 
             modelBuilder.Entity("ApplicationUserUserGroup", b =>
@@ -1447,7 +1447,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("UserGroupsId");
 
-                    b.ToTable("ApplicationUserUserGroup");
+                    b.ToTable("ApplicationUserUserGroup", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
