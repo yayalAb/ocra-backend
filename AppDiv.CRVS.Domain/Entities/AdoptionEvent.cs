@@ -13,8 +13,6 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid CourtCaseId { get; set; }
         public Guid EventId { get; set; }
         public string ApprovedNameStr { get; set; }
-
-
         public string ReasonStr { get; set; }
         [NotMapped]
         public JObject Reason
@@ -37,7 +35,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                ReasonStr = value.ToString();
+                ApprovedNameStr = value.ToString();
             }
         }
 

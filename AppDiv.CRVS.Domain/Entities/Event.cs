@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual PersonalInfo EventOwener { get; set; }
         public virtual PersonalInfo CivilRegOfficer { get; set; }
         public virtual BirthEvent BirthEvent { get; set; }
-        public virtual Lookup InformantTypeLookup { get; set; }
+        public virtual Lookup? InformantTypeLookup { get; set; }
         public virtual Registrar? EventRegistrar { get; set; }
         public virtual DeathEvent DeathEventNavigation { get; set; }
         public virtual AdoptionEvent AdoptionEvent { get; set; }
