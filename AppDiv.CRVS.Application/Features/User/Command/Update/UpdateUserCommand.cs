@@ -19,8 +19,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
     public class UpdateUserCommand : IRequest<UserResponseDTO>
     {
         public string Id { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
+        public string? UserName { get; set; }
+        public string? Email { get; set; }
         public string? UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         private readonly IFileService _fileService;
         private readonly ILogger<UpdateUserCommandHandler> logger;
 
-        public UpdateUserCommandHandler(IIdentityService identityService, IGroupRepository groupRepository, IFileService fileService , ILogger<UpdateUserCommandHandler> logger)
+        public UpdateUserCommandHandler(IIdentityService identityService, IGroupRepository groupRepository, IFileService fileService, ILogger<UpdateUserCommandHandler> logger)
         {
             this._fileService = fileService;
             this.logger = logger;
@@ -69,8 +69,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 PlaceOfBirthLookupId = request.PersonalInfo.PlaceOfBirthLookupId,
                 EducationalStatusLookupId = request.PersonalInfo.EducationalStatusLookupId,
                 TypeOfWorkLookupId = request.PersonalInfo.TypeOfWorkLookupId,
-                MarriageStatusLookupId = request.PersonalInfo.MarriageStatusLookupId,
-                AddressId = request.PersonalInfo.AddressId,
+                MarriageStatusLookupId = request.PersonalInfo?.MarriageStatusLookupId,
+                AddressId = request.PersonalInfo?.AddressId,
                 NationLookupId = request.PersonalInfo.NationLookupId,
                 TitleLookupId = request.PersonalInfo.TitleLookupId,
                 ReligionLookupId = request.PersonalInfo.ReligionLookupId,
@@ -112,7 +112,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             var modifiedUser = await _identityService.GetUserByIdAsync(request.Id);
 
             // var userResponse = CustomMapper.Mapper.Map<UserResponseDTO>(modifiedUser);
-            var userResponse = new UserResponseDTO{
+            var userResponse = new UserResponseDTO
+            {
 
             };
             return userResponse;

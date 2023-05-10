@@ -13,17 +13,20 @@ namespace AppDiv.CRVS.Domain.Configuration
 
             builder.HasOne(m => m.Address)
                .WithMany(n => n.PersonalInfos)
-               .HasForeignKey(m => m.AddressId);
+               .HasForeignKey(m => m.AddressId)
+               .IsRequired(false);
             builder.HasOne(m => m.SexLookup)
                .WithMany(n => n.PersonSexNavigation)
-               .HasForeignKey(m => m.SexLookupId);
+               .HasForeignKey(m => m.SexLookupId)
+               .IsRequired(false);
             builder.HasOne(m => m.PlaceOfBirthLookup)
                .WithMany(n => n.PersonPlaceOfBirthNavigation)
                .HasForeignKey(m => m.PlaceOfBirthLookupId)
                .IsRequired(false);
             builder.HasOne(m => m.NationalityLookup)
                .WithMany(n => n.PersonNationalityNavigation)
-               .HasForeignKey(m => m.NationalityLookupId);
+               .HasForeignKey(m => m.NationalityLookupId)
+               .IsRequired(false);
             builder.HasOne(m => m.TitleLookup)
                .WithMany(n => n.PersonTitleNavigation)
                .HasForeignKey(m => m.TitleLookupId)

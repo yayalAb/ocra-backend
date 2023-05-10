@@ -23,9 +23,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? MarraigeStatusLookup { get; set; }
         // public AddressDTO? Address { get; set; }
         public string? NationLookup { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         // public string ContactInfo { get; set; }
-        public ContactInfoDTO ContactInfo { get; set; }
+        public ContactInfoDTO? ContactInfo { get; set; }
 
     }
 }

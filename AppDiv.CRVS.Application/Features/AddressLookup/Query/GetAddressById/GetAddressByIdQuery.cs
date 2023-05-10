@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 {
     // Customer GetAddressByIdQuery with  response
-    public class GetAddressByIdQuery : IRequest<List<AddressDTO>>
+    public class GetAddressByIdQuery : IRequest<object>
     {
         public Guid Id { get; private set; }
 
@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 
     }
 
-    public class GetAddressByIdQueryHandler : IRequestHandler<GetAddressByIdQuery, List<AddressDTO>>
+    public class GetAddressByIdQueryHandler : IRequestHandler<GetAddressByIdQuery, object>
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
 
@@ -33,11 +33,11 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
         {
             _AddresslookupRepository = AddresslookupRepository;
         }
-        public async Task<List<AddressDTO>> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
+        public async Task<object> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
         {
             var LookupList = await _AddresslookupRepository.GetAllAsync();
             var lookups = CustomMapper.Mapper.Map<List<AddressDTO>>(LookupList.Where(x => x.Id == request.Id));
-            return lookups;
+            return lookups[0];
             // return selectedCustomer;
         }
     }

@@ -149,10 +149,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("AdoptiveFatherId")
+                    b.Property<Guid?>("AdoptiveFatherId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("AdoptiveMotherId")
+                    b.Property<Guid?>("AdoptiveMotherId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("ApprovedNameStr")
@@ -162,7 +164,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("BeforeAdoptionAddressId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("CourtCaseId")
+                    b.Property<Guid?>("CourtCaseId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -171,7 +174,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("EventId")
+                    b.Property<Guid?>("EventId")
+                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -1077,13 +1081,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("AddressId")
+                    b.Property<Guid?>("AddressId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("ContactInfoId")
+                    b.Property<Guid?>("ContactInfoId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1102,11 +1106,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<string>("LastNameStr")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("MarriageStatusLookupId")
+                    b.Property<Guid?>("MarriageStatusLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("MiddleNameStr")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -1119,10 +1122,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("NationalId")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("NationalityLookupId")
+                    b.Property<Guid?>("NationalityLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("PlaceOfBirthLookupId")
@@ -1962,7 +1964,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamption", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Event", "Event")
-                        .WithOne("EventPaymentExamptionNavigation")
+                        .WithOne("PaymentExamption")
                         .HasForeignKey("AppDiv.CRVS.Domain.Entities.PaymentExamption", "EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2028,15 +2030,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
                         .WithMany("PersonalInfos")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AddressId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.ContactInfo", "ContactInfo")
                         .WithMany()
-                        .HasForeignKey("ContactInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactInfoId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "EducationalStatusLookup")
                         .WithMany("PersonEducationalStatusNavigation")
@@ -2052,9 +2050,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "NationalityLookup")
                         .WithMany("PersonNationalityNavigation")
-                        .HasForeignKey("NationalityLookupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("NationalityLookupId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "PlaceOfBirthLookup")
                         .WithMany("PersonPlaceOfBirthNavigation")
@@ -2066,9 +2062,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "SexLookup")
                         .WithMany("PersonSexNavigation")
-                        .HasForeignKey("SexLookupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SexLookupId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "TitleLookup")
                         .WithMany("PersonTitleNavigation")
@@ -2303,18 +2297,17 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Navigation("EventCertificates");
 
-                    b.Navigation("EventPaymentExamptionNavigation")
-                        .IsRequired();
-
                     b.Navigation("EventPaymentRequest")
                         .IsRequired();
 
-                    b.Navigation("EventRegistrar")
-                        .IsRequired();
+                    b.Navigation("EventRegistrar");
 
                     b.Navigation("EventSupportingDocuments");
 
                     b.Navigation("MarriageEvent")
+                        .IsRequired();
+
+                    b.Navigation("PaymentExamption")
                         .IsRequired();
                 });
 

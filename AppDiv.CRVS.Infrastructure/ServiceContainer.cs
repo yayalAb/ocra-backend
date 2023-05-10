@@ -89,12 +89,15 @@ namespace AppDiv.CRVS.Infrastructure
 
             services.AddTransient<IMarriageApplicationRepository, MarriageApplicationRepository>();
             services.AddTransient<IMarriageEventRepository, MarriageEventRepository>();
+            services.AddTransient<IAdoptionEventRepository, AdoptionEventRepository>();
 
 
 
 
             services.AddTransient<IDeathEventRepository, DeathEventRepository>();
             services.AddTransient<IBirthEventRepository, BirthEventRepository>();
+            services.AddTransient<IDivorceEventRepository, DivorceEventRepository>();
+
 
 
             services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();

@@ -28,6 +28,11 @@ using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create;
 using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Update;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create;
+using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create;
+using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -136,6 +141,16 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<BirthNotification, AddBirthNotificationRequest>().ReverseMap();
             CreateMap<BirthNotification, BirthNotificationDTO>().ReverseMap();
+
+            CreateMap<CreateDivorceEventCommand, DivorceEvent>();
+            CreateMap<UpdateDivorceEventCommand, DivorceEvent>().ReverseMap();
+
+            CreateMap<CreateMarriageEventCommand, MarriageEvent>();
+            CreateMap<UpdateMarriageEventCommand, MarriageEvent>().ReverseMap();
+
+
+            CreateMap<AdoptionEvent, AddAdoptionRequest>().ReverseMap();
+            CreateMap<AdoptionEvent, CreateAdoptionCommand>().ReverseMap();
 
 
 
