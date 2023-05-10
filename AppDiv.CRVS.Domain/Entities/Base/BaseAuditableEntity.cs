@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Domain.Base
             this.CreatedAt = DateTime.Now;
             this.Id = Guid.NewGuid();
             var httpContext = new HttpContextAccessor().HttpContext;
-            if (httpContext.Request.Headers.ContainsKey("lang"))
+            if (httpContext != null && httpContext.Request.Headers.ContainsKey("lang"))
             {
                 httpContext.Request.Headers.TryGetValue("lang", out StringValues headerValue);
                 this.lang = headerValue.FirstOrDefault();
