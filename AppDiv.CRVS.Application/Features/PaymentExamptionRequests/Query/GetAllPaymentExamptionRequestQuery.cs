@@ -36,8 +36,10 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Query
                                 {
                                     Id = r.Id,
                                     ReasonStr = r.ReasonStr,
+                                    Reason = r.Reason,
                                     ExamptedClientId = r.ExamptedClientId,
                                     ExamptedClientFullNAme = r.ExamptedClientFullNAme,
+                                    ExamptedBy = r.ExamptedBy,
                                     NumberOfClient = r.NumberOfClient
                                     // Description = g.Description.Value<string>("eng")
                                 }).ToList()

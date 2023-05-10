@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
@@ -9,6 +10,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public string ReasonStr { get; set; }
+        public JObject Reason { get; set; }
         public string? ExamptedClientId { get; set; }
         public string? ExamptedClientFullNAme { get; set; }
         public DateTime ExamptedDate { get; set; }

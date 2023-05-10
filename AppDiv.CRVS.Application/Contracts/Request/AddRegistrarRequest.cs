@@ -8,7 +8,5 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid RelationshipId { get; set; }
         public virtual UpdatePersonalInfoRequest RegistrarInfo { get; set; }
 
-
-
     }
 }

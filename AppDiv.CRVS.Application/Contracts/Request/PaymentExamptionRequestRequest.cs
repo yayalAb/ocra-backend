@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class PaymentExamptionRequestRequest
     {
-        public JObject? Reason { get; set; }
+        public JObject Reason { get; set; }
         public string? ExamptedClientId { get; set; }
         public string? ExamptedClientFullNAme { get; set; }
         public DateTime ExamptedDate { get; set; }
