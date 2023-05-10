@@ -159,6 +159,10 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AdoptionEvent, AddAdoptionRequest>().ReverseMap();
             CreateMap<AdoptionEvent, CreateAdoptionCommand>().ReverseMap();
 
+            CreateMap<CourtCase, AddCourtCaseRequest>().ReverseMap();
+
+
+
             CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
             CreateMap<PaymentExamption, UpdatePaymentExamptionRequest>().ReverseMap();
             CreateMap<Registrar, UpdateRegistrarRequest>().ReverseMap();

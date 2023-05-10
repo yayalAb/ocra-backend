@@ -71,7 +71,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 var folderName = Path.Combine("Resources", "UserProfiles");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 var fileName = response.id;
+                if(!string.IsNullOrEmpty(file)){
+
                 await _fileService.UploadBase64FileAsync(file, fileName, pathToSave, FileMode.Create);
+                }
 
                 //send password by email    
                 var emailContent = response.password + "  is your default password you can login and change it";
