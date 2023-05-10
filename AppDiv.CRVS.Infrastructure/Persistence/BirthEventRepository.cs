@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             this._dbContext = dbContext;
         }
 
-        public virtual async Task<BirthEvent?> GetWithAsync(Guid id)
+        public virtual async Task<BirthEvent?> GetWithIncludedAsync(Guid id)
         {
             return await _dbContext.birthEvents
                             .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)
@@ -38,7 +38,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 _dbContext.PersonalInfos.Update(entity.Event.EventOwener);
                 entity.Event.EventOwener = null;
             }
-            if (!string.IsNullOrEmpty(entity.Event.EventRegistrar.RegistrarInfo.Id.ToString()))
+            if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()))
             {
                 _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
                 entity.Event.EventRegistrar.RegistrarInfo = null;

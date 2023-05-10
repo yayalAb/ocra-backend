@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid FacilityId { get; set; }
         public Guid BirthPlaceId { get; set; }
         public Guid TypeOfBirthId { get; set; }
-        public Guid EventId { get; set; }
+        // public Guid EventId { get; set; }
 
         public virtual UpdatePersonalInfoRequest Father { get; set; }
         public virtual UpdatePersonalInfoRequest Mother { get; set; }

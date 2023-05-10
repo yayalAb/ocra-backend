@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         public async Task<DeathEventDTO> Handle(GetDeathEventByIdQuery request, CancellationToken cancellationToken)
         {
 
-            var selectedDeathEvent = await _deathEventRepository.GetWithAsync(request.Id);
+            var selectedDeathEvent = await _deathEventRepository.GetIncludedAsync(request.Id);
             return CustomMapper.Mapper.Map<DeathEventDTO>(selectedDeathEvent);
             // return selectedCustomer;
         }

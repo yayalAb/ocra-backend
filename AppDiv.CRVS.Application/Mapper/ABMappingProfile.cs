@@ -33,6 +33,8 @@ using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create;
+using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Update;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -105,12 +107,16 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<DeathEvent, AddDeathEventRequest>().ReverseMap();
             CreateMap<DeathEvent, CreateDeathEventCommand>().ReverseMap();
             CreateMap<DeathEvent, UpdateDeathEventCommand>().ReverseMap();
+            CreateMap<BirthEvent, UpdateBirthEventCommand>().ReverseMap();
 
             CreateMap<DeathNotification, AddDeathNotificationRequest>().ReverseMap();
             CreateMap<DeathNotification, DeathNotificationDTO>().ReverseMap();
+            CreateMap<DeathNotification, UpdateDeathNotificationRequest>().ReverseMap();
+            CreateMap<BirthNotification, UpdateBirthNotificationRequest>().ReverseMap();
 
             CreateMap<Event, EventDTO>().ReverseMap();
             CreateMap<Event, AddEventRequest>().ReverseMap();
+            CreateMap<Event, UpdateEventRequest>().ReverseMap();
 
             CreateMap<PaymentExamption, PaymentExamptionDTO>().ReverseMap();
             CreateMap<PaymentExamption, AddPaymentExamptionRequest>().ReverseMap();
@@ -123,6 +129,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestDTO>().ReverseMap();
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestRequest>().ReverseMap();
+            CreateMap<PaymentExamptionRequest, UpdatePaymentExamptionRequestCommand>().ReverseMap();
 
             CreateMap<CreateMarriageApplicationCommand, MarriageApplication>();
             CreateMap<MarriageApplication, MarriageApplicationGridDTO>();
@@ -151,6 +158,10 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<AdoptionEvent, AddAdoptionRequest>().ReverseMap();
             CreateMap<AdoptionEvent, CreateAdoptionCommand>().ReverseMap();
+
+            CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
+            CreateMap<PaymentExamption, UpdatePaymentExamptionRequest>().ReverseMap();
+            CreateMap<Registrar, UpdateRegistrarRequest>().ReverseMap();
 
 
 

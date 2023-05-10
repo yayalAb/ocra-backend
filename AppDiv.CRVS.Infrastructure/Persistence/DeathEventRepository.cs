@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             this._dbContext = dbContext;
         }
 
-        public virtual async Task<DeathEvent?> GetWithAsync(Guid id)
+        public async Task<DeathEvent?> GetIncludedAsync(Guid id)
         {
             return await _dbContext.DeathEvents
                             .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)

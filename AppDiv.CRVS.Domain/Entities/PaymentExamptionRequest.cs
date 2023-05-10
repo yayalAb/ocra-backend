@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Domain.Entities
                 ReasonStr = value.ToString();
             }
         }
-        public virtual PaymentExamption ExamptionRequestNavigation { get; set; }
+        public virtual ICollection<PaymentExamption> ExamptionRequestNavigation { get; set; }
 
 
     }

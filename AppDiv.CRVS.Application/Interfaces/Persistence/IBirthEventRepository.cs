@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IBirthEventRepository : IBaseRepository<BirthEvent>
     {
-        Task<BirthEvent> GetWithAsync(Guid id);
+        Task<BirthEvent> GetWithIncludedAsync(Guid id);
         Task InsertOrUpdateAsync(BirthEvent entity, CancellationToken cancellationToken);
     }
 }
