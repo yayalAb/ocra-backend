@@ -269,7 +269,8 @@ namespace AppDiv.CRVS.Application.Service
         {
             return  _userManager.Users
             .Include(u => u.PersonalInfo)
-            .Include(p => p.PersonalInfo.Address)
+            .Include(p => p.PersonalInfo.BirthAddress)
+            .Include(p => p.PersonalInfo.ResidentAddress)
             .Include(p => p.PersonalInfo.PlaceOfBirthLookup)
             .Include(p => p.PersonalInfo.NationalityLookup)
             .Include(p => p.PersonalInfo.TitleLookup)

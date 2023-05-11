@@ -14,11 +14,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
     public class CreateBirthEventCommandHandler : IRequestHandler<CreateBirthEventCommand, CreateBirthEventCommandResponse>
     {
         private readonly IBirthEventRepository _birthEventRepository;
-        private readonly IFileService _fileService;
-        public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository, IFileService fileService)
+        private readonly IEventDocumentService _eventDocumentService;
+        public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository, IEventDocumentService eventDocumentService)
         {
-            this._fileService = fileService;
-            _birthEventRepository = birthEventRepository;
+            this._eventDocumentService = eventDocumentService;
+            this._birthEventRepository = birthEventRepository;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -43,25 +43,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             {
                 // var docs = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
 
-                var BirthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
-                BirthEvent.Event.EventType = "BirthEvent";
+                var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                birthEvent.Event.EventType = "BirthEvent";
 
-                await _birthEventRepository.InsertOrUpdateAsync(BirthEvent, cancellationToken);
+                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
-                var files = request.BirthEvent.Event.EventSupportingDocuments.Select(doc => doc.base64String).ToList();
-                var fileNames = request.BirthEvent.Event.EventSupportingDocuments.Select(doc => doc.Id).ToList();
-                var folderName = Path.Combine("Resources", "SupportingDocuments", "BirthEvents");
-                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                // await _fileService.UploadBase64FilesAsync(files, fileNames, pathToSave, FileMode.Create);
+                var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
+                var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
 
-                var paymentExamption = request.BirthEvent.Event.PaymentExamption.SupportingDocuments.Select(doc => doc.base64String).ToList();
-                var paymentExamptionIds = request.BirthEvent.Event.PaymentExamption.SupportingDocuments.Select(doc => doc.Id).ToList();
-                // await _fileService.UploadBase64FilesAsync(paymentExamption, paymentExamptionIds, pathToSave, FileMode.Create);
-
-                var allDocs = files.Concat(paymentExamption).ToList();
-                var allNames = fileNames.Concat(paymentExamptionIds).ToList();
-                await _fileService.UploadBase64FilesAsync(allDocs, allNames, pathToSave, FileMode.Create);
+                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "BirthEvents");
 
             }
             return createPaymentCommandResponse;

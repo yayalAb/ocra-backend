@@ -21,7 +21,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? EducationalStatusLookupId { get; set; }
         public Guid? TypeOfWorkLookupId { get; set; }
         public Guid? MarriageStatusLookupId { get; set; }
-        public Guid? AddressId { get; set; }
+        public Guid? BirthAddressId { get; set; }
+        public Guid? ResidentAddressId { get; set; }
+
         public Guid? NationLookupId { get; set; }
         public Guid? ContactInfoId { get; set; }
         [NotMapped]
@@ -86,7 +88,8 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
 
-        public virtual Address Address { get; set; }
+        public virtual Address BirthAddress { get; set; }
+        public virtual Address ResidentAddress { get; set; }
         public virtual Lookup SexLookup { get; set; }
         public virtual Lookup PlaceOfBirthLookup { get; set; }
         public virtual Lookup NationalityLookup { get; set; }
@@ -100,18 +103,18 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Event> EventCivilRegOfficers { get; set; }
         // public virtual ApplicationUser ApplicationUser { get; set; }
-        public virtual BirthEvent BirthFatherNavigation { get; set; }
-        public virtual BirthEvent BirthMotherNavigation { get; set; }
-        public virtual Registrar RegistrarPersonalInfoNavigation { get; set; }
+        public virtual ICollection<BirthEvent> BirthFatherNavigation { get; set; }
+        public virtual ICollection<BirthEvent> BirthMotherNavigation { get; set; }
+        public virtual ICollection<Registrar> RegistrarPersonalInfoNavigation { get; set; }
 
-        public virtual DivorceEvent DivorceWifeNavigation { get; set; }
+        public virtual ICollection<DivorceEvent> DivorceWifeNavigation { get; set; }
 
-        public AdoptionEvent AdoptiveMotherNavigation { get; set; }
-        public AdoptionEvent AdoptiveFatherNavigation { get; set; }
-        public virtual Witness Witness { get; set; }
-        public virtual MarriageEvent MarriageEventBrideInfo { get; set; }
-        public virtual MarriageApplication MarriageApplicationBrideInfo { get; set; }
-        public virtual MarriageApplication MarriageApplicationGroomInfo { get; set; }
+        public ICollection<AdoptionEvent> AdoptiveMotherNavigation { get; set; }
+        public ICollection<AdoptionEvent> AdoptiveFatherNavigation { get; set; }
+        public virtual ICollection<Witness> Witness { get; set; }
+        public virtual ICollection<MarriageEvent> MarriageEventBrideInfo { get; set; }
+        public virtual ICollection<MarriageApplication> MarriageApplicationBrideInfo { get; set; }
+        public virtual ICollection<MarriageApplication> MarriageApplicationGroomInfo { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplicationCivilRegOfficer { get; set; }
 
 

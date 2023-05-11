@@ -25,9 +25,15 @@ namespace AppDiv.CRVS.Infrastructure.Services
             {
                 if (file.Length > 0)
                 {
+                    if (!Directory.Exists(pathToSave))
+                    {
+                        // If folder does not exist, create it
+                        Directory.CreateDirectory(pathToSave);
+                    }
                     var matchingFiles = Directory.GetFiles(pathToSave, fileName + "*");
                     //removing file with the same id but different extension 
-                    matchingFiles.ToList().ForEach(file => {
+                    matchingFiles.ToList().ForEach(file =>
+                    {
                         //TODO: delete the file
                         System.IO.File.Delete(file);
                     });
@@ -54,10 +60,15 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
             try
             {
+                 if (!Directory.Exists(pathToSave))
+                    {
+                        // If folder does not exist, create it
+                        Directory.CreateDirectory(pathToSave);
+                    }
 
                 // Convert the Base64 string to a byte array.
                 string myString = base64String.Substring(base64String.IndexOf(',') + 1);
-            //    _logger.LogCritical(myString);
+                //    _logger.LogCritical(myString);
                 byte[] bytes = Convert.FromBase64String(myString);
                 var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
                 var fullPath = Path.Combine(pathToSave, fileName + extension);

@@ -12,9 +12,9 @@ namespace AppDiv.CRVS.Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<DeathNotification> builder)
         {
-            builder.HasOne(m => m.CauseOfDeathInfoType)
+            builder.HasOne(m => m.CauseOfDeathInfoTypeLookup)
                .WithMany(n => n.CauseOfDeathInfoTypeNavigation)
-               .HasForeignKey(m => m.CauseOfDeathInfoTypeId);
+               .HasForeignKey(m => m.CauseOfDeathInfoTypeLookupId);
         }
     }
 }

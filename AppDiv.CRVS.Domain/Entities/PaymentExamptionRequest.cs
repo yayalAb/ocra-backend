@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public string? ReasonStr { get; set; }
         public string? ExamptedClientId { get; set; }
-        public string? ExamptedClientFullNAme { get; set; }
+        public string? ExamptedClientFullName { get; set; }
         public DateTime ExamptedDate { get; set; }
         public string ExamptedBy { get; set; }
         public string? NumberOfClient { get; set; }
@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Domain.Entities
                 ReasonStr = value.ToString();
             }
         }
-        public virtual PaymentExamption ExamptionRequestNavigation { get; set; }
+        public virtual ICollection<PaymentExamption> ExamptionRequestNavigation { get; set; }
 
 
     }

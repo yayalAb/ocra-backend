@@ -18,32 +18,40 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             this._dbContext = dbContext;
         }
 
-        public virtual async Task<DeathEvent?> GetWithAsync(Guid id)
+        public async Task<DeathEvent?> GetIncludedAsync(Guid id)
         {
             return await _dbContext.DeathEvents
                             .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
                             .Include(d => d.Event).ThenInclude(e => e.EventRegistrar).ThenInclude(r => r.RegistrarInfo)
-                            .Include(d => d.Facility)
-                            .Include(d => d.FacilityType)
+                            .Include(d => d.FacilityLookup)
+                            .Include(d => d.FacilityTypeLookup)
                             .Include(d => d.DeathNotification)
                             .FirstOrDefaultAsync(d => d.Id == id);
         }
 
         public async Task InsertOrUpdateAsync(DeathEvent entity, CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+            try
             {
-                _dbContext.PersonalInfos.Update(entity.Event.EventOwener);
-                entity.Event.EventOwener = null;
-            }
-            if (!string.IsNullOrEmpty(entity.Event.EventRegistrar.RegistrarInfo.Id.ToString()))
-            {
-                _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
-                entity.Event.EventRegistrar.RegistrarInfo = null;
-            }
+                if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+                {
+                    _dbContext.PersonalInfos.Update(entity.Event.EventOwener);
+                    entity.Event.EventOwener = null;
+                }
+                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar.RegistrarInfo.Id.ToString()))
+                {
+                    _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
+                    entity.Event.EventRegistrar.RegistrarInfo = null;
+                }
 
-            await base.InsertAsync(entity, cancellationToken);
+                await base.InsertAsync(entity, cancellationToken);
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
 
 
         }

@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public string EventType { get; set; }
+        public string CertificateId { get;set ;}
         public Guid EventOwenerId { get; set; }
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
@@ -20,6 +21,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid InformantTypeLookupId { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
+        public bool IsPaid { get; set; } = false;
+
         public bool IsCertified { get; set; } = false;
         public UpdatePersonalInfoRequest EventOwener { get; set; }
 

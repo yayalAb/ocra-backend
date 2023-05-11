@@ -31,10 +31,11 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Address ParentAddress { get; set; }
         public virtual ICollection<Event> EventAddresses { get; set; }
         public virtual ICollection<Address> ChildAddresses { get; set; }
-        public virtual ICollection<PersonalInfo> PersonalInfos { get; }
+        public virtual ICollection<PersonalInfo> PersonalInfoBirthAddresses { get; }
+        public virtual ICollection<PersonalInfo> PersonalInfoResidentAddresses { get; }
+
         public virtual ICollection<BirthEvent> AddressBirthPlaceNavigation { get; set; }
-        public AdoptionEvent BeforeAdoptionAddressNavigation { get; set; }
-        public virtual Court CourtAddress { get; set; }
+        public virtual ICollection<AdoptionEvent> BeforeAdoptionAddressNavigation { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplications {get; set;}
 
         [NotMapped]

@@ -1,15 +1,8 @@
 ﻿using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
-using AppDiv.CRVS.Application.Mapper;
-using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Query
 {
@@ -38,7 +31,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Query
                                     ReasonStr = r.ReasonStr,
                                     Reason = r.Reason,
                                     ExamptedClientId = r.ExamptedClientId,
-                                    ExamptedClientFullNAme = r.ExamptedClientFullNAme,
+                                    ExamptedClientFullName = r.ExamptedClientFullName,
                                     ExamptedBy = r.ExamptedBy,
                                     NumberOfClient = r.NumberOfClient
                                     // Description = g.Description.Value<string>("eng")

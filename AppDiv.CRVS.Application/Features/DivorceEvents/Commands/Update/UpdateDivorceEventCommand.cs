@@ -21,7 +21,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
         public DateTime DivorceDate { get; set; }
         public JObject DivorceReason { get; set; }
         public virtual UpdateCourtCaseRequest CourtCase { get; set; }
-        public int NumberChildren { get; set; }
+        public int NumberOfChildren { get; set; }
         public UpdateEventRequest Event { get; set; }
 
     }

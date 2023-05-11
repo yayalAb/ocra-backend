@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         public async Task<BirthEventDTO> Handle(GetBirthEventByIdQuery request, CancellationToken cancellationToken)
         {
 
-            var selectedBirthEvent = await _BirthEventRepository.GetWithAsync(request.Id);
+            var selectedBirthEvent = await _BirthEventRepository.GetWithIncludedAsync(request.Id);
             return CustomMapper.Mapper.Map<BirthEventDTO>(selectedBirthEvent);
             // return selectedCustomer;
         }

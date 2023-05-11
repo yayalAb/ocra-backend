@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     {
         public Guid Id { get; set; }
 
-        public JObject FirstName { get; set; }
+        public JObject? FirstName { get; set; }
         public JObject? MiddleName { get; set; }
         public JObject? LastName { get; set; }
         public DateTime? BirthDate { get; set; }
@@ -25,7 +25,9 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid? EducationalStatusLookupId { get; set; }
         public Guid? TypeOfWorkLookupId { get; set; }
         public Guid? MarriageStatusLookupId { get; set; }
-        public Guid? AddressId { get; set; }
+        public Guid? BirthAddressId { get; set; }
+        public Guid? ResidentAddressId { get; set; }
+
         public Guid? NationLookupId { get; set; }
         public UpdateContactInfoRequest? ContactInfo { get; set; }
     }
