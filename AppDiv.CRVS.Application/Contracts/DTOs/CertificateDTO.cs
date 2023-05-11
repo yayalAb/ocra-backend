@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string ContentStr { get; set; }
         public bool Status { get; set; }
         public bool AuthenticationStatus { get; set; }
-        public int PrintCont { get; set; }
+        public int PrintCount { get; set; }
         public string CertificateSerialNumber { get; set; }
 
         public EventDTO Event { get; set; }

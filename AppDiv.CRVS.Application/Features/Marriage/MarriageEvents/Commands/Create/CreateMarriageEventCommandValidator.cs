@@ -15,18 +15,18 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "BrideInfo.NationalityLookupId","BrideInfo.TitleLookupId","BrideInfo.ReligionLookupId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
                     "BrideInfo.AddressId","BrideInfo.NationLookupId","Event",
-                    "Event.EventOwner.FirstName","Event.EventOwner.MiddleName","Event.EventOwner.LastName","Event.EventOwner.BirthDate",
-                    "Event.EventOwner.NationalId","Event.EventOwner.SexLookupId","Event.EventOwner.PlaceOfBirthLookupId",
-                    "Event.EventOwner.NationalityLookupId","Event.EventOwner.TitleLookupId","Event.EventOwner.ReligionLookupId",
-                    "Event.EventOwner.EducationalStatusLookupId","Event.EventOwner.TypeOfWorkLookupId","Event.EventOwner.MarriageStatusLookupId",
-                    "Event.EventOwner.AddressId","Event.EventOwner.NationLookupId",
+                    "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
+                    "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
+                    "Event.EventOwener.NationalityLookupId","Event.EventOwener.TitleLookupId","Event.EventOwener.ReligionLookupId",
+                    "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+                    "Event.EventOwener.AddressId","Event.EventOwener.NationLookupId",
                     "Event.EventRegistrar.RelationshipId",
                     "Event.EventRegistrar.RegistrarInfo.FirstName","Event.EventRegistrar.RegistrarInfo.MiddleName","Event.EventRegistrar.RegistrarInfo.LastName","Event.EventRegistrar.RegistrarInfo.BirthDate",
                     "Event.EventRegistrar.RegistrarInfo.NationalId","Event.EventRegistrar.RegistrarInfo.SexLookupId","Event.EventRegistrar.RegistrarInfo.PlaceOfBirthLookupId",
                     "Event.EventRegistrar.RegistrarInfo.NationalityLookupId","Event.EventRegistrar.RegistrarInfo.TitleLookupId","Event.EventRegistrar.RegistrarInfo.ReligionLookupId",
                     "Event.EventRegistrar.RegistrarInfo.EducationalStatusLookupId","Event.EventRegistrar.RegistrarInfo.TypeOfWorkLookupId","Event.EventRegistrar.RegistrarInfo.MarriageStatusLookupId",
                     "Event.EventRegistrar.RegistrarInfo.AddressId","Event.EventRegistrar.RegistrarInfo.NationLookupId",
-            
+
             };
             foreach (var fieldName in fieldNames)
             {
@@ -44,7 +44,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.SexLookupId)).NotEmpty().NotNull();
             //only resident address is required
-            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.AddressId)).NotEmpty().NotNull();
+            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.BirthAddressId)).NotEmpty().NotNull();
+            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
+
 
 
         }
@@ -55,10 +57,20 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             foreach (var member in propertyPath.Split('.'))
             {
                 body = Expression.PropertyOrField(body, member);
+
+
             }
+            if (Nullable.GetUnderlyingType(body.Type) != null)
+            {
+                // If the type is a nullable value type, convert it to its underlying type before converting to object
+                body = Expression.Convert(body, Nullable.GetUnderlyingType(body.Type));
+            }
+
+            // Convert the result to object
+            body = Expression.Convert(body, typeof(object));
             return Expression.Lambda<Func<T, object>>(body, param);
         }
-       
+
 
 
 

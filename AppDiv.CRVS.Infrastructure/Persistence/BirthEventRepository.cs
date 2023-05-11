@@ -23,8 +23,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return await _dbContext.BirthEvents
                             .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
-                            .Include(d => d.Facility)
-                            .Include(d => d.FacilityType)
+                            .Include(d => d.FacilityLookup)
+                            .Include(d => d.FacilityTypeLookup)
                             .Include(d => d.BirthNotification)
                             .Include(d => d.Father)
                             .Include(d => d.Mother)

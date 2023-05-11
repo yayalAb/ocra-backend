@@ -11,9 +11,13 @@ namespace AppDiv.CRVS.Domain.Configuration
         public void Configure(EntityTypeBuilder<PersonalInfo> builder)
         {
 
-            builder.HasOne(m => m.Address)
-               .WithMany(n => n.PersonalInfos)
-               .HasForeignKey(m => m.AddressId)
+            builder.HasOne(m => m.BirthAddress)
+               .WithMany(n => n.PersonalInfoBirthAddresses)
+               .HasForeignKey(m => m.BirthAddressId)
+               .IsRequired(false);
+            builder.HasOne(m => m.ResidentAddress)
+               .WithMany(n => n.PersonalInfoResidentAddresses)
+               .HasForeignKey(m => m.ResidentAddressId)
                .IsRequired(false);
             builder.HasOne(m => m.SexLookup)
                .WithMany(n => n.PersonSexNavigation)

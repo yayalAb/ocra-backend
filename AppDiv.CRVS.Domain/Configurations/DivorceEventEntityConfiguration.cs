@@ -10,8 +10,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
 
             builder.HasOne(m => m.DivorcedWife)
-                .WithOne(n => n.DivorceWifeNavigation)
-                .HasForeignKey<DivorceEvent>(m => m.DivorcedWifeId);
+                .WithMany(n => n.DivorceWifeNavigation)
+                .HasForeignKey(m => m.DivorcedWifeId);
             builder.HasOne(m => m.CourtCase)
                .WithOne(n => n.DivorceEventCourtCase)
                .HasForeignKey<DivorceEvent>(m => m.CourtCaseId);

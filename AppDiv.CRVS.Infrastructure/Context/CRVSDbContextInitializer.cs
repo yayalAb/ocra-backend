@@ -57,9 +57,22 @@ namespace AppDiv.CRVS.Infrastructure
         public async Task TrySeedAsync()
         {
             // await SeedUser();
+            await SeedSetting();
 
 
         }
+       public async Task SeedSetting(){
+        if (!_context.Settings.Where(s => s.Key == "DateSetting").Any()){
+            var currentYearSetting = new Setting{
+                Key = "DateSetting",
+                Value = new JObject{
+                    {"currentYear",DateTime.Now.Year}
+                }
+            };
+           await _context.Settings.AddAsync(currentYearSetting);
+           await _context.SaveChangesAsync();
+        }
+       }
         public async Task SeedUser()
         {
             List<UserGroup> groups = new List<UserGroup>();
@@ -165,7 +178,24 @@ namespace AppDiv.CRVS.Infrastructure
                     {
                         Email = "admin@gmail.com"
                     },
-                    Address = new Address
+                    BirthAddress = new Address
+                    {
+                        AddressName = new JObject{
+                        {"en","some place"}
+                      },
+                        StatisticCode = "code34726746",
+                        Code = "cc8989890809",
+                        AdminLevel = 1,
+                        AreaTypeLookup = new Lookup
+                        {
+                            Key = "AreaType",
+                            Value = new JObject{
+                        {"en","zone"}
+                      }
+                        },
+
+                    },
+                     ResidentAddress = new Address
                     {
                         AddressName = new JObject{
                         {"en","some place"}

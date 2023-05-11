@@ -15,8 +15,8 @@ namespace AppDiv.CRVS.Domain.Configuration
             .HasForeignKey(m => m.MarriageEventId);
 
             builder.HasOne(m => m.WitnessPersonalInfo)
-            .WithOne(n => n.Witness)
-            .HasForeignKey<Witness>(m => m.WitnessPersonalInfoId);
+            .WithMany(n => n.Witness)
+            .HasForeignKey(m => m.WitnessPersonalInfoId);
 
             
 

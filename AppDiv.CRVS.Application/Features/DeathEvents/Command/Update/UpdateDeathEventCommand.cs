@@ -18,8 +18,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
     public class UpdateDeathEventCommand : IRequest<DeathEventDTO>
     {
         public Guid Id { get; set; }
-        public Guid FacilityTypeId { get; set; }
-        public Guid FacilityId { get; set; }
+        public Guid FacilityTypeLookupId { get; set; }
+        public Guid FacilityLookupId { get; set; }
         public string DuringDeath { get; set; }
         public string PlaceOfFuneral { get; set; }
         public UpdateDeathNotificationRequest DeathNotification { get; set; }

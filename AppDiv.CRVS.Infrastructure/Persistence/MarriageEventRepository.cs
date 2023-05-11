@@ -1,10 +1,12 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class MarriageEventRepository : BaseRepository<MarriageEvent>, IMarriageEventRepository
     {
+        public DatabaseFacade Database => dbContext.Database ;
         private readonly CRVSDbContext dbContext;
 
         public MarriageEventRepository(CRVSDbContext dbContext) : base(dbContext)
@@ -50,6 +52,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     witness.WitnessPersonalInfo = null!;
                 }
             });
+            var db = dbContext.Database;
 
             await base.InsertAsync(entity, cancellationToken);
 

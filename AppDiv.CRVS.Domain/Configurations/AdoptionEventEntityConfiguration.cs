@@ -10,16 +10,16 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
 
             builder.HasOne(m => m.BeforeAdoptionAddress)
-                 .WithOne(n => n.BeforeAdoptionAddressNavigation)
-                 .HasForeignKey<AdoptionEvent>(m => m.BeforeAdoptionAddressId);
+                 .WithMany(n => n.BeforeAdoptionAddressNavigation)
+                 .HasForeignKey(m => m.BeforeAdoptionAddressId);
 
             builder.HasOne(m => m.AdoptiveMother)
-                 .WithOne(n => n.AdoptiveMotherNavigation)
-                 .HasForeignKey<AdoptionEvent>(m => m.AdoptiveMotherId);
+                 .WithMany(n => n.AdoptiveMotherNavigation)
+                 .HasForeignKey(m => m.AdoptiveMotherId);
 
             builder.HasOne(m => m.AdoptiveFather)
-                 .WithOne(n => n.AdoptiveFatherNavigation)
-                 .HasForeignKey<AdoptionEvent>(m => m.AdoptiveFatherId);
+                 .WithMany(n => n.AdoptiveFatherNavigation)
+                 .HasForeignKey(m => m.AdoptiveFatherId);
             builder.HasOne(m => m.CourtCase)
                  .WithOne(n => n.AdoptionEventCourtCase)
                  .HasForeignKey<AdoptionEvent>(m => m.CourtCaseId);

@@ -9,11 +9,11 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public Guid BirthEventId { get; set; }
-        public Guid DeliveryTypeId { get; set; }
-        public float WeghtAtBirth { get; set; }
-        public Guid SkilledProfId { get; set; }
+        public Guid DeliveryTypeLookupId { get; set; }
+        public float WeightAtBirth { get; set; }
+        public Guid SkilledProfLookupId { get; set; }
         public string NotficationSerialNumber { get; set; }
-        public virtual LookupDTO DeliveryType { get; set; }
-        public virtual LookupDTO SkilledProf { get; set; }
+        public virtual LookupDTO DeliveryTypeLookup { get; set; }
+        public virtual LookupDTO SkilledProfLookup { get; set; }
     }
 }

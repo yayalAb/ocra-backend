@@ -37,8 +37,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Query
                                 _deathEventRepository.GetAll().Select(de => new DeathEventDTO
                                 {
                                     Id = de.Id,
-                                    FacilityType = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityType),
-                                    Facility = CustomMapper.Mapper.Map<LookupDTO>(de.Facility),
+                                    FacilityTypeLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityTypeLookup),
+                                    FacilityLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityLookupId),
                                     DuringDeath = de.DuringDeath,
                                     PlaceOfFuneral = de.PlaceOfFuneral,
                                     DeathNotification = CustomMapper.Mapper.Map<DeathNotificationDTO>(de.DeathNotification),

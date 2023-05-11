@@ -14,13 +14,13 @@ namespace AppDiv.CRVS.Domain.Configuration
             .HasForeignKey(m => m.ApplicationAddressId);
             //with personalInfo table
             builder.HasOne(m =>m.BrideInfo)
-            .WithOne(n => n.MarriageApplicationBrideInfo )
-            .HasForeignKey<MarriageApplication>(m => m.BrideInfoId);
+            .WithMany(n => n.MarriageApplicationBrideInfo )
+            .HasForeignKey(m => m.BrideInfoId);
 
             //with personalInfo table
             builder.HasOne(m =>m.GroomInfo)
-            .WithOne(n => n.MarriageApplicationGroomInfo )
-            .HasForeignKey<MarriageApplication>(m => m.GroomInfoId); 
+            .WithMany(n => n.MarriageApplicationGroomInfo )
+            .HasForeignKey(m => m.GroomInfoId); 
 
             //with personalInfo table
             builder.HasOne(m =>m.CivilRegOfficer)

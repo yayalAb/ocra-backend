@@ -16,13 +16,13 @@ namespace AppDiv.CRVS.Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<DeathEvent> builder)
         {
-            builder.HasOne(m => m.FacilityType)
+            builder.HasOne(m => m.FacilityTypeLookup)
                .WithMany(n => n.DeathFacilityTypeNavigation)
-               .HasForeignKey(m => m.FacilityTypeId);
+               .HasForeignKey(m => m.FacilityTypeLookupId);
 
-            builder.HasOne(m => m.Facility)
+            builder.HasOne(m => m.FacilityLookup)
                .WithMany(n => n.DeathFacilityNavigation)
-               .HasForeignKey(m => m.FacilityId);
+               .HasForeignKey(m => m.FacilityLookupId);
 
             builder.HasOne(d => d.Event)
             .WithOne(n => n.DeathEventNavigation)
