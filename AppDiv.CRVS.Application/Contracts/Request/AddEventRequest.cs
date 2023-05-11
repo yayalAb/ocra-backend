@@ -17,10 +17,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public  AddRegistrarRequest EventRegistrar { get; set; }
         public  ICollection<AddSupportingDocumentRequest>? EventSupportingDocuments { get; set; }
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
-        
-
-
-
 
     }
 }
