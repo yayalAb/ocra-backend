@@ -32,18 +32,26 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task InsertOrUpdateAsync(DeathEvent entity, CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+            try
             {
-                _dbContext.PersonalInfos.Update(entity.Event.EventOwener);
-                entity.Event.EventOwener = null;
-            }
-            if (!string.IsNullOrEmpty(entity.Event.EventRegistrar.RegistrarInfo.Id.ToString()))
-            {
-                _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
-                entity.Event.EventRegistrar.RegistrarInfo = null;
-            }
+                if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+                {
+                    _dbContext.PersonalInfos.Update(entity.Event.EventOwener);
+                    entity.Event.EventOwener = null;
+                }
+                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar.RegistrarInfo.Id.ToString()))
+                {
+                    _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
+                    entity.Event.EventRegistrar.RegistrarInfo = null;
+                }
 
-            await base.InsertAsync(entity, cancellationToken);
+                await base.InsertAsync(entity, cancellationToken);
+            }
+            catch (System.Exception)
+            {
+
+                throw;
+            }
 
 
         }

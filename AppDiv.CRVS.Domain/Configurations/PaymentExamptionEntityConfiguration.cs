@@ -11,7 +11,6 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.ExamptionRequest)
                .WithMany(n => n.ExamptionRequestNavigation)
                .HasForeignKey(m => m.ExamptionRequestId);
-
         }
     }
 
