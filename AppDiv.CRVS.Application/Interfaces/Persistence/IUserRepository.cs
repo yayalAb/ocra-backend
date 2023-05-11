@@ -12,6 +12,6 @@ namespace AppDiv.CRVS.Domain.Repositories
     // Interface for CustomerQueryRepository
     public interface IUserRepository : IBaseRepository<ApplicationUser>
     {
-        
+         IQueryable<ApplicationUser> GetAllQueryableAsync();
     }
 }

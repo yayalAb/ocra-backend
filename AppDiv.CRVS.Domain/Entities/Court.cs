@@ -24,8 +24,17 @@ namespace AppDiv.CRVS.Domain.Entities
                 NameStr = value.ToString();
             }
         }
+
         [NotMapped]
-        public JObject Description
+        public string? NameLang
+        {
+            get
+            {
+                return Name.Value<string>(lang);
+            }
+        }
+        [NotMapped]
+        public JObject? Description
         {
             get
             {
@@ -34,6 +43,14 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 DescriptionStr = value.ToString();
+            }
+        }
+        [NotMapped]
+        public string? DescriptionLang
+        {
+            get
+            {
+                return Description.Value<string>(lang);
             }
         }
 

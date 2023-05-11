@@ -64,6 +64,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<Address, CreateAdderssCommand>().ReverseMap();
             CreateMap<Address, UpdateaddressCommand>().ReverseMap();
+            CreateMap<Address, AddAddressRequest>().ReverseMap();
 
             CreateMap<Setting, SettingDTO>().ReverseMap();
             CreateMap<Setting, createSettingCommand>().ReverseMap();
@@ -166,6 +167,10 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<CourtCase, AddCourtCaseRequest>().ReverseMap();
             CreateMap<AdoptionEvent, AdoptionDTO>().ReverseMap();
 
+            CreateMap<Court, AddCourtRequest>().ReverseMap();
+            CreateMap<Court, CourtDTO>().ReverseMap();
+
+
 
 
             CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
@@ -175,14 +180,6 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddEventForDeathRequest, Event>().ReverseMap();
             CreateMap<RegistrarForBirthRequest, Registrar>().ReverseMap();
             CreateMap<RegistrarForDeathRequest, Registrar>().ReverseMap();
-
-
-
-
-
-
-
-
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
             var mapFromType = typeof(IMapFrom<>);

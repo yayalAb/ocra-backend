@@ -3,6 +3,7 @@ using System;
 using AppDiv.CRVS.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    partial class CRVSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230511122625_second")]
+    partial class second
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +28,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
-
-                    b.Property<Guid>("AddressId")
-                        .HasColumnType("char(36)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -84,8 +83,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("varchar(256)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("AddressId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -1583,19 +1580,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.ApplicationUser", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
-                        .WithMany("ApplicationuserAddresses")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
                         .WithMany()
                         .HasForeignKey("PersonalInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Address");
 
                     b.Navigation("PersonalInfo");
                 });
@@ -2263,8 +2252,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Address", b =>
                 {
                     b.Navigation("AddressBirthPlaceNavigation");
-
-                    b.Navigation("ApplicationuserAddresses");
 
                     b.Navigation("BeforeAdoptionAddressNavigation");
 
