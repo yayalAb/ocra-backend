@@ -32,6 +32,19 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(query);
         }
 
+        [HttpGet("paidCertificatesByOfficer")]
+        public async Task<PaginatedList<PaidCertificateDTO>> Get([FromQuery] GetAllPaidCertificateByCivilRegistrarQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+        [HttpGet("unPaidCertificatesByOfficer")]
+        public async Task<PaginatedList<UnPaidCertificateDTO>> Get([FromQuery] GetAllUnPaidCertificateByCivilRegistrarQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<CertificateDTO> Get(Guid id)
