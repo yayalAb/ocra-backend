@@ -48,9 +48,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
 
             await base.InsertAsync(entity, cancellationToken);
-
-
         }
+
 
 
     }

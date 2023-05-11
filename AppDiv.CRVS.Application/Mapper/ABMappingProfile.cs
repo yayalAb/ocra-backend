@@ -100,6 +100,8 @@ namespace AppDiv.CRVS.Application.Mapper
             // CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
             CreateMap<ContactInfo, UpdateContactInfoRequest>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
+            CreateMap<PersonalInfo, AdoptionEventPersonalInfoDTO>().ReverseMap();
+
 
             CreateMap<DeathEvent, DeathEventDTO>().ReverseMap();
             CreateMap<DeathEvent, AddDeathEventRequest>().ReverseMap();
@@ -111,6 +113,8 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<Event, EventDTO>().ReverseMap();
             CreateMap<Event, AddEventRequest>().ReverseMap();
+            CreateMap<Event, AddAdoptionEventRequest>().ReverseMap();
+
 
             CreateMap<PaymentExamption, PaymentExamptionDTO>().ReverseMap();
             CreateMap<PaymentExamption, AddPaymentExamptionRequest>().ReverseMap();
@@ -153,6 +157,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AdoptionEvent, CreateAdoptionCommand>().ReverseMap();
 
             CreateMap<CourtCase, AddCourtCaseRequest>().ReverseMap();
+            CreateMap<AdoptionEvent, AdoptionDTO>().ReverseMap();
 
 
 
