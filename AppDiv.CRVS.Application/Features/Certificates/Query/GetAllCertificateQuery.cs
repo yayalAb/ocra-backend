@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                     ContentStr = c.ContentStr,
                                     Status = c.Status,
                                     AuthenticationStatus = c.AuthenticationStatus,
-                                    PrintCont = c.PrintCount,
+                                    PrintCount = c.PrintCount,
                                     CertificateSerialNumber = c.CertificateSerialNumber,
                                     // Description = g.Description.Value<string>("eng")
                                 }).ToList()

@@ -21,11 +21,11 @@ namespace AppDiv.CRVS.API.Controllers
 
             return Ok(await Mediator.Send(command));
         }
-        [HttpGet]
-        public async Task<IActionResult> updateDivorceEvent([FromBody] GetDivorceEventByIdQuery query)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> updateDivorceEvent(Guid  id)
         {
 
-            return Ok(await Mediator.Send(query));
+            return Ok(await Mediator.Send(new GetDivorceEventByIdQuery{Id = id}));
             
         }
     }

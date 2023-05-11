@@ -33,11 +33,11 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return Ok(await _mediator.Send(command));
         }
-        [HttpGet]
-        public async Task<IActionResult> GetAdoptionEventById([FromBody] AdoptionEventGetByIdQuery query)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetAdoptionEventById(Guid id)
         {
 
-            return Ok(await _mediator.Send(query));
+            return Ok(await _mediator.Send(new AdoptionEventGetByIdQuery { Id = id }));
         }
 
     }

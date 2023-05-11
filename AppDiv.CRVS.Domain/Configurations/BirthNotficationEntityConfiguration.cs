@@ -8,9 +8,9 @@ namespace AppDiv.CRVS.Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<BirthNotification> builder)
         {
-            builder.HasOne(m => m.DeliveryType)
+            builder.HasOne(m => m.DeliveryTypeLookup)
                .WithMany(n => n.DeliveryTypeNavigation)
-               .HasForeignKey(m => m.DeliveryTypeId);
+               .HasForeignKey(m => m.DeliveryTypeLookupId);
         }
     }
 }

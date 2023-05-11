@@ -33,12 +33,13 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<CertificateTemplate> CertificateTemplates { get; set; }
         public DbSet<Workflow> Workflows { get; set; }
         public DbSet<Step> Steps { get; set; }
+        public DbSet<ContactInfo> ContactInfos { get; set; }
         
         public DbSet<AdoptionEvent> AdoptionEvents { get; set; }
         public DbSet<BirthEvent> BirthEvents { get; set; }
         public DbSet<BirthNotification> BirthNotifications { get; set; }
         public DbSet<Certificate> Certificates { get; set; }
-        public DbSet<Court> Courts { get; set; }
+        // public DbSet<Court> Courts { get; set; }
         public DbSet<CourtCase> CourtCases { get; set; }
         public DbSet<DeathEvent> DeathEvents { get; set; }
         public DbSet<DeathNotification> DeathNotifications { get; set; }

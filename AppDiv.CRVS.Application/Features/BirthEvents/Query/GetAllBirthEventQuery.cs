@@ -43,14 +43,14 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Query
                                     Mother = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Mother),
                                     Father = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Father),
                                     BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(de.BirthPlace),
-                                    TypeOfBirth = CustomMapper.Mapper.Map<LookupDTO>(de.TypeOfBirth),
+                                    TypeOfBirthLookup = CustomMapper.Mapper.Map<LookupDTO>(de.TypeOfBirthLookup),
                                     EventId = de.EventId,
                                     Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
                                     BirthNotification = CustomMapper.Mapper.Map<BirthNotificationDTO>(de.BirthNotification),
-                                    FacilityTypeId = de.FacilityTypeId,
-                                    FacilityId = de.FacilityId,
-                                    FacilityType = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityType),
-                                    Facility = CustomMapper.Mapper.Map<LookupDTO>(de.Facility)
+                                    FacilityTypeLookupId = de.FacilityTypeLookupId,
+                                    FacilityLookupId = de.FacilityLookupId,
+                                    FacilityTypeLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityTypeLookup),
+                                    FacilityLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityLookup)
                                 }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var paymentRateResponse = CustomMapper.Mapper.Map<List<BirthEventDTO>>(paymentRateList);
