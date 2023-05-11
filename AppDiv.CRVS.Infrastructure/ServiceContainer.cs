@@ -91,6 +91,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IMarriageApplicationRepository, MarriageApplicationRepository>();
             services.AddTransient<IMarriageEventRepository, MarriageEventRepository>();
             services.AddTransient<IAdoptionEventRepository, AdoptionEventRepository>();
+            
 
 
 
@@ -103,6 +104,11 @@ namespace AppDiv.CRVS.Infrastructure
 
             services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();
             services.AddTransient<IPaymentRateRepository, PaymentRateRepository>();
+            services.AddTransient<IPaymentRepository, PaymentRepository>();
+
+            services.AddTransient<IEventRepository, EventRepository>();
+
+
 
             services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
