@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
         public string DuringDeath { get; set; }
         public string PlaceOfFuneral { get; set; }
         public UpdateDeathNotificationRequest DeathNotification { get; set; }
-        public UpdateEventRequest Event { get; set; }
+        public AddEventForDeathRequest Event { get; set; }
     }
 
     public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, DeathEventDTO>
@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
         public async Task<DeathEventDTO> Handle(UpdateDeathEventCommand request, CancellationToken cancellationToken)
         {
             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
-
+            deathEvent.Event.EventType = "DeathEvent";
             try
             {
                 _deathEventRepository.Update(deathEvent);

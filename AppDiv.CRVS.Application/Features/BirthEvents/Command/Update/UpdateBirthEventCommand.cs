@@ -28,7 +28,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 
         public virtual UpdatePersonalInfoRequest Father { get; set; }
         public virtual UpdatePersonalInfoRequest Mother { get; set; }
-        public virtual UpdateEventRequest Event { get; set; }
+        public virtual AddEventForBirthRequest Event { get; set; }
         public virtual UpdateBirthNotificationRequest BirthNotification { get; set; }
     }
 
@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         public async Task<BirthEventDTO> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
         {
             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
-
+            birthEvent.Event.EventType = "BirthEvent";
             try
             {
                 _birthEventRepository.Update(birthEvent);

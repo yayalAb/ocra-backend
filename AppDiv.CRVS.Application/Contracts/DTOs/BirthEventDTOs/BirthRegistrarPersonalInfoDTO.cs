@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Contracts.DTOs.BirthEventDTO
+namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
-    public class BirthRegistrarPersonalInfoDTO
+    public class BirthRegistrarPersonalInfoDTO : RegistrarPersonalInfoDTO
     {
         public Guid SexLookupId { get; set; }
         public DateTime BirthDate { get; set; }

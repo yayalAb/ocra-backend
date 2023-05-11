@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
-namespace AppDiv.CRVS.Application.Contracts.DTOs.BirthEventDTO
+namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class ChildInfoDTO
     {
@@ -14,6 +14,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.BirthEventDTO
         public DateTime BirthDate { get; set; }
         public Guid PlaceOfBirthLookupId { get; set; }
         public Guid NationalityLookupId { get; set; }
-        public Guid AddressId { get; set; }
+        public Guid ResidentAddressId { get; set; }
     }
 }

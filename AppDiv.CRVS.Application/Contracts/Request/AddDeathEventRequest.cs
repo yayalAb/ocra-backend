@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string DuringDeath { get; set; }
         public string PlaceOfFuneral { get; set; }
         public AddDeathNotificationRequest DeathNotification { get; set; }
-        public AddEventRequest Event { get; set; }
+        public AddEventForDeathRequest Event { get; set; }
 
     }
 }
