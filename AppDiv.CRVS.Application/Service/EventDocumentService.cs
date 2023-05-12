@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Application.Service
         {
              _fileService = fileService;
         }
-        public bool saveSupportingDocuments(ICollection<SupportingDocument> eventDocs , ICollection<SupportingDocument> examptionDocs,string eventType ){
+        public bool saveSupportingDocuments(ICollection<SupportingDocument> eventDocs , ICollection<SupportingDocument>? examptionDocs,string eventType ){
 
             var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", eventType);
             var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", eventType);
@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Application.Service
             {
                 _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
             });
-            examptionDocs.ToList().ForEach(doc =>
+            examptionDocs?.ToList().ForEach(doc =>
             {
                 _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
             });

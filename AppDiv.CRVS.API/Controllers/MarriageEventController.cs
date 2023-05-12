@@ -21,11 +21,11 @@ namespace AppDiv.CRVS.API.Controllers
 
             return Ok(await Mediator.Send(command));
         }
-        [HttpGet]
-        public async Task<IActionResult> updateMarriageEvent([FromBody] GetMarriageEventByIdQuery query)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> updateMarriageEvent(Guid id)
         {
 
-            return Ok(await Mediator.Send(query));
+            return Ok(await Mediator.Send(new GetMarriageEventByIdQuery{Id = id}));
         }
     }
 }

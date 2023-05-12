@@ -5,7 +5,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface IEventDocumentService
     {
-         public bool saveSupportingDocuments(ICollection<SupportingDocument> eventDocs , ICollection<SupportingDocument> examptionDocs,string eventType );
+         public bool saveSupportingDocuments(ICollection<SupportingDocument> eventDocs , ICollection<SupportingDocument>? examptionDocs,string eventType );
 
     }
 }

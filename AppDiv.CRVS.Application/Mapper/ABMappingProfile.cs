@@ -170,6 +170,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Court, AddCourtRequest>().ReverseMap();
             CreateMap<Court, CourtDTO>().ReverseMap();
 
+            CreateMap<Witness , UpdateWitnessRequest>().ReverseMap();
             CreateMap<MotherInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<FatherInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<ChildInfoDTO, PersonalInfo>().ReverseMap();
