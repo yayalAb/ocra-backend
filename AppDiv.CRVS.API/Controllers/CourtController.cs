@@ -74,7 +74,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<CourtDTO> GetById(Guid id)
+        public async Task<object> GetById(Guid id)
         {
             return await Mediator.Send(new CourtGetByIdQuery(id));
         }
