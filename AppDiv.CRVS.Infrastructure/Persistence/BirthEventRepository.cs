@@ -38,21 +38,25 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
                 {
                     _dbContext.PersonalInfos.Update(entity.Event.EventOwener);
+                    entity.Event.EventOwenerId = entity.Event.EventOwener.Id;
                     entity.Event.EventOwener = null;
                 }
                 if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()))
                 {
                     _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
+                    entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
                     entity.Event.EventRegistrar.RegistrarInfo = null;
                 }
                 if (!string.IsNullOrEmpty(entity.Father.Id.ToString()))
                 {
                     _dbContext.PersonalInfos.Update(entity.Father);
+                    entity.FatherId = entity.Father.Id;
                     entity.Father = null;
                 }
                 if (!string.IsNullOrEmpty(entity.Mother.Id.ToString()))
                 {
                     _dbContext.PersonalInfos.Update(entity.Mother);
+                    entity.MotherId = entity.Mother.Id;
                     entity.Mother = null;
                 }
 
