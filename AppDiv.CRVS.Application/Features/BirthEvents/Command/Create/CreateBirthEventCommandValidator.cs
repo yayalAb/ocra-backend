@@ -19,11 +19,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
             _repo = repo;
             // _mediator = mediator;
-            // RuleFor(p => p.BirthEvent.PaymentTypeLookupId)
-            //     .Must(x => x != Guid.Empty).WithMessage("Payment Type must not be empty.");
-            // // .NotEmpty().WithMessage("{PropertyName} is required.")
-            // // .NotNull().
-            // // .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
+            // RuleFor(p => p.BirthEvent.Event.EventOwener.FirstName)
+            //     // .Must(x => x != Guid.Empty).WithMessage("Payment Type must not be empty.");
+            // .NotEmpty().WithMessage("{PropertyName} is required.")
+            // .NotNull()
+            // .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
+            // RuleFor(p => p.BirthEvent.Event.EventOwener.FirstName)
+            //     // .Must(x => x != Guid.Empty).WithMessage("Payment Type must not be empty.");
+            // .NotEmpty().WithMessage("{PropertyName} is required.")
+            // .NotNull()
+            // .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
             // RuleFor(p => p.BirthEvent.EventLookupId)
             //     .Must(x => x != Guid.Empty).WithMessage("Event must not be empty.");
 

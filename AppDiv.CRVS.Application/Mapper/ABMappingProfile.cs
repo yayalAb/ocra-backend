@@ -170,6 +170,14 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Court, AddCourtRequest>().ReverseMap();
             CreateMap<Court, CourtDTO>().ReverseMap();
 
+            CreateMap<MotherInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<FatherInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<ChildInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<WitnessInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<DeadPersonalInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<RegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<BirthRegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<DivorcePartnersInfoDTO, PersonalInfo>().ReverseMap();
 
 
 
@@ -177,6 +185,14 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<SupportingDocument, AddSupportingDocumentRequest>().ReverseMap();
             CreateMap<PaymentExamption, UpdatePaymentExamptionRequest>().ReverseMap();
             CreateMap<Registrar, UpdateRegistrarRequest>().ReverseMap();
+            CreateMap<AddEventForBirthRequest, Event>().ReverseMap();
+            CreateMap<AddEventForDeathRequest, Event>().ReverseMap();
+            CreateMap<AddEventForMarriageRequest, Event>().ReverseMap();
+            CreateMap<AddEventForDivorceRequest, Event>().ReverseMap();
+            CreateMap<RegistrarForBirthRequest, Registrar>().ReverseMap();
+            CreateMap<RegistrarForDeathRequest, Registrar>().ReverseMap();
+            CreateMap<RegistrarForMarriageRequest, Registrar>().ReverseMap();
+            CreateMap<RegistrarForDivorceRequest, Registrar>().ReverseMap();
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
             var mapFromType = typeof(IMapFrom<>);

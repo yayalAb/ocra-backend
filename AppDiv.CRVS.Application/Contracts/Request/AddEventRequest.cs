@@ -14,8 +14,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid InformantTypeLookupId { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
-        public UpdatePersonalInfoRequest EventOwener { get; set; }
-        public AddRegistrarRequest EventRegistrar { get; set; }
+        // public UpdatePersonalInfoRequest EventOwener { get; set; }
+        // public AddRegistrarRequest EventRegistrar { get; set; }
         public ICollection<AddSupportingDocumentRequest>? EventSupportingDocuments { get; set; }
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
 

@@ -7,6 +7,8 @@ using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
+using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {
@@ -15,9 +17,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
     {
         private readonly IDeathEventRepository _deathEventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository, IEventDocumentService eventDocumentService)
+        private readonly ILogger<CreateDeathEventCommandHandler> logger;
+
+        public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository, IEventDocumentService eventDocumentService, ILogger<CreateDeathEventCommandHandler> logger)
         {
             this._eventDocumentService = eventDocumentService;
+            this.logger = logger;
             this._deathEventRepository = deathEventRepository;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
@@ -43,6 +48,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             {
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                 deathEvent.Event.EventType = "DeathEvent";
+                logger.LogCritical(deathEvent.Event.CivilRegOfficerId.ToString());
+                logger.LogCritical(deathEvent.Event.EventOwenerId.ToString());
 
                 await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);

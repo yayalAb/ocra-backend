@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     _dbContext.PersonalInfos.Update(entity.Event.EventOwener);
                     entity.Event.EventOwener = null;
                 }
-                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar.RegistrarInfo.Id.ToString()))
+                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()))
                 {
                     _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
                     entity.Event.EventRegistrar.RegistrarInfo = null;
