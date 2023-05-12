@@ -50,6 +50,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             await base.InsertAsync(entity, cancellationToken);
         }
 
+        public void EFUpdate(AdoptionEvent adoptionEvent)
+        {
+            _dbContext.AdoptionEvents.Update(adoptionEvent);
+        }
 
 
     }

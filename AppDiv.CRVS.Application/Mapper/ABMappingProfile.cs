@@ -174,6 +174,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
             CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
+            CreateMap<SupportingDocument, AddSupportingDocumentRequest>().ReverseMap();
             CreateMap<PaymentExamption, UpdatePaymentExamptionRequest>().ReverseMap();
             CreateMap<Registrar, UpdateRegistrarRequest>().ReverseMap();
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();

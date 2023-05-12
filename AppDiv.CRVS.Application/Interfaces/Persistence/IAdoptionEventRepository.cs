@@ -7,6 +7,9 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<AdoptionEvent> GetWithAsync(Guid id);
         Task InsertOrUpdateAsync(AdoptionEvent entity, CancellationToken cancellationToken);
+        public void EFUpdate(AdoptionEvent adoptionEvent);
+
+
 
     }
 }
