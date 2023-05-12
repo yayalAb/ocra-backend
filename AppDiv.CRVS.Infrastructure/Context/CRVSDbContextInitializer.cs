@@ -56,23 +56,26 @@ namespace AppDiv.CRVS.Infrastructure
 
         public async Task TrySeedAsync()
         {
-            // await SeedUser();
+            //await SeedUser();
             await SeedSetting();
 
 
         }
-       public async Task SeedSetting(){
-        if (!_context.Settings.Where(s => s.Key == "DateSetting").Any()){
-            var currentYearSetting = new Setting{
-                Key = "DateSetting",
-                Value = new JObject{
+        public async Task SeedSetting()
+        {
+            if (!_context.Settings.Where(s => s.Key == "DateSetting").Any())
+            {
+                var currentYearSetting = new Setting
+                {
+                    Key = "DateSetting",
+                    Value = new JObject{
                     {"currentYear",DateTime.Now.Year}
                 }
-            };
-           await _context.Settings.AddAsync(currentYearSetting);
-           await _context.SaveChangesAsync();
+                };
+                await _context.Settings.AddAsync(currentYearSetting);
+                await _context.SaveChangesAsync();
+            }
         }
-       }
         public async Task SeedUser()
         {
             List<UserGroup> groups = new List<UserGroup>();
@@ -129,6 +132,23 @@ namespace AppDiv.CRVS.Infrastructure
                 NormalizedEmail = "ADMIN@GMAIL.COM",
                 LockoutEnabled = false,
                 PhoneNumber = "1234567890",
+                Address = new Address
+                {
+                    AddressName = new JObject{
+                        {"en","Kebele User Address"}
+                      },
+                    StatisticCode = "code34726746",
+                    Code = "cc8989890809",
+                    AdminLevel = 1,
+                    AreaTypeLookup = new Lookup
+                    {
+                        Key = "AreaType",
+                        Value = new JObject{
+                        {"en","zone"}
+                      }
+                    },
+
+                },
                 PersonalInfo = new PersonalInfo
                 {
                     // Id = personalInfoId,
@@ -195,7 +215,7 @@ namespace AppDiv.CRVS.Infrastructure
                         },
 
                     },
-                     ResidentAddress = new Address
+                    ResidentAddress = new Address
                     {
                         AddressName = new JObject{
                         {"en","some place"}
