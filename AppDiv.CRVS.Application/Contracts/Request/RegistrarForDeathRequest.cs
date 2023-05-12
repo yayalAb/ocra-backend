@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class RegistrarForDeathRequest : AddRegistrarRequest
     {
+        public Guid? RegistrarInfoId { get; set; } = null;
         public virtual RegistrarPersonalInfoDTO RegistrarInfo { get; set; }
     }
 }

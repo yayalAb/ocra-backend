@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class ChildInfoDTO
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; } = null;
         public JObject FirstName { get; set; }
         public Guid SexLookupId { get; set; }
         public DateTime BirthDate { get; set; }
