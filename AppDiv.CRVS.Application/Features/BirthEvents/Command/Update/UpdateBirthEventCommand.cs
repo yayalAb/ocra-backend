@@ -26,8 +26,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         public Guid TypeOfBirthId { get; set; }
         public Guid EventId { get; set; }
 
-        public virtual UpdatePersonalInfoRequest Father { get; set; }
-        public virtual UpdatePersonalInfoRequest Mother { get; set; }
+        public virtual FatherInfoDTO Father { get; set; }
+        public virtual MotherInfoDTO Mother { get; set; }
         public virtual AddEventForBirthRequest Event { get; set; }
         public virtual UpdateBirthNotificationRequest BirthNotification { get; set; }
     }

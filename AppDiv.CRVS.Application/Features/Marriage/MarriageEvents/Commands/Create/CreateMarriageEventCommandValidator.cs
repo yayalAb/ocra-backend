@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.SexLookupId)).NotEmpty().NotNull();
             //only resident address is required
-            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.BirthAddressId)).NotEmpty().NotNull();
+            // RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.BirthAddressId)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
 

@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Contracts.Request;
+﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 
@@ -11,8 +12,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
     {
         public Guid MarriageTypeId { get; set; }
         public Guid ApplicationId { get; set; }
-        public virtual UpdatePersonalInfoRequest BrideInfo { get; set; }
-        public virtual AddEventRequest Event { get;set;}
+        public virtual BrideInfoDTO BrideInfo { get; set; }
+        public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
     }
     }
