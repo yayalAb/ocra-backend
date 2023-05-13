@@ -44,12 +44,27 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(query);
         }
 
+        [HttpGet("lastGeneratedIdInfo")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> Get([FromQuery] GetLastGeneratedEventIdByOfficerQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<CertificateDTO> Get(Guid id)
         {
             return await Mediator.Send(new GetCertificateByIdQuery(id));
+        }
+
+        [HttpGet("Reprint/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<CertificateDTO> GetReprint(Guid id)
+        {
+            return await Mediator.Send(new ReprintCertificateCommand { Id = id });
         }
 
         [HttpGet("Event/{eventId}")]
@@ -95,6 +110,9 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
-
+// address -- 0d37c377-27fb-4173-9a09-9af3895c51fd
+// lookup -- 045bd314-3083-49aa-b256-d953833a2960
+// marriageApp -- 32c65493-5027-4cee-bf55-4f1dfaf99869
+// personalINfo -- 1983b361-79cb-492d-ac6e-e9fa5dfb2774
     }
 }

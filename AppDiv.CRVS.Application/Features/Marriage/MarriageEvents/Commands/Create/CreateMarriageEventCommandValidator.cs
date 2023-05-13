@@ -14,18 +14,18 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "BrideInfo.NationalId","BrideInfo.SexLookupId","BrideInfo.PlaceOfBirthLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.TitleLookupId","BrideInfo.ReligionLookupId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.AddressId","BrideInfo.NationLookupId","Event",
+                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
                     "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.TitleLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    "Event.EventOwener.AddressId","Event.EventOwener.NationLookupId",
-                    "Event.EventRegistrar.RelationshipId",
+                    "Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
+                    "Event.EventRegistrar.RelationshipLookupId",
                     "Event.EventRegistrar.RegistrarInfo.FirstName","Event.EventRegistrar.RegistrarInfo.MiddleName","Event.EventRegistrar.RegistrarInfo.LastName","Event.EventRegistrar.RegistrarInfo.BirthDate",
                     "Event.EventRegistrar.RegistrarInfo.NationalId","Event.EventRegistrar.RegistrarInfo.SexLookupId","Event.EventRegistrar.RegistrarInfo.PlaceOfBirthLookupId",
                     "Event.EventRegistrar.RegistrarInfo.NationalityLookupId","Event.EventRegistrar.RegistrarInfo.TitleLookupId","Event.EventRegistrar.RegistrarInfo.ReligionLookupId",
                     "Event.EventRegistrar.RegistrarInfo.EducationalStatusLookupId","Event.EventRegistrar.RegistrarInfo.TypeOfWorkLookupId","Event.EventRegistrar.RegistrarInfo.MarriageStatusLookupId",
-                    "Event.EventRegistrar.RegistrarInfo.AddressId","Event.EventRegistrar.RegistrarInfo.NationLookupId",
+                    "Event.EventRegistrar.RegistrarInfo.BirthAddressId","Event.EventRegistrar.RegistrarInfo.NationLookupId",
 
             };
             foreach (var fieldName in fieldNames)

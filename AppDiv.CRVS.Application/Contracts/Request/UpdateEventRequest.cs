@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public UpdatePersonalInfoRequest EventOwener { get; set; }
         public  UpdateRegistrarRequest EventRegistrar { get; set; }
         public  ICollection<UpdateSupportingDocumentRequest> EventSupportingDocuments { get; set; }
-        public UpdatePaymentExamptionRequest PaymentExamption { get; set; }
+        public UpdatePaymentExamptionRequest? PaymentExamption { get; set; }
         
 
 

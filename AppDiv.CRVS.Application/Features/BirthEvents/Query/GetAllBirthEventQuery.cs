@@ -42,6 +42,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Query
                                     MotherId = de.MotherId,           // Father = CustomMapper.Mapper.Map<PersonalInfoDTO>(de.Father),
                                     Mother = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Mother),
                                     Father = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Father),
+                                    Child = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Event.EventOwener),
                                     BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(de.BirthPlace),
                                     TypeOfBirthLookup = CustomMapper.Mapper.Map<LookupDTO>(de.TypeOfBirthLookup),
                                     EventId = de.EventId,
