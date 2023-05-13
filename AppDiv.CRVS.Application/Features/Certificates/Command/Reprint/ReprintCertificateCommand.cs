@@ -14,28 +14,30 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 {
     // Customer create command with CustomerResponse
-    public class UpdateCertificateCommand : IRequest<CertificateDTO>
+    public class ReprintCertificateCommand : IRequest<CertificateDTO>
     {
 
         public Guid Id { get; set; }
-        public Guid EventId { get; set; }
-        public JObject Content { get; set; }
-        public bool Status { get; set; }
-        public bool AuthenticationStatus { get; set; }
-        public int PrintCount { get; set; }
-        public string CertificateSerialNumber { get; set; }
+        // public Guid EventId { get; set; }
+        // public JObject Content { get; set; }
+        // public bool Status { get; set; }
+        // public bool AuthenticationStatus { get; set; }
+        // public int PrintCont { get; set; }
+        // public string CertificateSerialNumber { get; set; }
     }
 
-    public class UpdateCertificateCommandHandler : IRequestHandler<UpdateCertificateCommand, CertificateDTO>
+    public class ReprintCertificateCommandHandler : IRequestHandler<ReprintCertificateCommand, CertificateDTO>
     {
         private readonly ICertificateRepository _certificateRepository;
-        public UpdateCertificateCommandHandler(ICertificateRepository certificateRepository)
+        public ReprintCertificateCommandHandler(ICertificateRepository certificateRepository)
         {
             _certificateRepository = certificateRepository;
         }
-        public async Task<CertificateDTO> Handle(UpdateCertificateCommand request, CancellationToken cancellationToken)
+        public async Task<CertificateDTO> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
-            var certificate = CustomMapper.Mapper.Map<Certificate>(request);
+            var certificate = await _certificateRepository.GetAsync(request.Id);
+            certificate.PrintCount += 1;
+            // var certificate = CustomMapper.Mapper.Map<Certificate>(request);
 
             try
             {

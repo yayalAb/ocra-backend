@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                 {
                                     Id = c.Id,
                                     EventId = c.EventId,
-                                    ContentStr = c.ContentStr,
+                                    Content = c.Content,
                                     Status = c.Status,
                                     AuthenticationStatus = c.AuthenticationStatus,
                                     PrintCount = c.PrintCount,

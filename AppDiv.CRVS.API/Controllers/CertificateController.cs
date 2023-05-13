@@ -52,6 +52,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(new GetCertificateByIdQuery(id));
         }
 
+        [HttpGet("Reprint/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<CertificateDTO> GetReprint(Guid id)
+        {
+            return await Mediator.Send(new ReprintCertificateCommand { Id = id });
+        }
+
         [HttpGet("Event/{eventId}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IEnumerable<CertificateDTO>> GetByEventId(Guid eventId)
