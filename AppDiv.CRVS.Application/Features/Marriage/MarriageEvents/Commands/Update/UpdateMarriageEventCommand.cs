@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         public Guid MarriageTypeId { get; set; }
         public Guid ApplicationId { get; set; }
         public virtual UpdatePersonalInfoRequest BrideInfo { get; set; }
-        public virtual AddEventForMarriageRequest Event { get; set; }
-        public virtual ICollection<UpdateWitnessRequest> Witnesses { get; }
+        public virtual UpdateEventRequest Event { get;set;}
+        public virtual ICollection<UpdateWitnessRequest> Witnesses { get; set; }
     }
     }

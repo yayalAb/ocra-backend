@@ -1,5 +1,6 @@
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
@@ -12,12 +13,12 @@ using Microsoft.EntityFrameworkCore;
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
 {
     // Customer query with List<Customer> response
-    public record AdoptionEventGetByIdQuery : IRequest<AdoptionDTO>
+    public record AdoptionEventGetByIdQuery : IRequest<AddAdoptionRequest>
     {
         public Guid Id { get; set; }
     }
 
-    public class AdoptionEventGetByIdQueryHandler : IRequestHandler<AdoptionEventGetByIdQuery, AdoptionDTO>
+    public class AdoptionEventGetByIdQueryHandler : IRequestHandler<AdoptionEventGetByIdQuery, AddAdoptionRequest>
     {
         private readonly IAdoptionEventRepository _adoptionEventRepository;
         private readonly IMapper _mapper;
@@ -27,7 +28,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
             _adoptionEventRepository = adoptionEventRepository;
             _mapper = mapper;
         }
-        public async Task<AdoptionDTO> Handle(AdoptionEventGetByIdQuery request, CancellationToken cancellationToken)
+        public async Task<AddAdoptionRequest> Handle(AdoptionEventGetByIdQuery request, CancellationToken cancellationToken)
         {
 
             var adoptionEvent = await _adoptionEventRepository
@@ -39,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
                     .Include(m => m.Event.EventOwener).ThenInclude(e => e.ContactInfo)
                     .Include(m => m.Event.EventSupportingDocuments)
                     .Include(m => m.Event.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
-                    .ProjectTo<AdoptionDTO>(_mapper.ConfigurationProvider)
+                    .ProjectTo<AddAdoptionRequest>(_mapper.ConfigurationProvider)
                     .FirstOrDefaultAsync();
             if (adoptionEvent == null)
             {

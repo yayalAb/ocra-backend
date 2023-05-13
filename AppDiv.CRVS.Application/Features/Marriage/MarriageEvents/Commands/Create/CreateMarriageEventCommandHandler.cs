@@ -5,6 +5,7 @@ using MediatR;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 {
@@ -14,12 +15,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageEventRepository _marriageEventRepository;
         private readonly IPersonalInfoRepository _personalInfoRepository;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly ILogger<CreateMarriageEventCommandHandler> logger;
 
-        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository, IPersonalInfoRepository personalInfoRepository, IEventDocumentService eventDocumentService)
+        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository, IPersonalInfoRepository personalInfoRepository, IEventDocumentService eventDocumentService, ILogger<CreateMarriageEventCommandHandler> logger)
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
             _eventDocumentService = eventDocumentService;
+            this.logger = logger;
         }
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
         {
@@ -52,10 +55,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                         {
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
+                            // logger.LogCritical($"yyyyyyyyyy......{request.Event.EventRegistrar.Relationshi}")
                             marriageEvent.Event.EventType = "Marriage";
                             await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
-                            _eventDocumentService.saveSupportingDocuments(marriageEvent.Event.EventSupportingDocuments, marriageEvent.Event.PaymentExamption.SupportingDocuments, "Marriage");
+                           //TODO: //
+                            _eventDocumentService.saveSupportingDocuments(marriageEvent.Event.EventSupportingDocuments, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
 
                         }
                         // return new CreateMarriageEventCommandResponse { Message = "Marriage Event created Successfully" };

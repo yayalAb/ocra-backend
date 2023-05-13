@@ -36,6 +36,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
                 .Include(m => m.Event)
                 .Include(m => m.Event.EventOwener).ThenInclude(e => e.ContactInfo)
                 .Include(m => m.Event.EventSupportingDocuments)
+                .Include(m => m.Witnesses)
                 .Include(m=> m.Event.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
                 .ProjectTo<UpdateMarriageEventCommand>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();

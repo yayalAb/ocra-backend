@@ -102,7 +102,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ContactInfo ContactInfo { get; set; }
         public virtual ICollection<Event> Events { get; set; }
         public virtual ICollection<Event> EventCivilRegOfficers { get; set; }
-        // public virtual ApplicationUser ApplicationUser { get; set; }
+        public virtual ApplicationUser ApplicationUser { get; set; }
         public virtual ICollection<BirthEvent> BirthFatherNavigation { get; set; }
         public virtual ICollection<BirthEvent> BirthMotherNavigation { get; set; }
         public virtual ICollection<Registrar> RegistrarPersonalInfoNavigation { get; set; }

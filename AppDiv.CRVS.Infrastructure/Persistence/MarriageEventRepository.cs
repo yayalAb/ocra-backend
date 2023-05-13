@@ -1,17 +1,20 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class MarriageEventRepository : BaseRepository<MarriageEvent>, IMarriageEventRepository
     {
-        public DatabaseFacade Database => dbContext.Database ;
+        public DatabaseFacade Database => dbContext.Database;
         private readonly CRVSDbContext dbContext;
+        private readonly ILogger<MarriageEventRepository> logger;
 
-        public MarriageEventRepository(CRVSDbContext dbContext) : base(dbContext)
+        public MarriageEventRepository(CRVSDbContext dbContext, ILogger<MarriageEventRepository> logger) : base(dbContext)
         {
             this.dbContext = dbContext;
+            this.logger = logger;
         }
         public IQueryable<MarriageEvent> GetAllQueryableAsync()
         {
@@ -28,24 +31,25 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+            logger.LogCritical($"jkjkjk....{entity.Event.EventOwener.Id}");
+            if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.Event.EventOwener);
                 entity.Event.EventOwener = null!;
             }
-            if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()))
+            if (entity.Event.EventRegistrar?.RegistrarInfo.Id != null && entity.Event.EventRegistrar.RegistrarInfo.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
                 entity.Event.EventRegistrar.RegistrarInfo = null!;
             }
-            if (!string.IsNullOrEmpty(entity.BrideInfo.Id.ToString()))
+            if (entity.BrideInfo.Id != null && entity.BrideInfo.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.BrideInfo);
                 entity.BrideInfo = null!;
             }
             entity.Witnesses?.ToList().ForEach(witness =>
             {
-                if (witness.WitnessPersonalInfo.Id != null)
+                if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
                 {
                     dbContext.PersonalInfos.Update(witness.WitnessPersonalInfo);
                     witness.WitnessPersonalInfoId = witness.WitnessPersonalInfo.Id;
