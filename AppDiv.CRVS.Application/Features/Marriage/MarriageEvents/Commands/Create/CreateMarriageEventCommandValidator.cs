@@ -9,23 +9,26 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
     {
         public CreateMarriageEventCommandValidator()
         {
-            var fieldNames = new List<string>{"MarriageTypeId","ApplicationId","BrideInfo",
-                    "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDate",
-                    "BrideInfo.NationalId","BrideInfo.SexLookupId","BrideInfo.PlaceOfBirthLookupId",
-                    "BrideInfo.NationalityLookupId","BrideInfo.TitleLookupId","BrideInfo.ReligionLookupId",
-                    "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event",
-                    "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
-                    "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
-                    "Event.EventOwener.NationalityLookupId","Event.EventOwener.TitleLookupId","Event.EventOwener.ReligionLookupId",
-                    "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    "Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
-                    "Event.EventRegistrar.RelationshipLookupId",
-                    "Event.EventRegistrar.RegistrarInfo.FirstName","Event.EventRegistrar.RegistrarInfo.MiddleName","Event.EventRegistrar.RegistrarInfo.LastName","Event.EventRegistrar.RegistrarInfo.BirthDate",
-                    "Event.EventRegistrar.RegistrarInfo.NationalId","Event.EventRegistrar.RegistrarInfo.SexLookupId","Event.EventRegistrar.RegistrarInfo.PlaceOfBirthLookupId",
-                    "Event.EventRegistrar.RegistrarInfo.NationalityLookupId","Event.EventRegistrar.RegistrarInfo.TitleLookupId","Event.EventRegistrar.RegistrarInfo.ReligionLookupId",
-                    "Event.EventRegistrar.RegistrarInfo.EducationalStatusLookupId","Event.EventRegistrar.RegistrarInfo.TypeOfWorkLookupId","Event.EventRegistrar.RegistrarInfo.MarriageStatusLookupId",
-                    "Event.EventRegistrar.RegistrarInfo.BirthAddressId","Event.EventRegistrar.RegistrarInfo.NationLookupId",
+            var fieldNames = 
+            new List<string>{
+                "MarriageTypeId"
+                // "MarriageTypeId","ApplicationId","BrideInfo",
+                //     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDate",
+                //     "BrideInfo.NationalId","BrideInfo.SexLookupId","BrideInfo.PlaceOfBirthLookupId",
+                //     "BrideInfo.NationalityLookupId","BrideInfo.TitleLookupId","BrideInfo.ReligionLookupId",
+                //     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
+                //     "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event",
+                //     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
+                //     "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
+                //     "Event.EventOwener.NationalityLookupId","Event.EventOwener.TitleLookupId","Event.EventOwener.ReligionLookupId",
+                //     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+                //     "Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
+                //     "Event.EventRegistrar.RelationshipLookupId",
+                //     "Event.EventRegistrar.RegistrarInfo.FirstName","Event.EventRegistrar.RegistrarInfo.MiddleName","Event.EventRegistrar.RegistrarInfo.LastName","Event.EventRegistrar.RegistrarInfo.BirthDate",
+                //     "Event.EventRegistrar.RegistrarInfo.NationalId","Event.EventRegistrar.RegistrarInfo.SexLookupId","Event.EventRegistrar.RegistrarInfo.PlaceOfBirthLookupId",
+                //     "Event.EventRegistrar.RegistrarInfo.NationalityLookupId","Event.EventRegistrar.RegistrarInfo.TitleLookupId","Event.EventRegistrar.RegistrarInfo.ReligionLookupId",
+                //     "Event.EventRegistrar.RegistrarInfo.EducationalStatusLookupId","Event.EventRegistrar.RegistrarInfo.TypeOfWorkLookupId","Event.EventRegistrar.RegistrarInfo.MarriageStatusLookupId",
+                //     "Event.EventRegistrar.RegistrarInfo.BirthAddressId","Event.EventRegistrar.RegistrarInfo.NationLookupId",
 
             };
             foreach (var fieldName in fieldNames)
@@ -50,6 +53,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
 
         }
+
+        private bool fds(object arg)
+        {
+            throw new NotImplementedException();
+        }
+
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {
             var param = Expression.Parameter(typeof(T), "x");

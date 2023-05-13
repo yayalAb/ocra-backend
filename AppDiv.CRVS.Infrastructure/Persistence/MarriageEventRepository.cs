@@ -29,24 +29,46 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return dbContext.MarriageEvents.Where(m => m.Id == id).Any();
         }
+        public async Task InsertWitness(List<Witness> witnesses){
+            witnesses.ToList().ForEach(witness =>
+            {
+                if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
+                {
+                    dbContext.PersonalInfos.Update(witness.WitnessPersonalInfo);
+                    witness.WitnessPersonalInfoId = witness.WitnessPersonalInfo.Id;
+                    witness.WitnessPersonalInfo = null!;
+
+                }
+            });
+            await dbContext.Witnesses.AddRangeAsync(witnesses);
+        }
         public async Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken)
         {
             logger.LogCritical($"jkjkjk....{entity.Event.EventOwener.Id}");
             if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.Event.EventOwener);
+                entity.Event.EventOwenerId = entity.Event.EventOwener.Id;
                 entity.Event.EventOwener = null!;
+                await dbContext.SaveChangesAsync(cancellationToken);
             }
             if (entity.Event.EventRegistrar?.RegistrarInfo.Id != null && entity.Event.EventRegistrar.RegistrarInfo.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
+                entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
                 entity.Event.EventRegistrar.RegistrarInfo = null!;
+                await dbContext.SaveChangesAsync(cancellationToken);
+
             }
             if (entity.BrideInfo.Id != null && entity.BrideInfo.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.BrideInfo);
+                entity.BrideInfoId = entity.BrideInfo.Id;
                 entity.BrideInfo = null!;
+                await dbContext.SaveChangesAsync(cancellationToken);
+
             }
+            
             entity.Witnesses?.ToList().ForEach(witness =>
             {
                 if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
@@ -54,11 +76,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     dbContext.PersonalInfos.Update(witness.WitnessPersonalInfo);
                     witness.WitnessPersonalInfoId = witness.WitnessPersonalInfo.Id;
                     witness.WitnessPersonalInfo = null!;
+
                 }
             });
             var db = dbContext.Database;
 
             await base.InsertAsync(entity, cancellationToken);
+                await dbContext.SaveChangesAsync(cancellationToken);
 
 
         }
