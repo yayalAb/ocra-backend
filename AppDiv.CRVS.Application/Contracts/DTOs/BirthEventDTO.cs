@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid EventId { get; set; }
         public virtual UpdatePersonalInfoRequest Father { get; set; }
         public virtual UpdatePersonalInfoRequest Mother { get; set; }
+        public virtual UpdatePersonalInfoRequest Child { get; set; }
         public virtual LookupDTO FacilityTypeLookup { get; set; }
         public virtual LookupDTO FacilityLookup { get; set; }
         public virtual LookupDTO TypeOfBirthLookup { get; set; }

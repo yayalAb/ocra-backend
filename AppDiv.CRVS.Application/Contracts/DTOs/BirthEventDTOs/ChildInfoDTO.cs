@@ -10,6 +10,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid? Id { get; set; } = null;
         public JObject FirstName { get; set; }
+        public JObject? MiddleName { get; set; }
+        public JObject? LastName { get; set; }
         public Guid SexLookupId { get; set; }
         public DateTime BirthDate { get; set; }
         public Guid PlaceOfBirthLookupId { get; set; }

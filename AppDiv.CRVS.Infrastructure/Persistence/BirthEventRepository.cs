@@ -21,13 +21,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public virtual async Task<BirthEvent?> GetWithIncludedAsync(Guid id)
         {
             return await _dbContext.BirthEvents
-                            .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)
-                            .Include(d => d.Event).ThenInclude(e => e.EventOwener)
                             .Include(d => d.FacilityLookup)
                             .Include(d => d.FacilityTypeLookup)
                             .Include(d => d.BirthNotification)
                             .Include(d => d.Father)
                             .Include(d => d.Mother)
+                            .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)
+                            .Include(d => d.Event).ThenInclude(e => e.EventOwener)
+                            .Include(d => d.Event).ThenInclude(e => e.EventRegistrar)
                             .FirstOrDefaultAsync(d => d.Id == id);
         }
 
