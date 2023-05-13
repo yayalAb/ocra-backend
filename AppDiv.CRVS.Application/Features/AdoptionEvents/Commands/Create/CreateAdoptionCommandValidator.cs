@@ -9,14 +9,37 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         public CreatAdoptionCommandValidator(IAdoptionEventRepository repo)
         {
             _repo = repo;
-            // RuleFor(p => p.Address.AddressNameStr)
-            //     .NotEmpty().WithMessage("{PropertyName} is required.")
-            //     .NotNull()
-            //     .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
-            //RuleFor(e => e)
-            //   .MustAsync(phoneNumberUnique)
-            //   .WithMessage("A Customer phoneNumber already exists.");
+
+            RuleFor(p => p.Adoption.ApprovedName.am)
+                .Cascade(CascadeMode.StopOnFirstFailure)
+                .NotNull()
+                .WithMessage("{PropertyName} is required.")
+                .NotEmpty()
+                .WithMessage("{PropertyName} must not be empty.");
+            RuleFor(p => p.Adoption.ApprovedName.or)
+                .Cascade(CascadeMode.StopOnFirstFailure)
+                .NotNull()
+                .WithMessage("{PropertyName} is required.")
+                .NotEmpty()
+                .WithMessage("{PropertyName} must not be empty.");
+            RuleFor(p => p.Adoption.AdoptiveFather.FirstName.am)
+                .NotNull()
+                .WithMessage("{PropertyName} is required.")
+                .NotEmpty()
+                .WithMessage("{PropertyName} must not be empty.");
+            RuleFor(p => p.Adoption.AdoptiveFather.FirstName.or)
+                .NotNull()
+                .WithMessage("{PropertyName} is required.")
+                .NotEmpty()
+                .WithMessage("{PropertyName} must not be empty.");
+            RuleFor(p => p.Adoption.BeforeAdoptionAddressId)
+                .NotNull()
+                .WithMessage("{PropertyName} is required.")
+                .NotEmpty()
+                .WithMessage("{PropertyName} must not be empty.");
         }
+
+
 
     }
 }

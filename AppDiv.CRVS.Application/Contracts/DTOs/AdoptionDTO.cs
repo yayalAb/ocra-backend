@@ -9,13 +9,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid BeforeAdoptionAddressId { get; set; }
         public JObject ApprovedName { get; set; }
         public JObject Reason { get; set; }
-        public Guid AdoptiveMotherId { get; set; }
-        public Guid AdoptiveFatherId { get; set; }
-        public Guid CourtCaseId { get; set; }
-        public Guid EventId { get; set; }
-        public virtual UpdatePersonalInfoRequest AdoptiveMother { get; set; }
-        public UpdatePersonalInfoRequest AdoptiveFather { get; set; }
+        public virtual AdoptionEventPersonalInfoDTO AdoptiveMother { get; set; }
+        public AdoptionEventPersonalInfoDTO AdoptiveFather { get; set; }
         public virtual AddCourtCaseRequest CourtCase { get; set; }
-        public virtual EventDTO Event { get; set; }
+        public virtual AdoptionEventDTO Event { get; set; }
     }
 }
