@@ -7,10 +7,8 @@ using AppDiv.CRVS.Domain.Entities;
 
 namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
-    public interface IPaymentRateRepository : IBaseRepository<PaymentRate>
+    public interface IPaymentRequestRepository : IBaseRepository<PaymentRequest>
     {
-        Task<IEnumerable<PaymentRate>> GetAllAsync();
-        Task<PaymentRate> GetByIdAsync(Guid id);
-        IQueryable<PaymentRate> GetAllQueryableAsync();
+       
     }
 }

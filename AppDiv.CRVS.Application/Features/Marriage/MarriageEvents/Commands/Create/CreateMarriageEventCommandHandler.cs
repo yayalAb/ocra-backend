@@ -54,12 +54,17 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                         if (CreateMarriageEventCommandResponse.Success)
                         {
 
+
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
+           
+
                             // logger.LogCritical($"yyyyyyyyyy......{request.Event.EventRegistrar.Relationshi}")
                             marriageEvent.Event.EventType = "Marriage";
                             await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
+
+
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
-                           //TODO: //
+                            //TODO: //
                             _eventDocumentService.saveSupportingDocuments(marriageEvent.Event.EventSupportingDocuments, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
 
                         }
