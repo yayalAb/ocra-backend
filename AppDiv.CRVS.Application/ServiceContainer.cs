@@ -24,6 +24,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IEventDocumentService , EventDocumentService>();
 
 
+
             return services;
         }
     }

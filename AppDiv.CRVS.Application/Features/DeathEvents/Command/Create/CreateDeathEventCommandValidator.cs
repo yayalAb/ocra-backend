@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 
             _repo = repo;
             // _mediator = mediator;
-            // RuleFor(p => p.DeathEvent.PaymentTypeLookupId)
+            // RuleFor(p => p.DeathEvent.FacilityLookupId)
             //     .Must(x => x != Guid.Empty).WithMessage("Payment Type must not be empty.");
             // // .NotEmpty().WithMessage("{PropertyName} is required.")
             // // .NotNull().
