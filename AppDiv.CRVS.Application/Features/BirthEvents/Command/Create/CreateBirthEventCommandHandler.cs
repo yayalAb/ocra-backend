@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request.customer);           
 
-            var createPaymentCommandResponse = new CreateBirthEventCommandResponse();
+            var createBirthEventCommandResponse = new CreateBirthEventCommandResponse();
 
             var validator = new CreateBirthEventCommandValidator(_eventRepository, request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -38,13 +38,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             //Check and log validation errors
             if (validationResult.Errors.Count > 0)
             {
-                createPaymentCommandResponse.Success = false;
-                createPaymentCommandResponse.ValidationErrors = new List<string>();
+                createBirthEventCommandResponse.Success = false;
+                createBirthEventCommandResponse.ValidationErrors = new List<string>();
                 foreach (var error in validationResult.Errors)
-                    createPaymentCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                createPaymentCommandResponse.Message = createPaymentCommandResponse.ValidationErrors[0];
+                    createBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
+                createBirthEventCommandResponse.Message = createBirthEventCommandResponse.ValidationErrors[0];
             }
-            if (createPaymentCommandResponse.Success)
+            if (createBirthEventCommandResponse.Success)
             {
                 // var docs = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
 
@@ -60,7 +60,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "BirthEvents");
 
             }
-            return createPaymentCommandResponse;
+            return createBirthEventCommandResponse;
         }
     }
 }
