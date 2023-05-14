@@ -15,9 +15,14 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
     {
         private readonly IBirthEventRepository _birthEventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository, IEventDocumentService eventDocumentService)
+        private readonly IEventRepository _eventRepository;
+
+        public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
+                                              IEventDocumentService eventDocumentService,
+                                              IEventRepository eventRepository)
         {
             this._eventDocumentService = eventDocumentService;
+            this._eventRepository = eventRepository;
             this._birthEventRepository = birthEventRepository;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
@@ -27,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
             var createPaymentCommandResponse = new CreateBirthEventCommandResponse();
 
-            var validator = new CreateBirthEventCommandValidator(_birthEventRepository);
+            var validator = new CreateBirthEventCommandValidator(_eventRepository, request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors

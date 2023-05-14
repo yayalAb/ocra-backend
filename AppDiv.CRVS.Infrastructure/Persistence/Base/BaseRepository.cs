@@ -1,6 +1,7 @@
 ﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using Audit.EntityFramework;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await _dbContext.Set<T>().ToListAsync();
         }
+
         public virtual IQueryable<T> GetAll()
         {
             return _dbContext.Set<T>().AsQueryable();
