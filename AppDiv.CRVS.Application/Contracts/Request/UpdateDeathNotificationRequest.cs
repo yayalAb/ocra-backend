@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     {
         public Guid Id { get; set; }
         public string CauseOfDeath { get; set; }
-        public Guid CauseOfDeathInfoTypeId { get; set; }
+        public Guid CauseOfDeathInfoTypeLookupId { get; set; }
         public string DeathNotificationSerialNumber { get; set; }
     }
 }

@@ -17,13 +17,15 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
     {
         private readonly IDeathEventRepository _deathEventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly ILogger<CreateDeathEventCommandHandler> logger;
+        private readonly IEventRepository _eventRepository;
 
-        public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository, IEventDocumentService eventDocumentService, ILogger<CreateDeathEventCommandHandler> logger)
+        public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
+                                              IEventDocumentService eventDocumentService,
+                                              IEventRepository eventRepository)
         {
             this._eventDocumentService = eventDocumentService;
-            this.logger = logger;
             this._deathEventRepository = deathEventRepository;
+            this._eventRepository = eventRepository;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -32,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 
             var createPaymentCommandResponse = new CreateDeathEventCommandResponse();
 
-            var validator = new CreateDeathEventCommandValidator(_deathEventRepository);
+            var validator = new CreateDeathEventCommandValidator(_eventRepository, request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors
@@ -48,8 +50,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             {
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                 deathEvent.Event.EventType = "DeathEvent";
-                logger.LogCritical(deathEvent.Event.CivilRegOfficerId.ToString());
-                logger.LogCritical(deathEvent.Event.EventOwenerId.ToString());
+                // logger.LogCritical(deathEvent.Event.CivilRegOfficerId.ToString());
+                // logger.LogCritical(deathEvent.Event.EventOwenerId.ToString());
 
                 await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
