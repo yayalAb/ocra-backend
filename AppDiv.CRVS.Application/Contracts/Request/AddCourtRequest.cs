@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     public class AddCourtRequest
     {
         public virtual Guid? AddressId { get; set; }
-        public JObject Name { get; set; }
-        public JObject? Description { get; set; }
+        public LanguageModel Name { get; set; }
+        public LanguageModel? Description { get; set; }
     }
 }

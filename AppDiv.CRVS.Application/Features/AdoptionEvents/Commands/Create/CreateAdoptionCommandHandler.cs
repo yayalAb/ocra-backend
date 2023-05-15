@@ -46,19 +46,47 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
                     if (adoptionEvent.AdoptiveFather.Id != null && adoptionEvent.AdoptiveFather.Id != Guid.Empty)
                     {
-                        _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.AdoptiveFather));
+                        PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
+                        selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
+                        selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
+                        selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
+                        selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveFather?.EducationalStatusLookupId;
+                        selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveFather?.TypeOfWorkLookupId;
+                        selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveFather?.MarriageStatusLookupId;
+                        selectedperson.NationLookupId = adoptionEvent.AdoptiveFather?.NationLookupId;
+
+                        _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(selectedperson));
                         adoptionEvent.AdoptiveFatherId = adoptionEvent.AdoptiveFather.Id;
                         adoptionEvent.AdoptiveFather = null;
                     }
                     if (adoptionEvent.AdoptiveMother.Id != null && adoptionEvent.AdoptiveMother.Id != Guid.Empty)
                     {
-                        _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.AdoptiveMother));
+
+                        PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
+                        selectedperson.NationalId = adoptionEvent.AdoptiveMother?.NationalId;
+                        selectedperson.NationalityLookupId = adoptionEvent.AdoptiveMother?.NationalityLookupId;
+                        selectedperson.ReligionLookupId = adoptionEvent.AdoptiveMother?.ReligionLookupId;
+                        selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveMother?.EducationalStatusLookupId;
+                        selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveMother?.TypeOfWorkLookupId;
+                        selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveMother?.MarriageStatusLookupId;
+                        selectedperson.NationLookupId = adoptionEvent.AdoptiveMother?.NationLookupId;
+
+                        _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(selectedperson));
                         adoptionEvent.AdoptiveMotherId = adoptionEvent.AdoptiveMother.Id;
                         adoptionEvent.AdoptiveMother = null;
                     }
                     if (adoptionEvent.Event.EventOwener.Id != null && adoptionEvent.Event.EventOwener.Id != Guid.Empty)
                     {
-                        _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(adoptionEvent.Event.EventOwener));
+                        PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.Event.EventOwener.Id);
+                        selectedperson.NationalId = adoptionEvent.Event?.EventOwener?.NationalId;
+                        selectedperson.NationalityLookupId = adoptionEvent.Event?.EventOwener?.NationalityLookupId;
+                        selectedperson.ReligionLookupId = adoptionEvent.Event?.EventOwener?.ReligionLookupId;
+                        selectedperson.EducationalStatusLookupId = adoptionEvent.Event?.EventOwener?.EducationalStatusLookupId;
+                        selectedperson.TypeOfWorkLookupId = adoptionEvent.Event?.EventOwener?.TypeOfWorkLookupId;
+                        selectedperson.MarriageStatusLookupId = adoptionEvent.Event?.EventOwener?.MarriageStatusLookupId;
+                        selectedperson.NationLookupId = adoptionEvent.Event?.EventOwener?.NationLookupId;
+
+                        _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(selectedperson));
                         adoptionEvent.Event.EventOwenerId = adoptionEvent.Event.EventOwener.Id;
                         adoptionEvent.Event.EventOwener = null;
                     }
