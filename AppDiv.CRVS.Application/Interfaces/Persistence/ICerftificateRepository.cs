@@ -11,6 +11,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface ICertificateRepository : IBaseRepository<Certificate>
     {
         Task<IEnumerable<Certificate>> GetByEventAsync(Guid id);
-        Task<JObject> GetContent(Guid eventId);
+        Task<(BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce)> GetContent(Guid eventId);
     }
 }

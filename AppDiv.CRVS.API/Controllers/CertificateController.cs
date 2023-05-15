@@ -12,11 +12,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.API.Controllers
 {
     public class CertificateController : ApiControllerBase
     {
+
+        [HttpGet("Generate")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<JObject> GetCertificate([FromQuery] Guid id, string serialNo)
+        {
+            return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo });
+        }
 
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
