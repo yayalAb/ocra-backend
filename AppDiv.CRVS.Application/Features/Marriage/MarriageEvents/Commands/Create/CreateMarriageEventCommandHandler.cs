@@ -15,15 +15,18 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageEventRepository _marriageEventRepository;
         private readonly IPersonalInfoRepository _personalInfoRepository;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly ILookupRepository _lookupRepository;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
 
-        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository, IPersonalInfoRepository personalInfoRepository, IEventDocumentService eventDocumentService, ILogger<CreateMarriageEventCommandHandler> logger)
+        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository, IPersonalInfoRepository personalInfoRepository, IEventDocumentService eventDocumentService,ILookupRepository lookupRepository, ILogger<CreateMarriageEventCommandHandler> logger)
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
             _eventDocumentService = eventDocumentService;
+            _lookupRepository = lookupRepository;
             this.logger = logger;
         }
+
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
         {
 
@@ -39,7 +42,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     {
                         var CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse();
 
-                        var validator = new CreateMarriageEventCommandValidator();
+                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors

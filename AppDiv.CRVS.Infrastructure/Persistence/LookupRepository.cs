@@ -13,8 +13,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class LookupRepository : BaseRepository<Lookup>, ILookupRepository
     {
+        private readonly CRVSDbContext dbContext;
+
         public LookupRepository(CRVSDbContext dbContext) : base(dbContext)
         {
+            this.dbContext = dbContext;
         }
 
         public async Task<Lookup> GetByIdAsync(Guid id)
@@ -27,9 +30,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return base.GetFirstEntryAsync(x => x.Key.Equals(key), q => q.Id, Utility.Contracts.SortingDirection.Ascending);
         }
 
-        public Task<Lookup> GetLookupListByKey(string[] key)
-        {
-            throw new NotImplementedException();
+        public Lookup? GetLookupById(Guid id){
+            return dbContext.Lookups.Find(id);
         }
     }
 }

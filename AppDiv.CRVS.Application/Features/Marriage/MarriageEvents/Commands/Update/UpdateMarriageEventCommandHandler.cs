@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         public async Task<UpdateMarriageEventCommandResponse> Handle(UpdateMarriageEventCommand request, CancellationToken cancellationToken)
         {
             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
+            marriageEvent.Event.EventType = "Marriage";
             _marriageEventRepository.EFUpdate(marriageEvent);
             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
 
