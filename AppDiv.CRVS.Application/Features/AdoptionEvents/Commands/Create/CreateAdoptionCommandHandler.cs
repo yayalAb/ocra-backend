@@ -15,20 +15,24 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
     {
         private readonly IAdoptionEventRepository _AdoptionEventRepository;
         private readonly IPersonalInfoRepository _personalInfoRepository;
+        private readonly ICourtRepository _courtRepository;
+        private readonly IAddressLookupRepository _addressRepository;
         private readonly IFileService _fileService;
         private readonly IEventDocumentService _eventDocumentService;
-        public CreateAdoptionCommandHandler(IEventDocumentService eventDocumentService, IAdoptionEventRepository AdoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService)
+        public CreateAdoptionCommandHandler(IAddressLookupRepository addressRepository, ICourtRepository courtQueryRepository, IEventDocumentService eventDocumentService, IAdoptionEventRepository AdoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
+            _courtRepository = courtQueryRepository;
             _fileService = fileService;
             _eventDocumentService = eventDocumentService;
+            _addressRepository = addressRepository;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
             var CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse();
 
-            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository);
+            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository, _addressRepository);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (validationResult.Errors.Count > 0)
             {
@@ -89,6 +93,12 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                         _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(selectedperson));
                         adoptionEvent.Event.EventOwenerId = adoptionEvent.Event.EventOwener.Id;
                         adoptionEvent.Event.EventOwener = null;
+                    }
+                    if (adoptionEvent.CourtCase.Court.Id != null && adoptionEvent.CourtCase.Court.Id != Guid.Empty)
+                    {
+                        _courtRepository.Update(CustomMapper.Mapper.Map<Court>(adoptionEvent.CourtCase.Court));
+                        adoptionEvent.CourtCase.CourtId = adoptionEvent.CourtCase.Court.Id;
+                        adoptionEvent.CourtCase.Court = null;
                     }
                     await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                     await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);

@@ -14,5 +14,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public void EFUpdate(PersonalInfo personalInfo);
         public void Attach(PersonalInfo personalInfo);
         public PersonalInfo GetById(Guid id);
+        public bool CheckPerson(Guid id);
+
     }
 }

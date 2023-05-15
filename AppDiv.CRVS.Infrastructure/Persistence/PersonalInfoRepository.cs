@@ -41,6 +41,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return dbContext.PersonalInfos.Find(id);
         }
+        public bool CheckPerson(Guid id)
+        {
+            var person = dbContext.PersonalInfos.Find(id);
+            if (person != null)
+            {
+                return true;
+            }
+            return false;
+        }
 
 
     }
