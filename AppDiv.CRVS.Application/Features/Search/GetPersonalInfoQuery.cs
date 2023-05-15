@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.Search
         public async Task<object> Handle(GetPersonalInfoQuery request, CancellationToken cancellationToken)
         {
             var SelectedInfo = _PersonaInfoRepository.GetAll().Where(model =>
-                                            EF.Functions.Like(model.FirstNameStr, $"%{request.SearchString}%")
+                                             EF.Functions.Like(model.FirstNameStr, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.MiddleNameStr, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.LastNameStr, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.NationalId, $"%{request.SearchString}%")

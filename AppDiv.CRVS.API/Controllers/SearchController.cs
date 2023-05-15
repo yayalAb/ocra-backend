@@ -21,12 +21,19 @@ namespace AppDiv.CRVS.API.Controllers
             _Ilog = Ilog;
         }
         [HttpGet]
-        [Route("GetPersonalInfo")]
+        [Route("SearchPersonalInfo")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> GetByParent([FromQuery] string SearchString)
+        public async Task<object> SearchPersonalInfo([FromQuery] string SearchString)
         {
             return await _mediator.Send(new GetPersonalInfoQuery { SearchString = SearchString });
         }
 
+        [HttpGet]
+        [Route("GetPersonalInfoById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> G([FromQuery] Guid Id)
+        {
+            return await _mediator.Send(new GetPersonalInfoById { Id = Id });
+        }
     }
 }

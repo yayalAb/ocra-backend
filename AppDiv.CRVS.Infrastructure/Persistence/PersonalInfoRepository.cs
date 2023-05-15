@@ -31,5 +31,26 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             dbContext.PersonalInfos.Update(personalInfo);
         }
+        public void Attach(PersonalInfo personalInfo)
+        {
+            dbContext.PersonalInfos.Attach(personalInfo);
+        }
+
+        public PersonalInfo GetById(Guid id)
+        {
+
+            return dbContext.PersonalInfos.Find(id);
+        }
+        public bool CheckPerson(Guid id)
+        {
+            var person = dbContext.PersonalInfos.Find(id);
+            if (person != null)
+            {
+                return true;
+            }
+            return false;
+        }
+
+
     }
 }
