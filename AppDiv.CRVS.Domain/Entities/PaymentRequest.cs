@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual PaymentRate PaymentRate { get; set; }
         public virtual Payment Payment { get; set; }
 
-
+  
         [NotMapped]
         public JObject Reason
         {

@@ -1,9 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
-using AppDiv.CRVS.Application.Interfaces;
-using AppDiv.CRVS.Application.Interfaces.Persistence;
-using AppDiv.CRVS.Application.Mapper;
-using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using System;
@@ -20,50 +16,15 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         public Guid Id { get; set; }
         public Guid FatherId { get; set; }
         public Guid MotherId { get; set; }
-        public Guid FacilityTypeId { get; set; }
-        public Guid FacilityId { get; set; }
+        public Guid FacilityTypeLookupId { get; set; }
+        public Guid FacilityLookupId { get; set; }
         public Guid BirthPlaceId { get; set; }
-        public Guid TypeOfBirthId { get; set; }
+        public Guid TypeOfBirthLookupId { get; set; }
         public Guid EventId { get; set; }
 
         public virtual FatherInfoDTO Father { get; set; }
         public virtual MotherInfoDTO Mother { get; set; }
         public virtual AddEventForBirthRequest Event { get; set; }
         public virtual UpdateBirthNotificationRequest BirthNotification { get; set; }
-    }
-
-    public class UpdateBirthEventCommandHandler : IRequestHandler<UpdateBirthEventCommand, BirthEventDTO>
-    {
-        private readonly IBirthEventRepository _birthEventRepository;
-        private readonly IEventDocumentService _eventDocumentService;
-        public UpdateBirthEventCommandHandler(IBirthEventRepository birthEventRepository, IEventDocumentService eventDocumentService)
-        {
-            this._eventDocumentService = eventDocumentService;
-            _birthEventRepository = birthEventRepository;
-        }
-        public async Task<BirthEventDTO> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
-        {
-            var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
-            birthEvent.Event.EventType = "BirthEvent";
-            try
-            {
-                _birthEventRepository.Update(birthEvent);
-                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-
-                var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
-                var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
-
-                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "BirthEvents");
-            }
-            catch (Exception exp)
-            {
-                throw new ApplicationException(exp.Message);
-            }
-
-            var modifiedBirthEvent = await _birthEventRepository.GetWithIncludedAsync(request.Id);
-            var paymentRateResponse = CustomMapper.Mapper.Map<BirthEventDTO>(modifiedBirthEvent);
-
-            return paymentRateResponse;
-        }
     }
 }

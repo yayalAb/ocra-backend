@@ -188,8 +188,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<RegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<BirthRegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<DivorcePartnersInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<GroomInfoDTO , PersonalInfo>();
 
-
+            CreateMap<BrideInfoDTO , PersonalInfo>();
 
             CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
             CreateMap<SupportingDocument, AddSupportingDocumentRequest>().ReverseMap();

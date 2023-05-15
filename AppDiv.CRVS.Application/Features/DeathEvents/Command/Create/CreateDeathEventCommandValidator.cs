@@ -1,4 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Repositories;
 using FluentValidation;
 using MediatR;
@@ -12,30 +13,47 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {
     public class CreateDeathEventCommandValidator : AbstractValidator<CreateDeathEventCommand>
     {
-        private readonly IDeathEventRepository _repo;
+        private readonly IEventRepository _repo;
         // private readonly IMediator _mediator;
-        public CreateDeathEventCommandValidator(IDeathEventRepository repo)
+        public CreateDeathEventCommandValidator(IEventRepository repo, CreateDeathEventCommand request)
         {
-
             _repo = repo;
-            // _mediator = mediator;
-            // RuleFor(p => p.DeathEvent.PaymentTypeLookupId)
-            //     .Must(x => x != Guid.Empty).WithMessage("Payment Type must not be empty.");
-            // // .NotEmpty().WithMessage("{PropertyName} is required.")
-            // // .NotNull().
-            // // .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
-            // RuleFor(p => p.DeathEvent.EventLookupId)
-            //     .Must(x => x != Guid.Empty).WithMessage("Event must not be empty.");
+            RuleFor(p => p.DeathEvent.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.DeathEvent.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            // RuleFor(p => p.DeathEvent.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo);
+            RuleFor(p => p.DeathEvent.DuringDeath).NotEmpty().NotNull();
+            RuleFor(p => p.DeathEvent.PlaceOfFuneral).NotEmpty().NotNull();
+            RuleFor(p => p.DeathEvent.DeathNotification.CauseOfDeathInfoTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            // RuleFor(p => p.DeathEvent.DeathNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.DeathEvent.DeathNotification.CauseOfDeath).NotEmpty().NotNull();
+            RuleFor(p => p.DeathEvent.Event.EventOwener.FirstName.or).NotEmpty().NotNull();
+            RuleFor(p => p.DeathEvent.Event.EventOwener.FirstName.am).NotEmpty().NotNull();
+            RuleFor(p => p.DeathEvent.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            // RuleFor(p => p.DeathEvent.Event.EventOwener.BirthDate).NotEmpty().NotNull();
+            RuleFor(p => p.DeathEvent.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.DeathEvent.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.DeathEvent.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
 
-            // RuleFor(p => p.DeathEvent.AddressId)
-            //     .Must(x => x != Guid.Empty).WithMessage("Address must not be empty.");
-            // RuleFor(pr => pr.DeathEvent.Amount)
-            //     .NotEmpty().WithMessage("{PropertyName} is required.")
-            //     .NotNull();
 
-            // RuleFor(e => e)
-            //   .MustAsync(phoneNumberUnique)
-            //   .WithMessage("A Customer phoneNumber already exists.");
+            if (!string.IsNullOrEmpty(request.DeathEvent.Event.EventRegistrar?.RegistrarInfoId.ToString()) && request.DeathEvent.Event.EventRegistrar != null)
+            {
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.MiddleName.am).NotEmpty().NotNull();
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.LastName.or).NotEmpty().NotNull();
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.LastName.am).NotEmpty().NotNull();
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+                // RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.BirthDate).NotEmpty().NotNull()
+                // .Must(date => date < DateTime.Now && date > necw DateTime(1900, 1, 1));
+            }
+            else
+            {
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfoId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+            }
+
         }
 
         //private async Task<bool> phoneNumberUnique(CreateCustomerCommand request, CancellationToken token)

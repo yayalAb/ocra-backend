@@ -12,6 +12,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         public IQueryable<MarriageEvent> GetAllQueryableAsync();
         public void EFUpdate(MarriageEvent marriageEvent);
+        public Task InsertWitness(List<Witness> witnesses  );
         public bool exists(Guid id);
         // public DatabaseFacade Database;
          public DatabaseFacade Database {get;}

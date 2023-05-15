@@ -45,7 +45,10 @@ public enum Page{
    NationalityLookup,
    SexLookup,
    PlaceOfBirthLookup,
-   MartialStatusLookup
+   MartialStatusLookup,
+   SupportingDocumentTypeLookup,
+   FacilityLookup,
+   DeliveryTypeLookup
 
 
 

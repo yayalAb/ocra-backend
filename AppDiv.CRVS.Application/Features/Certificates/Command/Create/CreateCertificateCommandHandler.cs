@@ -6,6 +6,8 @@ using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Command.Create
 {
@@ -13,8 +15,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Create
     public class CreateCertificateCommandHandler : IRequestHandler<CreateCertificateCommand, CreateCertificateCommandResponse>
     {
         private readonly ICertificateRepository _certificateRepository;
-        public CreateCertificateCommandHandler(ICertificateRepository certificateRepository)
+        private readonly ILogger<CreateCertificateCommand> log;
+        private readonly ICustomValidator<CreateCertificateCommand> _customValidator;
+        public CreateCertificateCommandHandler(ICertificateRepository certificateRepository,
+                                                ILogger<CreateCertificateCommand> log,
+                                                ICustomValidator<CreateCertificateCommand> customValidator)
         {
+            this._customValidator = customValidator;
+            this.log = log;
             _certificateRepository = certificateRepository;
         }
         public async Task<CreateCertificateCommandResponse> Handle(CreateCertificateCommand request, CancellationToken cancellationToken)
@@ -24,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Create
 
             var createCertificateCommandResponse = new CreateCertificateCommandResponse();
 
-            var validator = new CreateCertificateCommandValidator(_certificateRepository);
+            var validator = new CreateCertificateCommandValidator(_certificateRepository, log, _customValidator);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors

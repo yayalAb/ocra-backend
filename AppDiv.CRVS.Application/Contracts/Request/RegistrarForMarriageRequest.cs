@@ -8,7 +8,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class RegistrarForMarriageRequest : AddRegistrarRequest
     {
-        public Guid? RegistrarInfoId { get; set; } = null;
         public virtual GroomInfoDTO RegistrarInfo { get; set; }
     }
 }
