@@ -107,6 +107,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
             CreateMap<PersonalInfo, AdoptionEventPersonalInfoDTO>().ReverseMap();
             CreateMap<PersonalInfo, AddAdoptionPersonalInfoRequest>().ReverseMap();
+            // CreateMap<PersonalInfo, PersonalInfoByIdDTO>().ReverseMap();
+
+
 
 
             CreateMap<DeathEvent, DeathEventDTO>().ReverseMap();

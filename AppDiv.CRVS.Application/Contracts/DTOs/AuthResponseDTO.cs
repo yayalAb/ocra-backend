@@ -9,8 +9,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public record AuthResponseDTO
     {
         public string UserId { get; set; }
+        public Guid? PersonalInfoId { get; set; }
         public string Name { get; set; }
         public string Token { get; set; }
-        public List<RoleDto> Roles { get; set;}
+        public List<RoleDto> Roles { get; set; }
     }
 }
