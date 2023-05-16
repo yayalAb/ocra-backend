@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<AdoptionEvent> BeforeAdoptionAddressNavigation { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplications {get; set;}
         public virtual ICollection<ApplicationUser> ApplicationuserAddresses { get; set;}
+        public virtual ICollection<PaymentExamptionRequest> ExamptionRequestAddresses { get; set; }
 
         [NotMapped]
         public string? AddressNameLang

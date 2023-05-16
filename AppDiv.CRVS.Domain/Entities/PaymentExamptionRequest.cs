@@ -13,6 +13,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public DateTime ExamptedDate { get; set; }
         public string ExamptedBy { get; set; }
         public string? NumberOfClient { get; set; }
+        public Guid? AddressId { get; set; }
+        public string CertificateType { get; set; }
         [NotMapped]
         public JObject Reason
         {
@@ -25,7 +27,17 @@ namespace AppDiv.CRVS.Domain.Entities
                 ReasonStr = value.ToString();
             }
         }
+
+        [NotMapped]
+        public string? ReasonLang
+        {
+            get
+            {
+                return Reason.Value<string>(lang);
+            }
+        }
         public virtual ICollection<PaymentExamption> ExamptionRequestNavigation { get; set; }
+        public virtual Address Address { get; set; }
 
 
     }

@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<PaymentExamptionRequestDTO>> Get([FromQuery] GetAllPaymentExamptionRequestQuery query)
+        public async Task<PaginatedList<PaymentExamptionRequestGridDTO>> Get([FromQuery] GetAllPaymentExamptionRequestQuery query)
         {
             return await Mediator.Send(query);
         }
