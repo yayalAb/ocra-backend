@@ -86,9 +86,9 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
             RuleFor(p => p.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
             RuleFor(p => p.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
 
-            if (string.IsNullOrEmpty(request.FatherId.ToString()) && request.Father != null)
-            {
-                RuleFor(p => p.Father.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+            // if (string.IsNullOrEmpty(request.FatherId.ToString()) && request.Father != null)
+            // {
+            RuleFor(p => p.Father.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
                 RuleFor(p => p.Father.FirstName.or).NotEmpty().NotNull();
                 RuleFor(p => p.Father.FirstName.am).NotEmpty().NotNull();
                 RuleFor(p => p.Father.MiddleName.am).NotEmpty().NotNull();
@@ -96,12 +96,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 RuleFor(p => p.Father.LastName.am).NotEmpty().NotNull();
                 RuleFor(p => p.Father.LastName.or).NotEmpty().NotNull();
 
-            }
-            else
-            {
-                RuleFor(p => p.FatherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
-            }
-            if (!string.IsNullOrEmpty(request.Event.EventRegistrar?.RegistrarInfoId.ToString()) && request.Event.EventRegistrar != null)
+            // }
+            // else
+            // {
+            //     RuleFor(p => p.FatherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+            // }
+            if (request.Event.EventRegistrar != null)
             {
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
@@ -115,25 +115,25 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.BirthDate).NotEmpty().NotNull()
                     .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
             }
-            else
-            {
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfoId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
-            }
+            // else
+            // {
+            //     RuleFor(p => p.Event.EventRegistrar.RegistrarInfoId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+            // }
 
-            if (!string.IsNullOrEmpty(request.MotherId.ToString()) && request.Mother != null)
-            {
-                RuleFor(p => p.Mother.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+            // if (!string.IsNullOrEmpty(request.MotherId.ToString()) && request.Mother != null)
+            // {
+            RuleFor(p => p.Mother.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
                 RuleFor(p => p.Mother.FirstName.or).NotEmpty().NotNull();
                 RuleFor(p => p.Mother.FirstName.am).NotEmpty().NotNull();
                 RuleFor(p => p.Mother.MiddleName.am).NotEmpty().NotNull();
                 RuleFor(p => p.Mother.MiddleName.or).NotEmpty().NotNull();
                 RuleFor(p => p.Mother.LastName.am).NotEmpty().NotNull();
                 RuleFor(p => p.Mother.LastName.or).NotEmpty().NotNull();
-            }
-            else
-            {
-                RuleFor(p => p.MotherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
-            }
+            // }
+            // else
+            // {
+            //     RuleFor(p => p.MotherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+            // }
         }
 
     }

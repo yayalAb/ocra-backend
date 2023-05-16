@@ -32,12 +32,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             // RuleFor(p => p.DeathEvent.Event.EventOwener.BirthDate).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
             RuleFor(p => p.DeathEvent.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-            RuleFor(p => p.DeathEvent.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.DeathEvent.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address);
 
 
-            if (!string.IsNullOrEmpty(request.DeathEvent.Event.EventRegistrar?.RegistrarInfoId.ToString()) && request.DeathEvent.Event.EventRegistrar != null)
+            if (request.DeathEvent.Event.EventRegistrar != null)
             {
-                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+                // RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
                 RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
                 RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
                 RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
@@ -45,13 +45,13 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                 RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.LastName.or).NotEmpty().NotNull();
                 RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.LastName.am).NotEmpty().NotNull();
                 RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address);
                 // RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfo.BirthDate).NotEmpty().NotNull()
                 // .Must(date => date < DateTime.Now && date > necw DateTime(1900, 1, 1));
             }
-            else
+            else if (request.DeathEvent.Event.EventRegistrar == null)
             {
-                RuleFor(p => p.DeathEvent.Event.EventRegistrar.RegistrarInfoId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+                RuleFor(p => p.DeathEvent.Event.EventRegistrar).Must(r => !(r == null));
             }
 
         }

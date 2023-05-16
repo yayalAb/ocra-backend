@@ -24,7 +24,8 @@ namespace AppDiv.CRVS.Application.Service
             return ruleBuilder.MustAsync(async (lookup, c)
                         =>
             {
-                var look = await repo.GetAsync(lookup);
+                Guid.TryParse(lookup, out Guid guid);
+                var look = await repo.GetAsync(guid);
                 return look == null ? false : true;
             }).WithMessage("'{PropertyName}' Unable to Get The Lookup");
         }
@@ -36,7 +37,8 @@ namespace AppDiv.CRVS.Application.Service
             return ruleBuilder.MustAsync(async (ad, c)
                         =>
             {
-                var address = await repo.GetAsync(ad);
+                Guid.TryParse(ad, out Guid guid);
+                var address = await repo.GetAsync(guid);
                 return address == null ? false : true;
             }).WithMessage("'{PropertyName}' Unable to Get The Address");
         }
@@ -47,7 +49,8 @@ namespace AppDiv.CRVS.Application.Service
             return ruleBuilder.MustAsync(async (pr, c)
                             =>
                             {
-                                var person = await repo.GetAsync(pr);
+                                Guid.TryParse(pr, out Guid guid);
+                                var person = await repo.GetAsync(guid);
                                 return person == null ? false : true;
                             }).WithMessage("'{PropertyName}' Unable to Get The Person");
         }

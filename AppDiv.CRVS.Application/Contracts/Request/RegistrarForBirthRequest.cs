@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class RegistrarForBirthRequest : AddRegistrarRequest
     {
-        public Guid? RegistrarInfoId { get; set; } = null;
+        // public Guid? RegistrarInfoId { get; set; } = null;
         public BirthRegistrarPersonalInfoDTO RegistrarInfo { get; set; }
     }
 }
