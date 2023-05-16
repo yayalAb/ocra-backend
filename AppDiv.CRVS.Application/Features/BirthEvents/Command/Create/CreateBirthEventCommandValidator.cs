@@ -18,10 +18,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
     public class CreateBirthEventCommandValidator : AbstractValidator<CreateBirthEventCommand>
     {
-        private readonly IEventRepository _repo;
+        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) _repo;
         // private readonly IMediator _mediator;
         // private readonly ILogger<CreateBirthEventCommandValidator> log;
-        public CreateBirthEventCommandValidator(IEventRepository repo, CreateBirthEventCommand request
+        public CreateBirthEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) repo, CreateBirthEventCommand request
         // , ILogger<CreateBirthEventCommandValidator> log
         )
         {
@@ -71,24 +71,24 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             // };
             _repo = repo;
 
-            RuleFor(p => p.BirthEvent.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.BirthEvent.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.BirthEvent.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo);
-            RuleFor(p => p.BirthEvent.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.BirthEvent.BirthNotification.DeliveryTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.BirthEvent.BirthNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.BirthEvent.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.BirthEvent.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.BirthEvent.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address);
+            RuleFor(p => p.BirthEvent.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.BirthEvent.BirthNotification.DeliveryTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.BirthEvent.BirthNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
             RuleFor(p => p.BirthEvent.BirthNotification.WeightAtBirth).NotEmpty().NotNull();
             RuleFor(p => p.BirthEvent.Event.EventOwener.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.BirthEvent.Event.EventOwener.FirstName.am).NotEmpty().NotNull();
-            RuleFor(p => p.BirthEvent.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.BirthEvent.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
             RuleFor(p => p.BirthEvent.Event.EventOwener.BirthDate).NotEmpty().NotNull();
-            RuleFor(p => p.BirthEvent.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.BirthEvent.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.BirthEvent.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.BirthEvent.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.BirthEvent.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.BirthEvent.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
 
             if (string.IsNullOrEmpty(request.BirthEvent.FatherId.ToString()) && request.BirthEvent.Father != null)
             {
-                RuleFor(p => p.BirthEvent.Father.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+                RuleFor(p => p.BirthEvent.Father.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
                 RuleFor(p => p.BirthEvent.Father.FirstName.or).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Father.FirstName.am).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Father.MiddleName.am).NotEmpty().NotNull();
@@ -99,30 +99,30 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             }
             else
             {
-                RuleFor(p => p.BirthEvent.FatherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+                RuleFor(p => p.BirthEvent.FatherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
             }
             if (!string.IsNullOrEmpty(request.BirthEvent.Event.EventRegistrar?.RegistrarInfoId.ToString()) && request.BirthEvent.Event.EventRegistrar != null)
             {
-                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.MiddleName.am).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.LastName.or).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.LastName.am).NotEmpty().NotNull();
-                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfo.BirthDate).NotEmpty().NotNull()
                     .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
             }
             else
             {
-                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfoId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+                RuleFor(p => p.BirthEvent.Event.EventRegistrar.RegistrarInfoId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
             }
 
             if (!string.IsNullOrEmpty(request.BirthEvent.MotherId.ToString()) && request.BirthEvent.Mother != null)
             {
-                RuleFor(p => p.BirthEvent.Mother.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+                RuleFor(p => p.BirthEvent.Mother.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
                 RuleFor(p => p.BirthEvent.Mother.FirstName.or).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Mother.FirstName.am).NotEmpty().NotNull();
                 RuleFor(p => p.BirthEvent.Mother.MiddleName.am).NotEmpty().NotNull();
@@ -132,7 +132,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             }
             else
             {
-                RuleFor(p => p.BirthEvent.MotherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo);
+                RuleFor(p => p.BirthEvent.MotherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
             }
         }
 
