@@ -33,6 +33,11 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .WithMessage("{PropertyName} is required.")
                 .NotEmpty()
                 .WithMessage("{PropertyName} must not be empty.");
+            RuleFor(p => p.Adoption.Event.EventSupportingDocuments)
+                .NotNull()
+                .WithMessage("{PropertyName} is required.")
+                .NotEmpty()
+                .WithMessage("{PropertyName} must not be empty.");
             RuleFor(e => e)
               .MustAsync(ValidateForignkeyAddress)
               .WithMessage("A address does not  exists.");
