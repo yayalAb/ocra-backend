@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<IEnumerable<Lookup>> GetAllAsync();
         Task<Lookup> GetByIdAsync(Guid id);
         Task<Lookup> GetLookupByKey(string key);
-        Task<Lookup> GetLookupListByKey(string[] key);
+         Lookup? GetLookupById(Guid id);
     }
 }
 

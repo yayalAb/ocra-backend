@@ -26,19 +26,22 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task InsertOrUpdateAsync(DivorceEvent entity, CancellationToken cancellationToken)
         {
-            if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+            if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.Event.EventOwener);
+                entity.Event.EventOwenerId = entity.Event.EventOwener.Id;
                 entity.Event.EventOwener = null;
             }
-            if (!string.IsNullOrEmpty(entity.Event.EventRegistrar.RegistrarInfo.Id.ToString()))
+            if (entity.Event.EventRegistrar?.RegistrarInfo.Id != null && entity.Event.EventRegistrar?.RegistrarInfo.Id != Guid.Empty)
             {
-                dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
-                entity.Event.EventRegistrar.RegistrarInfo = null;
+                dbContext.PersonalInfos.Update(entity.Event.EventRegistrar?.RegistrarInfo!);
+                entity.Event.EventRegistrar!.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
+                entity.Event.EventRegistrar!.RegistrarInfo = null;
             }
-            if (!string.IsNullOrEmpty(entity.DivorcedWife.Id.ToString()))
+            if (entity.DivorcedWife.Id != null && entity.DivorcedWife.Id != Guid.Empty)
             {
                 dbContext.PersonalInfos.Update(entity.DivorcedWife);
+                entity.DivorcedWifeId = entity.DivorcedWife.Id;
                 entity.DivorcedWife = null;
             }
 

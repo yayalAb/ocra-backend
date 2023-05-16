@@ -147,8 +147,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<MarriageApplication, MarriageApplicationGridDTO>();
             CreateMap<UpdateMarriageApplicationCommand, MarriageApplication>().ReverseMap();
 
-            CreateMap<AddEventRequest, Event>();
-            CreateMap<AddWitnessRequest, Witness>();
+            CreateMap<AddEventRequest, Event>().ReverseMap();
+            CreateMap<AddWitnessRequest, Witness>().ReverseMap();
 
             CreateMap<AddRegistrarRequest, Registrar>();
             CreateMap<Registrar, RegistrarDTO>().ReverseMap();
@@ -190,9 +190,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<RegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<BirthRegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<DivorcePartnersInfoDTO, PersonalInfo>().ReverseMap();
-            CreateMap<GroomInfoDTO, PersonalInfo>();
+            CreateMap<GroomInfoDTO , PersonalInfo>().ReverseMap();
 
-            CreateMap<BrideInfoDTO, PersonalInfo>();
+            CreateMap<BrideInfoDTO , PersonalInfo>().ReverseMap();
 
             CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
             CreateMap<SupportingDocument, AddSupportingDocumentRequest>().ReverseMap();
