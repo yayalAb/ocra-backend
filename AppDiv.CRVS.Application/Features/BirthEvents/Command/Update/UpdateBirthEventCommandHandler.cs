@@ -21,8 +21,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                               IAddressLookupRepository addressRepository,
                                               IPersonalInfoRepository person)
         {
-            this._eventDocumentService = eventDocumentService;
             this._birthEventRepository = birthEventRepository;
+            this._eventDocumentService = eventDocumentService;
             this._addressRepository = addressRepository;
             this._lookupRepository = lookupRepository;
             this._person = person;

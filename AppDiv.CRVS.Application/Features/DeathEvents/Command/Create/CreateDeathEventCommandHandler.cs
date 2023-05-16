@@ -16,16 +16,22 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
     public class CreateDeathEventCommandHandler : IRequestHandler<CreateDeathEventCommand, CreateDeathEventCommandResponse>
     {
         private readonly IDeathEventRepository _deathEventRepository;
+        private readonly ILookupRepository _lookupRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IEventRepository _eventRepository;
+        private readonly IAddressLookupRepository _addressRepository;
+        private readonly IPersonalInfoRepository _person;
 
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventDocumentService eventDocumentService,
-                                              IEventRepository eventRepository)
+                                              ILookupRepository lookupRepository,
+                                              IAddressLookupRepository addressRepository,
+                                              IPersonalInfoRepository person)
         {
-            this._eventDocumentService = eventDocumentService;
             this._deathEventRepository = deathEventRepository;
-            this._eventRepository = eventRepository;
+            this._eventDocumentService = eventDocumentService;
+            this._addressRepository = addressRepository;
+            this._lookupRepository = lookupRepository;
+            this._person = person;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -34,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 
             var createPaymentCommandResponse = new CreateDeathEventCommandResponse();
 
-            var validator = new CreateDeathEventCommandValidator(_eventRepository, request);
+            var validator = new CreateDeathEventCommandValidator((_lookupRepository, _addressRepository, _person), request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors

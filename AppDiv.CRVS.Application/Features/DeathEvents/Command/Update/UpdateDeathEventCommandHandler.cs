@@ -10,23 +10,29 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
     public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, DeathEventDTO>
     {
         private readonly IDeathEventRepository _deathEventRepository;
+        private readonly ILookupRepository _lookupRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IEventRepository _eventRepository;
+        private readonly IAddressLookupRepository _addressRepository;
+        private readonly IPersonalInfoRepository _person;
 
         public UpdateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventDocumentService eventDocumentService,
-                                              IEventRepository eventRepository)
+                                              ILookupRepository lookupRepository,
+                                              IAddressLookupRepository addressRepository,
+                                              IPersonalInfoRepository person)
         {
-            this._eventRepository = eventRepository;
             this._deathEventRepository = deathEventRepository;
             this._eventDocumentService = eventDocumentService;
+            this._addressRepository = addressRepository;
+            this._lookupRepository = lookupRepository;
+            this._person = person;
         }
         public async Task<DeathEventDTO> Handle(UpdateDeathEventCommand request, CancellationToken cancellationToken)
         {
 
             var updateDeathEventCommandResponse = new UpdateDeathEventCommandResponse();
 
-            var validator = new UpdateDeathEventCommandValidator(_eventRepository, request);
+            var validator = new UpdateDeathEventCommandValidator((_lookupRepository, _addressRepository, _person), request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors
