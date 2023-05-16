@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Application.Service
         //     return !id.HasValue && id.Equals(Guid.Empty);
         // }
         // private static IBaseRepository<BaseAuditableEntity> repository;
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithLookup<T>(this IRuleBuilder<T, string?> ruleBuilder, ILookupRepository repo)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithLookup<T>(this IRuleBuilder<T, string?> ruleBuilder, ILookupRepository repo, string propertyName)
         {
             // repository = repo;
             return ruleBuilder.MustAsync(async (lookup, c)
@@ -27,11 +27,11 @@ namespace AppDiv.CRVS.Application.Service
                 Guid.TryParse(lookup, out Guid guid);
                 var look = await repo.GetAsync(guid);
                 return look == null ? false : true;
-            }).WithMessage("'{PropertyName}' Unable to Get The Lookup");
+            }).WithMessage($"'{propertyName}' Unable to Get The Lookup");
         }
         // repo.CheckForeignKey(e => e.InformantTypeLookup.Id.ToString() == lookup, p => p.InformantTypeLookup)
 
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithAddress<T>(this IRuleBuilder<T, string?> ruleBuilder, IAddressLookupRepository repo)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithAddress<T>(this IRuleBuilder<T, string?> ruleBuilder, IAddressLookupRepository repo, string propertyName)
         {
             // repository = repo;
             return ruleBuilder.MustAsync(async (ad, c)
@@ -40,10 +40,10 @@ namespace AppDiv.CRVS.Application.Service
                 Guid.TryParse(ad, out Guid guid);
                 var address = await repo.GetAsync(guid);
                 return address == null ? false : true;
-            }).WithMessage("'{PropertyName}' Unable to Get The Address");
+            }).WithMessage($"'{propertyName}' Unable to Get The Address");
         }
 
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IPersonalInfoRepository repo)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IPersonalInfoRepository repo, string propertyName)
         {
             // repository = repo;
             return ruleBuilder.MustAsync(async (pr, c)
@@ -52,12 +52,12 @@ namespace AppDiv.CRVS.Application.Service
                                 Guid.TryParse(pr, out Guid guid);
                                 var person = await repo.GetAsync(guid);
                                 return person == null ? false : true;
-                            }).WithMessage("'{PropertyName}' Unable to Get The Person");
+                            }).WithMessage($"'{propertyName}' Unable to Get The Person");
         }
 
         public static IRuleBuilderOptions<T, string?> NotGuidEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
         {
-            return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("'{PropertyName}' is requered");
+            return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("{PropertyName} must not be null.").WithMessage("'{PropertyName}' is requered");
         }
 
 

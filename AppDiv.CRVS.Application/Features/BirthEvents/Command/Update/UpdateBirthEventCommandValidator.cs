@@ -71,68 +71,63 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
             // };
             _repo = repo;
 
-            RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-            RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-            RuleFor(p => p.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address);
-            RuleFor(p => p.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-            RuleFor(p => p.BirthNotification.DeliveryTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-            RuleFor(p => p.BirthNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityLookupId");
+            RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityTypeLookupId");
+            RuleFor(p => p.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "BirthPlaceId");
+            RuleFor(p => p.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "TypeOfBirthLookupId");
+            RuleFor(p => p.BirthNotification.DeliveryTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "DeliveryTypeLookupId");
+            RuleFor(p => p.BirthNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SkilledProfLookupId");
             RuleFor(p => p.BirthNotification.WeightAtBirth).NotEmpty().NotNull();
             RuleFor(p => p.Event.EventOwener.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.Event.EventOwener.FirstName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SexLookupId");
             RuleFor(p => p.Event.EventOwener.BirthDate).NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-            RuleFor(p => p.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-            RuleFor(p => p.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+            RuleFor(p => p.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "PlaceOfBirthLookupId");
+            RuleFor(p => p.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "NationalityLookupId");
+            RuleFor(p => p.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "ResidentAddressId");
 
-            // if (string.IsNullOrEmpty(request.FatherId.ToString()) && request.Father != null)
+            // if (request.Father != null)
             // {
-            RuleFor(p => p.Father.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
-                RuleFor(p => p.Father.FirstName.or).NotEmpty().NotNull();
-                RuleFor(p => p.Father.FirstName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Father.MiddleName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Father.MiddleName.or).NotEmpty().NotNull();
-                RuleFor(p => p.Father.LastName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Father.LastName.or).NotEmpty().NotNull();
+            // RuleFor(p => p.Father.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person, "Father.Id");
+            RuleFor(p => p.Father.FirstName.or).NotEmpty().NotNull();
+            RuleFor(p => p.Father.FirstName.am).NotEmpty().NotNull();
+            RuleFor(p => p.Father.MiddleName.am).NotEmpty().NotNull();
+            RuleFor(p => p.Father.MiddleName.or).NotEmpty().NotNull();
+            RuleFor(p => p.Father.LastName.am).NotEmpty().NotNull();
+            RuleFor(p => p.Father.LastName.or).NotEmpty().NotNull();
+
 
             // }
-            // else
-            // {
-            //     RuleFor(p => p.FatherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
-            // }
+
             if (request.Event.EventRegistrar != null)
             {
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+                // RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person, "RegistrarInfo.Id");
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.MiddleName.am).NotEmpty().NotNull();
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.LastName.or).NotEmpty().NotNull();
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.LastName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup);
+                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SexLookupId");
+                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "ResidentAddressId");
                 RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.BirthDate).NotEmpty().NotNull()
                     .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
             }
-            // else
+            // if(request.Father == null && request.Mother == null)
             // {
-            //     RuleFor(p => p.Event.EventRegistrar.RegistrarInfoId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+            //     RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
             // }
 
-            // if (!string.IsNullOrEmpty(request.MotherId.ToString()) && request.Mother != null)
+            // if (request.Mother != null)
             // {
-            RuleFor(p => p.Mother.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
-                RuleFor(p => p.Mother.FirstName.or).NotEmpty().NotNull();
-                RuleFor(p => p.Mother.FirstName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Mother.MiddleName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Mother.MiddleName.or).NotEmpty().NotNull();
-                RuleFor(p => p.Mother.LastName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Mother.LastName.or).NotEmpty().NotNull();
-            // }
-            // else
-            // {
-            //     RuleFor(p => p.MotherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
+            // RuleFor(p => p.Mother.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person, "Mother.Id");
+            RuleFor(p => p.Mother.FirstName.or).NotEmpty().NotNull();
+            RuleFor(p => p.Mother.FirstName.am).NotEmpty().NotNull();
+            RuleFor(p => p.Mother.MiddleName.am).NotEmpty().NotNull();
+            RuleFor(p => p.Mother.MiddleName.or).NotEmpty().NotNull();
+            RuleFor(p => p.Mother.LastName.am).NotEmpty().NotNull();
+            RuleFor(p => p.Mother.LastName.or).NotEmpty().NotNull();
+            // RuleFor(p => p.MotherId.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person, );
             // }
         }
 
