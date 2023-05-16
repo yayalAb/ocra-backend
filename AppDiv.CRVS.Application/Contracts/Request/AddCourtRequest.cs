@@ -1,4 +1,5 @@
 
+using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.Request
