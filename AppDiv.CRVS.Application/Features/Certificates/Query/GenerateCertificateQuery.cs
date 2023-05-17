@@ -1,6 +1,7 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Create;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Application.Service;
@@ -48,13 +49,15 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly IBirthEventRepository _IBirthEventRepository;
         private readonly IMediator _mediator;
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
+        private readonly ICertificateGenerator _CertificateGenerator;
 
-        public GenerateCertificateHandler(IBirthEventRepository IBirthEventRepository, ICertificateTemplateRepository ICertificateTemplateRepository, ICertificateRepository CertificateRepository, IMediator mediato, IEventRepository eventRepository)
+        public GenerateCertificateHandler(ICertificateGenerator CertificateGenerator, IBirthEventRepository IBirthEventRepository, ICertificateTemplateRepository ICertificateTemplateRepository, ICertificateRepository CertificateRepository, IMediator mediato, IEventRepository eventRepository)
         {
             _certificateRepository = CertificateRepository;
             _eventRepository = eventRepository;
             _ICertificateTemplateRepository = ICertificateTemplateRepository;
             _IBirthEventRepository = IBirthEventRepository;
+            _CertificateGenerator = CertificateGenerator;
         }
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
@@ -62,7 +65,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             // certificate.Content.
             var content = await _certificateRepository.GetContent(request.Id);
-            var certificate = CertificateGenerator.GetCertificate(request, content, birthCertificateNo?.Event?.CertificateId);
+            var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo?.Event?.CertificateId);
 
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType).FirstOrDefault();
             if (request.IsPrint)
@@ -77,13 +80,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 Content = certificate.Content,
                 TemplateId = certificateTemplateId?.Id
             };
-
-
             return Response;
-
-
-
-
         }
     }
 }

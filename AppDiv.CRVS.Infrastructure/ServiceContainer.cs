@@ -72,6 +72,7 @@ namespace AppDiv.CRVS.Infrastructure
 
 
 
+
             #region Repositories DI         
 
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -94,7 +95,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IMarriageApplicationRepository, MarriageApplicationRepository>();
             services.AddTransient<IMarriageEventRepository, MarriageEventRepository>();
             services.AddTransient<IAdoptionEventRepository, AdoptionEventRepository>();
-            
+
 
 
 
@@ -116,6 +117,11 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<CRVSDbContextInitializer>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
+            services.AddScoped<IDateAndAddressService, DateAndAddressService>();
+            services.AddScoped<IDateAndAddressService, DateAndAddressService>();
+            services.AddScoped<ICertificateGenerator, CertificateGenerator>();
+
+
             #endregion Repositories DI
 
             return services;

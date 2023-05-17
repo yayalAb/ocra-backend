@@ -10,14 +10,23 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json.Linq;
+using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Service
 {
-    public static class CertificateGenerator
+    public class CertificateGenerator : ICertificateGenerator
     {
-
-        public static Certificate GetCertificate(GenerateCertificateQuery request, (BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce) content, string BirhtCertId)
+        IDateAndAddressService _DateAndAddressService;
+        public CertificateGenerator(IDateAndAddressService DateAndAddressService)
         {
+            _DateAndAddressService = DateAndAddressService;
+        }
+
+        public Certificate GetCertificate(GenerateCertificateQuery request, (BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce) content, string BirhtCertId)
+        {
+
+
 
             // return GetBirthCertificate(content.birth);
             var certificate = new Certificate()
@@ -31,31 +40,31 @@ namespace AppDiv.CRVS.Application.Service
             };
             if (content.birth != null)
             {
-                certificate.Content = JObject.FromObject(CertificateGenerator.GetBirthCertificate(content.birth));
+                certificate.Content = JObject.FromObject(this.GetBirthCertificate(content.birth));
             }
             if (content.death != null)
             {
                 // certificate.Content = JObject.FromObject(new DeathCertificateDTO());
-                certificate.Content = JObject.FromObject(CertificateGenerator.GetDeathCertificate(content.death));
+                certificate.Content = JObject.FromObject(this.GetDeathCertificate(content.death));
             }
             if (content.adoption != null)
             {
-                certificate.Content = JObject.FromObject(CertificateGenerator.GetAdoptionCertificate(content.adoption, BirhtCertId));
+                certificate.Content = JObject.FromObject(this.GetAdoptionCertificate(content.adoption, BirhtCertId));
             }
             if (content.marriage != null)
             {
-                certificate.Content = JObject.FromObject(CertificateGenerator.GetMarriageCertificate(content.marriage));
+                certificate.Content = JObject.FromObject(this.GetMarriageCertificate(content.marriage));
             }
             if (content.divorce != null)
             {
-                certificate.Content = JObject.FromObject(CertificateGenerator.GetDivorceCertificate(content.divorce));
+                certificate.Content = JObject.FromObject(this.GetDivorceCertificate(content.divorce));
             }
 
 
             return certificate;
 
         }
-        private static BirthCertificateDTO GetBirthCertificate(BirthEvent birth)
+        private BirthCertificateDTO GetBirthCertificate(BirthEvent birth)
         {
             return new BirthCertificateDTO()
             {
@@ -81,36 +90,60 @@ namespace AppDiv.CRVS.Application.Service
             };
         }
 
-        private static AdoptionCertificateDTO GetAdoptionCertificate(AdoptionEvent adoption, string? BirthCertNo)
+        private AdoptionCertificateDTO GetAdoptionCertificate(AdoptionEvent adoption, string? BirthCertNo)
         {
 
             return new AdoptionCertificateDTO()
             {
+                CertifcateId = adoption.Event.CertificateId,
+                RegBookNo = adoption.Event.RegBookNo,
+                BirthCertifcateId = adoption.BirthCertificateId,
+                ChildFirstNameAm = adoption.Event.EventOwener?.FirstName?.Value<string>("am"),
+                ChildMiddleNameAm = adoption.Event.EventOwener?.MiddleName?.Value<string>("am"),
+                ChildLastNameAm = adoption.Event.EventOwener?.LastName?.Value<string>("am"),
+                ChildFirstNameOr = adoption.Event.EventOwener?.FirstName?.Value<string>("or"),
+                ChildMiddleNameOr = adoption.Event.EventOwener?.MiddleName?.Value<string>("or"),
+                ChildLastNameOr = adoption.Event.EventOwener?.LastName?.Value<string>("or"),
+                GenderAm = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
+                GenderOr = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
 
-                BirthCertificateNo = BirthCertNo,
-                ChildFirstName = adoption.Event.EventOwener?.FirstName,
-                ChildMiddleName = adoption.Event.EventOwener?.MiddleName,
-                ChildLastName = adoption.Event.EventOwener?.LastName,
-                BirthDate = adoption.Event.EventDate,
-                BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(adoption.Event.EventOwener?.BirthAddress),
-                ChildNationality = CustomMapper.Mapper.Map<LookupDTO>(adoption.Event.EventOwener?.NationalityLookup),
-                MotherFirstName = adoption.AdoptiveMother?.FirstName,
-                MotherMiddleName = adoption.AdoptiveMother?.MiddleName,
-                MotherLastName = adoption.AdoptiveMother?.LastName,
-                MotherNationality = CustomMapper.Mapper.Map<LookupDTO>(adoption.AdoptiveMother?.NationalityLookup),
-                FatherFirstName = adoption.AdoptiveFather?.FirstName,
-                FatherMiddleName = adoption.AdoptiveFather?.MiddleName,
-                FatherLastName = adoption.AdoptiveFather?.LastName,
-                FatherNationality = CustomMapper.Mapper.Map<LookupDTO>(adoption.AdoptiveFather?.NationalityLookup),
-                EventRegDate = adoption.Event.EventRegDate,
-                CivilRegOfficerFirstName = adoption.Event.CivilRegOfficer?.FirstName,
-                CivilRegOfficerMiddleName = adoption.Event.CivilRegOfficer?.MiddleName,
-                CivilRegOfficerLastName = adoption.Event.CivilRegOfficer?.LastName
+                BirthMonth = adoption.Event.EventDate.Month.ToString(),
+                BirthDay = adoption.Event.EventDate.Month.ToString(),
+                BirthYear = adoption.Event.EventDate.Month.ToString(),
+                BirthAddressAm = adoption.Event?.EventAddress?.Id.ToString(),
+                BirthAddressOr = adoption.Event?.EventAddress?.Id.ToString(),
+                NationalityOr = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
+                NationalityAm = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
+
+                MotherFullNameOr = adoption.AdoptiveMother?.FirstName?.Value<string>("or")
+                + " " + adoption.AdoptiveMother?.MiddleName?.Value<string>("or") + " " + adoption.AdoptiveMother?.LastName?.Value<string>("or"),
+                MotherFullNameAm = adoption.AdoptiveMother?.FirstName?.Value<string>("am")
+                + " " + adoption.AdoptiveMother?.MiddleName?.Value<string>("am") + " " + adoption.AdoptiveMother?.LastName?.Value<string>("am"),
+                MotherNationalityOr = adoption.AdoptiveMother?.NationalityLookup?.Value?.Value<string>("or"),
+                MotherNationalityAm = adoption.AdoptiveMother?.NationalityLookup?.Value?.Value<string>("am"),
+
+                FatherFullNameOr = adoption.AdoptiveFather?.FirstName?.Value<string>("or")
+                + " " + adoption.AdoptiveFather?.MiddleName?.Value<string>("or") + " " + adoption.AdoptiveFather?.LastName?.Value<string>("or"),
+                FatherFullNameAm = adoption.AdoptiveFather?.FirstName?.Value<string>("am")
+                + " " + adoption.AdoptiveFather?.MiddleName?.Value<string>("am") + " " + adoption.AdoptiveFather?.LastName?.Value<string>("am"),
+                FatherNationalityOr = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("or"),
+                FatherNationalityAm = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("am"),
+
+                EventRegisteredMonth = adoption.Event.EventRegDate.Month.ToString(),
+                EventRegisteredDay = adoption.Event.EventRegDate.Day.ToString(),
+                EventRegisteredYear = adoption.Event.EventRegDate.Year.ToString(),
+                GeneratedMonth = adoption.Event.CreatedAt.Month.ToString(),
+                GeneratedDay = adoption.Event.CreatedAt.Day.ToString(),
+                GeneratedYear = adoption.Event.CreatedAt.Year.ToString(),
+                CivileRegOfficerFullNameOr = adoption.Event.CivilRegOfficer?.FirstName?.Value<string>("or")
+                + " " + adoption.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " " + adoption.Event.CivilRegOfficer?.LastName?.Value<string>("or"),
+                CivileRegOfficerFullNameAm = adoption.Event.CivilRegOfficer?.FirstName?.Value<string>("am")
+                + " " + adoption.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " " + adoption.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
 
             };
         }
 
-        private static MarriageCertificateDTO GetMarriageCertificate(MarriageEvent marriage)
+        private MarriageCertificateDTO GetMarriageCertificate(MarriageEvent marriage)
         {
             return new MarriageCertificateDTO()
             {
@@ -132,7 +165,8 @@ namespace AppDiv.CRVS.Application.Service
             };
         }
 
-        private static DivorceCertificateDTO GetDivorceCertificate(DivorceEvent Divorce)
+
+        private DivorceCertificateDTO GetDivorceCertificate(DivorceEvent Divorce)
         {
             return new DivorceCertificateDTO()
             {
@@ -154,7 +188,7 @@ namespace AppDiv.CRVS.Application.Service
             };
         }
 
-        private static DeathCertificateDTO GetDeathCertificate(DeathEvent death)
+        private DeathCertificateDTO GetDeathCertificate(DeathEvent death)
         {
             return new DeathCertificateDTO()
             {
@@ -175,6 +209,8 @@ namespace AppDiv.CRVS.Application.Service
             };
         }
     }
+
+
 }
 
 // FullNameAm = adoption.Event.EventOwener?.FirstName.Value<string>("am") + " " + adoption.Event.EventOwener?.MiddleName?.Value<string>("am") + " " + adoption.Event.EventOwener?.MiddleName?.Value<string>("am"),
