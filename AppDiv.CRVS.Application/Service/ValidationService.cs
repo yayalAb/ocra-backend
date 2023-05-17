@@ -29,7 +29,6 @@ namespace AppDiv.CRVS.Application.Service
                 return look == null ? false : true;
             }).WithMessage($"'{propertyName}' Unable to Get The Lookup");
         }
-        // repo.CheckForeignKey(e => e.InformantTypeLookup.Id.ToString() == lookup, p => p.InformantTypeLookup)
 
         public static IRuleBuilderOptions<T, string?> ForeignKeyWithAddress<T>(this IRuleBuilder<T, string?> ruleBuilder, IAddressLookupRepository repo, string propertyName)
         {

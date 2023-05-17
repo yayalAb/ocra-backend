@@ -11,14 +11,14 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public string EventType { get; set; }
-        public string CertificateId { get;set ;}
+        public string CertificateId { get; set; }
         public Guid EventOwenerId { get; set; }
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
         public Guid EventAddressId { get; set; }
         public RegistrarDTO EventRegistrar { get; set; }
         public PaymentExamptionDTO PaymentExamption { get; set; }
-        public Guid InformantTypeLookupId { get; set; }
+        public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
         public bool IsPaid { get; set; } = false;

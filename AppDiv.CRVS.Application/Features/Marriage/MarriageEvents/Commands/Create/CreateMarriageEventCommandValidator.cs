@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
                     "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event","Event.CertificateId", "Event.EventDate",
-                    "Event.EventRegDate","Event.EventAddressId","Event.InformantTypeLookupId","Event.CivilRegOfficerId","Event.IsExampted",
+                    "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
                     "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
@@ -108,14 +108,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .NotEmpty()
                 .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
             });
-             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
-            {
-                RuleFor(e => e.Event.EventSupportingDocuments)
-                .Cascade(CascadeMode.StopOnFirstFailure)
-                .NotNull()
-                .NotEmpty()
-                .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
-            });
+            When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
+           {
+               RuleFor(e => e.Event.EventSupportingDocuments)
+               .Cascade(CascadeMode.StopOnFirstFailure)
+               .NotNull()
+               .NotEmpty()
+               .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
+           });
         }
 
 

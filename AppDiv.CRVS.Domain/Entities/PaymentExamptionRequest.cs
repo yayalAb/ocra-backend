@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string ExamptedBy { get; set; }
         public string? NumberOfClient { get; set; }
         public Guid? AddressId { get; set; }
-        public string CertificateType { get; set; }
+        public string? CertificateType { get; set; }
         [NotMapped]
         public JObject Reason
         {

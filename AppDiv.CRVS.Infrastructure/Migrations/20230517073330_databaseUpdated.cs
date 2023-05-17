@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
-    public partial class sprint1TablesCreate : Migration
+    public partial class databaseUpdated : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -123,33 +123,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Lookups", x => x.Id);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
-                name: "PaymentExamptionRequests",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ReasonStr = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExamptedClientId = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExamptedClientFullName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExamptedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ExamptedBy = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NumberOfClient = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PaymentExamptionRequests", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -333,6 +306,42 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         column: x => x.AddressId,
                         principalTable: "Addresses",
                         principalColumn: "Id");
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "PaymentExamptionRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ReasonStr = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExamptedClientId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExamptedClientFullName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExamptedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ExamptedBy = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NumberOfClient = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    AddressId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CertificateType = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentExamptionRequests", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PaymentExamptionRequests_Addresses_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -563,17 +572,23 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     EventType = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
+                    RegBookNo = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CertificateId = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CivilRegOfficeCode = table.Column<string>(type: "longtext", nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     EventOwenerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     EventDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EventRegDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     EventAddressId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    InformantTypeLookupId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    InformantType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     CivilRegOfficerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     IsExampted = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsPaid = table.Column<bool>(type: "tinyint(1)", nullable: false),
                     IsCertified = table.Column<bool>(type: "tinyint(1)", nullable: false),
+                    LookupId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
@@ -589,11 +604,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Events_Lookups_InformantTypeLookupId",
-                        column: x => x.InformantTypeLookupId,
+                        name: "FK_Events_Lookups_LookupId",
+                        column: x => x.LookupId,
                         principalTable: "Lookups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Events_PersonalInfos_CivilRegOfficerId",
                         column: x => x.CivilRegOfficerId,
@@ -788,6 +802,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     BeforeAdoptionAddressId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    BirthCertificateId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     AdoptiveMotherId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     AdoptiveFatherId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CourtCaseId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
@@ -979,8 +995,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     DivorcedWifeId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    WifeBirthCertificateId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    HusbandBirthCertificate = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     DateOfMarriage = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    DivorceDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     DivorceReasonStr = table.Column<string>(type: "longtext", nullable: false)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     CourtCaseId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
@@ -1122,8 +1141,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     BrideInfoId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    BirthCertificateGroomId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    BirthCertificateBrideId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
                     MarriageTypeId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ApplicationId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ApplicationId = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
                     EventId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
                     ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
@@ -1553,9 +1576,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 column: "EventOwenerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Events_InformantTypeLookupId",
+                name: "IX_Events_LookupId",
                 table: "Events",
-                column: "InformantTypeLookupId");
+                column: "LookupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MarriageApplications_ApplicationAddressId",
@@ -1598,6 +1621,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "IX_MarriageEvents_MarriageTypeId",
                 table: "MarriageEvents",
                 column: "MarriageTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentExamptionRequests_AddressId",
+                table: "PaymentExamptionRequests",
+                column: "AddressId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentExamptions_EventId",

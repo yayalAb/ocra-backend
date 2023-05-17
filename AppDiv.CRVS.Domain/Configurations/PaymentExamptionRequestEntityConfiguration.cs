@@ -10,7 +10,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.Address)
                .WithMany(n => n.ExamptionRequestAddresses)
-               .HasForeignKey(m => m.AddressId);
+               .HasForeignKey(m => m.AddressId)
+               .IsRequired(false);
         }
     }
 
