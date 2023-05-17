@@ -18,33 +18,46 @@ namespace AppDiv.CRVS.Application.Service
         //     return !id.HasValue && id.Equals(Guid.Empty);
         // }
         // private static IBaseRepository<BaseAuditableEntity> repository;
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithLookup<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithLookup<T>(this IRuleBuilder<T, string?> ruleBuilder, ILookupRepository repo, string propertyName)
         {
             // repository = repo;
-            return ruleBuilder.MustAsync((lookup, c)
-                        => repo.CheckForeignKey(e => e.InformantTypeLookupId.ToString() == lookup, p => p.InformantTypeLookup))
-                        .WithMessage("'{PropertyName}' Unable to Get The Lookup");
+            return ruleBuilder.MustAsync(async (lookup, c)
+                        =>
+            {
+                Guid.TryParse(lookup, out Guid guid);
+                var look = await repo.GetAsync(guid);
+                return look == null ? false : true;
+            }).WithMessage($"'{propertyName}' Unable to Get The Lookup");
+        }
+        // repo.CheckForeignKey(e => e.InformantTypeLookup.Id.ToString() == lookup, p => p.InformantTypeLookup)
+
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithAddress<T>(this IRuleBuilder<T, string?> ruleBuilder, IAddressLookupRepository repo, string propertyName)
+        {
+            // repository = repo;
+            return ruleBuilder.MustAsync(async (ad, c)
+                        =>
+            {
+                Guid.TryParse(ad, out Guid guid);
+                var address = await repo.GetAsync(guid);
+                return address == null ? false : true;
+            }).WithMessage($"'{propertyName}' Unable to Get The Address");
         }
 
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithAddress<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IPersonalInfoRepository repo, string propertyName)
         {
             // repository = repo;
-            return ruleBuilder.MustAsync((address, c)
-                        => repo.CheckForeignKey(e => e.EventAddressId.ToString() == address, p => p.EventAddress))
-                        .WithMessage("'{PropertyName}' Unable to Get The Address");
-        }
-
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo)
-        {
-            // repository = repo;
-            return ruleBuilder.MustAsync((person, c)
-                        => repo.CheckForeignKey(e => e.CivilRegOfficerId.ToString() == person, p => p.CivilRegOfficer))
-                        .WithMessage("'{PropertyName}' Unable to Get The Person");
+            return ruleBuilder.MustAsync(async (pr, c)
+                            =>
+                            {
+                                Guid.TryParse(pr, out Guid guid);
+                                var person = await repo.GetAsync(guid);
+                                return person == null ? false : true;
+                            }).WithMessage($"'{propertyName}' Unable to Get The Person");
         }
 
         public static IRuleBuilderOptions<T, string?> NotGuidEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
         {
-            return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("'{PropertyName}' is requered");
+            return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("{PropertyName} must not be null.").WithMessage("'{PropertyName}' is requered");
         }
 
 

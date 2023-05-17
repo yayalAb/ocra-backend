@@ -87,6 +87,7 @@ namespace AppDiv.CRVS.Infrastructure
 
                 modelBuilder.ApplyConfiguration(new PaymentEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new PaymentExamptionEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new PaymentExamptionRequestEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new PaymentRequestEntityConfiguration());
 
                 modelBuilder.ApplyConfiguration(new SupportingDocumentEntityConfiguration());

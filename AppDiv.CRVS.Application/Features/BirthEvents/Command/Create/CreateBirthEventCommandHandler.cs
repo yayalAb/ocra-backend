@@ -14,16 +14,22 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
     public class CreateBirthEventCommandHandler : IRequestHandler<CreateBirthEventCommand, CreateBirthEventCommandResponse>
     {
         private readonly IBirthEventRepository _birthEventRepository;
+        private readonly ILookupRepository _lookupRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IEventRepository _eventRepository;
+        private readonly IAddressLookupRepository _addressRepository;
+        private readonly IPersonalInfoRepository _person;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventDocumentService eventDocumentService,
-                                              IEventRepository eventRepository)
+                                              ILookupRepository lookupRepository,
+                                              IAddressLookupRepository addressRepository,
+                                              IPersonalInfoRepository person)
         {
             this._eventDocumentService = eventDocumentService;
-            this._eventRepository = eventRepository;
             this._birthEventRepository = birthEventRepository;
+            this._addressRepository = addressRepository;
+            this._lookupRepository = lookupRepository;
+            this._person = person;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -32,7 +38,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
             var createBirthEventCommandResponse = new CreateBirthEventCommandResponse();
 
-            var validator = new CreateBirthEventCommandValidator(_eventRepository, request);
+            var validator = new CreateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person), request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors
