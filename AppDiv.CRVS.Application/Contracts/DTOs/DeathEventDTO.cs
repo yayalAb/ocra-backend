@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class DeathEventDTO
     {
         public Guid Id { get; set; }
+        public string? BirthCertificateId { get; set; }
         public LookupDTO FacilityTypeLookup { get; set; }
         public LookupDTO FacilityLookup { get; set; }
         public string DuringDeath { get; set; }

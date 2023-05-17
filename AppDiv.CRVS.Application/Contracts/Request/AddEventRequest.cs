@@ -6,7 +6,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     public class AddEventRequest
     {
         public Guid? Id { get; set; } = null;
-        // public string EventType { get; set; }
+        public string? RegBookNo { get; set; }
+        public string? CivilRegOfficeCode { get; set; }
         public string CertificateId { get; set; }
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
