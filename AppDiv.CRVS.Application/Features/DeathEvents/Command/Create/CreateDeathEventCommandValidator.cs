@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             RuleFor(p => p.DeathEvent.Event.EventOwener.FirstName.am).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SexLookupId");
             // RuleFor(p => p.DeathEvent.Event.EventOwener.BirthDate).NotEmpty().NotNull();
-            RuleFor(p => p.DeathEvent.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "PlaceOfBirthLookupId");
+            // RuleFor(p => p.DeathEvent.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "PlaceOfBirthLookupId");
             RuleFor(p => p.DeathEvent.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "NationalityLookupId");
             RuleFor(p => p.DeathEvent.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "ResidentAddressId");
 
