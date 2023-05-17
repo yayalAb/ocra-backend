@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
+﻿using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using System;
@@ -9,8 +10,8 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Delete
 {
-    // Customer create command with string response
-    public class DeletePaymentExamptionRequestCommand : IRequest<String>
+    // Customer create command with BaseResponse response
+    public class DeletePaymentExamptionRequestCommand : IRequest<BaseResponse>
     {
         public Guid Id { get; private set; }
 
@@ -20,17 +21,19 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Dele
         }
     }
 
-    // Customer delete command handler with string response as output
-    public class DeletePaymentExamptionRequestCommmandHandler : IRequestHandler<DeletePaymentExamptionRequestCommand, String>
+    // Customer delete command handler with BaseResponse response as output
+    public class DeletePaymentExamptionRequestCommmandHandler : IRequestHandler<DeletePaymentExamptionRequestCommand, BaseResponse>
     {
+
         private readonly IPaymentExamptionRequestRepository _PaymentExamptionRequestRepository;
         public DeletePaymentExamptionRequestCommmandHandler(IPaymentExamptionRequestRepository PaymentExamptionRequestRepository)
         {
             _PaymentExamptionRequestRepository = PaymentExamptionRequestRepository;
         }
 
-        public async Task<string> Handle(DeletePaymentExamptionRequestCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeletePaymentExamptionRequestCommand request, CancellationToken cancellationToken)
         {
+            var response = new BaseResponse();
             try
             {
                 var PaymentExamptionRequestEntity = await _PaymentExamptionRequestRepository.GetAsync(request.Id);
@@ -41,17 +44,22 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Dele
                 }
                 else
                 {
-                    return "There is no PaymentExamptionRequest with the specified id";
+                    response.Success = false;
+                    response.Message = "There is no PaymentExamptionRequest with the specified id";
                 }
 
 
             }
             catch (Exception exp)
             {
+                response.Success = false;
+                response.Message = exp.Message;
                 throw (new ApplicationException(exp.Message));
             }
+            response.Success = true;
+            response.Message = "Payment Examption Request information has been deleted!";
 
-            return "Payment Examption Request information has been deleted!";
+            return response;
         }
     }
 }

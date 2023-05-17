@@ -12,8 +12,17 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create
 {
     // Customer create command with CustomerResponse
-    public record CreatePaymentExamptionRequestCommand(PaymentExamptionRequestRequest PaymentExamptionRequest) : IRequest<CreatePaymentExamptionRequestCommandResponse>
+    public record CreatePaymentExamptionRequestCommand : IRequest<CreatePaymentExamptionRequestCommandResponse>
     {
+        public LanguageModel Reason { get; set; }
+        public string? ExamptedClientId { get; set; }
+        public string? ExamptedClientFullName { get; set; }
+        public DateTime ExamptedDate { get; set; } = DateTime.Now;
+        public string ExamptedBy { get; set; }
+        public string? NumberOfClient { get; set; }
+        public Guid? AddressId { get; set; }
+        public string CertificateType { get; set; }
+
 
     }
 }

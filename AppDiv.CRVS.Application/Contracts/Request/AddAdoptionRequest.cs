@@ -9,6 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     {
         public Guid? Id { get; set; }
         public Guid BeforeAdoptionAddressId { get; set; }
+        public string? BirthCertificateId { get; set; }
         public LanguageModel ApprovedName { get; set; }
         public LanguageModel Reason { get; set; }
         public virtual AddAdoptionPersonalInfoRequest AdoptiveMother { get; set; }

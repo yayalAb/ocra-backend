@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
             if (createPaymentExamptionRequestCommandResponse.Success)
             {
 
-                var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request.PaymentExamptionRequest);
+                var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request);
 
                 await _paymentExamptionRequestRepository.InsertAsync(PaymentExamptionRequest, cancellationToken);
                 var result = await _paymentExamptionRequestRepository.SaveChangesAsync(cancellationToken);
