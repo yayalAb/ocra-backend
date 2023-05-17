@@ -23,9 +23,10 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         }
         public async Task<PaginatedList<UnPaidCertificateDTO>> Handle(GetAllUnPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
-            return await PaginatedList<UnPaidCertificateDTO>
+            return  await PaginatedList<UnPaidCertificateDTO>
                         .CreateAsync(
                             _eventRepository.GetAllQueryableAsync()
+                            
                            .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId && !e.IsPaid && !e.IsExampted && !e.IsCertified).Include(e => e.EventOwener).Include(e => e.EventPaymentRequest)
                             .Select(e => new UnPaidCertificateDTO
                             {

@@ -15,19 +15,23 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageEventRepository _marriageEventRepository;
         private readonly IPersonalInfoRepository _personalInfoRepository;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly IMarriageApplicationRepository _marriageApplicationRepository;
         private readonly ILookupRepository _lookupRepository;
+        private readonly IDivorceEventRepository _divorceEventRepository;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
 
-        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository, IPersonalInfoRepository personalInfoRepository, IEventDocumentService eventDocumentService,ILookupRepository lookupRepository, ILogger<CreateMarriageEventCommandHandler> logger)
+        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository, IPersonalInfoRepository personalInfoRepository, IEventDocumentService eventDocumentService,IMarriageApplicationRepository marriageApplicationRepository,ILookupRepository lookupRepository,IDivorceEventRepository divorceEventRepository, ILogger<CreateMarriageEventCommandHandler> logger )
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
             _eventDocumentService = eventDocumentService;
+            _marriageApplicationRepository = marriageApplicationRepository;
             _lookupRepository = lookupRepository;
+            _divorceEventRepository = divorceEventRepository;
             this.logger = logger;
         }
 
-        public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
+        public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken )
         {
 
             var executionStrategy = _marriageEventRepository.Database.CreateExecutionStrategy();
@@ -42,7 +46,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     {
                         var CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse();
 
-                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository);
+                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository , _divorceEventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors

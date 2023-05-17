@@ -9,6 +9,5 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     public class AddEventForMarriageRequest : AddEventRequest
     {
         public GroomInfoDTO EventOwener { get; set; }
-        public RegistrarForMarriageRequest EventRegistrar { get; set; }
     }
 }

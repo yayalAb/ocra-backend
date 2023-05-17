@@ -81,8 +81,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();
-            services.AddTransient<IPersonalInfoRepository, PersonalInfoRepository>();
-            services.AddTransient<IContactInfoRepository, ContactInfoRepository>();
+            services.AddScoped<IPersonalInfoRepository, PersonalInfoRepository>();
+            services.AddScoped<IContactInfoRepository, ContactInfoRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IWorkflowRepository, WorkflowRepository>();
             services.AddScoped<ICourtRepository, CourtRepository>();
@@ -113,7 +113,8 @@ namespace AppDiv.CRVS.Infrastructure
 
 
 
-            services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
+            services.AddScoped<CRVSDbContextInitializer>();
+            services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
             #endregion Repositories DI
 
