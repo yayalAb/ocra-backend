@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Contracts.Request;
+﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
@@ -16,8 +17,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
     {
         public DateTime ApplicationDate { get; set; }
         public Guid ApplicationAddressId { get; set; }
-        public AddPersonalInfoRequest BrideInfo { get; set;}
-        public AddPersonalInfoRequest GroomInfo { get; set;}
+        public BrideInfoDTO BrideInfo { get; set;}
+        public GroomInfoDTO GroomInfo { get; set;}
         public Guid CivilRegOfficerId { get; set; }
 
        

@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
     public record CreateMarriageEventCommand: IRequest<CreateMarriageEventCommandResponse>
     {
         public Guid MarriageTypeId { get; set; }
-        public Guid ApplicationId { get; set; }
+        public Guid? ApplicationId { get; set; }
         public virtual BrideInfoDTO BrideInfo { get; set; }
         public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
