@@ -8,8 +8,9 @@ namespace AppDiv.CRVS.Domain.Entities
     public class DivorceEvent : BaseAuditableEntity
     {
         public Guid DivorcedWifeId { get; set; }
+        public string? WifeBirthCertificateId { get; set; }
+        public string? HusbandBirthCertificate { get; set; }
         public DateTime DateOfMarriage { get; set; }
-        public DateTime DivorceDate { get; set; }
         public string DivorceReasonStr { get; set; }
         public Guid CourtCaseId { get; set; }
         public int NumberOfChildren { get; set; }

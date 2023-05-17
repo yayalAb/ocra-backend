@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    [Migration("20230511122625_second")]
-    partial class second
+    [Migration("20230517073814_databaseUpdated1")]
+    partial class databaseUpdated1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -84,6 +87,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AddressId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -91,7 +96,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PersonalInfoId");
+                    b.HasIndex("PersonalInfoId")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -162,6 +168,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<Guid>("BeforeAdoptionAddressId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("BirthCertificateId")
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("CourtCaseId")
                         .HasColumnType("char(36)");
@@ -536,6 +545,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("BirthCertificateId")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -637,9 +649,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<DateTime>("DateOfMarriage")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<DateTime>("DivorceDate")
-                        .HasColumnType("datetime(6)");
-
                     b.Property<string>("DivorceReasonStr")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -650,6 +659,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("HusbandBirthCertificate")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
@@ -658,6 +670,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<int>("NumberOfChildren")
                         .HasColumnType("int");
+
+                    b.Property<string>("WifeBirthCertificateId")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -680,6 +695,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<string>("CertificateId")
                         .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CivilRegOfficeCode")
                         .HasColumnType("longtext");
 
                     b.Property<Guid>("CivilRegOfficerId")
@@ -707,8 +725,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("InformantTypeLookupId")
-                        .HasColumnType("char(36)");
+                    b.Property<string>("InformantType")
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("IsCertified")
                         .HasColumnType("tinyint(1)");
@@ -719,11 +737,17 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<bool>("IsPaid")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<Guid?>("LookupId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("RegBookNo")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -733,7 +757,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("EventOwenerId");
 
-                    b.HasIndex("InformantTypeLookupId");
+                    b.HasIndex("LookupId");
 
                     b.ToTable("Events");
                 });
@@ -830,8 +854,14 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("ApplicationId")
+                    b.Property<Guid?>("ApplicationId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("BirthCertificateBrideId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BirthCertificateGroomId")
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("BrideInfoId")
                         .HasColumnType("char(36)");
@@ -947,6 +977,14 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("AddressId")
+                        .IsRequired()
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CertificateType")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
 
@@ -979,6 +1017,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId");
 
                     b.ToTable("PaymentExamptionRequests");
                 });
@@ -1580,11 +1620,19 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.ApplicationUser", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
-                        .WithMany()
-                        .HasForeignKey("PersonalInfoId")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
+                        .WithMany("ApplicationuserAddresses")
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
+                        .WithOne("ApplicationUser")
+                        .HasForeignKey("AppDiv.CRVS.Domain.ApplicationUser", "PersonalInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("PersonalInfo");
                 });
@@ -1861,19 +1909,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "InformantTypeLookup")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", null)
                         .WithMany("EventInformantTypeNavigation")
-                        .HasForeignKey("InformantTypeLookupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LookupId");
 
                     b.Navigation("CivilRegOfficer");
 
                     b.Navigation("EventAddress");
 
                     b.Navigation("EventOwener");
-
-                    b.Navigation("InformantTypeLookup");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.MarriageApplication", b =>
@@ -1980,6 +2024,17 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("Event");
 
                     b.Navigation("ExamptionRequest");
+                });
+
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", b =>
+                {
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
+                        .WithMany("ExamptionRequestAddresses")
+                        .HasForeignKey("AddressId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
@@ -2253,11 +2308,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.Navigation("AddressBirthPlaceNavigation");
 
+                    b.Navigation("ApplicationuserAddresses");
+
                     b.Navigation("BeforeAdoptionAddressNavigation");
 
                     b.Navigation("ChildAddresses");
 
                     b.Navigation("EventAddresses");
+
+                    b.Navigation("ExamptionRequestAddresses");
 
                     b.Navigation("MarriageApplications");
 
@@ -2404,6 +2463,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("AdoptiveFatherNavigation");
 
                     b.Navigation("AdoptiveMotherNavigation");
+
+                    b.Navigation("ApplicationUser")
+                        .IsRequired();
 
                     b.Navigation("BirthFatherNavigation");
 

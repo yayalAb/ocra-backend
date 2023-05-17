@@ -21,9 +21,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Generate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<JObject> GetCertificate([FromQuery] Guid id, string serialNo)
+        public async Task<object> GetCertificate([FromQuery] Guid id, string? serialNo, bool IsPrint = false)
         {
-            return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo });
+            return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint });
         }
 
         [HttpPost("Create")]
@@ -118,9 +118,9 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
-// address -- 0d37c377-27fb-4173-9a09-9af3895c51fd
-// lookup -- 045bd314-3083-49aa-b256-d953833a2960
-// marriageApp -- 32c65493-5027-4cee-bf55-4f1dfaf99869
-// personalINfo -- 1983b361-79cb-492d-ac6e-e9fa5dfb2774
+        // address -- 0d37c377-27fb-4173-9a09-9af3895c51fd
+        // lookup -- 045bd314-3083-49aa-b256-d953833a2960
+        // marriageApp -- 32c65493-5027-4cee-bf55-4f1dfaf99869
+        // personalINfo -- 1983b361-79cb-492d-ac6e-e9fa5dfb2774
     }
 }

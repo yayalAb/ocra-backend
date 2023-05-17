@@ -2,10 +2,11 @@ using AppDiv.CRVS.Domain.Base;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
-    public class DeathEvent  : BaseAuditableEntity
+    public class DeathEvent : BaseAuditableEntity
     {
+        public string? BirthCertificateId { get; set; }
         public Guid FacilityTypeLookupId { get; set; }
-        public Guid FacilityLookupId { get; set; } 
+        public Guid FacilityLookupId { get; set; }
         public string DuringDeath { get; set; }
         public string PlaceOfFuneral { get; set; }
         public Guid EventId { get; set; }

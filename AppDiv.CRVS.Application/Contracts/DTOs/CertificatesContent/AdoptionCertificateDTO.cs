@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
 {
     public class AdoptionCertificateDTO
     {
+        public string? BirthCertificateNo { get; set; }
         public JObject? ChildFirstName { get; set; }
         public JObject? ChildMiddleName { get; set; }
         public JObject? ChildLastName { get; set; }

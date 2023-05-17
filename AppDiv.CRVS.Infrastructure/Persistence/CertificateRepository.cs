@@ -18,6 +18,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             this._dbContext = dbContext;
         }
+        async Task<Certificate> ICertificateRepository.GetByIdAsync(Guid id)
+        {
+            return await base.GetAsync(id);
+        }
 
         public async Task<IEnumerable<Certificate>> GetByEventAsync(Guid id)
         {

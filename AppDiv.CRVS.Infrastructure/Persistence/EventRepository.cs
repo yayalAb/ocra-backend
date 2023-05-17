@@ -13,6 +13,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             this.dbContext = dbContext;
         }
+        async Task<Event> IEventRepository.GetByIdAsync(Guid id)
+        {
+            return await base.GetAsync(id);
+        }
         public IQueryable<Event> GetAllQueryableAsync()
         {
 
