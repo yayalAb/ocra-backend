@@ -34,9 +34,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             try
             {
-                if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+                if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 {
-                    PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
+                    PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
                     selectedperson.NationalId = entity.Event?.EventOwener?.NationalId;
                     selectedperson.NationalityLookupId = entity.Event?.EventOwener?.NationalityLookupId;
                     selectedperson.ReligionLookupId = entity.Event?.EventOwener?.ReligionLookupId;
@@ -44,23 +44,27 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.TypeOfWorkLookupId = entity.Event?.EventOwener?.TypeOfWorkLookupId;
                     selectedperson.MarriageStatusLookupId = entity.Event?.EventOwener?.MarriageStatusLookupId;
                     selectedperson.NationLookupId = entity.Event?.EventOwener?.NationLookupId;
+                    selectedperson.ResidentAddressId = entity.Event?.EventOwener?.ResidentAddressId;
+                    selectedperson.TitleLookupId = entity.Event?.EventOwener?.TitleLookupId;
 
+                    // _dbContext.PersonalInfos.Update(selectedperson);
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.Event.EventOwenerId = entity.Event.EventOwener.Id;
                     entity.Event.EventOwener = null;
                 }
-                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()))
+                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()) && entity.Event.EventRegistrar?.RegistrarInfo.Id != Guid.Empty)
                 {
                     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventRegistrar.RegistrarInfo.Id);
-                    selectedperson.NationalId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationLookupId;
+                    selectedperson.NationalId = entity.Event?.EventRegistrar?.RegistrarInfo?.NationalId;
+                    selectedperson.NationalityLookupId = entity.Event?.EventRegistrar?.RegistrarInfo?.NationalityLookupId;
+                    selectedperson.ReligionLookupId = entity.Event?.EventRegistrar?.RegistrarInfo?.ReligionLookupId;
+                    selectedperson.EducationalStatusLookupId = entity.Event?.EventRegistrar?.RegistrarInfo?.EducationalStatusLookupId;
+                    selectedperson.TypeOfWorkLookupId = entity.Event?.EventRegistrar?.RegistrarInfo?.TypeOfWorkLookupId;
+                    selectedperson.MarriageStatusLookupId = entity.Event?.EventRegistrar?.RegistrarInfo?.MarriageStatusLookupId;
+                    selectedperson.NationLookupId = entity.Event?.EventRegistrar?.RegistrarInfo?.NationLookupId;
+                    selectedperson.TitleLookupId = entity.Event?.EventOwener?.TitleLookupId;
 
-                    _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
+                    _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar?.RegistrarInfo);
                     entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
                     entity.Event.EventRegistrar.RegistrarInfo = null;
                 }
