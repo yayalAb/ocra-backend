@@ -14,24 +14,25 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageApplicationRepository _marriageApplicationRepo;
         private readonly IPersonalInfoRepository _personalInfoRepo;
         private readonly IDivorceEventRepository _divorceEventRepo;
+        private readonly IAddressLookupRepository _addressRepo;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo ,IAddressLookupRepository addressRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
             _personalInfoRepo = personalInfoRepo;
             _divorceEventRepo = divorceEventRepo;
+            _addressRepo = addressRepo;
             var fieldNames =
             new List<string>{
 
                 "MarriageTypeId","ApplicationId","BrideInfo",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDate",
                     "BrideInfo.NationalId","BrideInfo.SexLookupId","BrideInfo.PlaceOfBirthLookupId",
-                    "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId",
+                    "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
                     "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event","Event.CertificateId", "Event.EventDate",
-                    "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
                     "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
@@ -44,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                "MarriageTypeId","BrideInfo.SexLookupId","BrideInfo.PlaceOfBirthLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.NationLookupId","Event.InformantTypeLookupId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
+                    "BrideInfo.NationLookupId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                     "Event.EventOwener.NationLookupId"
@@ -66,6 +67,19 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .WithMessage("{PropertyName} must not be null.")
                     .NotEmpty()
                     .WithMessage("{PropertyName} must not be empty.");
+
+                // add more validation rules for the field here, if needed
+            }
+            var addressFeilds = new List<string>{
+                "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
+                "EventOwener.BirthAddressId","EventOwener.ResidentAddressId"
+            };
+            foreach (var addressFeild in addressFeilds)
+            {
+                var rule = RuleFor(GetNestedProperty<CreateMarriageEventCommand>(addressFeild))
+                    .Cascade(CascadeMode.StopOnFirstFailure)
+                    .MustAsync(BeFoundInAddressTable)
+                    .WithMessage("{PropertyName} with the provided id is not found");
 
                 // add more validation rules for the field here, if needed
             }
@@ -150,6 +164,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
 
             });
+        }
+
+        private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
+        {
+            return addressId != null && (await _addressRepo.GetAsync(addressId)) != null;
         }
 
         private bool BeFoundInPersonalInfoTable(Guid guid)
@@ -248,10 +267,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return DateTime.Now.Year - birthDate.Year >= 18;
         }
 
-        private bool fds(object arg)
-        {
-            throw new NotImplementedException();
-        }
+       
 
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {

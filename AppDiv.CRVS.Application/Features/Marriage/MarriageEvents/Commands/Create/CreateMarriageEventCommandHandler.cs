@@ -18,9 +18,19 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageApplicationRepository _marriageApplicationRepository;
         private readonly ILookupRepository _lookupRepository;
         private readonly IDivorceEventRepository _divorceEventRepository;
+        private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly IAddressLookupRepository _addressRepository;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
 
-        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository, IPersonalInfoRepository personalInfoRepository, IEventDocumentService eventDocumentService,IMarriageApplicationRepository marriageApplicationRepository,ILookupRepository lookupRepository,IDivorceEventRepository divorceEventRepository, ILogger<CreateMarriageEventCommandHandler> logger )
+        public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
+                                                 IPersonalInfoRepository personalInfoRepository,
+                                                 IEventDocumentService eventDocumentService,
+                                                 IMarriageApplicationRepository marriageApplicationRepository,
+                                                 ILookupRepository lookupRepository,
+                                                 IDivorceEventRepository divorceEventRepository,
+                                                 IEventPaymentRequestService paymentRequestService ,
+                                                 IAddressLookupRepository addressRepository,
+                                                 ILogger<CreateMarriageEventCommandHandler> logger)
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -28,6 +38,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _marriageApplicationRepository = marriageApplicationRepository;
             _lookupRepository = lookupRepository;
             _divorceEventRepository = divorceEventRepository;
+            _paymentRequestService = paymentRequestService;
+            _addressRepository = addressRepository;
             this.logger = logger;
         }
 
@@ -46,7 +58,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     {
                         var CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse();
 
-                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository , _divorceEventRepository);
+                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository , _divorceEventRepository, _addressRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors
@@ -73,8 +85,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                             //TODO: //
                             _eventDocumentService.saveSupportingDocuments(marriageEvent.Event.EventSupportingDocuments, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
+                            // create payment request for the event if it is not exempted
+                            if(!marriageEvent.Event.IsExampted){
+
+                            await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event.Id, cancellationToken);
+                            } 
 
                         }
+                        
                         // return new CreateMarriageEventCommandResponse { Message = "Marriage Event created Successfully" };
                         await transaction.CommitAsync();
                         return CreateMarriageEventCommandResponse;

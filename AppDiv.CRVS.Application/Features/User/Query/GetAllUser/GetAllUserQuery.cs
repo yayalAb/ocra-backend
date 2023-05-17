@@ -46,11 +46,13 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
+                    AddressId = user.AddressId, 
                     PersonalInfo = new PersonalInfoDTO
                     {
                         Id = user.PersonalInfo.Id,
                         FirstName = user.PersonalInfo.FirstNameLang,
                         MiddleName = user.PersonalInfo.MiddleNameLang,
+
                         // LastName = user.PersonalInfo.LastNameLang,
                         BirthDate = user.PersonalInfo.BirthDate,
                         NationalId = user.PersonalInfo.NationalId,
