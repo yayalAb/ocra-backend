@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,9 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         public async Task<PaymentExamptionRequestDTO> Handle(GetPaymentExamptionRequestByIdQuery request, CancellationToken cancellationToken)
         {
 
-            var selectedPaymentExamptionRequest = await _PaymentExamptionRequestRepository.GetAsync(request.Id);
+            var selectedPaymentExamptionRequest = _PaymentExamptionRequestRepository.GetAll().Where(x => x.Id == request.Id)
+            .Include(m => m.Address)
+            .FirstOrDefault();
             return CustomMapper.Mapper.Map<PaymentExamptionRequestDTO>(selectedPaymentExamptionRequest);
             // return selectedCustomer;
         }

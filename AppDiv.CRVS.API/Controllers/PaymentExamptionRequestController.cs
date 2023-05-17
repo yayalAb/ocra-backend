@@ -65,8 +65,7 @@ namespace AppDiv.CRVS.API.Controllers
         {
             try
             {
-                string result = string.Empty;
-                result = await Mediator.Send(new DeletePaymentExamptionRequestCommand(id));
+                var result = await Mediator.Send(new DeletePaymentExamptionRequestCommand(id));
                 return Ok(result);
             }
             catch (Exception exp)

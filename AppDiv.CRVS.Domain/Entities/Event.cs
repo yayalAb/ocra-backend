@@ -6,9 +6,8 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public string EventType { get; set; }
         public string? RegBookNo { get; set; }
-        public string CertificateId { get; set; }
         public string? CivilRegOfficeCode { get; set; }
-
+        public string CertificateId { get; set; }
         public Guid EventOwenerId { get; set; }
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }

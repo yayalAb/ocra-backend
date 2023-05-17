@@ -37,6 +37,7 @@ using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Update;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Update;
 using static AppDiv.CRVS.Application.Contracts.Request.AdoptionPersonalINformationRequest;
+using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -142,6 +143,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestDTO>().ReverseMap();
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestRequest>().ReverseMap();
             CreateMap<PaymentExamptionRequest, UpdatePaymentExamptionRequestCommand>().ReverseMap();
+            CreateMap<PaymentExamptionRequest, CreatePaymentExamptionRequestCommand>().ReverseMap();
+
 
             CreateMap<CreateMarriageApplicationCommand, MarriageApplication>();
             CreateMap<MarriageApplication, MarriageApplicationGridDTO>();
@@ -190,9 +193,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<RegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<BirthRegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
             CreateMap<DivorcePartnersInfoDTO, PersonalInfo>().ReverseMap();
-            CreateMap<GroomInfoDTO , PersonalInfo>().ReverseMap();
+            CreateMap<GroomInfoDTO, PersonalInfo>().ReverseMap();
 
-            CreateMap<BrideInfoDTO , PersonalInfo>().ReverseMap();
+            CreateMap<BrideInfoDTO, PersonalInfo>().ReverseMap();
 
             CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
             CreateMap<SupportingDocument, AddSupportingDocumentRequest>().ReverseMap();
