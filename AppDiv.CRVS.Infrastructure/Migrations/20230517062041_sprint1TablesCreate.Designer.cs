@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    [Migration("20230511122625_second")]
-    partial class second
+    [Migration("20230517062041_sprint1TablesCreate")]
+    partial class sprint1TablesCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -84,6 +87,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AddressId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -91,7 +96,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PersonalInfoId");
+                    b.HasIndex("PersonalInfoId")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -1580,11 +1586,19 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.ApplicationUser", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
-                        .WithMany()
-                        .HasForeignKey("PersonalInfoId")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
+                        .WithMany("ApplicationuserAddresses")
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
+                        .WithOne("ApplicationUser")
+                        .HasForeignKey("AppDiv.CRVS.Domain.ApplicationUser", "PersonalInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("PersonalInfo");
                 });
@@ -2253,6 +2267,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.Navigation("AddressBirthPlaceNavigation");
 
+                    b.Navigation("ApplicationuserAddresses");
+
                     b.Navigation("BeforeAdoptionAddressNavigation");
 
                     b.Navigation("ChildAddresses");
@@ -2404,6 +2420,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("AdoptiveFatherNavigation");
 
                     b.Navigation("AdoptiveMotherNavigation");
+
+                    b.Navigation("ApplicationUser")
+                        .IsRequired();
 
                     b.Navigation("BirthFatherNavigation");
 

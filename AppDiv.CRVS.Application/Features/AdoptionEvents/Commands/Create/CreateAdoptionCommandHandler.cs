@@ -48,7 +48,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 {
                     request.Adoption.Event.EventType = "Adoption";
                     var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
-                    if (adoptionEvent.AdoptiveFather.Id != null && adoptionEvent.AdoptiveFather.Id != Guid.Empty)
+                    if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
                     {
                         PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
                         selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
@@ -63,7 +63,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                         adoptionEvent.AdoptiveFatherId = adoptionEvent.AdoptiveFather.Id;
                         adoptionEvent.AdoptiveFather = null;
                     }
-                    if (adoptionEvent.AdoptiveMother.Id != null && adoptionEvent.AdoptiveMother.Id != Guid.Empty)
+                    if (adoptionEvent.AdoptiveMother?.Id != null && adoptionEvent.AdoptiveMother?.Id != Guid.Empty)
                     {
 
                         PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                         adoptionEvent.AdoptiveMotherId = adoptionEvent.AdoptiveMother.Id;
                         adoptionEvent.AdoptiveMother = null;
                     }
-                    if (adoptionEvent.Event.EventOwener.Id != null && adoptionEvent.Event.EventOwener.Id != Guid.Empty)
+                    if (adoptionEvent.Event.EventOwener?.Id != null && adoptionEvent.Event.EventOwener?.Id != Guid.Empty)
                     {
                         PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.Event.EventOwener.Id);
                         selectedperson.NationalId = adoptionEvent.Event?.EventOwener?.NationalId;
@@ -94,7 +94,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                         adoptionEvent.Event.EventOwenerId = adoptionEvent.Event.EventOwener.Id;
                         adoptionEvent.Event.EventOwener = null;
                     }
-                    if (adoptionEvent.CourtCase.Court.Id != null && adoptionEvent.CourtCase.Court.Id != Guid.Empty)
+                    if (adoptionEvent.CourtCase?.Court?.Id != null && adoptionEvent.CourtCase?.Court?.Id != Guid.Empty)
                     {
                         _courtRepository.Update(CustomMapper.Mapper.Map<Court>(adoptionEvent.CourtCase.Court));
                         adoptionEvent.CourtCase.CourtId = adoptionEvent.CourtCase.Court.Id;
@@ -102,7 +102,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     }
                     await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                     await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
-                    _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
+                    _eventDocumentService.saveSupportingDocuments(adoptionEvent?.Event?.EventSupportingDocuments, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                     CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse { Message = "Adoption Event created Successfully" };
                 }
                 catch (Exception ex)

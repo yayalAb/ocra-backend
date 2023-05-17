@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
     [DbContext(typeof(CRVSDbContext))]
-    [Migration("20230511102300_dbupdate")]
-    partial class dbupdate
+    [Migration("20230517062950_sprint1TablesCreate1")]
+    partial class sprint1TablesCreate1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
+
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("char(36)");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -84,6 +87,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AddressId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -91,7 +96,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PersonalInfoId");
+                    b.HasIndex("PersonalInfoId")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -936,6 +942,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
+                    b.HasIndex("ExamptionRequestId");
+
                     b.ToTable("PaymentExamptions");
                 });
 
@@ -964,9 +972,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<DateTime>("ExamptedDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("ExamptionRequestNavigationId")
-                        .HasColumnType("char(36)");
-
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
@@ -980,8 +985,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExamptionRequestNavigationId");
 
                     b.ToTable("PaymentExamptionRequests");
                 });
@@ -1583,11 +1586,19 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.ApplicationUser", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
-                        .WithMany()
-                        .HasForeignKey("PersonalInfoId")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
+                        .WithMany("ApplicationuserAddresses")
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
+                        .WithOne("ApplicationUser")
+                        .HasForeignKey("AppDiv.CRVS.Domain.ApplicationUser", "PersonalInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("PersonalInfo");
                 });
@@ -1974,18 +1985,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Event");
-                });
-
-            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", b =>
-                {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.PaymentExamption", "ExamptionRequestNavigation")
-                        .WithMany("ExamptionRequest")
-                        .HasForeignKey("ExamptionRequestNavigationId")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", "ExamptionRequest")
+                        .WithMany("ExamptionRequestNavigation")
+                        .HasForeignKey("ExamptionRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ExamptionRequestNavigation");
+                    b.Navigation("Event");
+
+                    b.Navigation("ExamptionRequest");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
@@ -2259,6 +2267,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.Navigation("AddressBirthPlaceNavigation");
 
+                    b.Navigation("ApplicationuserAddresses");
+
                     b.Navigation("BeforeAdoptionAddressNavigation");
 
                     b.Navigation("ChildAddresses");
@@ -2385,9 +2395,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamption", b =>
                 {
-                    b.Navigation("ExamptionRequest");
-
                     b.Navigation("SupportingDocuments");
+                });
+
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", b =>
+                {
+                    b.Navigation("ExamptionRequestNavigation");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
@@ -2407,6 +2420,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("AdoptiveFatherNavigation");
 
                     b.Navigation("AdoptiveMotherNavigation");
+
+                    b.Navigation("ApplicationUser")
+                        .IsRequired();
 
                     b.Navigation("BirthFatherNavigation");
 

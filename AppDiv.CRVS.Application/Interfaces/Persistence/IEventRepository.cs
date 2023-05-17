@@ -10,8 +10,10 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IEventRepository : IBaseRepository<Event>
     {
-       
+
         public IQueryable<Event> GetAllQueryableAsync();
+
+        Task<Event> GetByIdAsync(Guid id);
         Task<bool> CheckForeignKey(Expression<Func<Event, bool>> where, Expression<Func<Event, object>> predicate);
     }
 }

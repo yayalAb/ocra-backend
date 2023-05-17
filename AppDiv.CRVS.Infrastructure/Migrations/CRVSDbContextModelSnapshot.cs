@@ -94,7 +94,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PersonalInfoId");
+                    b.HasIndex("PersonalInfoId")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -1590,8 +1591,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
-                        .WithMany()
-                        .HasForeignKey("PersonalInfoId")
+                        .WithOne("ApplicationUser")
+                        .HasForeignKey("AppDiv.CRVS.Domain.ApplicationUser", "PersonalInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2417,6 +2418,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("AdoptiveFatherNavigation");
 
                     b.Navigation("AdoptiveMotherNavigation");
+
+                    b.Navigation("ApplicationUser")
+                        .IsRequired();
 
                     b.Navigation("BirthFatherNavigation");
 

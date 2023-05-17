@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AppDiv.CRVS.Infrastructure.Migrations
 {
-    public partial class dbupdate : Migration
+    public partial class sprint1TablesCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -123,6 +123,33 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Lookups", x => x.Id);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
+                name: "PaymentExamptionRequests",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ReasonStr = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExamptedClientId = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExamptedClientFullName = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    ExamptedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ExamptedBy = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    NumberOfClient = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PaymentExamptionRequests", x => x.Id);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -487,6 +514,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     OtpExpiredDate = table.Column<DateTime>(type: "datetime(6)", nullable: true),
                     PersonalInfoId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    AddressId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
                     UserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
                         .Annotation("MySql:CharSet", "utf8mb4"),
                     NormalizedUserName = table.Column<string>(type: "varchar(256)", maxLength: 256, nullable: true)
@@ -513,6 +541,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Addresses_AddressId",
+                        column: x => x.AddressId,
+                        principalTable: "Addresses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_AspNetUsers_PersonalInfos_PersonalInfoId",
                         column: x => x.PersonalInfoId,
@@ -1002,6 +1036,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         principalTable: "Events",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PaymentExamptions_PaymentExamptionRequests_ExamptionRequestId",
+                        column: x => x.ExamptionRequestId,
+                        principalTable: "PaymentExamptionRequests",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 })
                 .Annotation("MySql:CharSet", "utf8mb4");
 
@@ -1194,40 +1234,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
-                name: "PaymentExamptionRequests",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    ReasonStr = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExamptedClientId = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExamptedClientFullName = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExamptedDate = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ExamptedBy = table.Column<string>(type: "longtext", nullable: false)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    NumberOfClient = table.Column<string>(type: "longtext", nullable: true)
-                        .Annotation("MySql:CharSet", "utf8mb4"),
-                    ExamptionRequestNavigationId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
-                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
-                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
-                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PaymentExamptionRequests", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_PaymentExamptionRequests_PaymentExamptions_ExamptionRequestN~",
-                        column: x => x.ExamptionRequestNavigationId,
-                        principalTable: "PaymentExamptions",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                })
-                .Annotation("MySql:CharSet", "utf8mb4");
-
-            migrationBuilder.CreateTable(
                 name: "SupportingDocuments",
                 columns: table => new
                 {
@@ -1399,9 +1405,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_AddressId",
+                table: "AspNetUsers",
+                column: "AddressId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_PersonalInfoId",
                 table: "AspNetUsers",
-                column: "PersonalInfoId");
+                column: "PersonalInfoId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
@@ -1588,15 +1600,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 column: "MarriageTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PaymentExamptionRequests_ExamptionRequestNavigationId",
-                table: "PaymentExamptionRequests",
-                column: "ExamptionRequestNavigationId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PaymentExamptions_EventId",
                 table: "PaymentExamptions",
                 column: "EventId",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PaymentExamptions_ExamptionRequestId",
+                table: "PaymentExamptions",
+                column: "ExamptionRequestId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PaymentRates_AddressId",
@@ -1785,9 +1797,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "DivorceEvents");
 
             migrationBuilder.DropTable(
-                name: "PaymentExamptionRequests");
-
-            migrationBuilder.DropTable(
                 name: "Payments");
 
             migrationBuilder.DropTable(
@@ -1840,6 +1849,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "PaymentRates");
+
+            migrationBuilder.DropTable(
+                name: "PaymentExamptionRequests");
 
             migrationBuilder.DropTable(
                 name: "Events");

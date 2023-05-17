@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Features.Certificates.Query;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json.Linq;
@@ -14,8 +15,10 @@ namespace AppDiv.CRVS.Application.Service
 {
     public static class CertificateGenerator
     {
-        public static Certificate GetCertificate(GenerateCertificateQuery request, (BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce) content)
+
+        public static Certificate GetCertificate(GenerateCertificateQuery request, (BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce) content, string BirhtCertId)
         {
+
             // return GetBirthCertificate(content.birth);
             var certificate = new Certificate()
             {
@@ -37,7 +40,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             if (content.adoption != null)
             {
-                certificate.Content = JObject.FromObject(CertificateGenerator.GetAdoptionCertificate(content.adoption));
+                certificate.Content = JObject.FromObject(CertificateGenerator.GetAdoptionCertificate(content.adoption, BirhtCertId));
             }
             if (content.marriage != null)
             {
@@ -78,10 +81,13 @@ namespace AppDiv.CRVS.Application.Service
             };
         }
 
-        private static AdoptionCertificateDTO GetAdoptionCertificate(AdoptionEvent adoption)
+        private static AdoptionCertificateDTO GetAdoptionCertificate(AdoptionEvent adoption, string? BirthCertNo)
         {
+
             return new AdoptionCertificateDTO()
             {
+
+                BirthCertificateNo = BirthCertNo,
                 ChildFirstName = adoption.Event.EventOwener?.FirstName,
                 ChildMiddleName = adoption.Event.EventOwener?.MiddleName,
                 ChildLastName = adoption.Event.EventOwener?.LastName,
@@ -170,3 +176,6 @@ namespace AppDiv.CRVS.Application.Service
         }
     }
 }
+
+// FullNameAm = adoption.Event.EventOwener?.FirstName.Value<string>("am") + " " + adoption.Event.EventOwener?.MiddleName?.Value<string>("am") + " " + adoption.Event.EventOwener?.MiddleName?.Value<string>("am"),
+//                 FullNameOr = adoption.Event.EventOwener?.FirstName.Value<string>("or") + " " + adoption.Event.EventOwener?.MiddleName?.Value<string>("or") + " " + adoption.Event.EventOwener?.MiddleName?.Value<string>("or"),
