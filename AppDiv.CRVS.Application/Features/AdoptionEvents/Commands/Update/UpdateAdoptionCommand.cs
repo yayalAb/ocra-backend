@@ -58,6 +58,42 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
             {
                 request.Adoption.Event.EventType = "Adoption";
                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
+                if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
+                {
+                    PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
+                    selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
+                    selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
+                    selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
+                    selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveFather?.EducationalStatusLookupId;
+                    selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveFather?.TypeOfWorkLookupId;
+                    selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveFather?.MarriageStatusLookupId;
+                    selectedperson.NationLookupId = adoptionEvent.AdoptiveFather?.NationLookupId;
+                    adoptionEvent.AdoptiveFather = selectedperson;
+                }
+                if (adoptionEvent.AdoptiveMother?.Id != null && adoptionEvent.AdoptiveMother?.Id != Guid.Empty)
+                {
+                    PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
+                    selectedperson.NationalId = adoptionEvent.AdoptiveMother?.NationalId;
+                    selectedperson.NationalityLookupId = adoptionEvent.AdoptiveMother?.NationalityLookupId;
+                    selectedperson.ReligionLookupId = adoptionEvent.AdoptiveMother?.ReligionLookupId;
+                    selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveMother?.EducationalStatusLookupId;
+                    selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveMother?.TypeOfWorkLookupId;
+                    selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveMother?.MarriageStatusLookupId;
+                    selectedperson.NationLookupId = adoptionEvent.AdoptiveMother?.NationLookupId;
+                    adoptionEvent.AdoptiveMother = selectedperson;
+                }
+                if (adoptionEvent.Event.EventOwener?.Id != null && adoptionEvent.Event.EventOwener?.Id != Guid.Empty)
+                {
+                    PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.Event.EventOwener.Id);
+                    selectedperson.NationalId = adoptionEvent.Event?.EventOwener?.NationalId;
+                    selectedperson.NationalityLookupId = adoptionEvent.Event?.EventOwener?.NationalityLookupId;
+                    selectedperson.ReligionLookupId = adoptionEvent.Event?.EventOwener?.ReligionLookupId;
+                    selectedperson.EducationalStatusLookupId = adoptionEvent.Event?.EventOwener?.EducationalStatusLookupId;
+                    selectedperson.TypeOfWorkLookupId = adoptionEvent.Event?.EventOwener?.TypeOfWorkLookupId;
+                    selectedperson.MarriageStatusLookupId = adoptionEvent.Event?.EventOwener?.MarriageStatusLookupId;
+                    selectedperson.NationLookupId = adoptionEvent.Event?.EventOwener?.NationLookupId;
+                    adoptionEvent.Event.EventOwener = selectedperson;
+                }
                 _adoptionEventRepository.EFUpdate(adoptionEvent);
                 await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                 _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
@@ -65,7 +101,11 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
             }
             catch (Exception ex)
             {
-                UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = ex.Message };
+                UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
             }
         }
         return UpdateAdoptionCommandResponse;

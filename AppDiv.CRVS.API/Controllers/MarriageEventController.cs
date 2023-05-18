@@ -13,13 +13,31 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<IActionResult> createMarriageEvent([FromBody] CreateMarriageEventCommand command)
         {
 
-            return Ok(await Mediator.Send(command));
+            var res = await Mediator.Send(command);
+            if (res.Success)
+            {
+                return Ok(res);
+
+            }
+            else
+            {
+                return BadRequest(res);
+            }
         }
         [HttpPut]
         public async Task<IActionResult> updateMarriageEvent([FromBody] UpdateMarriageEventCommand command)
         {
 
-            return Ok(await Mediator.Send(command));
+            var res = await Mediator.Send(command);
+            if (res.Success)
+            {
+                return Ok(res);
+
+            }
+            else
+            {
+                return BadRequest(res);
+            }
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> updateMarriageEvent(Guid id)

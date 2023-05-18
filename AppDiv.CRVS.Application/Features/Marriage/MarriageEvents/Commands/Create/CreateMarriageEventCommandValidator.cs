@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepo;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo ,IAddressLookupRepository addressRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IAddressLookupRepository addressRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -29,23 +29,23 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
                 "MarriageTypeId","ApplicationId","BrideInfo",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDate",
-                    "BrideInfo.NationalId","BrideInfo.SexLookupId","BrideInfo.PlaceOfBirthLookupId",
+                    "BrideInfo.NationalId","BrideInfo.SexLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event","Event.CertificateId", "Event.EventDate",
+                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDate",
                     "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
-                    "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
+                    "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                     "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
 
             };
             var lookupFeilds = new List<string>{
-               "MarriageTypeId","BrideInfo.SexLookupId","BrideInfo.PlaceOfBirthLookupId",
+               "MarriageTypeId","BrideInfo.SexLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.NationLookupId","Event.EventOwener.SexLookupId","Event.EventOwener.PlaceOfBirthLookupId",
+                    "BrideInfo.NationLookupId","Event.EventOwener.SexLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                     "Event.EventOwener.NationLookupId"
@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             }
             var addressFeilds = new List<string>{
                 "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
-                "EventOwener.BirthAddressId","EventOwener.ResidentAddressId"
+                "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
             foreach (var addressFeild in addressFeilds)
             {
@@ -224,7 +224,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             {
 
                 hasRegisteredDivorceCertificate = perosnalInfoId != null
-                         && await  _divorceEventRepo.GetAllQueryableAsync().Where(e => e.DivorcedWifeId == perosnalInfoId).AnyAsync();
+                         && await _divorceEventRepo.GetAllQueryableAsync().Where(e => e.DivorcedWifeId == perosnalInfoId).AnyAsync();
             }
             else
             {
@@ -267,7 +267,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return DateTime.Now.Year - birthDate.Year >= 18;
         }
 
-       
+
 
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {

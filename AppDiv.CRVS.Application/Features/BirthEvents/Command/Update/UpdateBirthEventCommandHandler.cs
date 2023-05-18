@@ -33,7 +33,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 
             var validator = new UpdateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person), request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
             //Check and log validation errors
             if (validationResult.Errors.Count > 0)
             {
