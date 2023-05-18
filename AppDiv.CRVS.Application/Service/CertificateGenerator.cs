@@ -12,15 +12,18 @@ using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Application.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Service
 {
     public class CertificateGenerator : ICertificateGenerator
     {
         IDateAndAddressService _DateAndAddressService;
-        public CertificateGenerator(IDateAndAddressService DateAndAddressService)
+        private readonly ILogger<CertificateGenerator> _Ilogger;
+        public CertificateGenerator(IDateAndAddressService DateAndAddressService, ILogger<CertificateGenerator> Ilogger)
         {
             _DateAndAddressService = DateAndAddressService;
+            _Ilogger = Ilogger;
         }
 
         public Certificate GetCertificate(GenerateCertificateQuery request, (BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce) content, string BirhtCertId)
@@ -130,7 +133,13 @@ namespace AppDiv.CRVS.Application.Service
 
         private AdoptionCertificateDTO GetAdoptionCertificate(AdoptionEvent adoption, string? BirthCertNo)
         {
-            (string Am, string Or) address = _DateAndAddressService.addressFormat(adoption.Event?.EventAddress?.Id);
+            string AddressAm = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty
+                    || adoption.Event?.EventOwener?.BirthAddressId == null) ? null :
+                    _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId).Item1;
+            string AddressOr = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty
+               || adoption.Event?.EventOwener?.BirthAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId).Item2;
+
             return new AdoptionCertificateDTO()
             {
                 CertifcateId = adoption.Event.CertificateId,
@@ -148,10 +157,8 @@ namespace AppDiv.CRVS.Application.Service
                 BirthMonth = adoption.Event.EventDate.Month.ToString(),
                 BirthDay = adoption.Event.EventDate.Month.ToString(),
                 BirthYear = adoption.Event.EventDate.Month.ToString(),
-                BirthAddressAm = address.Am,
-                BirthAddressOr = address.Or,
-                // BirthAddressAm = adoption.Event?.EventAddress?.Id.ToString(),
-                // BirthAddressOr = adoption.Event?.EventAddress?.Id.ToString(),
+                BirthAddressAm = AddressAm,
+                BirthAddressOr = AddressOr,
                 NationalityOr = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 NationalityAm = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
@@ -182,7 +189,6 @@ namespace AppDiv.CRVS.Application.Service
 
             };
         }
-
         private MarriageCertificateDTO GetMarriageCertificate(MarriageEvent marriage)
         {
             (string Am, string Or) address = _DateAndAddressService.addressFormat(marriage.Event?.EventAddress?.Id);

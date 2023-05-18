@@ -9,6 +9,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Utility.Contracts;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -50,14 +51,17 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly IMediator _mediator;
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
         private readonly ICertificateGenerator _CertificateGenerator;
+        private readonly ILogger<GenerateCertificateHandler> _ILogger;
 
-        public GenerateCertificateHandler(ICertificateGenerator CertificateGenerator, IBirthEventRepository IBirthEventRepository, ICertificateTemplateRepository ICertificateTemplateRepository, ICertificateRepository CertificateRepository, IMediator mediato, IEventRepository eventRepository)
+
+        public GenerateCertificateHandler(ILogger<GenerateCertificateHandler> ILogger, ICertificateGenerator CertificateGenerator, IBirthEventRepository IBirthEventRepository, ICertificateTemplateRepository ICertificateTemplateRepository, ICertificateRepository CertificateRepository, IMediator mediato, IEventRepository eventRepository)
         {
             _certificateRepository = CertificateRepository;
             _eventRepository = eventRepository;
             _ICertificateTemplateRepository = ICertificateTemplateRepository;
             _IBirthEventRepository = IBirthEventRepository;
             _CertificateGenerator = CertificateGenerator;
+            _ILogger = ILogger;
         }
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
@@ -65,6 +69,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             // certificate.Content.
             var content = await _certificateRepository.GetContent(request.Id);
+            _ILogger.LogCritical(content.adoption.Event.EventOwener.BirthAddressId.ToString());
             var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo?.Event?.CertificateId);
 
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType).FirstOrDefault();
