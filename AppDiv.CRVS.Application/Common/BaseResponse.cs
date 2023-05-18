@@ -21,8 +21,17 @@ namespace AppDiv.CRVS.Application.Common
             Message = message;
         }
 
+        public BaseResponse(string message, bool success, int status = 200)
+        {
+            Success = success;
+            Message = message;
+            Status = status;
+        }
+
+
         public bool Success { get; set; }
         public string Message { get; set; }
+        public int Status { get; set; }
         public List<string> ValidationErrors { get; set; }
     }
 }

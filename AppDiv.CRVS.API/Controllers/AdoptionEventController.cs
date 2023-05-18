@@ -24,14 +24,31 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         public async Task<ActionResult> CreateAdoption([FromBody] CreateAdoptionCommand command)
         {
-            var result = await _mediator.Send(command);
-            return Ok(result);
+            var res = await _mediator.Send(command);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res);
+            }
+
         }
 
         [HttpPut]
         public async Task<IActionResult> update([FromBody] UpdateAdoptionCommand command)
         {
-            return Ok(await _mediator.Send(command));
+            var res = await _mediator.Send(command);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res);
+            }
+
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetAdoptionEventById(Guid id)

@@ -92,7 +92,6 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     selectedperson.TypeOfWorkLookupId = adoptionEvent.Event?.EventOwener?.TypeOfWorkLookupId;
                     selectedperson.MarriageStatusLookupId = adoptionEvent.Event?.EventOwener?.MarriageStatusLookupId;
                     selectedperson.NationLookupId = adoptionEvent.Event?.EventOwener?.NationLookupId;
-
                     adoptionEvent.Event.EventOwener = selectedperson;
                 }
                 _adoptionEventRepository.EFUpdate(adoptionEvent);
@@ -102,7 +101,11 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
             }
             catch (Exception ex)
             {
-                UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = ex.Message };
+                UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
             }
         }
         return UpdateAdoptionCommandResponse;

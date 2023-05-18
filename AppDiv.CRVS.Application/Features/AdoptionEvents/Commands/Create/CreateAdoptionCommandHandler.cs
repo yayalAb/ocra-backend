@@ -103,11 +103,23 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                     await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
                     _eventDocumentService.saveSupportingDocuments(adoptionEvent?.Event?.EventSupportingDocuments, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
-                    CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse { Message = "Adoption Event created Successfully" };
+                    CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
+                    {
+                        Success = true,
+                        Message = "Adoption Event created Successfully"
+                    };
                 }
                 catch (Exception ex)
                 {
-                    CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse { Message = ex.Message };
+
+                    CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
+                    {
+                        Status = 500,
+                        Success = false,
+                        Message = ex.Message
+                    };
+                    throw;
+
                 }
             }
             return CreateAdoptionCommandResponse;
