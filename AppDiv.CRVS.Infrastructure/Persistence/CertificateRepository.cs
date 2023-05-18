@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(d => d.Father).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.Mother).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
+                            .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.SexLookup)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.Event).ThenInclude(e => e.CivilRegOfficer)
                             .Include(d => d.Event).ThenInclude(e => e.EventAddress)
@@ -49,6 +50,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.TitleLookup)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.SexLookup)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.NationalityLookup)
+                            .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.TitleLookup)
                             .Include(d => d.Event).ThenInclude(e => e.CivilRegOfficer)
                             .Include(d => d.Event).ThenInclude(e => e.EventAddress)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
@@ -58,8 +60,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     return (null, null,
                             await _dbContext.AdoptionEvents
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
+                            .Include(d => d.Event).ThenInclude(e => e.EventAddress)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.BirthAddress)
+                            .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.SexLookup)
                             .Include(d => d.AdoptiveFather).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.AdoptiveMother).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.Event).ThenInclude(e => e.CivilRegOfficer)
