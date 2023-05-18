@@ -36,8 +36,8 @@ namespace AppDiv.CRVS.Application.Service
                 GenderOr = death.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
 
                 BirthMonth = death.Event.EventDate.Month.ToString(),
-                BirthDay = death.Event.EventDate.Month.ToString(),
-                BirthYear = death.Event.EventDate.Month.ToString(),
+                BirthDay = death.Event.EventDate.Day.ToString(),
+                BirthYear = death.Event.EventDate.Year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 DeathPlaceAm = address?.am,

@@ -46,8 +46,8 @@ namespace AppDiv.CRVS.Application.Service
                 GroomNationalityAm = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
                 MarriageMonth = marriage.Event.EventDate.Month.ToString(),
-                MarriageDay = marriage.Event.EventDate.Month.ToString(),
-                MarriageYear = marriage.Event.EventDate.Month.ToString(),
+                MarriageDay = marriage.Event.EventDate.Day.ToString(),
+                MarriageYear = marriage.Event.EventDate.Year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 MarriageAddressAm = address?.am,

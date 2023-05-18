@@ -47,8 +47,8 @@ namespace AppDiv.CRVS.Application.Service
                 HusbandNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
                 DivorceMonth = divorce.Event.EventDate.Month.ToString(),
-                DivorceDay = divorce.Event.EventDate.Month.ToString(),
-                DivorceYear = divorce.Event.EventDate.Month.ToString(),
+                DivorceDay = divorce.Event.EventDate.Day.ToString(),
+                DivorceYear = divorce.Event.EventDate.Year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 DivorceAddressAm = address?.am,
