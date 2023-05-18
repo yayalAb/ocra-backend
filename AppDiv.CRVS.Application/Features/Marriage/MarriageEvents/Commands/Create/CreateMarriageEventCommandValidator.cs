@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepo;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo ,IAddressLookupRepository addressRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IAddressLookupRepository addressRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             }
             var addressFeilds = new List<string>{
                 "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
-                "EventOwener.BirthAddressId","EventOwener.ResidentAddressId"
+                "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
             foreach (var addressFeild in addressFeilds)
             {
@@ -224,7 +224,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             {
 
                 hasRegisteredDivorceCertificate = perosnalInfoId != null
-                         && await  _divorceEventRepo.GetAllQueryableAsync().Where(e => e.DivorcedWifeId == perosnalInfoId).AnyAsync();
+                         && await _divorceEventRepo.GetAllQueryableAsync().Where(e => e.DivorcedWifeId == perosnalInfoId).AnyAsync();
             }
             else
             {
@@ -267,7 +267,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return DateTime.Now.Year - birthDate.Year >= 18;
         }
 
-       
+
 
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {

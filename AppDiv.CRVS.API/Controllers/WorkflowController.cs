@@ -40,7 +40,14 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<ActionResult<WorkflowDTO>> CreateGroup([FromBody] CreateWorkFlowCommand command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
-            return Ok(result);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
         }
 
         [HttpGet("{id}")]
