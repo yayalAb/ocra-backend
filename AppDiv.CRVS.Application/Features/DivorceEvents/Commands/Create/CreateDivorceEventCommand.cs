@@ -1,6 +1,6 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
-
+using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Newtonsoft.Json.Linq;
 
@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
     {
         public virtual DivorcePartnersInfoDTO DivorcedWife { get; set; }
         public DateTime DataOfMarriage { get; set; }
-        public JObject DivorceReason { get; set; }
+        public LanguageModel DivorceReason { get; set; }
         public virtual AddCourtCaseRequest CourtCase { get; set; }
         public int NumberOfChildren { get; set; }
         public AddEventForDivorceRequest Event { get; set; }

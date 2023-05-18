@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public DateTime EventRegDate { get; set; }
         public Guid EventAddressId { get; set; }
 
-        public string? InformantType { get; set; }
+        // public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
         // public UpdatePersonalInfoRequest EventOwener { get; set; }

@@ -25,6 +25,9 @@ namespace AppDiv.CRVS.Application
 
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IEventDocumentService , EventDocumentService>();
+            services.AddScoped<IEventPaymentRequestService , EventPaymentRequestService>();
+
+
 
 
 
