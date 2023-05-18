@@ -55,7 +55,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                 // var docs = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
 
                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
-                birthEvent.Event.EventType = "BirthEvent";
+                birthEvent.Event.EventType = "Birth";
 
                 await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);

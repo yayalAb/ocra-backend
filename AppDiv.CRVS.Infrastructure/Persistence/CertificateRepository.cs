@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             var eventType = _dbContext.Events.Where(e => e.Id == eventId).Select(e => e.EventType).FirstOrDefault();
             switch (eventType)
             {
-                case "BirthEvent":
+                case "Birth":
                     return (await _dbContext.BirthEvents
                             .Include(d => d.Father).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.Mother).ThenInclude(p => p.NationalityLookup)
@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(d => d.Event).ThenInclude(e => e.EventAddress)
                             .Where(e => e.EventId == eventId).FirstOrDefaultAsync()
                             , null, null, null, null);
-                case "DeathEvent":
+                case "Death":
                     return (null,
                             await _dbContext.DeathEvents
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.TitleLookup)

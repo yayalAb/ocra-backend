@@ -121,7 +121,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();
-            services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
+            // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
 
 
 

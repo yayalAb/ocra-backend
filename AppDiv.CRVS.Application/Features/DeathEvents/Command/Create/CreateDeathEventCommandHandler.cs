@@ -55,7 +55,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             if (createPaymentCommandResponse.Success)
             {
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
-                deathEvent.Event.EventType = "DeathEvent";
+                deathEvent.Event.EventType = "Death";
                 // logger.LogCritical(deathEvent.Event.CivilRegOfficerId.ToString());
                 // logger.LogCritical(deathEvent.Event.EventOwenerId.ToString());
 

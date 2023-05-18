@@ -21,7 +21,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             RuleFor(p => p.DeathEvent.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityLookupId");
             RuleFor(p => p.DeathEvent.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityTypeLookupId");
             // RuleFor(p => p.DeathEvent.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo);
-            RuleFor(p => p.DeathEvent.DuringDeath).NotEmpty().NotNull();
+            // RuleFor(p => p.DeathEvent.DuringDeath).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.BirthCertificateId).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.PlaceOfFuneral).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.DeathNotification.CauseOfDeathInfoTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "CauseOfDeathInfoTypeLookupId");
@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             RuleFor(p => p.DeathEvent.Event.RegBookNo).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.Event.CivilRegOfficeCode).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.Event.CertificateId).NotEmpty().NotNull();
-            RuleFor(p => p.DeathEvent.Event.EventRegDate).NotEmpty().NotNull().Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
+            RuleFor(p => p.DeathEvent.Event.EventRegDate).NotEmpty().NotNull().Must(date => date > new DateTime(1900, 1, 1));
             RuleFor(p => p.DeathEvent.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");
             RuleFor(p => p.DeathEvent.Event.EventOwener.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.DeathEvent.Event.EventOwener.FirstName.am).NotEmpty().NotNull();
