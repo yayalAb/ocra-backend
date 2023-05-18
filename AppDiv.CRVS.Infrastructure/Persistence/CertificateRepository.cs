@@ -57,8 +57,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 case "Adoption":
                     return (null, null,
                             await _dbContext.AdoptionEvents
-                            .Include(d => d.Event).ThenInclude(e => e.EventOwener)
-                            .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.NationalityLookup)
+                            .Include(d => d.Event)
+                            .ThenInclude(e => e.EventOwener).ThenInclude(p => p.NationalityLookup)
+                            .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.SexLookup)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.BirthAddress)
                             .Include(d => d.AdoptiveFather).ThenInclude(p => p.NationalityLookup)
                             .Include(d => d.AdoptiveMother).ThenInclude(p => p.NationalityLookup)
