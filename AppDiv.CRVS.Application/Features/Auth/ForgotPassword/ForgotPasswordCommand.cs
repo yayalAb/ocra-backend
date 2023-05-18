@@ -76,15 +76,16 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
         // }
         private async Task<bool> sendOTP(ForgotPasswordCommand request, CancellationToken cancellationToken)
         {
+
             var user = await _identityService.GetUserByName(request.UserName);
             if (user == null)
             {
                 throw new NotFoundException("user not found");
             }
-
-            Random random = new Random();
-            var otpCode = random.Next(000000, 999999);
-            var updateResponse = await _identityService.UpdateUser(user.Id, user.UserName, user.Email, user.PersonalInfoId, otpCode.ToString(), DateTime.Now.AddMinutes(2));
+            int expirySecond = 120;
+            //send sms and get otp code
+            var otpCode = await  _smsService.SendOtpAsync(user.PhoneNumber,"","is your password reset code ",expirySecond,6,0);
+            var updateResponse = await _identityService.UpdateUser(user.Id, user.UserName, user.Email, user.PersonalInfoId, otpCode.ToString(), DateTime.Now.AddSeconds(expirySecond));
             if (!updateResponse.Succeeded)
             {
                 throw new Exception(string.Join(",", updateResponse.Errors));
@@ -101,8 +102,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
             var subject = "Reset Password";
             await _mailService.SendAsync(body: emailContent, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: user.Email, cancellationToken);
 
-            //send to phone
-            // _smsService.SendSms(user.PhoneNumber , otpCode.ToString());
+    
         
 
             return true;

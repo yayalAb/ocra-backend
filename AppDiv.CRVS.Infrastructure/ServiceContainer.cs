@@ -60,7 +60,7 @@ namespace AppDiv.CRVS.Infrastructure
             // services.Configure<RabbitMQConfiguration>(configuration.GetSection(RabbitMQConfiguration.CONFIGURATION_SECTION));
             services.Configure<SMTPServerConfiguration>(configuration.GetSection(SMTPServerConfiguration.CONFIGURATION_SECTION));
             services.Configure<TwilioConfiguration>(configuration.GetSection(TwilioConfiguration.CONFIGURATION_SECTION));
-
+            services.Configure<AfroMessageConfiguration>(configuration.GetSection(AfroMessageConfiguration.CONFIGURATION_SECTION));
 
 
 
@@ -69,6 +69,7 @@ namespace AppDiv.CRVS.Infrastructure
 
             services.AddSingleton<IMailService, MailKitService>();
             services.AddSingleton<ISmsService, TwilioService>();
+            services.AddSingleton<ISmsService , AfroMessageService>();
 
 
 
