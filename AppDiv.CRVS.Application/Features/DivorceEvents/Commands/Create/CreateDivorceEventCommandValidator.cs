@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                 "DivorcedWife.SexLookupId",
                 "DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId",
                 "DivorcedWife.EducationalStatusLookupId","DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId",
-                "BrideInfo.NationLookupId","Event.EventOwener.SexLookupId",
+                "DivorcedWife.NationLookupId","Event.EventOwener.SexLookupId",
                 "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                 "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                 "Event.EventOwener.NationLookupId"
@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             }
             var addressFeilds = new List<string>{
                 "DivorcedWife.BirthAddressId","DivorcedWife.ResidentAddressId","Event.EventAddressId",
-                "EventOwener.BirthAddressId","EventOwener.ResidentAddressId"
+                "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
             foreach (var addressFeild in addressFeilds)
             {

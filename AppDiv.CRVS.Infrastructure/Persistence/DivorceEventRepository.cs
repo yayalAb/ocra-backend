@@ -1,11 +1,13 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class DivorceEventRepository : BaseRepository<DivorceEvent>, IDivorceEventRepository
     {
         private readonly CRVSDbContext dbContext;
+         public DatabaseFacade Database => dbContext.Database;
 
         public DivorceEventRepository(CRVSDbContext dbContext) : base(dbContext)
         {
