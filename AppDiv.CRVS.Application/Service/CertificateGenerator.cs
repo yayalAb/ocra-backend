@@ -66,33 +66,71 @@ namespace AppDiv.CRVS.Application.Service
         }
         private BirthCertificateDTO GetBirthCertificate(BirthEvent birth)
         {
+            (string Am, string Or) address = _DateAndAddressService.addressFormat(birth.Event?.EventAddress?.Id);
             return new BirthCertificateDTO()
             {
-                ChildFirstName = birth.Event.EventOwener?.FirstName,
-                ChildMiddleName = birth.Event.EventOwener?.MiddleName,
-                ChildLastName = birth.Event.EventOwener?.LastName,
-                BirthDate = birth.Event.EventDate,
-                BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(birth.BirthPlace),
-                ChildNationality = CustomMapper.Mapper.Map<LookupDTO>(birth.Event.EventOwener?.NationalityLookup),
-                MotherFirstName = birth.Mother?.FirstName,
-                MotherMiddleName = birth.Mother?.MiddleName,
-                MotherLastName = birth.Mother?.LastName,
-                MotherNationality = CustomMapper.Mapper.Map<LookupDTO>(birth.Mother?.NationalityLookup),
-                FatherFirstName = birth.Father?.FirstName,
-                FatherMiddleName = birth.Father?.MiddleName,
-                FatherLastName = birth.Father?.LastName,
-                FatherNationality = CustomMapper.Mapper.Map<LookupDTO>(birth.Father?.NationalityLookup),
-                EventRegDate = birth.Event.EventRegDate,
-                CivilRegOfficerFirstName = birth.Event.CivilRegOfficer?.FirstName,
-                CivilRegOfficerMiddleName = birth.Event.CivilRegOfficer?.MiddleName,
-                CivilRegOfficerLastName = birth.Event.CivilRegOfficer?.LastName
+                CertifcateId = birth.Event.CertificateId,
+                RegBookNo = birth.Event.RegBookNo,
+                // BirthCertifcateId = birth.BirthCertificateId,
+                ChildFirstNameAm = birth.Event.EventOwener?.FirstName?.Value<string>("am"),
+                ChildMiddleNameAm = birth.Event.EventOwener?.MiddleName?.Value<string>("am"),
+                ChildLastNameAm = birth.Event.EventOwener?.LastName?.Value<string>("am"),
+                ChildFirstNameOr = birth.Event.EventOwener?.FirstName?.Value<string>("or"),
+                ChildMiddleNameOr = birth.Event.EventOwener?.MiddleName?.Value<string>("or"),
+                ChildLastNameOr = birth.Event.EventOwener?.LastName?.Value<string>("or"),
+
+                GenderAm = birth.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
+                GenderOr = birth.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
+
+                BirthMonth = birth.Event.EventDate.Month.ToString(),
+                BirthDay = birth.Event.EventDate.Month.ToString(),
+                BirthYear = birth.Event.EventDate.Month.ToString(),
+
+                // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
+                BirthAddressAm = address.Am,
+                BirthAddressOr = address.Or,
+                NationalityOr = birth.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
+                NationalityAm = birth.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
+
+                MotherFullNameOr = birth.Mother?.FirstName?.Value<string>("or") + " "
+                                 + birth.Mother?.MiddleName?.Value<string>("or") + " "
+                                 + birth.Mother?.LastName?.Value<string>("or"),
+                MotherFullNameAm = birth.Mother?.FirstName?.Value<string>("am") + " "
+                                 + birth.Mother?.MiddleName?.Value<string>("am") + " "
+                                 + birth.Mother?.LastName?.Value<string>("am"),
+                MotherNationalityOr = birth.Mother?.NationalityLookup?.Value?.Value<string>("or"),
+                MotherNationalityAm = birth.Mother?.NationalityLookup?.Value?.Value<string>("am"),
+
+                FatherFullNameOr = birth.Father?.FirstName?.Value<string>("or") + " "
+                                 + birth.Father?.MiddleName?.Value<string>("or") + " "
+                                 + birth.Father?.LastName?.Value<string>("or"),
+                FatherFullNameAm = birth.Father?.FirstName?.Value<string>("am") + " "
+                                 + birth.Father?.MiddleName?.Value<string>("am") + " "
+                                 + birth.Father?.LastName?.Value<string>("am"),
+                FatherNationalityOr = birth.Father?.NationalityLookup?.Value?.Value<string>("or"),
+                FatherNationalityAm = birth.Father?.NationalityLookup?.Value?.Value<string>("am"),
+
+                EventRegisteredMonth = birth.Event.EventRegDate.Month.ToString(),
+                EventRegisteredDay = birth.Event.EventRegDate.Day.ToString(),
+                EventRegisteredYear = birth.Event.EventRegDate.Year.ToString(),
+
+                GeneratedMonth = birth.Event.CreatedAt.Month.ToString(),
+                GeneratedDay = birth.Event.CreatedAt.Day.ToString(),
+                GeneratedYear = birth.Event.CreatedAt.Year.ToString(),
+
+                CivileRegOfficerFullNameOr = birth.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
+                                           + birth.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " "
+                                           + birth.Event.CivilRegOfficer?.LastName?.Value<string>("or"),
+                CivileRegOfficerFullNameAm = birth.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
+                                           + birth.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
+                                           + birth.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
 
             };
         }
 
         private AdoptionCertificateDTO GetAdoptionCertificate(AdoptionEvent adoption, string? BirthCertNo)
         {
-
+            (string Am, string Or) address = _DateAndAddressService.addressFormat(adoption.Event?.EventAddress?.Id);
             return new AdoptionCertificateDTO()
             {
                 CertifcateId = adoption.Event.CertificateId,
@@ -110,8 +148,10 @@ namespace AppDiv.CRVS.Application.Service
                 BirthMonth = adoption.Event.EventDate.Month.ToString(),
                 BirthDay = adoption.Event.EventDate.Month.ToString(),
                 BirthYear = adoption.Event.EventDate.Month.ToString(),
-                BirthAddressAm = adoption.Event?.EventAddress?.Id.ToString(),
-                BirthAddressOr = adoption.Event?.EventAddress?.Id.ToString(),
+                BirthAddressAm = address.Am,
+                BirthAddressOr = address.Or,
+                // BirthAddressAm = adoption.Event?.EventAddress?.Id.ToString(),
+                // BirthAddressOr = adoption.Event?.EventAddress?.Id.ToString(),
                 NationalityOr = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 NationalityAm = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
@@ -145,66 +185,163 @@ namespace AppDiv.CRVS.Application.Service
 
         private MarriageCertificateDTO GetMarriageCertificate(MarriageEvent marriage)
         {
+            (string Am, string Or) address = _DateAndAddressService.addressFormat(marriage.Event?.EventAddress?.Id);
             return new MarriageCertificateDTO()
             {
-                BrideFirstName = marriage.BrideInfo.FirstName,
-                BrideMiddleName = marriage.BrideInfo.MiddleName,
-                BrideLastName = marriage.BrideInfo.LastName,
-                BrideNationality = CustomMapper.Mapper.Map<LookupDTO>(marriage.BrideInfo?.NationalityLookup),
-                GroomFirstName = marriage.Event.EventOwener.FirstName,
-                GroomMiddleName = marriage.Event.EventOwener.MiddleName,
-                GroomLastName = marriage.Event.EventOwener.LastName,
-                GroomNationality = CustomMapper.Mapper.Map<LookupDTO>(marriage.Event.EventOwener?.NationalityLookup),
-                MarriageDate = marriage.Event.EventDate,
-                MarriagePlace = CustomMapper.Mapper.Map<AddressDTO>(marriage.Event.EventAddress),
-                EventRegDate = marriage.Event.EventRegDate,
-                CivilRegOfficerFirstName = marriage.Event.CivilRegOfficer?.FirstName,
-                CivilRegOfficerMiddleName = marriage.Event.CivilRegOfficer?.MiddleName,
-                CivilRegOfficerLastName = marriage.Event.CivilRegOfficer?.LastName
+                CertifcateId = marriage.Event.CertificateId,
+                RegBookNo = marriage.Event.RegBookNo,
+                // BrideBirthCertifcateId = marriage.BirthCertificateBrideId,
+                BrideFirstNameAm = marriage.BrideInfo.FirstName?.Value<string>("am"),
+                BrideMiddleNameAm = marriage.BrideInfo.MiddleName?.Value<string>("am"),
+                BrideLastNameAm = marriage.BrideInfo.LastName?.Value<string>("am"),
+                BrideFirstNameOr = marriage.BrideInfo.FirstName?.Value<string>("or"),
+                BrideMiddleNameOr = marriage.BrideInfo.MiddleName?.Value<string>("or"),
+                BrideLastNameOr = marriage.BrideInfo.LastName?.Value<string>("or"),
+
+                BrideNationalityOr = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
+                BrideNationalityAm = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
+
+                // GroomBirthCertifcateId = marriage.BirthCertificateGroomId,
+                GroomFirstNameAm = marriage.Event.EventOwener?.FirstName?.Value<string>("am"),
+                GroomMiddleNameAm = marriage.Event.EventOwener?.MiddleName?.Value<string>("am"),
+                GroomLastNameAm = marriage.Event.EventOwener?.LastName?.Value<string>("am"),
+                GroomFirstNameOr = marriage.Event.EventOwener?.FirstName?.Value<string>("or"),
+                GroomMiddleNameOr = marriage.Event.EventOwener?.MiddleName?.Value<string>("or"),
+                GroomLastNameOr = marriage.Event.EventOwener?.LastName?.Value<string>("or"),
+
+                GroomNationalityOr = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
+                GroomNationalityAm = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
+
+                MarriageMonth = marriage.Event.EventDate.Month.ToString(),
+                MarriageDay = marriage.Event.EventDate.Month.ToString(),
+                MarriageYear = marriage.Event.EventDate.Month.ToString(),
+
+                // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
+                MarriageAddressAm = address.Am,
+                MarriageAddressOr = address.Or,
+
+                EventRegisteredMonth = marriage.Event.EventRegDate.Month.ToString(),
+                EventRegisteredDay = marriage.Event.EventRegDate.Day.ToString(),
+                EventRegisteredYear = marriage.Event.EventRegDate.Year.ToString(),
+
+                GeneratedMonth = marriage.Event.CreatedAt.Month.ToString(),
+                GeneratedDay = marriage.Event.CreatedAt.Day.ToString(),
+                GeneratedYear = marriage.Event.CreatedAt.Year.ToString(),
+
+                CivileRegOfficerFullNameOr = marriage.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
+                                           + marriage.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " "
+                                           + marriage.Event.CivilRegOfficer?.LastName?.Value<string>("or"),
+                CivileRegOfficerFullNameAm = marriage.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
+                                           + marriage.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
+                                           + marriage.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
+
 
             };
         }
 
 
-        private DivorceCertificateDTO GetDivorceCertificate(DivorceEvent Divorce)
+        private DivorceCertificateDTO GetDivorceCertificate(DivorceEvent divorce)
         {
+            (string Am, string Or) address = _DateAndAddressService.addressFormat(divorce.Event?.EventAddress?.Id);
             return new DivorceCertificateDTO()
             {
-                WifeFirstName = Divorce.DivorcedWife?.FirstName,
-                WifeMiddleName = Divorce.DivorcedWife?.MiddleName,
-                WifeLastName = Divorce.DivorcedWife?.LastName,
-                WifeNationality = CustomMapper.Mapper.Map<LookupDTO>(Divorce.DivorcedWife?.NationalityLookup),
-                HusbandFirstName = Divorce.Event.EventOwener?.FirstName,
-                HusbandMiddleName = Divorce.Event.EventOwener?.MiddleName,
-                HusbandLastName = Divorce.Event.EventOwener?.LastName,
-                HusbandNationality = CustomMapper.Mapper.Map<LookupDTO>(Divorce.Event.EventOwener?.NationalityLookup),
-                DivorceDate = Divorce.Event.EventDate,
-                DivorcePlace = CustomMapper.Mapper.Map<AddressDTO>(Divorce.Event.EventAddress),
-                EventRegDate = Divorce.Event.EventRegDate,
-                CivilRegOfficerFirstName = Divorce.Event.CivilRegOfficer?.FirstName,
-                CivilRegOfficerMiddleName = Divorce.Event.CivilRegOfficer?.MiddleName,
-                CivilRegOfficerLastName = Divorce.Event.CivilRegOfficer?.LastName
+                CertifcateId = divorce.Event.CertificateId,
+                RegBookNo = divorce.Event.RegBookNo,
+                // BrideBirthCertifcateId = divorce.BirthCertificateBrideId,
+                WifeFirstNameAm = divorce.DivorcedWife.FirstName?.Value<string>("am"),
+                WifeMiddleNameAm = divorce.DivorcedWife.MiddleName?.Value<string>("am"),
+                WifeLastNameAm = divorce.DivorcedWife.LastName?.Value<string>("am"),
+                WifeFirstNameOr = divorce.DivorcedWife.FirstName?.Value<string>("or"),
+                WifeMiddleNameOr = divorce.DivorcedWife.MiddleName?.Value<string>("or"),
+                WifeLastNameOr = divorce.DivorcedWife.LastName?.Value<string>("or"),
+
+                WifeNationalityOr = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
+                WifeNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
+
+                HusbandFirstNameAm = divorce.Event.EventOwener?.FirstName?.Value<string>("am"),
+                HusbandMiddleNameAm = divorce.Event.EventOwener?.MiddleName?.Value<string>("am"),
+                HusbandLastNameAm = divorce.Event.EventOwener?.LastName?.Value<string>("am"),
+                HusbandFirstNameOr = divorce.Event.EventOwener?.FirstName?.Value<string>("or"),
+                HusbandMiddleNameOr = divorce.Event.EventOwener?.MiddleName?.Value<string>("or"),
+                HusbandLastNameOr = divorce.Event.EventOwener?.LastName?.Value<string>("or"),
+
+                HusbandNationalityOr = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
+                HusbandNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
+
+                DivorceMonth = divorce.Event.EventDate.Month.ToString(),
+                DivorceDay = divorce.Event.EventDate.Month.ToString(),
+                DivorceYear = divorce.Event.EventDate.Month.ToString(),
+
+                // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
+                DivorceAddressAm = address.Am,
+                DivorceAddressOr = address.Or,
+
+                EventRegisteredMonth = divorce.Event.EventRegDate.Month.ToString(),
+                EventRegisteredDay = divorce.Event.EventRegDate.Day.ToString(),
+                EventRegisteredYear = divorce.Event.EventRegDate.Year.ToString(),
+
+                GeneratedMonth = divorce.Event.CreatedAt.Month.ToString(),
+                GeneratedDay = divorce.Event.CreatedAt.Day.ToString(),
+                GeneratedYear = divorce.Event.CreatedAt.Year.ToString(),
+
+                CivileRegOfficerFullNameOr = divorce.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
+                                           + divorce.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " "
+                                           + divorce.Event.CivilRegOfficer?.LastName?.Value<string>("or"),
+                CivileRegOfficerFullNameAm = divorce.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
+                                           + divorce.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
+                                           + divorce.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
+
 
             };
         }
 
         private DeathCertificateDTO GetDeathCertificate(DeathEvent death)
         {
+            (string Am, string Or) address = _DateAndAddressService.addressFormat(death.Event?.EventAddress?.Id);
             return new DeathCertificateDTO()
             {
-                FirstName = death.Event.EventOwener?.FirstName,
-                MiddleName = death.Event.EventOwener?.MiddleName,
-                LastName = death.Event.EventOwener?.LastName,
-                Title = CustomMapper.Mapper.Map<LookupDTO>(death.Event.EventOwener?.TitleLookup),
-                Gender = CustomMapper.Mapper.Map<LookupDTO>(death.Event.EventOwener?.SexLookup),
-                BirthDate = death.Event.EventOwener?.BirthDate,
-                DeathPlace = CustomMapper.Mapper.Map<AddressDTO>(death.Event.EventAddress),
-                DeathDate = death.Event.EventDate,
-                Nationality = CustomMapper.Mapper.Map<LookupDTO>(death.Event.EventOwener?.NationalityLookup),
-                EventRegDate = death.Event.EventDate,
-                CivilRegOfficerFirstName = death.Event.CivilRegOfficer?.FirstName,
-                CivilRegOfficerMiddleName = death.Event.CivilRegOfficer?.MiddleName,
-                CivilRegOfficerLastName = death.Event.CivilRegOfficer?.LastName
+                CertifcateId = death.Event.CertificateId,
+                RegBookNo = death.Event.RegBookNo,
+                BirthCertifcateId = death.BirthCertificateId,
+                FirstNameAm = death.Event.EventOwener?.FirstName?.Value<string>("am"),
+                MiddleNameAm = death.Event.EventOwener?.MiddleName?.Value<string>("am"),
+                LastNameAm = death.Event.EventOwener?.LastName?.Value<string>("am"),
+                FirstNameOr = death.Event.EventOwener?.FirstName?.Value<string>("or"),
+                MiddleNameOr = death.Event.EventOwener?.MiddleName?.Value<string>("or"),
+                LastNameOr = death.Event.EventOwener?.LastName?.Value<string>("or"),
+
+                GenderAm = death.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
+                GenderOr = death.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
+
+                BirthMonth = death.Event.EventDate.Month.ToString(),
+                BirthDay = death.Event.EventDate.Month.ToString(),
+                BirthYear = death.Event.EventDate.Month.ToString(),
+
+                // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
+                DeathPlaceAm = address.Am,
+                DeathPlaceOr = address.Or,
+
+                DeathMonth = death.Event.EventDate.Month.ToString(),
+                DeathDay = death.Event.EventDate.Month.ToString(),
+                DeathYear = death.Event.EventDate.Month.ToString(),
+
+                NationalityOr = death.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
+                NationalityAm = death.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
+
+                EventRegisteredMonth = death.Event.EventRegDate.Month.ToString(),
+                EventRegisteredDay = death.Event.EventRegDate.Day.ToString(),
+                EventRegisteredYear = death.Event.EventRegDate.Year.ToString(),
+
+                GeneratedMonth = death.Event.CreatedAt.Month.ToString(),
+                GeneratedDay = death.Event.CreatedAt.Day.ToString(),
+                GeneratedYear = death.Event.CreatedAt.Year.ToString(),
+
+                CivileRegOfficerFullNameOr = death.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
+                                           + death.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " "
+                                           + death.Event.CivilRegOfficer?.LastName?.Value<string>("or"),
+                CivileRegOfficerFullNameAm = death.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
+                                           + death.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
+                                           + death.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
 
             };
         }

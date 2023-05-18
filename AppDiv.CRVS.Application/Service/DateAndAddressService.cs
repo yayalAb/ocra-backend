@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Service
         {
             _AddresslookupRepository = AddresslookupRepository;
         }
-        public (string, string) addressFormat(Guid id)
+        public (string, string) addressFormat(Guid? id)
 
         {
             var Address = _AddresslookupRepository.GetAll()
@@ -26,14 +26,14 @@ namespace AppDiv.CRVS.Application.Service
             + "," + Address?.ParentAddress?.AddressName.Value<string>("am") + ","
             + Address?.AddressName.Value<string>("am");
 
-            var addressStringor =
+            var addressStringOr =
             Address?.ParentAddress?.ParentAddress?.ParentAddress?.ParentAddress?.AddressName.Value<string>("or")
             + "," + Address?.ParentAddress?.ParentAddress?.ParentAddress?.AddressName.Value<string>("or")
             + "," + Address?.ParentAddress?.ParentAddress?.AddressName.Value<string>("or")
             + "," + Address?.ParentAddress?.AddressName.Value<string>("or") + ","
             + Address?.AddressName.Value<string>("or");
 
-            return (addressStringAm, addressStringor);
+            return (addressStringAm, addressStringOr);
 
         }
 
