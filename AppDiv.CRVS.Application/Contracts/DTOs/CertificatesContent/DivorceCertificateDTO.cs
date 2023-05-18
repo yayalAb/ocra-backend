@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
     {
         public string? CertifcateId { get; set; }
         public string? RegBookNo { get; set; }
-        public string? BirthCertifcateId { get; set; }
+        public string? WifeBirthCertifcateId { get; set; }
         // public JObject? WifeFirstName { get; set; }
         // public JObject? WifeMiddleName { get; set; }
         // public JObject? WifeLastName { get; set; }
@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         // public JObject? HusbandMiddleName { get; set; }
         // public JObject? HusbandLastName { get; set; }
 
+        public string? HusbandBirthCertifcateId { get; set; }
         public string? HusbandFirstNameOr { get; set; }
         public string? HusbandFirstNameAm { get; set; }
         public string? HusbandMiddleNameOr { get; set; }
