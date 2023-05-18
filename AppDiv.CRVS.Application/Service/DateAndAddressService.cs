@@ -30,8 +30,8 @@ namespace AppDiv.CRVS.Application.Service
 
                 Address = _AddresslookupRepository.GetAll()
                                     .Where(a => a.Id == Address.ParentAddressId).FirstOrDefault();
-                addressStringAm = addressStringAm + ", " + Address?.AddressName?.Value<string>("am");
-                addressStringOr = addressStringOr + ", " + Address?.AddressName?.Value<string>("or");
+                addressStringAm = Address?.AddressName?.Value<string>("am") + "/" + addressStringAm;
+                addressStringOr = Address?.AddressName?.Value<string>("or") + "/" + addressStringOr;
             }
             return (addressStringAm, addressStringOr);
 
