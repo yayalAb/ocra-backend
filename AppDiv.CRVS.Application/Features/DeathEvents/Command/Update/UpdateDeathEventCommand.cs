@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 {
     // Customer create command with CustomerResponse
-    public class UpdateDeathEventCommand : IRequest<DeathEventDTO>
+    public class UpdateDeathEventCommand : IRequest<UpdateDeathEventCommandResponse>
     {
         public Guid Id { get; set; }
         public string? BirthCertificateId { get; set; }

@@ -21,7 +21,22 @@ namespace AppDiv.CRVS.API.Controllers
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateDeathEvent(CreateDeathEventCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            try
+            {
+                var result = await Mediator.Send(command);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result);
+                }
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
         }
 
         [HttpGet("GetAll")]
@@ -47,7 +62,15 @@ namespace AppDiv.CRVS.API.Controllers
                 if (command.Id == id)
                 {
                     var result = await Mediator.Send(command);
-                    return Ok(result);
+                    if (result.Success)
+                    {
+                        return Ok(result);
+                    }
+                    else
+                    {
+                        return BadRequest(result);
+                    }
+
                 }
                 else
                 {

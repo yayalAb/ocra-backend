@@ -7,7 +7,7 @@ using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 {
-    public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, DeathEventDTO>
+    public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, UpdateDeathEventCommandResponse>
     {
         private readonly IDeathEventRepository _deathEventRepository;
         private readonly ILookupRepository _lookupRepository;
@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             this._lookupRepository = lookupRepository;
             this._person = person;
         }
-        public async Task<DeathEventDTO> Handle(UpdateDeathEventCommand request, CancellationToken cancellationToken)
+        public async Task<UpdateDeathEventCommandResponse> Handle(UpdateDeathEventCommand request, CancellationToken cancellationToken)
         {
 
             var updateDeathEventCommandResponse = new UpdateDeathEventCommandResponse();
@@ -57,10 +57,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "DeathEvents");
             }
 
-            var modifiedDeathEvent = await _deathEventRepository.GetIncludedAsync(request.Id);
-            var paymentRateResponse = CustomMapper.Mapper.Map<DeathEventDTO>(modifiedDeathEvent);
+            // var modifiedDeathEvent = await _deathEventRepository.GetIncludedAsync(request.Id);
+            // var paymentRateResponse = CustomMapper.Mapper.Map<DeathEventDTO>(modifiedDeathEvent);
 
-            return paymentRateResponse;
+            return new UpdateDeathEventCommandResponse { Message = "Death Event Updated Successfully." };
         }
     }
 }
