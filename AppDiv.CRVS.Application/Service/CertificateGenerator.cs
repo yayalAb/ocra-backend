@@ -199,9 +199,9 @@ namespace AppDiv.CRVS.Application.Service
             (string Am, string Or) address = _DateAndAddressService.addressFormat(divorce.Event?.EventAddress?.Id);
             return new DivorceCertificateDTO()
             {
-                CertifcateId = divorce.Event?.CertificateId,
-                RegBookNo = divorce.Event?.RegBookNo,
-                WifeBirthCertifcateId = divorce.WifeBirthCertificateId,
+                CertifcateId = divorce.Event.CertificateId,
+                RegBookNo = divorce.Event.RegBookNo,
+                // BrideBirthCertifcateId = divorce.BirthCertificateBrideId,
                 WifeFirstNameAm = divorce.DivorcedWife.FirstName?.Value<string>("am"),
                 WifeMiddleNameAm = divorce.DivorcedWife.MiddleName?.Value<string>("am"),
                 WifeLastNameAm = divorce.DivorcedWife.LastName?.Value<string>("am"),
@@ -212,7 +212,6 @@ namespace AppDiv.CRVS.Application.Service
                 WifeNationalityOr = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 WifeNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
-                HusbandBirthCertifcateId = divorce.HusbandBirthCertifcate,
                 HusbandFirstNameAm = divorce.Event.EventOwener?.FirstName?.Value<string>("am"),
                 HusbandMiddleNameAm = divorce.Event.EventOwener?.MiddleName?.Value<string>("am"),
                 HusbandLastNameAm = divorce.Event.EventOwener?.LastName?.Value<string>("am"),
