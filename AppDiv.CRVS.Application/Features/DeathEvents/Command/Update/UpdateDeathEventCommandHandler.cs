@@ -47,7 +47,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             if (updateDeathEventCommandResponse.Success)
             {
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
-                deathEvent.Event.EventType = "DeathEvent";
+                deathEvent.Event.EventType = "Death";
                 _deathEventRepository.Update(deathEvent);
                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
 
