@@ -67,11 +67,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         {
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
-            // certificate.Content.
             var content = await _certificateRepository.GetContent(request.Id);
-            _ILogger.LogCritical(content.adoption.Event.EventOwener.BirthAddressId.ToString());
             var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo?.Event?.CertificateId);
-
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType).FirstOrDefault();
             if (request.IsPrint)
             {
