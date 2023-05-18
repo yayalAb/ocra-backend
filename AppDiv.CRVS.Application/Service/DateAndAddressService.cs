@@ -20,23 +20,19 @@ namespace AppDiv.CRVS.Application.Service
 
         {
             var Address = _AddresslookupRepository.GetAll()
-                                    .Include(a => a.ParentAddress)
                                    .Where(a => a.Id == id).FirstOrDefault();
-            _Ilogger.LogCritical(id.ToString());
-            var addressStringAm =
-            Address?.ParentAddress?.ParentAddress?.ParentAddress?.ParentAddress?.AddressName.Value<string>("am")
-            + "," + Address?.ParentAddress?.ParentAddress?.ParentAddress?.AddressName.Value<string>("am")
-            + "," + Address?.ParentAddress?.ParentAddress?.AddressName.Value<string>("am")
-            + "," + Address?.ParentAddress?.AddressName.Value<string>("am") + ","
-            + Address?.AddressName.Value<string>("am");
 
-            var addressStringOr =
-            Address?.ParentAddress?.ParentAddress?.ParentAddress?.ParentAddress?.AddressName.Value<string>("or")
-            + "," + Address?.ParentAddress?.ParentAddress?.ParentAddress?.AddressName.Value<string>("or")
-            + "," + Address?.ParentAddress?.ParentAddress?.AddressName.Value<string>("or")
-            + "," + Address?.ParentAddress?.AddressName.Value<string>("or") + ","
-            + Address?.AddressName.Value<string>("or");
+            string addressStringAm = Address?.AddressName?.Value<string>("am");
+            string addressStringOr = Address?.AddressName?.Value<string>("or");
+            string adressStr = adressStr = Address.AddressNameStr;
+            while (Address?.ParentAddressId != null)
+            {
 
+                Address = _AddresslookupRepository.GetAll()
+                                    .Where(a => a.Id == Address.ParentAddressId).FirstOrDefault();
+                addressStringAm = addressStringAm + ", " + Address?.AddressName?.Value<string>("am");
+                addressStringOr = addressStringOr + ", " + Address?.AddressName?.Value<string>("or");
+            }
             return (addressStringAm, addressStringOr);
 
         }

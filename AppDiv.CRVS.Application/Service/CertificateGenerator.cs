@@ -133,6 +133,12 @@ namespace AppDiv.CRVS.Application.Service
 
         private AdoptionCertificateDTO GetAdoptionCertificate(AdoptionEvent adoption, string? BirthCertNo)
         {
+            string AddressAm = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty
+                    || adoption.Event?.EventOwener?.BirthAddressId == null) ? null :
+                    _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId).Item1;
+            string AddressOr = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty
+               || adoption.Event?.EventOwener?.BirthAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId).Item2;
 
             return new AdoptionCertificateDTO()
             {
@@ -151,10 +157,8 @@ namespace AppDiv.CRVS.Application.Service
                 BirthMonth = adoption.Event.EventDate.Month.ToString(),
                 BirthDay = adoption.Event.EventDate.Month.ToString(),
                 BirthYear = adoption.Event.EventDate.Month.ToString(),
-                BirthAddressAm = address.Am,
-                BirthAddressOr = address.Or,
-                // BirthAddressAm = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty || adoption.Event?.EventOwener?.BirthAddressId == null) ? null : _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId).Item1,
-                // BirthAddressOr = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty || adoption.Event?.EventOwener?.BirthAddressId == null) ? null : _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId).Item2,
+                BirthAddressAm = AddressAm,
+                BirthAddressOr = AddressOr,
                 NationalityOr = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 NationalityAm = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
