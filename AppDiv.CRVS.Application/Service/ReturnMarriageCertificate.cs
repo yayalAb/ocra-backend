@@ -15,9 +15,9 @@ namespace AppDiv.CRVS.Application.Service
 
         public MarriageCertificateDTO GetMarriageCertificate(MarriageEvent marriage, string? BirthCertNo)
         {
-            (string am, string or)? address = (marriage.Event?.EventOwener?.BirthAddressId == Guid.Empty
-               || marriage.Event?.EventOwener?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(marriage.Event.EventOwener.BirthAddressId);
+            (string am, string or)? address = (marriage.Event?.EventAddressId == Guid.Empty
+               || marriage.Event?.EventAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(marriage.Event.EventAddressId);
 
             return new MarriageCertificateDTO()
             {
@@ -46,8 +46,8 @@ namespace AppDiv.CRVS.Application.Service
                 GroomNationalityAm = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
                 MarriageMonth = marriage.Event.EventDate.Month.ToString(),
-                MarriageDay = marriage.Event.EventDate.Month.ToString(),
-                MarriageYear = marriage.Event.EventDate.Month.ToString(),
+                MarriageDay = marriage.Event.EventDate.Day.ToString(),
+                MarriageYear = marriage.Event.EventDate.Year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 MarriageAddressAm = address?.am,

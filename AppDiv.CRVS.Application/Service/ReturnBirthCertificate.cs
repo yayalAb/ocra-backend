@@ -15,9 +15,9 @@ namespace AppDiv.CRVS.Application.Service
 
         public BirthCertificateDTO GetBirthCertificate(BirthEvent birth, string? BirthCertNo)
         {
-            (string am, string or)? address = (birth.Event?.EventOwener?.BirthAddressId == Guid.Empty
-               || birth.Event?.EventOwener?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(birth.Event.EventOwener.BirthAddressId);
+            (string am, string or)? address = (birth.Event?.EventAddressId == Guid.Empty
+               || birth.Event?.EventAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(birth.Event.EventAddressId);
 
 
             return new BirthCertificateDTO()

@@ -7,7 +7,7 @@ using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
-    public class UpdateBirthEventCommandHandler : IRequestHandler<UpdateBirthEventCommand, BirthEventDTO>
+    public class UpdateBirthEventCommandHandler : IRequestHandler<UpdateBirthEventCommand, UpdateBirthEventCommandResponse>
     {
         private readonly IBirthEventRepository _birthEventRepository;
         private readonly ILookupRepository _lookupRepository;
@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
             this._lookupRepository = lookupRepository;
             this._person = person;
         }
-        public async Task<BirthEventDTO> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
+        public async Task<UpdateBirthEventCommandResponse> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
         {
             var updateBirthEventCommandResponse = new UpdateBirthEventCommandResponse();
 
@@ -56,10 +56,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "BirthEvents");
             }
 
-            var modifiedBirthEvent = await _birthEventRepository.GetWithIncludedAsync(request.Id);
-            var paymentRateResponse = CustomMapper.Mapper.Map<BirthEventDTO>(modifiedBirthEvent);
+            // var modifiedBirthEvent = await _birthEventRepository.GetWithIncludedAsync(request.Id);
+            // var paymentRateResponse = CustomMapper.Mapper.Map<BirthEventDTO>(modifiedBirthEvent);
 
-            return paymentRateResponse;
+            return new UpdateBirthEventCommandResponse() { Message = "Birth Event updated succesfully." };
         }
     }
 }

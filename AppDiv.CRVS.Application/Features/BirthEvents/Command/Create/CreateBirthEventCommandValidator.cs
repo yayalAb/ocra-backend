@@ -56,7 +56,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             RuleFor(p => p.BirthEvent.Father.MiddleName.or).NotEmpty().NotNull();
             RuleFor(p => p.BirthEvent.Father.LastName.am).NotEmpty().NotNull();
             RuleFor(p => p.BirthEvent.Father.LastName.or).NotEmpty().NotNull();
-            RuleFor(p => p.BirthEvent.Father.NationalId).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.NationalId");
+            RuleFor(p => p.BirthEvent.Father.NationalId).NotGuidEmpty();
             RuleFor(p => p.BirthEvent.Father.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.SexLookupId");
             RuleFor(p => p.BirthEvent.Father.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.NationalityLookupId");
             RuleFor(p => p.BirthEvent.Father.ReligionLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.ReligionLookupId");
@@ -99,7 +99,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             RuleFor(p => p.BirthEvent.Mother.MiddleName.or).NotEmpty().NotNull();
             RuleFor(p => p.BirthEvent.Mother.LastName.am).NotEmpty().NotNull();
             RuleFor(p => p.BirthEvent.Mother.LastName.or).NotEmpty().NotNull();
-            RuleFor(p => p.BirthEvent.Mother.NationalId).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.NationalId");
+            RuleFor(p => p.BirthEvent.Mother.NationalId).NotGuidEmpty();
             RuleFor(p => p.BirthEvent.Mother.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.SexLookupId");
             RuleFor(p => p.BirthEvent.Mother.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.NationalityLookupId");
             RuleFor(p => p.BirthEvent.Mother.ReligionLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.ReligionLookupId");

@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             try
             {
-                if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()))
+                if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 {
                     PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
                     selectedperson.NationalId = entity.Event?.EventOwener?.NationalId;
@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     entity.Event.EventOwenerId = entity.Event.EventOwener.Id;
                     entity.Event.EventOwener = null;
                 }
-                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()))
+                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()) && entity.Event.EventRegistrar?.RegistrarInfo?.Id != Guid.Empty)
                 {
                     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventRegistrar.RegistrarInfo.Id);
                     selectedperson.NationalId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalId;
@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
                     entity.Event.EventRegistrar.RegistrarInfo = null;
                 }
-                if (!string.IsNullOrEmpty(entity.Father.Id.ToString()))
+                if (!string.IsNullOrEmpty(entity.Father?.Id.ToString()) && entity.Father?.Id != Guid.Empty)
                 {
                     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Father.Id);
                     selectedperson.NationalId = entity.Father?.NationalId;
@@ -81,7 +81,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     entity.FatherId = entity.Father.Id;
                     entity.Father = null;
                 }
-                if (!string.IsNullOrEmpty(entity.Mother.Id.ToString()))
+                if (!string.IsNullOrEmpty(entity.Mother?.Id.ToString()) && entity.Mother?.Id != Guid.Empty)
                 {
                     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Mother.Id);
                     selectedperson.NationalId = entity.Mother?.NationalId;

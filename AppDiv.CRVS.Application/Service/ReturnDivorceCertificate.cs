@@ -15,9 +15,9 @@ namespace AppDiv.CRVS.Application.Service
 
         public DivorceCertificateDTO GetDivorceCertificate(DivorceEvent divorce, string? BirthCertNo)
         {
-            (string am, string or)? address = (divorce.Event?.EventOwener?.BirthAddressId == Guid.Empty
-               || divorce.Event?.EventOwener?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(divorce.Event.EventOwener.BirthAddressId);
+            (string am, string or)? address = (divorce.Event?.EventAddressId == Guid.Empty
+               || divorce.Event?.EventAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(divorce.Event.EventAddressId);
 
 
             return new DivorceCertificateDTO()
@@ -47,8 +47,8 @@ namespace AppDiv.CRVS.Application.Service
                 HusbandNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
                 DivorceMonth = divorce.Event.EventDate.Month.ToString(),
-                DivorceDay = divorce.Event.EventDate.Month.ToString(),
-                DivorceYear = divorce.Event.EventDate.Month.ToString(),
+                DivorceDay = divorce.Event.EventDate.Day.ToString(),
+                DivorceYear = divorce.Event.EventDate.Year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 DivorceAddressAm = address?.am,

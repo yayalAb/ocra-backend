@@ -40,6 +40,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.SexLookup)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.NationalityLookup)
+                            .Include(d => d.Event).ThenInclude(e => e.EventOwener).ThenInclude(p => p.BirthAddress)
                             .Include(d => d.Event).ThenInclude(e => e.CivilRegOfficer)
                             .Include(d => d.Event).ThenInclude(e => e.EventAddress)
                             .Where(e => e.EventId == eventId).FirstOrDefaultAsync()
