@@ -13,9 +13,9 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {
     public class CreateDeathEventCommandValidator : AbstractValidator<CreateDeathEventCommand>
     {
-        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) _repo;
+        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) _repo;
         // private readonly IMediator _mediator;
-        public CreateDeathEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) repo, CreateDeathEventCommand request)
+        public CreateDeathEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) repo, CreateDeathEventCommand request)
         {
             _repo = repo;
             RuleFor(p => p.DeathEvent.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityLookupId");
@@ -64,6 +64,17 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             else if (request.DeathEvent.Event.EventRegistrar == null)
             {
                 RuleFor(p => p.DeathEvent.Event.EventRegistrar).Must(r => !(r == null)).WithMessage("Registrar Is Required");
+            }
+
+            if (request.DeathEvent.Event.EventSupportingDocuments != null)
+            {
+                RuleFor(p => p.DeathEvent.Event.EventSupportingDocuments).SupportingDocNull("Event.EventSupportingDocuments").NotEmpty().NotNull();
+            }
+
+            if (request.DeathEvent.Event.PaymentExamption != null)
+            {
+                RuleFor(p => p.DeathEvent.Event.PaymentExamption.ExamptionRequestId.ToString()).NotGuidEmpty().ForeignKeyWithPaymentExamptionRequest(_repo.ExamptionRequest, "Event.PaymentExamption.ExamptionRequestId");
+                RuleFor(p => p.DeathEvent.Event.PaymentExamption.SupportingDocuments).SupportingDocNull("Event.PaymentExamption.EventSupportingDocuments").NotEmpty().NotNull();
             }
 
         }
