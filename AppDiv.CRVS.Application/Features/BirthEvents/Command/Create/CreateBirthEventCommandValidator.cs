@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
+﻿using System.Net.Cache;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Base;
@@ -18,10 +19,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
     public class CreateBirthEventCommandValidator : AbstractValidator<CreateBirthEventCommand>
     {
-        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) _repo;
+        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) _repo;
         // private readonly IMediator _mediator;
         // private readonly ILogger<CreateBirthEventCommandValidator> log;
-        public CreateBirthEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) repo, CreateBirthEventCommand request
+        public CreateBirthEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) repo, CreateBirthEventCommand request
         // , ILogger<CreateBirthEventCommandValidator> log
         )
         {
@@ -40,6 +41,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             RuleFor(p => p.BirthEvent.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");
             RuleFor(p => p.BirthEvent.Event.EventOwener.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.BirthEvent.Event.EventOwener.FirstName.am).NotEmpty().NotNull();
+            RuleFor(p => p.BirthEvent.Event.EventOwener.MiddleName.or).Must(f => f == request.BirthEvent.Father.FirstName.or).WithMessage("The child's father name and his father first name does not match.").NotEmpty().NotNull();
+            RuleFor(p => p.BirthEvent.Event.EventOwener.MiddleName.am).Must(f => f == request.BirthEvent.Father.FirstName.am).WithMessage("The child's father's name and his father's first name do not match.").NotEmpty().NotNull();
+            RuleFor(p => p.BirthEvent.Event.EventOwener.LastName.or).Must(f => f == request.BirthEvent.Father.MiddleName.or).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
+            RuleFor(p => p.BirthEvent.Event.EventOwener.LastName.am).Must(f => f == request.BirthEvent.Father.MiddleName.am).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
+
             RuleFor(p => p.BirthEvent.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SexLookupId");
             RuleFor(p => p.BirthEvent.Event.EventOwener.BirthDate).NotEmpty().NotNull();
             // RuleFor(p => p.BirthEvent.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "PlaceOfBirthLookupId");
@@ -109,6 +115,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             RuleFor(p => p.BirthEvent.Mother.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "Mother.ResidentAddressId");
             RuleFor(p => p.BirthEvent.Mother.NationLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.NationLookupId");
             // }
+            if (request.BirthEvent.Event.EventSupportingDocuments != null)
+            {
+                RuleFor(p => p.BirthEvent.Event.EventSupportingDocuments).SupportingDocNull("Event.EventSupportingDocuments").NotEmpty().NotNull();
+            }
+
+            if (request.BirthEvent.Event.PaymentExamption != null)
+            {
+                RuleFor(p => p.BirthEvent.Event.PaymentExamption.ExamptionRequestId.ToString()).NotGuidEmpty().ForeignKeyWithPaymentExamptionRequest(_repo.ExamptionRequest, "Event.PaymentExamption.ExamptionRequestId");
+                RuleFor(p => p.BirthEvent.Event.PaymentExamption.SupportingDocuments).SupportingDocNull("Event.PaymentExamption.EventSupportingDocuments").NotEmpty().NotNull();
+            }
         }
 
     }

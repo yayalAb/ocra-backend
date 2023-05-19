@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Application.Service
                || adoption.Event?.EventOwener?.BirthAddressId == null) ? null :
                _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId);
 
-
+            (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new AdoptionCertificateDTO()
             {
                 CertifcateId = adoption.Event.CertificateId,
@@ -54,7 +54,6 @@ namespace AppDiv.CRVS.Application.Service
                     + " " + adoption.AdoptiveFather?.MiddleName?.Value<string>("am") + " " + adoption.AdoptiveFather?.LastName?.Value<string>("am"),
                 FatherNationalityOr = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("or"),
                 FatherNationalityAm = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("am"),
-
                 EventRegisteredMonth = adoption.Event.EventRegDate.Month.ToString(),
                 EventRegisteredDay = adoption.Event.EventRegDate.Day.ToString(),
                 EventRegisteredYear = adoption.Event.EventRegDate.Year.ToString(),
@@ -65,6 +64,22 @@ namespace AppDiv.CRVS.Application.Service
                     + " " + adoption.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " " + adoption.Event.CivilRegOfficer?.LastName?.Value<string>("or"),
                 CivileRegOfficerFullNameAm = adoption.Event.CivilRegOfficer?.FirstName?.Value<string>("am")
                     + " " + adoption.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " " + adoption.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
+
+
+                //splited address
+
+                CountryOr = splitedAddress.or?.ElementAtOrDefault(0),
+                CountryAm = splitedAddress.am?.ElementAtOrDefault(0),
+                RegionOr = splitedAddress.or?.ElementAtOrDefault(1),
+                RegionAm = splitedAddress.am?.ElementAtOrDefault(1),
+                ZoneOr = splitedAddress.or?.ElementAtOrDefault(2),
+                ZoneAm = splitedAddress.am?.ElementAtOrDefault(2),
+                WoredaOr = splitedAddress.or?.ElementAtOrDefault(3),
+                WoredaAm = splitedAddress.am?.ElementAtOrDefault(3),
+                CityOr = splitedAddress.or?.ElementAtOrDefault(4),
+                CityAm = splitedAddress.am?.ElementAtOrDefault(4),
+                KebeleOr = splitedAddress.or?.ElementAtOrDefault(5),
+                KebeleAm = splitedAddress.am?.ElementAtOrDefault(5),
 
             };
         }

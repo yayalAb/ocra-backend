@@ -32,6 +32,19 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? BirthAddressOr { get; set; }
         public string? BirthAddressAm { get; set; }
 
+        public string? CountryOr { get; set; }
+        public string? CountryAm { get; set; }
+        public string? RegionOr { get; set; }
+        public string? RegionAm { get; set; }
+        public string? ZoneOr { get; set; }
+        public string? ZoneAm { get; set; }
+        public string? WoredaOr { get; set; }
+        public string? WoredaAm { get; set; }
+        public string? CityOr { get; set; }
+        public string? CityAm { get; set; }
+        public string? KebeleOr { get; set; }
+        public string? KebeleAm { get; set; }
+
         // public LookupDTO? ChildNationality { get; set; }
         public string? NationalityOr { get; set; }
         public string? NationalityAm { get; set; }

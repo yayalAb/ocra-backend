@@ -53,6 +53,38 @@ namespace AppDiv.CRVS.Application.Service
                                 return person == null ? false : true;
                             }).WithMessage($"'{propertyName}' Unable to Get The Person");
         }
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPaymentExamptionRequest<T>(this IRuleBuilder<T, string?> ruleBuilder, IPaymentExamptionRequestRepository repo, string propertyName)
+        {
+            // repository = repo;
+            return ruleBuilder.MustAsync(async (r, c)
+                            =>
+                            {
+                                Guid.TryParse(r, out Guid guid);
+                                var e = await repo.GetAsync(guid);
+                                return e == null ? false : true;
+                            }).WithMessage($"'{propertyName}' Unable to Get The PaymentExamption Request");
+        }
+        public static IRuleBuilderOptions<T, ICollection<AddSupportingDocumentRequest>?> SupportingDocNull<T>(this IRuleBuilder<T, ICollection<AddSupportingDocumentRequest>?> ruleBuilder, string propertyName)
+        {
+            // repository = repo;
+            return ruleBuilder.Must(docs =>
+            {
+                foreach (var d in docs)
+                {
+                    try
+                    {
+                        Convert.FromBase64String(d.base64String);
+                        return d.Type == null || d.Type == "" ? false :
+                            (d.Description == null || d.Description == "") ? false : true;
+                    }
+                    catch (FormatException)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            }).WithMessage($"'{propertyName}' Check your supporting documents");
+        }
 
         public static IRuleBuilderOptions<T, string?> NotGuidEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
         {
