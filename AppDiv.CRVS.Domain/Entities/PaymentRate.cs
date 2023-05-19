@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup PaymentTypeLookup { get; set; }
         public virtual Lookup EventLookup { get; set; }
         public virtual Address Address { get; set; }
-        public virtual PaymentRequest PaymentRatePaymentRequest { get; set; }
+        public virtual ICollection<PaymentRequest> PaymentRatePaymentRequests { get; set; }
 
     }
 }

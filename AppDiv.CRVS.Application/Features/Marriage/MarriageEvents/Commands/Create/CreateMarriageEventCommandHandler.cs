@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
                             // logger.LogCritical($"yyyyyyyyyy......{request.Event.EventRegistrar.Relationshi}")
                             marriageEvent.Event.EventType = "Marriage";
-                            await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
+                            await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent,false, cancellationToken);
 
 
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
