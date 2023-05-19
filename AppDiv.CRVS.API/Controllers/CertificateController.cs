@@ -70,9 +70,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Reprint/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<CertificateDTO> GetReprint(Guid id, bool IsPrint)
+        public async Task<CertificateDTO> GetReprint(Guid id, bool IsPrint, string? CertificateSerialNumber)
         {
-            return await Mediator.Send(new ReprintCertificateCommand { Id = id, IsPrint = IsPrint });
+            return await Mediator.Send(new ReprintCertificateCommand { Id = id, IsPrint = IsPrint, CertificateSerialNumber = CertificateSerialNumber });
         }
 
         [HttpGet("Event/{eventId}")]

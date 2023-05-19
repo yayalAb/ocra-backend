@@ -19,12 +19,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 
         public Guid Id { get; set; }
         public bool IsPrint { get; set; } = false;
-        // public Guid EventId { get; set; }
-        // public JObject Content { get; set; }
-        // public bool Status { get; set; }
-        // public bool AuthenticationStatus { get; set; }
-        // public int PrintCont { get; set; }
-        // public string CertificateSerialNumber { get; set; }
+        public string? CertificateSerialNumber { get; set; } = "";
     }
 
     public class ReprintCertificateCommandHandler : IRequestHandler<ReprintCertificateCommand, CertificateDTO>
@@ -37,10 +32,11 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public async Task<CertificateDTO> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
 
-            if (request.IsPrint)
+            if (request.IsPrint && string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
                 var certificate = await _certificateRepository.GetAsync(request.Id);
                 certificate.PrintCount += 1;
+                certificate.CertificateSerialNumber = certificate.CertificateSerialNumber + ", " + request.CertificateSerialNumber;
                 try
                 {
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
