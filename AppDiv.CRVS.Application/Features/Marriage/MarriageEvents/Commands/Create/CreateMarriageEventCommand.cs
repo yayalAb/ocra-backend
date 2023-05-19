@@ -8,12 +8,14 @@ using MediatR;
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 {
     // Customer create command with CustomerResponse
-    public record CreateMarriageEventCommand: IRequest<CreateMarriageEventCommandResponse>
+    public record CreateMarriageEventCommand : IRequest<CreateMarriageEventCommandResponse>
     {
         public Guid MarriageTypeId { get; set; }
         public Guid? ApplicationId { get; set; }
+        public string? BirthCertificateGroomId { get; set; }
+        public string? BirthCertificateBrideId { get; set; }
         public virtual BrideInfoDTO BrideInfo { get; set; }
         public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
     }
-    }
+}
