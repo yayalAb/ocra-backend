@@ -38,15 +38,11 @@ namespace AppDiv.CRVS.Application.Service
         }
 
 
-        public (string[], string[]) SplitedAddress(Guid? id)
+        public (string[], string[]) SplitedAddress(string am, string or)
         {
-            (string am, string or) address = addressFormat(id);
-            string[] addressAm = address.am.Split("/");
-            string[] addressOr = address.or.Split("/");
+            string[] addressAm = am.Split("/");
+            string[] addressOr = or.Split("/");
             return (addressAm, addressOr);
-
-
-
         }
 
     }

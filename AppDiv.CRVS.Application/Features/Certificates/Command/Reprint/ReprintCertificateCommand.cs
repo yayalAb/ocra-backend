@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
     {
 
         public Guid Id { get; set; }
+        public bool IsPrint { get; set; } = false;
         // public Guid EventId { get; set; }
         // public JObject Content { get; set; }
         // public bool Status { get; set; }
@@ -35,20 +36,21 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         }
         public async Task<CertificateDTO> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
-            var certificate = await _certificateRepository.GetAsync(request.Id);
-            certificate.PrintCount += 1;
-            // var certificate = CustomMapper.Mapper.Map<Certificate>(request);
 
-            try
+            if (request.IsPrint)
             {
-                await _certificateRepository.UpdateAsync(certificate, x => x.Id);
-                var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                var certificate = await _certificateRepository.GetAsync(request.Id);
+                certificate.PrintCount += 1;
+                try
+                {
+                    await _certificateRepository.UpdateAsync(certificate, x => x.Id);
+                    var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                }
+                catch (Exception exp)
+                {
+                    throw new ApplicationException(exp.Message);
+                }
             }
-            catch (Exception exp)
-            {
-                throw new ApplicationException(exp.Message);
-            }
-
             var modifiedCertificate = await _certificateRepository.GetAsync(request.Id);
             var CertificateResponse = CustomMapper.Mapper.Map<CertificateDTO>(modifiedCertificate);
 

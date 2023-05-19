@@ -4,6 +4,6 @@ namespace AppDiv.CRVS.Application.Interfaces
     {
         public (string, string) addressFormat(Guid? id);
 
-        public (string[], string[]) SplitedAddress(Guid? id);
+        public (string[], string[]) SplitedAddress(string am, string or);
     }
 }

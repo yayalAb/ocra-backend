@@ -45,5 +45,19 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         public string? GeneratedYear { get; set; }
         public string? CivileRegOfficerFullNameOr { get; set; }
         public string? CivileRegOfficerFullNameAm { get; set; }
+
+        //splited Address
+        public string? CountryOr { get; set; }
+        public string? CountryAm { get; set; }
+        public string? RegionOr { get; set; }
+        public string? RegionAm { get; set; }
+        public string? ZoneOr { get; set; }
+        public string? ZoneAm { get; set; }
+        public string? WoredaOr { get; set; }
+        public string? WoredaAm { get; set; }
+        public string? CityOr { get; set; }
+        public string? CityAm { get; set; }
+        public string? KebeleOr { get; set; }
+        public string? KebeleAm { get; set; }
     }
 }
