@@ -19,7 +19,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IAddressLookupRepository _addressRepository;
         private readonly IFileService _fileService;
         private readonly IEventDocumentService _eventDocumentService;
-        public CreateAdoptionCommandHandler(IAddressLookupRepository addressRepository, ICourtRepository courtQueryRepository, IEventDocumentService eventDocumentService, IAdoptionEventRepository AdoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService)
+        private readonly IPersonalInfoRepository _PersonalInfo;
+        public CreateAdoptionCommandHandler(IPersonalInfoRepository PersonalInfo, IAddressLookupRepository addressRepository, ICourtRepository courtQueryRepository, IEventDocumentService eventDocumentService, IAdoptionEventRepository AdoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -27,12 +28,13 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _fileService = fileService;
             _eventDocumentService = eventDocumentService;
             _addressRepository = addressRepository;
+            _PersonalInfo = PersonalInfo;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
             var CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse();
 
-            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository, _addressRepository);
+            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository, _addressRepository, _PersonalInfo);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (validationResult.Errors.Count > 0)
             {

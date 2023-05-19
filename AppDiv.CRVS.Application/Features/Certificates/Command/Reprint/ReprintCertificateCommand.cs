@@ -18,12 +18,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
     {
 
         public Guid Id { get; set; }
-        // public Guid EventId { get; set; }
-        // public JObject Content { get; set; }
-        // public bool Status { get; set; }
-        // public bool AuthenticationStatus { get; set; }
-        // public int PrintCont { get; set; }
-        // public string CertificateSerialNumber { get; set; }
+        public bool IsPrint { get; set; } = false;
+        public string? CertificateSerialNumber { get; set; } = "";
     }
 
     public class ReprintCertificateCommandHandler : IRequestHandler<ReprintCertificateCommand, CertificateDTO>
@@ -35,20 +31,22 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         }
         public async Task<CertificateDTO> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
-            var certificate = await _certificateRepository.GetAsync(request.Id);
-            certificate.PrintCount += 1;
-            // var certificate = CustomMapper.Mapper.Map<Certificate>(request);
 
-            try
+            if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
-                await _certificateRepository.UpdateAsync(certificate, x => x.Id);
-                var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                var certificate = await _certificateRepository.GetAsync(request.Id);
+                certificate.PrintCount += 1;
+                certificate.CertificateSerialNumber = certificate.CertificateSerialNumber + ", " + request.CertificateSerialNumber;
+                try
+                {
+                    await _certificateRepository.UpdateAsync(certificate, x => x.Id);
+                    var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                }
+                catch (Exception exp)
+                {
+                    throw new ApplicationException(exp.Message);
+                }
             }
-            catch (Exception exp)
-            {
-                throw new ApplicationException(exp.Message);
-            }
-
             var modifiedCertificate = await _certificateRepository.GetAsync(request.Id);
             var CertificateResponse = CustomMapper.Mapper.Map<CertificateDTO>(modifiedCertificate);
 

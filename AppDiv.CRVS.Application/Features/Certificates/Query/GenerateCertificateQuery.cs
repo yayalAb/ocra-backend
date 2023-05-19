@@ -70,7 +70,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var content = await _certificateRepository.GetContent(request.Id);
             var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo?.Event?.CertificateId);
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType).FirstOrDefault();
-            if (request.IsPrint)
+            if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
                 selectedEvent.IsCertified = true;
                 _eventRepository.Update(CustomMapper.Mapper.Map<Event>(selectedEvent));

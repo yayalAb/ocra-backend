@@ -29,5 +29,13 @@ public class TwilioService  : ISmsService
         return true;
     }
 
+    public async Task<string> SendOtpAsync(string to, string prefix, string postfix, int expiration, int codeLength, int codeType)
+    {
+     return "true";
+    }
 
+    public async Task SendSMS(string to, string message)
+    {
+      
+    }
 }
