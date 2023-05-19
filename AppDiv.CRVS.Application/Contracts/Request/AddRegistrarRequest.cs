@@ -5,10 +5,9 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class AddRegistrarRequest
     {
-        public Guid RelationshipId { get; set; }
-        public virtual UpdatePersonalInfoRequest RegistrarInfo { get; set; }
-
-
+        public Guid? Id { get; set; } = null;
+        public Guid RelationshipLookupId { get; set; }
+        // public virtual UpdatePersonalInfoRequest RegistrarInfo { get; set; }
 
     }
 }

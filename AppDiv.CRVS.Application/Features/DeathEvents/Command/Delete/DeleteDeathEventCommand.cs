@@ -23,25 +23,25 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Delete
     // Customer delete command handler with string response as output
     public class DeleteDeathEventCommmandHandler : IRequestHandler<DeleteDeathEventCommand, String>
     {
-        private readonly IDeathEventRepository _paymentRateRepository;
-        public DeleteDeathEventCommmandHandler(IDeathEventRepository paymentRateRepository)
+        private readonly IDeathEventRepository _deathEventRepository;
+        public DeleteDeathEventCommmandHandler(IDeathEventRepository deathEventRepository)
         {
-            _paymentRateRepository = paymentRateRepository;
+            _deathEventRepository = deathEventRepository;
         }
 
         public async Task<string> Handle(DeleteDeathEventCommand request, CancellationToken cancellationToken)
         {
             try
             {
-                var paymentRateEntity = await _paymentRateRepository.GetAsync(request.Id);
+                var paymentRateEntity = await _deathEventRepository.GetAsync(request.Id);
                 if (paymentRateEntity != null)
                 {
-                    await _paymentRateRepository.DeleteAsync(request.Id);
-                    await _paymentRateRepository.SaveChangesAsync(cancellationToken);
+                    await _deathEventRepository.DeleteAsync(request.Id);
+                    await _deathEventRepository.SaveChangesAsync(cancellationToken);
                 }
                 else
                 {
-                    return "There is no payment rate with the specified id";
+                    return "There is no death with the specified id";
                 }
 
 
@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Delete
                 throw (new ApplicationException(exp.Message));
             }
 
-            return "Payment Rate information has been deleted!";
+            return "Death Event information has been deleted!";
         }
     }
 }

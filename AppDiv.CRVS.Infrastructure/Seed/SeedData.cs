@@ -96,7 +96,24 @@ namespace AppDiv.CRVS.Infrastructure.Seed
                         {"en","single"}
                       }
                 },
-                Address = new Address
+                BirthAddress = new Address
+                {
+                    AddressName = new JObject{
+                        {"en","some place"}
+                      },
+                    StatisticCode = "code34726746",
+                    Code = "cc8989890809",
+                    AdminLevel = 1,
+                    AreaTypeLookup = new Lookup
+                    {
+                        Key = "AreaType",
+                        Value = new JObject{
+                        {"en","zone"}
+                      }
+                    },
+
+                },
+                ResidentAddress = new Address
                 {
                     AddressName = new JObject{
                         {"en","some place"}

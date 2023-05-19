@@ -11,29 +11,29 @@ namespace AppDiv.CRVS.Domain.Configurations
         public void Configure(EntityTypeBuilder<BirthEvent> builder)
         {
 
-            builder.HasOne(m => m.Facility)
+            builder.HasOne(m => m.FacilityLookup)
                  .WithMany(n => n.BirthFacilityNavigation)
-                 .HasForeignKey(m => m.FacilityId);
+                 .HasForeignKey(m => m.FacilityLookupId);
 
-            builder.HasOne(m => m.FacilityType)
+            builder.HasOne(m => m.FacilityTypeLookup)
                 .WithMany(n => n.BirthFacilityTypeNavigation)
-                .HasForeignKey(m => m.FacilityTypeId);
+                .HasForeignKey(m => m.FacilityTypeLookupId);
 
             builder.HasOne(m => m.Father)
-                .WithOne(n => n.BirthFatherNavigation)
-                .HasForeignKey<BirthEvent>(m => m.FatherId);
+                .WithMany(n => n.BirthFatherNavigation)
+                .HasForeignKey(m => m.FatherId);
 
             builder.HasOne(m => m.Mother)
-               .WithOne(n => n.BirthMotherNavigation)
-               .HasForeignKey<BirthEvent>(m => m.MotherId);
+               .WithMany(n => n.BirthMotherNavigation)
+               .HasForeignKey(m => m.MotherId);
 
             builder.HasOne(m => m.BirthPlace)
-                .WithMany(n => n.AddressBirthPlaceNavigation)
+                .WithMany(n => n.BirthPlaceOfBirthNavigation)
                 .HasForeignKey(m => m.BirthPlaceId);
 
-            builder.HasOne(m => m.TypeOfBirth)
+            builder.HasOne(m => m.TypeOfBirthLookup)
                 .WithMany(n => n.BirthTypeOfBirthNavigation)
-                .HasForeignKey(m => m.TypeOfBirthId);
+                .HasForeignKey(m => m.TypeOfBirthLookupId);
 
             builder.HasOne(m => m.Event)
                 .WithOne(n => n.BirthEvent)

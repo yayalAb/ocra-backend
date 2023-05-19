@@ -7,7 +7,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class PaymentExamptionDTO
     {
+        public Guid Id { get; set; }
         public Guid ExamptionRequestId { get; set; }
-        public string Document { get; set; }
+
+        public virtual PaymentExamptionRequestDTO ExamptionRequest { get; set; }
+        public virtual ICollection<SupportingDocumentDTO> SupportingDocuments { get; set; }
     }
 }

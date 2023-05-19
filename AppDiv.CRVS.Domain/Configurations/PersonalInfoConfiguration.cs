@@ -11,19 +11,26 @@ namespace AppDiv.CRVS.Domain.Configuration
         public void Configure(EntityTypeBuilder<PersonalInfo> builder)
         {
 
-            builder.HasOne(m => m.Address)
-               .WithMany(n => n.PersonalInfos)
-               .HasForeignKey(m => m.AddressId);
+            builder.HasOne(m => m.BirthAddress)
+               .WithMany(n => n.PersonalInfoBirthAddresses)
+               .HasForeignKey(m => m.BirthAddressId)
+               .IsRequired(false);
+            builder.HasOne(m => m.ResidentAddress)
+               .WithMany(n => n.PersonalInfoResidentAddresses)
+               .HasForeignKey(m => m.ResidentAddressId)
+               .IsRequired(false);
             builder.HasOne(m => m.SexLookup)
                .WithMany(n => n.PersonSexNavigation)
-               .HasForeignKey(m => m.SexLookupId);
+               .HasForeignKey(m => m.SexLookupId)
+               .IsRequired(false);
             builder.HasOne(m => m.PlaceOfBirthLookup)
                .WithMany(n => n.PersonPlaceOfBirthNavigation)
                .HasForeignKey(m => m.PlaceOfBirthLookupId)
                .IsRequired(false);
             builder.HasOne(m => m.NationalityLookup)
                .WithMany(n => n.PersonNationalityNavigation)
-               .HasForeignKey(m => m.NationalityLookupId);
+               .HasForeignKey(m => m.NationalityLookupId)
+               .IsRequired(false);
             builder.HasOne(m => m.TitleLookup)
                .WithMany(n => n.PersonTitleNavigation)
                .HasForeignKey(m => m.TitleLookupId)

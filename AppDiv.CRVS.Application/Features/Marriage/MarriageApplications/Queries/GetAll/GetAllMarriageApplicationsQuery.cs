@@ -24,19 +24,19 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Query
     public class GetAllMarriageApplicationsQueryHandler : IRequestHandler<GetAllMarriageApplicationsQuery, PaginatedList<MarriageApplicationGridDTO>>
     {
         private readonly IMarriageApplicationRepository _MarriageApplicationsRepository;
-        private readonly IMapper _mapper;
+        // private readonly IMapper _mapper;
 
-        public GetAllMarriageApplicationsQueryHandler(IMarriageApplicationRepository MarriageApplicationsQueryRepository , IMapper mapper)
+        public GetAllMarriageApplicationsQueryHandler(IMarriageApplicationRepository MarriageApplicationsQueryRepository )
         {
             _MarriageApplicationsRepository = MarriageApplicationsQueryRepository;
-            _mapper = mapper;
+            // _mapper = mapper;
         }
         public async Task<PaginatedList<MarriageApplicationGridDTO>> Handle(GetAllMarriageApplicationsQuery request, CancellationToken cancellationToken)
         {
            
             return await PaginatedList<MarriageApplicationGridDTO>
                             .CreateAsync(
-                               await _MarriageApplicationsRepository.GetAll().ProjectToListAsync<MarriageApplicationGridDTO>(_mapper.ConfigurationProvider)
+                               await _MarriageApplicationsRepository.GetAll().ProjectToListAsync<MarriageApplicationGridDTO>(CustomMapper.Mapper.ConfigurationProvider)
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var MarriageApplicationsResponse = CustomMapper.Mapper.Map<List<MarriageApplicationsDTO>>(MarriageApplicationsList);
             // return MarriageApplicationsResponse;

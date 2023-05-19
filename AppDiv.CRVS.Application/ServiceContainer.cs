@@ -6,6 +6,8 @@ using AppDiv.CRVS.Application.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using AppDiv.CRVS.Application.Common.Behaviours;
+using FluentValidation;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 
 namespace AppDiv.CRVS.Application
 {
@@ -18,10 +20,18 @@ namespace AppDiv.CRVS.Application
 
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            // services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient);
+
+            // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
             services.AddScoped<IIdentityService, IdentityService>();
-  
+            services.AddScoped<IEventDocumentService , EventDocumentService>();
+            services.AddScoped<IEventPaymentRequestService , EventPaymentRequestService>();
+            services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
+            services.AddScoped<IReturnDeathCertificate, ReturnDeathCertificate>();
+            services.AddScoped<IReturnBirthCertificate, ReturnBirthCertificate>();
+            services.AddScoped<IReturnMarriageCertificate, ReturnMarriageCertificate>();
+            services.AddScoped<IReturnDivorceCertificate, ReturnDivorceCertificate>();
 
 
             return services;

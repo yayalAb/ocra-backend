@@ -22,8 +22,8 @@ namespace AppDiv.CRVS.Domain.Configuration
             .OnDelete(DeleteBehavior.ClientSetNull);
 
             builder.HasOne(m => m.BrideInfo)
-            .WithOne(n => n.MarriageEventBrideInfo)
-            .HasForeignKey<MarriageEvent>(n => n.BrideInfoId)
+            .WithMany(n => n.MarriageEventBrideInfo)
+            .HasForeignKey(n => n.BrideInfoId)
             .OnDelete(DeleteBehavior.Restrict);
 
 

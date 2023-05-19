@@ -8,13 +8,13 @@ namespace AppDiv.CRVS.Domain.Entities
     public class AdoptionEvent : BaseAuditableEntity
     {
         public Guid BeforeAdoptionAddressId { get; set; }
+        public string? BirthCertificateId { get; set; }
+
         public Guid AdoptiveMotherId { get; set; }
         public Guid AdoptiveFatherId { get; set; }
         public Guid CourtCaseId { get; set; }
         public Guid EventId { get; set; }
         public string ApprovedNameStr { get; set; }
-
-
         public string ReasonStr { get; set; }
         [NotMapped]
         public JObject Reason
@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                ReasonStr = value.ToString();
+                ApprovedNameStr = value.ToString();
             }
         }
 

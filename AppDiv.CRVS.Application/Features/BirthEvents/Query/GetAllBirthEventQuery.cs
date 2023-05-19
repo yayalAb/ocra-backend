@@ -1,5 +1,6 @@
 ﻿using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -39,14 +40,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Query
                                     Id = de.Id,
                                     FatherId = de.FatherId,           // Father = CustomMapper.Mapper.Map<PersonalInfoDTO>(de.Father),
                                     MotherId = de.MotherId,           // Father = CustomMapper.Mapper.Map<PersonalInfoDTO>(de.Father),
-                                    // Mother = CustomMapper.Mapper.Map<PersonalInfoDTO>(de.Mother),
-                                    // BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(de.BirthPlace),
-                                    TypeOfBirth = CustomMapper.Mapper.Map<LookupDTO>(de.TypeOfBirth),
+                                    Mother = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Mother),
+                                    Father = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Father),
+                                    Child = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(de.Event.EventOwener),
+                                    BirthPlace = CustomMapper.Mapper.Map<AddressDTO>(de.BirthPlace),
+                                    TypeOfBirthLookup = CustomMapper.Mapper.Map<LookupDTO>(de.TypeOfBirthLookup),
                                     EventId = de.EventId,
-                                    // Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
-                                    // BirthNotification = CustomMapper.Mapper.Map<BirthNotificationDTO>(de.BirthNotification),
-                                    FacilityType = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityType),
-                                    Facility = CustomMapper.Mapper.Map<LookupDTO>(de.Facility)
+                                    Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
+                                    BirthNotification = CustomMapper.Mapper.Map<BirthNotificationDTO>(de.BirthNotification),
+                                    FacilityTypeLookupId = de.FacilityTypeLookupId,
+                                    FacilityLookupId = de.FacilityLookupId,
+                                    FacilityTypeLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityTypeLookup),
+                                    FacilityLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityLookup)
                                 }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var paymentRateResponse = CustomMapper.Mapper.Map<List<BirthEventDTO>>(paymentRateList);

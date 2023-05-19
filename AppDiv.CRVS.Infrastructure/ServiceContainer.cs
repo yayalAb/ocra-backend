@@ -12,6 +12,8 @@ using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Services;
 using Twilio.Clients;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Infrastructure.Persistence.Base;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Infrastructure
 {
@@ -58,7 +60,7 @@ namespace AppDiv.CRVS.Infrastructure
             // services.Configure<RabbitMQConfiguration>(configuration.GetSection(RabbitMQConfiguration.CONFIGURATION_SECTION));
             services.Configure<SMTPServerConfiguration>(configuration.GetSection(SMTPServerConfiguration.CONFIGURATION_SECTION));
             services.Configure<TwilioConfiguration>(configuration.GetSection(TwilioConfiguration.CONFIGURATION_SECTION));
-
+            services.Configure<AfroMessageConfiguration>(configuration.GetSection(AfroMessageConfiguration.CONFIGURATION_SECTION));
 
 
 
@@ -67,6 +69,8 @@ namespace AppDiv.CRVS.Infrastructure
 
             services.AddSingleton<IMailService, MailKitService>();
             services.AddSingleton<ISmsService, TwilioService>();
+            services.AddSingleton<ISmsService , AfroMessageService>();
+
 
 
 
@@ -75,13 +79,15 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
+            services.AddScoped(typeof(ICustomValidator<>), typeof(CustomValidator<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();
-            services.AddTransient<IPersonalInfoRepository, PersonalInfoRepository>();
-            services.AddTransient<IContactInfoRepository, ContactInfoRepository>();
+            services.AddScoped<IPersonalInfoRepository, PersonalInfoRepository>();
+            services.AddScoped<IContactInfoRepository, ContactInfoRepository>();
             services.AddScoped<IGroupRepository, GroupRepository>();
             services.AddScoped<IWorkflowRepository, WorkflowRepository>();
+            services.AddScoped<ICourtRepository, CourtRepository>();
             services.AddTransient<IUserRepository, UserRepository>();
             services.AddTransient<IStepRepository, StepRepository>();
             services.AddTransient<ICertificateRepository, CertificateRepository>();
@@ -89,19 +95,37 @@ namespace AppDiv.CRVS.Infrastructure
 
             services.AddTransient<IMarriageApplicationRepository, MarriageApplicationRepository>();
             services.AddTransient<IMarriageEventRepository, MarriageEventRepository>();
+            services.AddTransient<IAdoptionEventRepository, AdoptionEventRepository>();
+
 
 
 
 
             services.AddTransient<IDeathEventRepository, DeathEventRepository>();
             services.AddTransient<IBirthEventRepository, BirthEventRepository>();
+            services.AddTransient<IDivorceEventRepository, DivorceEventRepository>();
+
 
 
             services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();
             services.AddTransient<IPaymentRateRepository, PaymentRateRepository>();
+            services.AddTransient<IPaymentRepository, PaymentRepository>();
+            services.AddTransient<IPaymentRequestRepository, PaymentRequestRepository>();
 
-            services.AddScoped<CRVSDbContextInitializer>(); services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
+            services.AddTransient<IEventRepository, EventRepository>();
+
+
+
+            services.AddScoped<CRVSDbContextInitializer>();
+            services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
+            services.AddScoped<IDateAndAddressService, DateAndAddressService>();
+            services.AddScoped<IDateAndAddressService, DateAndAddressService>();
+            services.AddScoped<ICertificateGenerator, CertificateGenerator>();
+            // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
+
+
+
             #endregion Repositories DI
 
             return services;

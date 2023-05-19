@@ -19,10 +19,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             var cc = await _dbContext.CertificateTemplates.AddAsync(certificateTemplate);
             return cc.Entity.Id;
         }
-        public  IQueryable<CertificateTemplate> GetAllAsync()
+        public IQueryable<CertificateTemplate> GetAllAsync()
         {
-            
+
             return _dbContext.CertificateTemplates.AsQueryable();
         }
+
     }
 }

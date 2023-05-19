@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<PaymentExamptionRequestDTO>> Get([FromQuery] GetAllPaymentExamptionRequestQuery query)
+        public async Task<PaginatedList<PaymentExamptionRequestGridDTO>> Get([FromQuery] GetAllPaymentExamptionRequestQuery query)
         {
             return await Mediator.Send(query);
         }
@@ -65,8 +65,7 @@ namespace AppDiv.CRVS.API.Controllers
         {
             try
             {
-                string result = string.Empty;
-                result = await Mediator.Send(new DeletePaymentExamptionRequestCommand(id));
+                var result = await Mediator.Send(new DeletePaymentExamptionRequestCommand(id));
                 return Ok(result);
             }
             catch (Exception exp)

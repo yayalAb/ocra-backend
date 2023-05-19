@@ -6,7 +6,6 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public Guid ExamptionRequestId { get; set; }
         public Guid EventId { get; set; }
-
         public virtual PaymentExamptionRequest ExamptionRequest { get; set; }
         public virtual Event Event { get; set; }
         public virtual ICollection<SupportingDocument> SupportingDocuments { get; set; }

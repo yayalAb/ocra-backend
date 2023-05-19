@@ -28,6 +28,16 @@ using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create;
 using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Update;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create;
+using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create;
+using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create;
+using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Update;
+using AppDiv.CRVS.Application.Features.Certificates.Command.Update;
+using static AppDiv.CRVS.Application.Contracts.Request.AdoptionPersonalINformationRequest;
+using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -57,6 +67,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<Address, CreateAdderssCommand>().ReverseMap();
             CreateMap<Address, UpdateaddressCommand>().ReverseMap();
+            CreateMap<Address, AddAddressRequest>().ReverseMap();
 
             CreateMap<Setting, SettingDTO>().ReverseMap();
             CreateMap<Setting, createSettingCommand>().ReverseMap();
@@ -92,20 +103,32 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PersonalInfo, AddPersonalInfoRequest>().ReverseMap();
             CreateMap<ContactInfo, AddContactInfoRequest>().ReverseMap();
             CreateMap<PersonalInfo, UpdatePersonalInfoRequest>().ReverseMap();
-            CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
+            // CreateMap<PersonalInfo, PersonalInfoDTO>().ReverseMap();
             CreateMap<ContactInfo, UpdateContactInfoRequest>().ReverseMap();
             CreateMap<ApplicationUser, UpdateUserCommand>().ReverseMap();
+            CreateMap<PersonalInfo, AdoptionEventPersonalInfoDTO>().ReverseMap();
+            CreateMap<PersonalInfo, AddAdoptionPersonalInfoRequest>().ReverseMap();
+            // CreateMap<PersonalInfo, PersonalInfoByIdDTO>().ReverseMap();
+
+
+
 
             CreateMap<DeathEvent, DeathEventDTO>().ReverseMap();
             CreateMap<DeathEvent, AddDeathEventRequest>().ReverseMap();
             CreateMap<DeathEvent, CreateDeathEventCommand>().ReverseMap();
             CreateMap<DeathEvent, UpdateDeathEventCommand>().ReverseMap();
+            CreateMap<BirthEvent, UpdateBirthEventCommand>().ReverseMap();
 
             CreateMap<DeathNotification, AddDeathNotificationRequest>().ReverseMap();
             CreateMap<DeathNotification, DeathNotificationDTO>().ReverseMap();
+            CreateMap<DeathNotification, UpdateDeathNotificationRequest>().ReverseMap();
+            CreateMap<BirthNotification, UpdateBirthNotificationRequest>().ReverseMap();
 
             CreateMap<Event, EventDTO>().ReverseMap();
             CreateMap<Event, AddEventRequest>().ReverseMap();
+            CreateMap<Event, AddAdoptionEventRequest>().ReverseMap();
+
+            CreateMap<Event, UpdateEventRequest>().ReverseMap();
 
             CreateMap<PaymentExamption, PaymentExamptionDTO>().ReverseMap();
             CreateMap<PaymentExamption, AddPaymentExamptionRequest>().ReverseMap();
@@ -115,17 +138,24 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<Certificate, CertificateDTO>().ReverseMap();
             CreateMap<Certificate, CertificateRequest>().ReverseMap();
+            CreateMap<Certificate, UpdateCertificateCommand>().ReverseMap();
 
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestDTO>().ReverseMap();
             CreateMap<PaymentExamptionRequest, PaymentExamptionRequestRequest>().ReverseMap();
+            CreateMap<PaymentExamptionRequest, UpdatePaymentExamptionRequestCommand>().ReverseMap();
+            CreateMap<PaymentExamptionRequest, CreatePaymentExamptionRequestCommand>().ReverseMap();
+
 
             CreateMap<CreateMarriageApplicationCommand, MarriageApplication>();
             CreateMap<MarriageApplication, MarriageApplicationGridDTO>();
             CreateMap<UpdateMarriageApplicationCommand, MarriageApplication>().ReverseMap();
 
-            CreateMap<AddEventRequest, Event>();
-            CreateMap<AddWitnessRequest, Witness>();
+            CreateMap<AddEventRequest, Event>().ReverseMap();
+            CreateMap<AddWitnessRequest, Witness>().ReverseMap();
+
             CreateMap<AddRegistrarRequest, Registrar>();
+            CreateMap<Registrar, RegistrarDTO>().ReverseMap();
+
             CreateMap<AddSupportingDocumentRequest, SupportingDocument>();
             CreateMap<AddPaymentExamptionDTO, PaymentExamption>();
             CreateMap<BirthEvent, AddBirthEventRequest>().ReverseMap();
@@ -134,11 +164,51 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<BirthNotification, AddBirthNotificationRequest>().ReverseMap();
             CreateMap<BirthNotification, BirthNotificationDTO>().ReverseMap();
 
+            CreateMap<CreateDivorceEventCommand, DivorceEvent>();
+            CreateMap<UpdateDivorceEventCommand, DivorceEvent>().ReverseMap();
+
+            CreateMap<CreateMarriageEventCommand, MarriageEvent>();
+            CreateMap<UpdateMarriageEventCommand, MarriageEvent>().ReverseMap();
 
 
+            CreateMap<AdoptionEvent, AddAdoptionRequest>().ReverseMap();
+            CreateMap<AdoptionEvent, CreateAdoptionCommand>().ReverseMap();
+            CreateMap<Event, AdoptionEventDTO>().ReverseMap();
 
 
+            CreateMap<CourtCase, AddCourtCaseRequest>().ReverseMap();
+            CreateMap<AdoptionEvent, AdoptionDTO>().ReverseMap();
 
+            CreateMap<Court, AddCourtRequest>().ReverseMap();
+            CreateMap<Court, CourtDTO>().ReverseMap();
+            CreateMap<CourtCase, CourtCaseDTO>().ReverseMap();
+
+
+            CreateMap<Witness, UpdateWitnessRequest>().ReverseMap();
+            CreateMap<MotherInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<FatherInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<ChildInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<WitnessInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<DeadPersonalInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<RegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<BirthRegistrarPersonalInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<DivorcePartnersInfoDTO, PersonalInfo>().ReverseMap();
+            CreateMap<GroomInfoDTO, PersonalInfo>().ReverseMap();
+
+            CreateMap<BrideInfoDTO, PersonalInfo>().ReverseMap();
+
+            CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
+            CreateMap<SupportingDocument, AddSupportingDocumentRequest>().ReverseMap();
+            CreateMap<PaymentExamption, UpdatePaymentExamptionRequest>().ReverseMap();
+            CreateMap<Registrar, UpdateRegistrarRequest>().ReverseMap();
+            CreateMap<AddEventForBirthRequest, Event>().ReverseMap();
+            CreateMap<AddEventForDeathRequest, Event>().ReverseMap();
+            CreateMap<AddEventForMarriageRequest, Event>().ReverseMap();
+            CreateMap<AddEventForDivorceRequest, Event>().ReverseMap();
+            CreateMap<RegistrarForBirthRequest, Registrar>().ReverseMap();
+            CreateMap<RegistrarForDeathRequest, Registrar>().ReverseMap();
+            CreateMap<RegistrarForMarriageRequest, Registrar>().ReverseMap();
+            CreateMap<RegistrarForDivorceRequest, Registrar>().ReverseMap();
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
             var mapFromType = typeof(IMapFrom<>);

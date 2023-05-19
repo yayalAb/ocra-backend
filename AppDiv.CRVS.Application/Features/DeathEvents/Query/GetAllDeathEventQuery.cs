@@ -22,34 +22,27 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Query
 
     public class GetAllDeathEventHandler : IRequestHandler<GetAllDeathEventQuery, PaginatedList<DeathEventDTO>>
     {
-        private readonly IDeathEventRepository _paymentRateRepository;
+        private readonly IDeathEventRepository _deathEventRepository;
 
-        public GetAllDeathEventHandler(IDeathEventRepository paymentRateQueryRepository)
+        public GetAllDeathEventHandler(IDeathEventRepository deathEventQueryRepository)
         {
-            _paymentRateRepository = paymentRateQueryRepository;
+            _deathEventRepository = deathEventQueryRepository;
         }
         public async Task<PaginatedList<DeathEventDTO>> Handle(GetAllDeathEventQuery request, CancellationToken cancellationToken)
         {
-            // var formatedLookup = lookups.Select(lo => new LookupForGridDTO
-            // {
-            //     id = lo.Id,
-            //     Key = lo.Key,
-            //     Value = lo?.Value["en"]?.ToString(),
-            //     StatisticCode = lo?.StatisticCode,
-            //     Code = lo?.Code
 
-
-            // });
             // var paymentRateList = await _paymentRateRepository.GetAll(new string[] { "PaymentTypeLookup", "EventLookup", "Address" });
             return await PaginatedList<DeathEventDTO>
                             .CreateAsync(
-                                _paymentRateRepository.GetAll().Select(de => new DeathEventDTO
+                                _deathEventRepository.GetAll().Select(de => new DeathEventDTO
                                 {
                                     Id = de.Id,
-                                    FacilityType = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityType),
-                                    Facility = CustomMapper.Mapper.Map<LookupDTO>(de.Facility),
+                                    FacilityTypeLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityTypeLookup),
+                                    FacilityLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityLookup),
                                     DuringDeath = de.DuringDeath,
                                     PlaceOfFuneral = de.PlaceOfFuneral,
+                                    DeathNotification = CustomMapper.Mapper.Map<DeathNotificationDTO>(de.DeathNotification),
+                                    Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
                                 }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var paymentRateResponse = CustomMapper.Mapper.Map<List<DeathEventDTO>>(paymentRateList);

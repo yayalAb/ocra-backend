@@ -12,7 +12,8 @@ namespace AppDiv.CRVS.Domain.Configuration
         {
             builder.HasOne(m => m.AreaTypeLookup)
                 .WithMany(n => n.AddressAreaTypeNavigation)
-                .HasForeignKey(m => m.AreaTypeLookupId);
+                .HasForeignKey(m => m.AreaTypeLookupId)
+                .IsRequired(false);
             builder.HasOne(m => m.ParentAddress)
                 .WithMany(n => n.ChildAddresses)
                 .HasForeignKey(m => m.ParentAddressId)

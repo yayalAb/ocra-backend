@@ -9,10 +9,12 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public string? ReasonStr { get; set; }
         public string? ExamptedClientId { get; set; }
-        public string? ExamptedClientFullNAme { get; set; }
+        public string? ExamptedClientFullName { get; set; }
         public DateTime ExamptedDate { get; set; }
         public string ExamptedBy { get; set; }
         public string? NumberOfClient { get; set; }
+        public Guid? AddressId { get; set; }
+        public string? CertificateType { get; set; }
         [NotMapped]
         public JObject Reason
         {
@@ -25,7 +27,17 @@ namespace AppDiv.CRVS.Domain.Entities
                 ReasonStr = value.ToString();
             }
         }
-        public virtual PaymentExamption ExamptionRequestNavigation { get; set; }
+
+        [NotMapped]
+        public string? ReasonLang
+        {
+            get
+            {
+                return Reason.Value<string>(lang);
+            }
+        }
+        public virtual ICollection<PaymentExamption> ExamptionRequestNavigation { get; set; }
+        public virtual Address Address { get; set; }
 
 
     }

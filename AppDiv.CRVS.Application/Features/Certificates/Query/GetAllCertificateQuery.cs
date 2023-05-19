@@ -36,10 +36,10 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                 {
                                     Id = c.Id,
                                     EventId = c.EventId,
-                                    ContentStr = c.ContentStr,
+                                    Content = c.Content,
                                     Status = c.Status,
                                     AuthenticationStatus = c.AuthenticationStatus,
-                                    PrintCont = c.PrintCont,
+                                    PrintCount = c.PrintCount,
                                     CertificateSerialNumber = c.CertificateSerialNumber,
                                     // Description = g.Description.Value<string>("eng")
                                 }).ToList()

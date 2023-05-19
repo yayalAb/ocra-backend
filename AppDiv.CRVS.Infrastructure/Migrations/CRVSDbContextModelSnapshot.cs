@@ -27,6 +27,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("AddressId")
+                        .HasColumnType("char(36)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("longtext");
@@ -82,6 +85,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AddressId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -89,7 +94,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
-                    b.HasIndex("PersonalInfoId");
+                    b.HasIndex("PersonalInfoId")
+                        .IsUnique();
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -108,7 +114,6 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("int");
 
                     b.Property<Guid?>("AreaTypeLookupId")
-                        .IsRequired()
                         .HasColumnType("char(36)");
 
                     b.Property<string>("Code")
@@ -140,7 +145,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("ParentAddressId");
 
-                    b.ToTable("Addresses", (string)null);
+                    b.ToTable("Addresses");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.AdoptionEvent", b =>
@@ -161,6 +166,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Property<Guid>("BeforeAdoptionAddressId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("BirthCertificateId")
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("CourtCaseId")
                         .HasColumnType("char(36)");
@@ -186,14 +194,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdoptiveFatherId")
-                        .IsUnique();
+                    b.HasIndex("AdoptiveFatherId");
 
-                    b.HasIndex("AdoptiveMotherId")
-                        .IsUnique();
+                    b.HasIndex("AdoptiveMotherId");
 
-                    b.HasIndex("BeforeAdoptionAddressId")
-                        .IsUnique();
+                    b.HasIndex("BeforeAdoptionAddressId");
 
                     b.HasIndex("CourtCaseId")
                         .IsUnique();
@@ -201,7 +206,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.ToTable("AdoptionEvents", (string)null);
+                    b.ToTable("AdoptionEvents");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Audit.AuditLog", b =>
@@ -238,7 +243,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("AuditId");
 
-                    b.ToTable("AuditLogs", (string)null);
+                    b.ToTable("AuditLogs");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.BirthEvent", b =>
@@ -259,10 +264,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("FacilityId")
+                    b.Property<Guid>("FacilityLookupId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("FacilityTypeId")
+                    b.Property<Guid>("FacilityTypeLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("FatherId")
@@ -277,7 +282,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("MotherId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("TypeOfBirthId")
+                    b.Property<Guid>("TypeOfBirthLookupId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -287,19 +292,17 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.HasIndex("FacilityId");
+                    b.HasIndex("FacilityLookupId");
 
-                    b.HasIndex("FacilityTypeId");
+                    b.HasIndex("FacilityTypeLookupId");
 
-                    b.HasIndex("FatherId")
-                        .IsUnique();
+                    b.HasIndex("FatherId");
 
-                    b.HasIndex("MotherId")
-                        .IsUnique();
+                    b.HasIndex("MotherId");
 
-                    b.HasIndex("TypeOfBirthId");
+                    b.HasIndex("TypeOfBirthLookupId");
 
-                    b.ToTable("birthEvents", (string)null);
+                    b.ToTable("BirthEvents");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.BirthNotification", b =>
@@ -317,7 +320,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("DeliveryTypeId")
+                    b.Property<Guid>("DeliveryTypeLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -330,10 +333,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("SkilledProfId")
+                    b.Property<Guid>("SkilledProfLookupId")
                         .HasColumnType("char(36)");
 
-                    b.Property<float>("WeghtAtBirth")
+                    b.Property<float>("WeightAtBirth")
                         .HasColumnType("float");
 
                     b.HasKey("Id");
@@ -341,11 +344,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("BirthEventId")
                         .IsUnique();
 
-                    b.HasIndex("DeliveryTypeId");
+                    b.HasIndex("DeliveryTypeLookupId");
 
-                    b.HasIndex("SkilledProfId");
+                    b.HasIndex("SkilledProfLookupId");
 
-                    b.ToTable("BirthNotifications", (string)null);
+                    b.ToTable("BirthNotifications");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Certificate", b =>
@@ -380,7 +383,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("PrintCont")
+                    b.Property<int>("PrintCount")
                         .HasColumnType("int");
 
                     b.Property<bool>("Status")
@@ -390,7 +393,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Certificates", (string)null);
+                    b.ToTable("Certificates");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CertificateTemplate", b =>
@@ -417,7 +420,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CertificateTemplates", (string)null);
+                    b.ToTable("CertificateTemplates");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.ContactInfo", b =>
@@ -456,7 +459,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ContactInfo", (string)null);
+                    b.ToTable("ContactInfos");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Court", b =>
@@ -489,10 +492,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId")
-                        .IsUnique();
+                    b.HasIndex("AddressId");
 
-                    b.ToTable("Courts", (string)null);
+                    b.ToTable("Court");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CourtCase", b =>
@@ -517,6 +519,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
+                    b.Property<Guid?>("LookupId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
@@ -527,7 +532,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("CourtId");
 
-                    b.ToTable("CourtCases", (string)null);
+                    b.HasIndex("LookupId");
+
+                    b.ToTable("CourtCases");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.DeathEvent", b =>
@@ -535,6 +542,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("BirthCertificateId")
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -549,10 +559,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("FacilityId")
+                    b.Property<Guid>("FacilityLookupId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("FacilityTypeId")
+                    b.Property<Guid>("FacilityTypeLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -570,11 +580,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.HasIndex("FacilityId");
+                    b.HasIndex("FacilityLookupId");
 
-                    b.HasIndex("FacilityTypeId");
+                    b.HasIndex("FacilityTypeLookupId");
 
-                    b.ToTable("DeathEvents", (string)null);
+                    b.ToTable("DeathEvents");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.DeathNotification", b =>
@@ -587,7 +597,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("CauseOfDeathInfoTypeId")
+                    b.Property<Guid>("CauseOfDeathInfoTypeLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -611,12 +621,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CauseOfDeathInfoTypeId");
+                    b.HasIndex("CauseOfDeathInfoTypeLookupId");
 
                     b.HasIndex("DeathEventId")
                         .IsUnique();
 
-                    b.ToTable("DeathNotifications", (string)null);
+                    b.ToTable("DeathNotifications");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.DivorceEvent", b =>
@@ -634,10 +644,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<DateTime>("DataOfMarriage")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<DateTime>("DivorceDate")
+                    b.Property<DateTime>("DateOfMarriage")
                         .HasColumnType("datetime(6)");
 
                     b.Property<string>("DivorceReasonStr")
@@ -650,27 +657,32 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("EventId")
                         .HasColumnType("char(36)");
 
+                    b.Property<string>("HusbandBirthCertificate")
+                        .HasColumnType("longtext");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
 
-                    b.Property<int>("NumberChildren")
+                    b.Property<int>("NumberOfChildren")
                         .HasColumnType("int");
+
+                    b.Property<string>("WifeBirthCertificateId")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CourtCaseId")
                         .IsUnique();
 
-                    b.HasIndex("DivorcedWifeId")
-                        .IsUnique();
+                    b.HasIndex("DivorcedWifeId");
 
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.ToTable("DivorceEvents", (string)null);
+                    b.ToTable("DivorceEvents");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Event", b =>
@@ -678,6 +690,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("CertificateId")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("CivilRegOfficeCode")
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("CivilRegOfficerId")
                         .HasColumnType("char(36)");
@@ -704,8 +723,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("InformantTypeLookupId")
-                        .HasColumnType("char(36)");
+                    b.Property<string>("InformantType")
+                        .HasColumnType("longtext");
 
                     b.Property<bool>("IsCertified")
                         .HasColumnType("tinyint(1)");
@@ -713,11 +732,20 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<bool>("IsExampted")
                         .HasColumnType("tinyint(1)");
 
+                    b.Property<bool>("IsPaid")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<Guid?>("LookupId")
+                        .HasColumnType("char(36)");
+
                     b.Property<DateTime>("ModifiedAt")
                         .HasColumnType("datetime(6)");
 
                     b.Property<Guid?>("ModifiedBy")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("RegBookNo")
+                        .HasColumnType("longtext");
 
                     b.HasKey("Id");
 
@@ -727,9 +755,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("EventOwenerId");
 
-                    b.HasIndex("InformantTypeLookupId");
+                    b.HasIndex("LookupId");
 
-                    b.ToTable("Events", (string)null);
+                    b.ToTable("Events");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Lookup", b =>
@@ -769,7 +797,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Lookups", (string)null);
+                    b.ToTable("Lookups");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.MarriageApplication", b =>
@@ -809,16 +837,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("ApplicationAddressId");
 
-                    b.HasIndex("BrideInfoId")
-                        .IsUnique();
+                    b.HasIndex("BrideInfoId");
 
-                    b.HasIndex("CivilRegOfficerId")
-                        .IsUnique();
+                    b.HasIndex("CivilRegOfficerId");
 
-                    b.HasIndex("GroomInfoId")
-                        .IsUnique();
+                    b.HasIndex("GroomInfoId");
 
-                    b.ToTable("MarriageApplications", (string)null);
+                    b.ToTable("MarriageApplications");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.MarriageEvent", b =>
@@ -827,8 +852,14 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("ApplicationId")
+                    b.Property<Guid?>("ApplicationId")
                         .HasColumnType("char(36)");
+
+                    b.Property<string>("BirthCertificateBrideId")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("BirthCertificateGroomId")
+                        .HasColumnType("longtext");
 
                     b.Property<Guid>("BrideInfoId")
                         .HasColumnType("char(36)");
@@ -856,15 +887,14 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("ApplicationId")
                         .IsUnique();
 
-                    b.HasIndex("BrideInfoId")
-                        .IsUnique();
+                    b.HasIndex("BrideInfoId");
 
                     b.HasIndex("EventId")
                         .IsUnique();
 
                     b.HasIndex("MarriageTypeId");
 
-                    b.ToTable("MarriageEvents", (string)null);
+                    b.ToTable("MarriageEvents");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Payment", b =>
@@ -902,7 +932,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("PaymentWayLookupId");
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamption", b =>
@@ -934,10 +964,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.HasIndex("ExamptionRequestId")
-                        .IsUnique();
+                    b.HasIndex("ExamptionRequestId");
 
-                    b.ToTable("PaymentExamptions", (string)null);
+                    b.ToTable("PaymentExamptions");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", b =>
@@ -945,6 +974,12 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("AddressId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("CertificateType")
+                        .HasColumnType("longtext");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime(6)");
@@ -956,7 +991,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<string>("ExamptedClientFullNAme")
+                    b.Property<string>("ExamptedClientFullName")
                         .HasColumnType("longtext");
 
                     b.Property<string>("ExamptedClientId")
@@ -979,7 +1014,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PaymentExamptionRequests", (string)null);
+                    b.HasIndex("AddressId");
+
+                    b.ToTable("PaymentExamptionRequests");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
@@ -1023,7 +1060,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("PaymentTypeLookupId");
 
-                    b.ToTable("PaymentRates", (string)null);
+                    b.ToTable("PaymentRates");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRequest", b =>
@@ -1068,7 +1105,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("PaymentRateId")
                         .IsUnique();
 
-                    b.ToTable("PaymentRequests", (string)null);
+                    b.ToTable("PaymentRequests");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
@@ -1077,13 +1114,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("AddressId")
+                    b.Property<Guid?>("BirthAddressId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime?>("BirthDate")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<Guid>("ContactInfoId")
+                    b.Property<Guid?>("ContactInfoId")
                         .HasColumnType("char(36)");
 
                     b.Property<DateTime>("CreatedAt")
@@ -1102,11 +1139,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<string>("LastNameStr")
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("MarriageStatusLookupId")
+                    b.Property<Guid?>("MarriageStatusLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<string>("MiddleNameStr")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<DateTime>("ModifiedAt")
@@ -1119,16 +1155,18 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasColumnType("char(36)");
 
                     b.Property<string>("NationalId")
-                        .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<Guid>("NationalityLookupId")
+                    b.Property<Guid?>("NationalityLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("PlaceOfBirthLookupId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid?>("ReligionLookupId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid?>("ResidentAddressId")
                         .HasColumnType("char(36)");
 
                     b.Property<Guid>("SexLookupId")
@@ -1142,7 +1180,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AddressId");
+                    b.HasIndex("BirthAddressId");
 
                     b.HasIndex("ContactInfoId");
 
@@ -1158,13 +1196,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("ReligionLookupId");
 
+                    b.HasIndex("ResidentAddressId");
+
                     b.HasIndex("SexLookupId");
 
                     b.HasIndex("TitleLookupId");
 
                     b.HasIndex("TypeOfWorkLookupId");
 
-                    b.ToTable("PersonalInfos", (string)null);
+                    b.ToTable("PersonalInfos");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Registrar", b =>
@@ -1191,7 +1231,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Property<Guid>("RegistrarInfoId")
                         .HasColumnType("char(36)");
 
-                    b.Property<Guid>("RelationshipId")
+                    b.Property<Guid>("RelationshipLookupId")
                         .HasColumnType("char(36)");
 
                     b.HasKey("Id");
@@ -1199,12 +1239,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.HasIndex("EventId")
                         .IsUnique();
 
-                    b.HasIndex("RegistrarInfoId")
-                        .IsUnique();
+                    b.HasIndex("RegistrarInfoId");
 
-                    b.HasIndex("RelationshipId");
+                    b.HasIndex("RelationshipLookupId");
 
-                    b.ToTable("Registrars", (string)null);
+                    b.ToTable("Registrars");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Setting", b =>
@@ -1235,7 +1274,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Settings", (string)null);
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Step", b =>
@@ -1282,7 +1321,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("workflowId");
 
-                    b.ToTable("Steps", (string)null);
+                    b.ToTable("Steps");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.SupportingDocument", b =>
@@ -1327,7 +1366,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("PaymentExamptionId");
 
-                    b.ToTable("SupportingDocuments", (string)null);
+                    b.ToTable("SupportingDocuments");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.UserGroup", b =>
@@ -1361,7 +1400,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserGroups", (string)null);
+                    b.ToTable("UserGroups");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Witness", b =>
@@ -1396,10 +1435,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("MarriageEventId");
 
-                    b.HasIndex("WitnessPersonalInfoId")
-                        .IsUnique();
+                    b.HasIndex("WitnessPersonalInfoId");
 
-                    b.ToTable("Witnesses", (string)null);
+                    b.ToTable("Witnesses");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Workflow", b =>
@@ -1430,7 +1468,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Workflows", (string)null);
+                    b.ToTable("Workflows");
                 });
 
             modelBuilder.Entity("ApplicationUserUserGroup", b =>
@@ -1445,7 +1483,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasIndex("UserGroupsId");
 
-                    b.ToTable("ApplicationUserUserGroup", (string)null);
+                    b.ToTable("ApplicationUserUserGroup");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1578,11 +1616,19 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.ApplicationUser", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
-                        .WithMany()
-                        .HasForeignKey("PersonalInfoId")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
+                        .WithMany("ApplicationuserAddresses")
+                        .HasForeignKey("AddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "PersonalInfo")
+                        .WithOne("ApplicationUser")
+                        .HasForeignKey("AppDiv.CRVS.Domain.ApplicationUser", "PersonalInfoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Address");
 
                     b.Navigation("PersonalInfo");
                 });
@@ -1591,9 +1637,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "AreaTypeLookup")
                         .WithMany("AddressAreaTypeNavigation")
-                        .HasForeignKey("AreaTypeLookupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AreaTypeLookupId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "ParentAddress")
                         .WithMany("ChildAddresses")
@@ -1607,20 +1651,20 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.AdoptionEvent", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "AdoptiveFather")
-                        .WithOne("AdoptiveFatherNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "AdoptiveFatherId")
+                        .WithMany("AdoptiveFatherNavigation")
+                        .HasForeignKey("AdoptiveFatherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "AdoptiveMother")
-                        .WithOne("AdoptiveMotherNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "AdoptiveMotherId")
+                        .WithMany("AdoptiveMotherNavigation")
+                        .HasForeignKey("AdoptiveMotherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "BeforeAdoptionAddress")
-                        .WithOne("BeforeAdoptionAddressNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.AdoptionEvent", "BeforeAdoptionAddressId")
+                        .WithMany("BeforeAdoptionAddressNavigation")
+                        .HasForeignKey("BeforeAdoptionAddressId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1649,8 +1693,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.BirthEvent", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "BirthPlace")
-                        .WithMany("AddressBirthPlaceNavigation")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "BirthPlace")
+                        .WithMany("BirthPlaceOfBirthNavigation")
                         .HasForeignKey("BirthPlaceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1661,33 +1705,33 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "Facility")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "FacilityLookup")
                         .WithMany("BirthFacilityNavigation")
-                        .HasForeignKey("FacilityId")
+                        .HasForeignKey("FacilityLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "FacilityType")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "FacilityTypeLookup")
                         .WithMany("BirthFacilityTypeNavigation")
-                        .HasForeignKey("FacilityTypeId")
+                        .HasForeignKey("FacilityTypeLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "Father")
-                        .WithOne("BirthFatherNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.BirthEvent", "FatherId")
+                        .WithMany("BirthFatherNavigation")
+                        .HasForeignKey("FatherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "Mother")
-                        .WithOne("BirthMotherNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.BirthEvent", "MotherId")
+                        .WithMany("BirthMotherNavigation")
+                        .HasForeignKey("MotherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "TypeOfBirth")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "TypeOfBirthLookup")
                         .WithMany("BirthTypeOfBirthNavigation")
-                        .HasForeignKey("TypeOfBirthId")
+                        .HasForeignKey("TypeOfBirthLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1695,15 +1739,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Navigation("Event");
 
-                    b.Navigation("Facility");
+                    b.Navigation("FacilityLookup");
 
-                    b.Navigation("FacilityType");
+                    b.Navigation("FacilityTypeLookup");
 
                     b.Navigation("Father");
 
                     b.Navigation("Mother");
 
-                    b.Navigation("TypeOfBirth");
+                    b.Navigation("TypeOfBirthLookup");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.BirthNotification", b =>
@@ -1714,23 +1758,23 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "DeliveryType")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "DeliveryTypeLookup")
                         .WithMany("DeliveryTypeNavigation")
-                        .HasForeignKey("DeliveryTypeId")
+                        .HasForeignKey("DeliveryTypeLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "SkilledProf")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "SkilledProfLookup")
                         .WithMany("SkilledProfNavigation")
-                        .HasForeignKey("SkilledProfId")
+                        .HasForeignKey("SkilledProfLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("BirthEvent");
 
-                    b.Navigation("DeliveryType");
+                    b.Navigation("DeliveryTypeLookup");
 
-                    b.Navigation("SkilledProf");
+                    b.Navigation("SkilledProfLookup");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Certificate", b =>
@@ -1747,8 +1791,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Court", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
-                        .WithOne("CourtAddress")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.Court", "AddressId");
+                        .WithMany()
+                        .HasForeignKey("AddressId");
 
                     b.Navigation("Address");
                 });
@@ -1761,6 +1805,10 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", null)
+                        .WithMany("CourtsCaseCourtNavigation")
+                        .HasForeignKey("LookupId");
+
                     b.Navigation("Court");
                 });
 
@@ -1772,30 +1820,30 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "Facility")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "FacilityLookup")
                         .WithMany("DeathFacilityNavigation")
-                        .HasForeignKey("FacilityId")
+                        .HasForeignKey("FacilityLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "FacilityType")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "FacilityTypeLookup")
                         .WithMany("DeathFacilityTypeNavigation")
-                        .HasForeignKey("FacilityTypeId")
+                        .HasForeignKey("FacilityTypeLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Event");
 
-                    b.Navigation("Facility");
+                    b.Navigation("FacilityLookup");
 
-                    b.Navigation("FacilityType");
+                    b.Navigation("FacilityTypeLookup");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.DeathNotification", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "CauseOfDeathInfoType")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "CauseOfDeathInfoTypeLookup")
                         .WithMany("CauseOfDeathInfoTypeNavigation")
-                        .HasForeignKey("CauseOfDeathInfoTypeId")
+                        .HasForeignKey("CauseOfDeathInfoTypeLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1805,7 +1853,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CauseOfDeathInfoType");
+                    b.Navigation("CauseOfDeathInfoTypeLookup");
 
                     b.Navigation("DeathEvent");
                 });
@@ -1819,8 +1867,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "DivorcedWife")
-                        .WithOne("DivorceWifeNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.DivorceEvent", "DivorcedWifeId")
+                        .WithMany("DivorceWifeNavigation")
+                        .HasForeignKey("DivorcedWifeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1857,19 +1905,15 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "InformantTypeLookup")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", null)
                         .WithMany("EventInformantTypeNavigation")
-                        .HasForeignKey("InformantTypeLookupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LookupId");
 
                     b.Navigation("CivilRegOfficer");
 
                     b.Navigation("EventAddress");
 
                     b.Navigation("EventOwener");
-
-                    b.Navigation("InformantTypeLookup");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.MarriageApplication", b =>
@@ -1881,20 +1925,20 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "BrideInfo")
-                        .WithOne("MarriageApplicationBrideInfo")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.MarriageApplication", "BrideInfoId")
+                        .WithMany("MarriageApplicationBrideInfo")
+                        .HasForeignKey("BrideInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "CivilRegOfficer")
-                        .WithOne("MarriageApplicationCivilRegOfficer")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.MarriageApplication", "CivilRegOfficerId")
+                        .WithMany("MarriageApplicationCivilRegOfficer")
+                        .HasForeignKey("CivilRegOfficerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "GroomInfo")
-                        .WithOne("MarriageApplicationGroomInfo")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.MarriageApplication", "GroomInfoId")
+                        .WithMany("MarriageApplicationGroomInfo")
+                        .HasForeignKey("GroomInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1914,8 +1958,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .HasForeignKey("AppDiv.CRVS.Domain.Entities.MarriageEvent", "ApplicationId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "BrideInfo")
-                        .WithOne("MarriageEventBrideInfo")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.MarriageEvent", "BrideInfoId")
+                        .WithMany("MarriageEventBrideInfo")
+                        .HasForeignKey("BrideInfoId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -1962,20 +2006,29 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamption", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Event", "Event")
-                        .WithOne("EventPaymentExamptionNavigation")
+                        .WithOne("PaymentExamption")
                         .HasForeignKey("AppDiv.CRVS.Domain.Entities.PaymentExamption", "EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", "ExamptionRequest")
-                        .WithOne("ExamptionRequestNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.PaymentExamption", "ExamptionRequestId")
+                        .WithMany("ExamptionRequestNavigation")
+                        .HasForeignKey("ExamptionRequestId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Event");
 
                     b.Navigation("ExamptionRequest");
+                });
+
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", b =>
+                {
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
+                        .WithMany("ExamptionRequestAddresses")
+                        .HasForeignKey("AddressId");
+
+                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
@@ -2026,17 +2079,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
                 {
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
-                        .WithMany("PersonalInfos")
-                        .HasForeignKey("AddressId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "BirthAddress")
+                        .WithMany("PersonalInfoBirthAddresses")
+                        .HasForeignKey("BirthAddressId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.ContactInfo", "ContactInfo")
                         .WithMany()
-                        .HasForeignKey("ContactInfoId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ContactInfoId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "EducationalStatusLookup")
                         .WithMany("PersonEducationalStatusNavigation")
@@ -2052,9 +2101,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "NationalityLookup")
                         .WithMany("PersonNationalityNavigation")
-                        .HasForeignKey("NationalityLookupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("NationalityLookupId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "PlaceOfBirthLookup")
                         .WithMany("PersonPlaceOfBirthNavigation")
@@ -2064,11 +2111,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .WithMany("PersonReligionNavigation")
                         .HasForeignKey("ReligionLookupId");
 
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "ResidentAddress")
+                        .WithMany("PersonalInfoResidentAddresses")
+                        .HasForeignKey("ResidentAddressId");
+
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "SexLookup")
                         .WithMany("PersonSexNavigation")
-                        .HasForeignKey("SexLookupId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SexLookupId");
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "TitleLookup")
                         .WithMany("PersonTitleNavigation")
@@ -2078,7 +2127,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .WithMany("PersonTypeOfWorkNavigation")
                         .HasForeignKey("TypeOfWorkLookupId");
 
-                    b.Navigation("Address");
+                    b.Navigation("BirthAddress");
 
                     b.Navigation("ContactInfo");
 
@@ -2093,6 +2142,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("PlaceOfBirthLookup");
 
                     b.Navigation("ReligionLookup");
+
+                    b.Navigation("ResidentAddress");
 
                     b.Navigation("SexLookup");
 
@@ -2110,14 +2161,14 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "RegistrarInfo")
-                        .WithOne("RegistrarPersonalInfoNavigation")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.Registrar", "RegistrarInfoId")
+                        .WithMany("RegistrarPersonalInfoNavigation")
+                        .HasForeignKey("RegistrarInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "Relationship")
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Lookup", "RelationshipLookup")
                         .WithMany("RelationshipNavigation")
-                        .HasForeignKey("RelationshipId")
+                        .HasForeignKey("RelationshipLookupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2125,7 +2176,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Navigation("RegistrarInfo");
 
-                    b.Navigation("Relationship");
+                    b.Navigation("RelationshipLookup");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Step", b =>
@@ -2171,8 +2222,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "WitnessPersonalInfo")
-                        .WithOne("Witness")
-                        .HasForeignKey("AppDiv.CRVS.Domain.Entities.Witness", "WitnessPersonalInfoId")
+                        .WithMany("Witness")
+                        .HasForeignKey("WitnessPersonalInfoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -2249,21 +2300,21 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Address", b =>
                 {
-                    b.Navigation("AddressBirthPlaceNavigation");
+                    b.Navigation("ApplicationuserAddresses");
 
-                    b.Navigation("BeforeAdoptionAddressNavigation")
-                        .IsRequired();
+                    b.Navigation("BeforeAdoptionAddressNavigation");
 
                     b.Navigation("ChildAddresses");
 
-                    b.Navigation("CourtAddress")
-                        .IsRequired();
-
                     b.Navigation("EventAddresses");
+
+                    b.Navigation("ExamptionRequestAddresses");
 
                     b.Navigation("MarriageApplications");
 
-                    b.Navigation("PersonalInfos");
+                    b.Navigation("PersonalInfoBirthAddresses");
+
+                    b.Navigation("PersonalInfoResidentAddresses");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.BirthEvent", b =>
@@ -2303,18 +2354,17 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Navigation("EventCertificates");
 
-                    b.Navigation("EventPaymentExamptionNavigation")
-                        .IsRequired();
-
                     b.Navigation("EventPaymentRequest")
                         .IsRequired();
 
-                    b.Navigation("EventRegistrar")
-                        .IsRequired();
+                    b.Navigation("EventRegistrar");
 
                     b.Navigation("EventSupportingDocuments");
 
                     b.Navigation("MarriageEvent")
+                        .IsRequired();
+
+                    b.Navigation("PaymentExamption")
                         .IsRequired();
                 });
 
@@ -2326,9 +2376,13 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
                     b.Navigation("BirthFacilityTypeNavigation");
 
+                    b.Navigation("BirthPlaceOfBirthNavigation");
+
                     b.Navigation("BirthTypeOfBirthNavigation");
 
                     b.Navigation("CauseOfDeathInfoTypeNavigation");
+
+                    b.Navigation("CourtsCaseCourtNavigation");
 
                     b.Navigation("DeathFacilityNavigation");
 
@@ -2383,8 +2437,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentExamptionRequest", b =>
                 {
-                    b.Navigation("ExamptionRequestNavigation")
-                        .IsRequired();
+                    b.Navigation("ExamptionRequestNavigation");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PaymentRate", b =>
@@ -2401,42 +2454,34 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.PersonalInfo", b =>
                 {
-                    b.Navigation("AdoptiveFatherNavigation")
+                    b.Navigation("AdoptiveFatherNavigation");
+
+                    b.Navigation("AdoptiveMotherNavigation");
+
+                    b.Navigation("ApplicationUser")
                         .IsRequired();
 
-                    b.Navigation("AdoptiveMotherNavigation")
-                        .IsRequired();
+                    b.Navigation("BirthFatherNavigation");
 
-                    b.Navigation("BirthFatherNavigation")
-                        .IsRequired();
+                    b.Navigation("BirthMotherNavigation");
 
-                    b.Navigation("BirthMotherNavigation")
-                        .IsRequired();
-
-                    b.Navigation("DivorceWifeNavigation")
-                        .IsRequired();
+                    b.Navigation("DivorceWifeNavigation");
 
                     b.Navigation("EventCivilRegOfficers");
 
                     b.Navigation("Events");
 
-                    b.Navigation("MarriageApplicationBrideInfo")
-                        .IsRequired();
+                    b.Navigation("MarriageApplicationBrideInfo");
 
-                    b.Navigation("MarriageApplicationCivilRegOfficer")
-                        .IsRequired();
+                    b.Navigation("MarriageApplicationCivilRegOfficer");
 
-                    b.Navigation("MarriageApplicationGroomInfo")
-                        .IsRequired();
+                    b.Navigation("MarriageApplicationGroomInfo");
 
-                    b.Navigation("MarriageEventBrideInfo")
-                        .IsRequired();
+                    b.Navigation("MarriageEventBrideInfo");
 
-                    b.Navigation("RegistrarPersonalInfoNavigation")
-                        .IsRequired();
+                    b.Navigation("RegistrarPersonalInfoNavigation");
 
-                    b.Navigation("Witness")
-                        .IsRequired();
+                    b.Navigation("Witness");
                 });
 
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.UserGroup", b =>

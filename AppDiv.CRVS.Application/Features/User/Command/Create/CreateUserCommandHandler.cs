@@ -20,17 +20,22 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         private readonly IGroupRepository _groupRepository;
         private readonly IFileService _fileService;
         private readonly IMailService _mailService;
+        private readonly ISmsService _smsService;
+        private readonly IOptions<SMTPServerConfiguration> config;
         private readonly SMTPServerConfiguration _config;
 
         public CreateUserCommandHandler(IIdentityService identityService,
                                         IGroupRepository groupRepository,
                                         IFileService fileService, IMailService mailService,
+                                        ISmsService smsService,
                                         IOptions<SMTPServerConfiguration> config)
         {
             this._groupRepository = groupRepository;
             _identityService = identityService;
             _fileService = fileService;
             _mailService = mailService;
+            _smsService = smsService;
+            this.config = config;
             _config = config.Value;
         }
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
@@ -58,6 +63,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
 
               
                 var user =  CustomMapper.Mapper.Map<ApplicationUser>(request);
+                user.PhoneNumber = user.PersonalInfo.ContactInfo.Phone;
                 user.UserGroups = listGroup;
 
                 var response = await _identityService.createUser(user);
@@ -71,12 +77,20 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 var folderName = Path.Combine("Resources", "UserProfiles");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 var fileName = response.id;
+                if(!string.IsNullOrEmpty(file)){
+
                 await _fileService.UploadBase64FileAsync(file, fileName, pathToSave, FileMode.Create);
+                }
 
                 //send password by email    
-                var emailContent = response.password + "  is your default password you can login and change it";
+                var content = response.password + "  is your default password you can login and change it";
                 var subject = "Welcome to OCRVS";
-                await _mailService.SendAsync(body: emailContent, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: user.Email, cancellationToken);
+                await _mailService.SendAsync(body: content, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: user.Email, cancellationToken);
+
+                //send password by phone 
+                await _smsService.SendSMS(user.PhoneNumber , subject +"\n"+content);
+            
+            
             }
             return CreateUserCommadResponse;
         }
