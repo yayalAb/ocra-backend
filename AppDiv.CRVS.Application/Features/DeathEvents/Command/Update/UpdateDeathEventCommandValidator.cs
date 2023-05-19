@@ -13,9 +13,9 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 {
     public class UpdateDeathEventCommandValidator : AbstractValidator<UpdateDeathEventCommand>
     {
-        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) _repo;
+        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) _repo;
         // private readonly IMediator _mediator;
-        public UpdateDeathEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person) repo, UpdateDeathEventCommand request)
+        public UpdateDeathEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) repo, UpdateDeathEventCommand request)
         {
             _repo = repo;
             RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityLookupId");
@@ -64,6 +64,17 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             else if (request.Event.EventRegistrar == null)
             {
                 RuleFor(p => p.Event.EventRegistrar).Must(r => !(r == null)).WithMessage("Registrar Is Required");
+            }
+
+            if (request.Event.EventSupportingDocuments != null)
+            {
+                RuleFor(p => p.Event.EventSupportingDocuments).SupportingDocNull("Event.EventSupportingDocuments").NotEmpty().NotNull();
+            }
+
+            if (request.Event.PaymentExamption != null)
+            {
+                RuleFor(p => p.Event.PaymentExamption.ExamptionRequestId.ToString()).NotGuidEmpty().ForeignKeyWithPaymentExamptionRequest(_repo.ExamptionRequest, "Event.PaymentExamption.ExamptionRequestId");
+                RuleFor(p => p.Event.PaymentExamption.SupportingDocuments).SupportingDocNull("Event.PaymentExamption.EventSupportingDocuments").NotEmpty().NotNull();
             }
 
         }
