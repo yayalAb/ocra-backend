@@ -17,8 +17,6 @@ namespace AppDiv.CRVS.Application.Service
             (string am, string or)? address = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty
                || adoption.Event?.EventOwener?.BirthAddressId == null) ? null :
                _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId);
-
-
             return new AdoptionCertificateDTO()
             {
                 CertifcateId = adoption.Event.CertificateId,
@@ -54,7 +52,6 @@ namespace AppDiv.CRVS.Application.Service
                     + " " + adoption.AdoptiveFather?.MiddleName?.Value<string>("am") + " " + adoption.AdoptiveFather?.LastName?.Value<string>("am"),
                 FatherNationalityOr = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("or"),
                 FatherNationalityAm = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("am"),
-
                 EventRegisteredMonth = adoption.Event.EventRegDate.Month.ToString(),
                 EventRegisteredDay = adoption.Event.EventRegDate.Day.ToString(),
                 EventRegisteredYear = adoption.Event.EventRegDate.Year.ToString(),
