@@ -10,5 +10,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface IPaymentExamptionRequestRepository : IBaseRepository<PaymentExamptionRequest>
     {
         // Task<IEnumerable<Certificate>> GetByEventAsync(Guid id);
+         public bool exists(Guid id);
+          public IQueryable<PaymentExamptionRequest> GetAllQueryable();
     }
 }
