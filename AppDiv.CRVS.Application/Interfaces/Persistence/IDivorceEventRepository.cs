@@ -14,6 +14,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public DatabaseFacade Database { get; }
         public void EFUpdate(DivorceEvent DivorceEvent);
         public bool exists(Guid id);
-        public Task InsertOrUpdateAsync(DivorceEvent entity, CancellationToken cancellationToken);
+        public Task InsertOrUpdateAsync(DivorceEvent entity, bool isUpdate, CancellationToken cancellationToken);
     }
 }
