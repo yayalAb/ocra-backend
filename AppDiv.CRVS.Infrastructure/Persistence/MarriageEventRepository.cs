@@ -1,5 +1,8 @@
+
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Logging;
 
@@ -29,7 +32,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return dbContext.MarriageEvents.Where(m => m.Id == id).Any();
         }
-        public async Task InsertWitness(List<Witness> witnesses){
+        public async Task InsertWitness(List<Witness> witnesses)
+        {
             witnesses.ToList().ForEach(witness =>
             {
                 if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
@@ -42,49 +46,82 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             });
             await dbContext.Witnesses.AddRangeAsync(witnesses);
         }
-        public async Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken)
+        public async Task InsertOrUpdateAsync(MarriageEvent entity, bool isUpdate, CancellationToken cancellationToken)
         {
-            logger.LogCritical($"jkjkjk....{entity.Event.EventOwener.Id}");
             if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
-                dbContext.PersonalInfos.Update(entity.Event.EventOwener);
+                //find and update existing personalInfo
+                var keyValuePair = new Dictionary<string, object>{
+                    {"SexLookupId" ,entity.Event.EventOwener.SexLookupId},
+                    {"ReligionLookupId" ,entity.Event.EventOwener.ReligionLookupId},
+                    {"EducationalStatusLookupId" ,entity.Event.EventOwener.EducationalStatusLookupId},
+                    {"TypeOfWorkLookupId" ,entity.Event.EventOwener.TypeOfWorkLookupId},
+                    {"MarriageStatusLookupId" ,entity.Event.EventOwener.MarriageStatusLookupId},
+                    {"ResidentAddressId" ,entity.Event.EventOwener.ResidentAddressId},
+                    {"NationalId", entity.Event.EventOwener.NationalId}
+                };
+                await updatePersonalInfo(keyValuePair, entity.Event.EventOwenerId, "Event Owner");
                 entity.Event.EventOwenerId = entity.Event.EventOwener.Id;
                 entity.Event.EventOwener = null!;
-                await dbContext.SaveChangesAsync(cancellationToken);
-            }
-            if (entity.Event.EventRegistrar?.RegistrarInfo.Id != null && entity.Event.EventRegistrar.RegistrarInfo.Id != Guid.Empty)
-            {
-                dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
-                entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
-                entity.Event.EventRegistrar.RegistrarInfo = null!;
-                await dbContext.SaveChangesAsync(cancellationToken);
-
             }
             if (entity.BrideInfo.Id != null && entity.BrideInfo.Id != Guid.Empty)
             {
-                dbContext.PersonalInfos.Update(entity.BrideInfo);
+                var keyValuePair = new Dictionary<string, object>{
+                    {"NationalId",entity.BrideInfo.NationalId},
+                    {"SexLookupId",entity.BrideInfo.SexLookupId},
+                    {"ReligionLookupId", entity.BrideInfo.ReligionLookupId},
+                    {"EducationalStatusLookupId", entity.BrideInfo.EducationalStatusLookupId},
+                    {"TypeOfWorkLookupId", entity.BrideInfo.TypeOfWorkLookupId},
+                    {"MarriageStatusLookupId", entity.BrideInfo.MarriageStatusLookupId},
+                    {"ResidentAddressId", entity.BrideInfo.ResidentAddressId}
+                };
+                await updatePersonalInfo(keyValuePair, entity.BrideInfo.Id, "BrideInfo");
                 entity.BrideInfoId = entity.BrideInfo.Id;
                 entity.BrideInfo = null!;
-                await dbContext.SaveChangesAsync(cancellationToken);
 
             }
-            
-            entity.Witnesses?.ToList().ForEach(witness =>
+
+            entity.Witnesses?.ToList().ForEach(async witness =>
             {
                 if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
                 {
-                    dbContext.PersonalInfos.Update(witness.WitnessPersonalInfo);
+                    var keyValuePair = new Dictionary<string, object>{
+                        {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
+                        {"NationalId",witness.WitnessPersonalInfo.NationalId},
+                        {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId}
+                    };
+                    await updatePersonalInfo(keyValuePair, witness.WitnessPersonalInfo.Id, "witness");
                     witness.WitnessPersonalInfoId = witness.WitnessPersonalInfo.Id;
                     witness.WitnessPersonalInfo = null!;
 
                 }
             });
-            var db = dbContext.Database;
+            if (isUpdate)
+            {
+                dbContext.MarriageEvents.Update(entity);
+            }
+            else
+            {
+                await base.InsertAsync(entity, cancellationToken);
+            }
 
-            await base.InsertAsync(entity, cancellationToken);
-                await dbContext.SaveChangesAsync(cancellationToken);
 
 
         }
+        private async Task updatePersonalInfo(Dictionary<string, object> keyValuePair, Guid id, string feildName)
+        {
+            var existing = await dbContext.PersonalInfos.FindAsync(id);
+            if (existing == null)
+            {
+                throw new NotFoundException($"{feildName} with the provided id is not found");
+            }
+
+            existing = HelperService.UpdateObjectFeilds<PersonalInfo>(existing, keyValuePair);
+            dbContext.PersonalInfos.Update(existing);
+
+        }
+
     }
+
+
 }

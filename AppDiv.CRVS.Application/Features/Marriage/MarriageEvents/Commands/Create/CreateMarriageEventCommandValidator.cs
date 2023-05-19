@@ -14,16 +14,21 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageApplicationRepository _marriageApplicationRepo;
         private readonly IPersonalInfoRepository _personalInfoRepo;
         private readonly IDivorceEventRepository _divorceEventRepo;
+        private readonly IMarriageEventRepository _marriageEventRepo;
+        private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepo;
         private readonly IAddressLookupRepository _addressRepo;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IAddressLookupRepository addressRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo,IMarriageEventRepository marriageEventRepo,IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
             _personalInfoRepo = personalInfoRepo;
             _divorceEventRepo = divorceEventRepo;
+            _marriageEventRepo = marriageEventRepo;
+            _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _addressRepo = addressRepo;
+
             var fieldNames =
             new List<string>{
 
@@ -150,7 +155,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 RuleFor(e => e.ApplicationId)
                 .NotNull().WithMessage("marriage application id is required for 'civil' marriage type")
                 .NotEmpty().WithMessage("marriage application id cannot be empty for 'civil' marriage type")
-                .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found");
+                .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
+                .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
                 RuleFor(e => e.Event.EventRegDate)
                 .MustAsync(async (model, eventRegDate, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDate, model))
@@ -162,8 +168,23 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotEmpty().WithMessage("payment Examption cannot be empty if isExapmted = true")
                     .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
-
+                RuleFor(e => e.Event.PaymentExamption.ExamptionRequestId)
+                    .Cascade(CascadeMode.StopOnFirstFailure)
+                    .NotNull().WithMessage("paymentExamptionRequestId cannot be null")
+                    .NotEmpty().WithMessage("paymentExamptionRequestId cannot be empty")
+                    .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
             });
+
+        }
+
+        private bool BeFoundInExamptionRequestTable(Guid guid)
+        {
+            return _paymentExamptionRequestRepo.exists(guid);
+        }
+
+        private bool BeUniqueApplicationId(Guid? marriageApplicationId)
+        {
+           return  _marriageEventRepo.GetAllQueryableAsync().Where(m =>m.ApplicationId == marriageApplicationId).Any();
         }
 
         private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
