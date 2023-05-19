@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public async Task<CertificateDTO> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
 
-            if (request.IsPrint && string.IsNullOrEmpty(request.CertificateSerialNumber))
+            if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
                 var certificate = await _certificateRepository.GetAsync(request.Id);
                 certificate.PrintCount += 1;
