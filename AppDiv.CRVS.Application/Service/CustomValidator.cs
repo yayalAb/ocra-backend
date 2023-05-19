@@ -7,11 +7,9 @@ using FluentValidation;
 
 namespace AppDiv.CRVS.Application.Service
 {
-    public interface ICustomValidator<T>
+    public static class CustomValidator
     {
-        Task<bool> CheckForForeignKeyAsync(T command, Guid nullable, ValidationContext<T> context, CancellationToken cancellationToken);
-        bool IsGuidNullOrEmpty(Guid? id);
-        // public static AbstractValidator<T> Validator;
+
     }
     // public class Validator : AbstractValidator<T>
     // {

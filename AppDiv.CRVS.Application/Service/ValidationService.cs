@@ -73,7 +73,8 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
-                        Convert.FromBase64String(d.base64String);
+                        string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
+                        Convert.FromBase64String(myString);
                         return d.Type == null || d.Type == "" ? false :
                             (d.Description == null || d.Description == "") ? false : true;
                     }
