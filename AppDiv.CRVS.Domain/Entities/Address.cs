@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<PersonalInfo> PersonalInfoBirthAddresses { get; }
         public virtual ICollection<PersonalInfo> PersonalInfoResidentAddresses { get; }
 
-        public virtual ICollection<BirthEvent> AddressBirthPlaceNavigation { get; set; }
+        // public virtual ICollection<BirthEvent> AddressBirthPlaceNavigation { get; set; }
         public virtual ICollection<AdoptionEvent> BeforeAdoptionAddressNavigation { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplications {get; set;}
         public virtual ICollection<ApplicationUser> ApplicationuserAddresses { get; set;}

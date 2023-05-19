@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
     // Customer create command with CustomerResponse
-    public class UpdateBirthEventCommand : IRequest<BirthEventDTO>
+    public class UpdateBirthEventCommand : IRequest<UpdateBirthEventCommandResponse>
     {
         public Guid Id { get; set; }
         public Guid FatherId { get; set; }

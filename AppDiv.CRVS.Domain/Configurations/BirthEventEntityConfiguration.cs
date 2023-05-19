@@ -28,7 +28,7 @@ namespace AppDiv.CRVS.Domain.Configurations
                .HasForeignKey(m => m.MotherId);
 
             builder.HasOne(m => m.BirthPlace)
-                .WithMany(n => n.AddressBirthPlaceNavigation)
+                .WithMany(n => n.BirthPlaceOfBirthNavigation)
                 .HasForeignKey(m => m.BirthPlaceId);
 
             builder.HasOne(m => m.TypeOfBirthLookup)

@@ -15,9 +15,9 @@ namespace AppDiv.CRVS.Application.Service
 
         public DeathCertificateDTO GetDeathCertificate(DeathEvent death, string? BirthCertNo)
         {
-            (string am, string or)? address = (death.Event?.EventOwener?.BirthAddressId == Guid.Empty
-               || death.Event?.EventOwener?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(death.Event.EventOwener.BirthAddressId);
+            (string am, string or)? address = (death.Event?.EventAddressId == Guid.Empty
+               || death.Event?.EventAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(death.Event.EventAddressId);
 
 
             return new DeathCertificateDTO()
@@ -44,8 +44,8 @@ namespace AppDiv.CRVS.Application.Service
                 DeathPlaceOr = address?.or,
 
                 DeathMonth = death.Event.EventDate.Month.ToString(),
-                DeathDay = death.Event.EventDate.Month.ToString(),
-                DeathYear = death.Event.EventDate.Month.ToString(),
+                DeathDay = death.Event.EventDate.Day.ToString(),
+                DeathYear = death.Event.EventDate.Year.ToString(),
 
                 NationalityOr = death.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 NationalityAm = death.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
