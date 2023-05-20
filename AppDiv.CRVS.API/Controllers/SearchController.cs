@@ -35,5 +35,22 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(new GetPersonalInfoById { Id = Id });
         }
+
+        [HttpGet]
+        [Route("SearchCertificate")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> SearchCertificate([FromQuery] string SearchString)
+        {
+            return await _mediator.Send(new SearchCertificateQuery { SearchString = SearchString });
+        }
+
+        [HttpGet]
+        [Route("SearchEvents")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> SearchEvents([FromQuery] string SearchString)
+        {
+            return await _mediator.Send(new SearchEventQuery { SearchString = SearchString });
+        }
     }
 }
+

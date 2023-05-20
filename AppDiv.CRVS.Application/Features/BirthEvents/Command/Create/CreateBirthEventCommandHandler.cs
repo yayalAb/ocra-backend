@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                 var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
                 var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
 
-                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "BirthEvents");
+                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
 
             }
             return createBirthEventCommandResponse;
