@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? ExamptedClientFullName { get; set; }
         public DateTime ExamptedDate { get; set; }
         public string ExamptedBy { get; set; }
-        public string? NumberOfClient { get; set; }
+        public int? NumberOfClient { get; set; }
         public Guid? AddressId { get; set; }
         public string? CertificateType { get; set; }
         [NotMapped]

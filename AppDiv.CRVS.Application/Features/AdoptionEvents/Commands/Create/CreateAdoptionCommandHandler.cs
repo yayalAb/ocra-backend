@@ -20,7 +20,17 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IFileService _fileService;
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IPersonalInfoRepository _PersonalInfo;
-        public CreateAdoptionCommandHandler(IPersonalInfoRepository PersonalInfo, IAddressLookupRepository addressRepository, ICourtRepository courtQueryRepository, IEventDocumentService eventDocumentService, IAdoptionEventRepository AdoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService)
+        private readonly ILookupRepository _LookupsRepo;
+        private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
+        public CreateAdoptionCommandHandler(
+                                        IPersonalInfoRepository PersonalInfo,
+                                        IAddressLookupRepository addressRepository,
+                                        ICourtRepository courtQueryRepository,
+                                        IEventDocumentService eventDocumentService,
+                                        IAdoptionEventRepository AdoptionEventRepository,
+                                        IPersonalInfoRepository personalInfoRepository,
+                                        IFileService fileService, ILookupRepository LookupsRepo,
+                                        IPaymentExamptionRequestRepository PaymentExaptionRepo)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -29,12 +39,14 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _eventDocumentService = eventDocumentService;
             _addressRepository = addressRepository;
             _PersonalInfo = PersonalInfo;
+            _LookupsRepo = LookupsRepo;
+            _PaymentExaptionRepo = PaymentExaptionRepo;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
             var CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse();
 
-            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository, _addressRepository, _PersonalInfo);
+            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository, _addressRepository, _PersonalInfo, _LookupsRepo, _PaymentExaptionRepo);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (validationResult.Errors.Count > 0)
             {

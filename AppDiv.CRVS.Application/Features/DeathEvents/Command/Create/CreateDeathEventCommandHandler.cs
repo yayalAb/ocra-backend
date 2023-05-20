@@ -68,7 +68,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                 var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
                 var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
 
-                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "DeathEvents");
+                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Death");
             }
             return createPaymentCommandResponse;
         }
