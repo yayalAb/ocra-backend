@@ -33,8 +33,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         public async Task<UpdateBirthEventCommandResponse> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
         {
             var updateBirthEventCommandResponse = new UpdateBirthEventCommandResponse();
-
-            var validator = new UpdateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), request);
+            var birth = await _birthEventRepository.GetWithIncludedAsync(request.Id);
+            var validator = new UpdateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), birth, request);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             //Check and log validation errors
             if (validationResult.Errors.Count > 0)
@@ -49,13 +49,14 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
             {
                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
                 birthEvent.Event.EventType = "Birth";
-                _birthEventRepository.Update(birthEvent);
+
+                _birthEventRepository.UpdateAll(birthEvent);
                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
                 var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
                 var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
 
-                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "BirthEvents");
+                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
             }
 
             // var modifiedBirthEvent = await _birthEventRepository.GetWithIncludedAsync(request.Id);
