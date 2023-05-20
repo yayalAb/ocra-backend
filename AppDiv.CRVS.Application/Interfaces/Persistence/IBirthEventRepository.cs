@@ -11,5 +11,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<BirthEvent> GetWithIncludedAsync(Guid id);
         Task InsertOrUpdateAsync(BirthEvent entity, CancellationToken cancellationToken);
+        public void UpdateAll(BirthEvent entity);
     }
 }

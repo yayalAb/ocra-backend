@@ -9,5 +9,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid SexLookupId { get; set; }
         public DateTime BirthDate { get; set; }
+        public Guid BirthAddressId { get; set; }
     }
 }

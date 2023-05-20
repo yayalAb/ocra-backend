@@ -118,6 +118,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<DeathEvent, CreateDeathEventCommand>().ReverseMap();
             CreateMap<DeathEvent, UpdateDeathEventCommand>().ReverseMap();
             CreateMap<BirthEvent, UpdateBirthEventCommand>().ReverseMap();
+            CreateMap<UpdateBirthEventCommand, AddBirthEventRequest>().ReverseMap();
 
             CreateMap<DeathNotification, AddDeathNotificationRequest>().ReverseMap();
             CreateMap<DeathNotification, DeathNotificationDTO>().ReverseMap();
