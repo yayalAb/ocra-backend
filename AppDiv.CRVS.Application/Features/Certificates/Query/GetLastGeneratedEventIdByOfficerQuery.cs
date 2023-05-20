@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     public class GetLastGeneratedEventIdByOfficerQuery : IRequest<object>
     {
         public Guid CivilRegOfficerId { get; set; }
-        public DateTime year { get; set; } = DateTime.Now;
+        public bool LastYear { get; set; } = false;
 
     }
 
@@ -47,18 +47,18 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             }
             var events = _eventRepository.GetAllQueryableAsync();
 
-            var lastEventIdInfo = events
-            .Where(e => e.CivilRegOfficer.ApplicationUser.AddressId == officer.AddressId && e.EventRegDate.Year == request.year.Year)
-                .OrderByDescending(e => e.CertificateId.Substring(e.CertificateId.Length - 4)).FirstOrDefault();
+            var year = request.LastYear ? DateTime.Now.Year - 1 : DateTime.Now.Year;
 
-            //  
+            var lastEventIdInfo = events
+            .Where(e => e.CivilRegOfficer.ApplicationUser.AddressId == officer.AddressId && e.EventRegDate.Year == year)
+                .OrderByDescending(e => e.CertificateId.Substring(e.CertificateId.Length - 4)).FirstOrDefault();
             if (lastEventIdInfo == null)
             {
                 return new
                 {
                     LastIdNumber = 0000,
                     AddressCode = officer?.Address?.Code,
-                    year = request.year.Year
+                    year = year
                 };
 
             }
@@ -69,7 +69,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 {
                     LastIdNumber = int.Parse(lastEventIdInfo?.CertificateId?.Substring(lastEventIdInfo.CertificateId.Length - 4)),
                     AddressCode = officer?.Address?.Code,
-                    year = request.year.Year
+                    year = year
                 };
             }
         }
