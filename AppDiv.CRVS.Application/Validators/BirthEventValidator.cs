@@ -15,14 +15,11 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityTypeLookupId");
             RuleFor(p => p.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "BirthPlaceId");
             RuleFor(p => p.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "TypeOfBirthLookupId");
-            RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
-            RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
+            // RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
+            // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
             RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull();
             RuleFor(p => p.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");
         }
     }
-
-
-
 
 }

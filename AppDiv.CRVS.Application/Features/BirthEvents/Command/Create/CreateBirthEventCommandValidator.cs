@@ -29,11 +29,14 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _repo = repo;
 
             RuleFor(p => p.BirthEvent).SetValidator(new BirthEventValidator((_repo.Lookup, _repo.Person)));
-            RuleFor(p => p.BirthEvent.BirthNotification).SetValidator(new BirthNotificationValidator(_repo.Lookup));
             RuleFor(p => p.BirthEvent.Event.EventOwener).SetValidator(new ChildValidator((_repo.Lookup, _repo.Address), request.BirthEvent.Father));
             RuleFor(p => p.BirthEvent.Father).SetValidator(new FatherValidator((_repo.Lookup, _repo.Address)));
             RuleFor(p => p.BirthEvent.Mother).SetValidator(new MotherValidator((_repo.Lookup, _repo.Address)));
 
+            if (request.BirthEvent.BirthNotification != null)
+            {
+                RuleFor(p => p.BirthEvent.BirthNotification).SetValidator(new BirthNotificationValidator(_repo.Lookup));
+            }
             if (request.BirthEvent.Event.EventRegistrar != null)
             {
                 RuleFor(p => p.BirthEvent.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator((_repo.Lookup, _repo.Address)));

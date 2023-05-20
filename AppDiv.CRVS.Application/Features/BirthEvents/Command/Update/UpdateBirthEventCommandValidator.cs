@@ -33,10 +33,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
             _repo = repo;
             RuleFor(p => p.Id).Must(id => id == birth.Id).WithMessage("Invalid birth Id");
             RuleFor(p => CustomMapper.Mapper.Map<AddBirthEventRequest>(p)).SetValidator(new BirthEventValidator((_repo.Lookup, _repo.Person)));
-
-            RuleFor(p => p.Id).Must(id => id == birth.BirthNotification.Id).WithMessage("Invalid birth Notification Id");
-            RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(_repo.Lookup));
-
+            if (request.BirthNotification != null)
+            {
+                RuleFor(p => p.Id).Must(id => id == birth.BirthNotification.Id).WithMessage("Invalid birth Notification Id");
+                RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(_repo.Lookup));
+            }
             RuleFor(p => p.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
             RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator((_repo.Lookup, _repo.Address), request.Father));
 

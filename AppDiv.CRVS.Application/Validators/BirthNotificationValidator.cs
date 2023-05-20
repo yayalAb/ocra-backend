@@ -16,6 +16,21 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.WeightAtBirth).NotEmpty().NotNull();
         }
     }
+    public class DeathNotificationValidator : AbstractValidator<AddDeathNotificationRequest>
+    {
+        private readonly ILookupRepository _repo;
+        public DeathNotificationValidator(ILookupRepository repo)
+        {
+            _repo = repo;
+            RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId");
+            // RuleFor(p => p.DeathNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
+            RuleFor(p => p.CauseOfDeath).NotEmpty().NotNull();
+            RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId");
+            RuleFor(p => p.DeathNotificationSerialNumber).NotEmpty().NotNull();
+        }
+    }
+
+
 
 
 
