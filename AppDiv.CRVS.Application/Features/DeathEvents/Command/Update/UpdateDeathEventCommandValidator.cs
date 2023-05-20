@@ -29,8 +29,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             RuleFor(p => p.DeathNotification.CauseOfDeath).NotEmpty().NotNull();
             RuleFor(p => p.DeathNotification.CauseOfDeathInfoTypeLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo.Lookup, "CauseOfDeathInfoTypeLookupId");
             RuleFor(p => p.DeathNotification.DeathNotificationSerialNumber).NotEmpty().NotNull();
-            RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
-            RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
+            // RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
+            // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
             RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull();
             RuleFor(p => p.Event.EventRegDate).NotEmpty().NotNull().Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
             RuleFor(p => p.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");

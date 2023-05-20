@@ -19,6 +19,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public virtual FatherInfoDTO Father { get; set; }
         public virtual MotherInfoDTO Mother { get; set; }
         public virtual AddEventForBirthRequest Event { get; set; }
-        public virtual AddBirthNotificationRequest? BirthNotification { get; set; }
+        public virtual AddBirthNotificationRequest? BirthNotification { get; set; } = null;
     }
 }

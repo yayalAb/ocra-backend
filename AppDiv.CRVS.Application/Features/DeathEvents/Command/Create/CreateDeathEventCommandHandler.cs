@@ -57,6 +57,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             }
             if (createPaymentCommandResponse.Success)
             {
+                request.DeathEvent.DuringDeath = request.DeathEvent.DuringDeath == "" ? "Null" : request.DeathEvent.DuringDeath;
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                 deathEvent.Event.EventType = "Death";
                 // logger.LogCritical(deathEvent.Event.CivilRegOfficerId.ToString());
