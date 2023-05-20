@@ -38,9 +38,12 @@ using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Update;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Update;
 using static AppDiv.CRVS.Application.Contracts.Request.AdoptionPersonalINformationRequest;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
+
+  
     internal class CRVSMappingProfile : Profile
     {
         public CRVSMappingProfile()
@@ -51,8 +54,11 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
         }
+       
+
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
+
 
             CreateMap<Customer, CustomerResponseDTO>().ReverseMap();
             CreateMap<Customer, CreateCustomerCommand>().ReverseMap();

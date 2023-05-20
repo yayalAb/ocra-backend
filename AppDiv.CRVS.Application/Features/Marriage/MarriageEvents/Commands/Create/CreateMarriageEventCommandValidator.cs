@@ -1,4 +1,5 @@
 ﻿
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
@@ -62,7 +63,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .Must(BeFoundInLookupTable)
                     .WithMessage("{PropertyName} with the provided id is not found");
 
-                // add more validation rules for the field here, if needed
+                
             }
             foreach (var fieldName in fieldNames)
             {
@@ -73,7 +74,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .NotEmpty()
                     .WithMessage("{PropertyName} must not be empty.");
 
-                // add more validation rules for the field here, if needed
+                
             }
             var addressFeilds = new List<string>{
                 "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
@@ -86,7 +87,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .MustAsync(BeFoundInAddressTable)
                     .WithMessage("{PropertyName} with the provided id is not found");
 
-                // add more validation rules for the field here, if needed
+                
             }
             RuleFor(e => e.Event.CivilRegOfficerId)
                 .Cascade(CascadeMode.StopOnFirstFailure)
@@ -168,7 +169,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotEmpty().WithMessage("payment Examption cannot be empty if isExapmted = true")
                     .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
-                RuleFor(e => e.Event.PaymentExamption.ExamptionRequestId)
+                RuleFor(e => e.Event.PaymentExamption)
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull().WithMessage("paymentExamptionRequestId cannot be null")
                     .NotEmpty().WithMessage("paymentExamptionRequestId cannot be empty")
@@ -177,9 +178,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         }
 
-        private bool BeFoundInExamptionRequestTable(Guid guid)
+
+
+        private bool BeFoundInExamptionRequestTable(AddPaymentExamptionRequest paymentExamption)
         {
-            return _paymentExamptionRequestRepo.exists(guid);
+            return paymentExamption == null || _paymentExamptionRequestRepo.exists(paymentExamption!.ExamptionRequestId);
         }
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)

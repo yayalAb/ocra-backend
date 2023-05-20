@@ -11,11 +11,11 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface IMarriageEventRepository : IBaseRepository<MarriageEvent>
     {
         public IQueryable<MarriageEvent> GetAllQueryableAsync();
-        public void EFUpdate(MarriageEvent marriageEvent);
+        public Task EFUpdateAsync(MarriageEvent marriageEvent);
         public Task InsertWitness(List<Witness> witnesses  );
         public bool exists(Guid id);
         // public DatabaseFacade Database;
          public DatabaseFacade Database {get;}
-        public Task InsertOrUpdateAsync(MarriageEvent entity, bool isUpdate, CancellationToken cancellationToken);
+        public Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken);
     }
 }

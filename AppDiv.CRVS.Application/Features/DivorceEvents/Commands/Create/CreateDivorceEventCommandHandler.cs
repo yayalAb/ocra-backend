@@ -65,7 +65,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             divorceEvent.Event.EventType = "Divorce";
-                            await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, false, cancellationToken);
+                            await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, cancellationToken);
                             await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                             _eventDocumentService.saveSupportingDocuments(divorceEvent.Event.EventSupportingDocuments, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
 
