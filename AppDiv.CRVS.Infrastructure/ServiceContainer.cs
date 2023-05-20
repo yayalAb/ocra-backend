@@ -12,7 +12,6 @@ using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Services;
 using Twilio.Clients;
 using AppDiv.CRVS.Application.Interfaces;
-using AppDiv.CRVS.Infrastructure.Persistence.Base;
 using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -79,7 +78,6 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-            services.AddScoped(typeof(ICustomValidator<>), typeof(CustomValidator<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();

@@ -36,6 +36,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             try
             {
+                entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
+                entity.Event.EventOwener.LastName = entity.Father.MiddleName;
                 if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 {
                     PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);

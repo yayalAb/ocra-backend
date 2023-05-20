@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Service
                || death.Event?.EventAddressId == null) ? null :
                _DateAndAddressService.addressFormat(death.Event.EventAddressId);
 
-
+            (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new DeathCertificateDTO()
             {
                 CertifcateId = death.Event.CertificateId,
@@ -64,6 +64,20 @@ namespace AppDiv.CRVS.Application.Service
                 CivileRegOfficerFullNameAm = death.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
                                            + death.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + death.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
+
+                CountryOr = splitedAddress.or.ElementAtOrDefault(0),
+                CountryAm = splitedAddress.am.ElementAtOrDefault(0),
+                RegionOr = splitedAddress.or.ElementAtOrDefault(1),
+                RegionAm = splitedAddress.am.ElementAtOrDefault(1),
+                ZoneOr = splitedAddress.or.ElementAtOrDefault(2),
+                ZoneAm = splitedAddress.am.ElementAtOrDefault(2),
+                WoredaOr = splitedAddress.or.ElementAtOrDefault(3),
+                WoredaAm = splitedAddress.am.ElementAtOrDefault(3),
+                CityOr = splitedAddress.or.ElementAtOrDefault(4),
+                CityAm = splitedAddress.am.ElementAtOrDefault(4),
+                KebeleOr = splitedAddress.or.ElementAtOrDefault(5),
+                KebeleAm = splitedAddress.am.ElementAtOrDefault(5),
+
 
             };
         }

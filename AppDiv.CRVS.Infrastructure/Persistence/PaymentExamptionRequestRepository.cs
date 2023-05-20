@@ -15,9 +15,17 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             this._dbContext = dbContext;
         }
-        async Task<PaymentExamptionRequest> IPaymentExamptionRequestRepository.GetByIdAsync(Guid id)
+        public bool exists(Guid id)
         {
-            return await base.GetAsync(id);
+            return _dbContext.PaymentExamptionRequests.Where(m => m.Id == id).Any();
+        }
+        public IQueryable<PaymentExamptionRequest> GetAllQueryable()
+        {
+            async Task<PaymentExamptionRequest> IPaymentExamptionRequestRepository.GetByIdAsync(Guid id)
+        {
+                return await base.GetAsync(id);
+            }
+            return _dbContext.PaymentExamptionRequests.AsQueryable();
         }
         // public async Task<IEnumerable<PaymentExamptionRequest>> GetByEventAsync(Guid id)
         // {

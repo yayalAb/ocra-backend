@@ -11,5 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<PaymentExamptionRequest> GetByIdAsync(Guid id);
         // Task<IEnumerable<Certificate>> GetByEventAsync(Guid id);
+         public bool exists(Guid id);
+          public IQueryable<PaymentExamptionRequest> GetAllQueryable();
     }
 }

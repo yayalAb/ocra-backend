@@ -16,12 +16,9 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Create
     {
         private readonly ICertificateRepository _certificateRepository;
         private readonly ILogger<CreateCertificateCommand> log;
-        private readonly ICustomValidator<CreateCertificateCommand> _customValidator;
         public CreateCertificateCommandHandler(ICertificateRepository certificateRepository,
-                                                ILogger<CreateCertificateCommand> log,
-                                                ICustomValidator<CreateCertificateCommand> customValidator)
+                                                ILogger<CreateCertificateCommand> log)
         {
-            this._customValidator = customValidator;
             this.log = log;
             _certificateRepository = certificateRepository;
         }
@@ -32,7 +29,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Create
 
             var createCertificateCommandResponse = new CreateCertificateCommandResponse();
 
-            var validator = new CreateCertificateCommandValidator(_certificateRepository, log, _customValidator);
+            var validator = new CreateCertificateCommandValidator(_certificateRepository, log);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors
