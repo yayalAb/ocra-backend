@@ -55,6 +55,11 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             RuleFor(e => e.Adoption.Event.CivilRegOfficerId)
                 .MustAsync(ValidateForignkeyPersonalInfo)
                 .WithMessage("A {PropertyName} does not  exists.");
+
+            RuleFor(p => p.Adoption.Event.EventOwener.BirthDate)
+            .NotEmpty().WithMessage("{PropertyName} is required.")
+            .GreaterThan(p => DateTime.Now).WithMessage("Not valid bith date");
+
         }
         private async Task<bool> ValidateForignkeyAddress(Guid request, CancellationToken token)
         {
@@ -107,7 +112,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 return true;
             }
         }
-
     }
 }
 
