@@ -15,6 +15,11 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.CauseOfDeathInfoTypeLookup)
                .WithMany(n => n.CauseOfDeathInfoTypeNavigation)
                .HasForeignKey(m => m.CauseOfDeathInfoTypeLookupId);
+
+            builder.HasOne(m => m.DeathEvent)
+               .WithOne(n => n.DeathNotification)
+               .HasForeignKey<DeathNotification>(m => m.DeathEventId)
+               .IsRequired(false);
         }
     }
 }

@@ -57,16 +57,36 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             {
                 // var docs = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
 
-                var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
-                birthEvent.Event.EventType = "Birth";
+                try
+                {
+                    var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                    birthEvent.Event.EventType = "Birth";
 
-                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
-                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                    await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
+                    var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
-                var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
-                var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
+                    var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
+                    var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
 
-                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
+                    _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
+                    createBirthEventCommandResponse = new CreateBirthEventCommandResponse
+                    {
+                        Status = 200,
+                        Success = true,
+                        Message = "Birth Event created Successfully"
+                    };
+                }
+                catch (System.Exception ex)
+                {
+                    createBirthEventCommandResponse = new CreateBirthEventCommandResponse
+                    {
+                        Status = 500,
+                        Success = false,
+                        Message = ex.Message
+                    };
+                    throw;
+                }
+                createBirthEventCommandResponse.Message = "Birth Event Created Successfully.";
 
             }
             return createBirthEventCommandResponse;

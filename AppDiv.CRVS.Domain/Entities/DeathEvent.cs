@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup FacilityTypeLookup { get; set; }
         public virtual Lookup FacilityLookup { get; set; }
         public virtual Event Event { get; set; }
-        public virtual DeathNotification DeathNotification { get; set; }
+        public virtual DeathNotification? DeathNotification { get; set; }
 
     }
 }
