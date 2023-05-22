@@ -63,7 +63,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.MarriageStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.MarriageStatusLookupId;
                     selectedperson.NationLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationLookupId;
 
-                    _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar.RegistrarInfo);
+                    _dbContext.PersonalInfos.Update(selectedperson);
                     entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
                     entity.Event.EventRegistrar.RegistrarInfo = null;
                 }
@@ -80,7 +80,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.BirthDate = entity.Father?.BirthDate;
                     selectedperson.BirthAddressId = entity.Father?.BirthAddressId;
 
-                    _dbContext.PersonalInfos.Update(entity.Father);
+                    _dbContext.PersonalInfos.Update(selectedperson);
                     entity.FatherId = entity.Father.Id;
                     entity.Father = null;
                 }
@@ -97,7 +97,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.BirthDate = entity.Father?.BirthDate;
                     selectedperson.BirthAddressId = entity.Father?.BirthAddressId;
 
-                    _dbContext.PersonalInfos.Update(entity.Mother);
+                    _dbContext.PersonalInfos.Update(selectedperson);
                     entity.MotherId = entity.Mother.Id;
                     entity.Mother = null;
                 }

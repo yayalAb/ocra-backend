@@ -39,5 +39,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await base.GetAsync(id);
         }
+
+        // public bool Exists(Guid id)
+        // {
+        //     return _DbContext.Addresses.Where(p => p.Id == id).Any();
+        // }
     }
 }
