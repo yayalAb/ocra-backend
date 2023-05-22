@@ -4,7 +4,7 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class BirthNotification : BaseAuditableEntity
     {
-        public Guid BirthEventId { get; set; }
+        public Guid? BirthEventId { get; set; }
         public Guid DeliveryTypeLookupId { get; set; }
         public float WeightAtBirth { get; set; }
         public Guid SkilledProfLookupId { get; set; }

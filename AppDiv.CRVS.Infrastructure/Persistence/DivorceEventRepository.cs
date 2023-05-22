@@ -22,13 +22,44 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public void EFUpdate(DivorceEvent DivorceEvent)
         {
+            var existingOwner =  dbContext.PersonalInfos.Find(DivorceEvent.Event.EventOwener.Id);
+            if (existingOwner == null)
+            {
+                throw new NotFoundException($"divorce event with the provided id is not found");
+            }
+
+            var eventOwnerFeilds = new Dictionary<string, object>{
+                    {"NationalId",DivorceEvent.Event.EventOwener.NationalId},
+                    {"SexLookupId",DivorceEvent.Event.EventOwener.SexLookupId},
+                    {"ReligionLookupId",DivorceEvent.Event.EventOwener.ReligionLookupId},
+                    {"EducationalStatusLookupId",DivorceEvent.Event.EventOwener.EducationalStatusLookupId},
+                    {"TypeOfWorkLookupId",DivorceEvent.Event.EventOwener.TypeOfWorkLookupId},
+                    {"MarriageStatusLookupId",DivorceEvent.Event.EventOwener.MarriageStatusLookupId},
+                    {"ResidentAddressId",DivorceEvent.Event.EventOwener.ResidentAddressId}
+            };
+            DivorceEvent.Event.EventOwener = HelperService.UpdateObjectFeilds<PersonalInfo>(existingOwner, eventOwnerFeilds);
+             var existingWife =  dbContext.PersonalInfos.Find(DivorceEvent.DivorcedWife.Id);
+            if (existingWife == null)
+            {
+                throw new NotFoundException($"divorce event with the provided id is not found");
+            }
+             var divorcedWifeFeilds = new Dictionary<string, object>{
+                    {"NationalId",DivorceEvent.DivorcedWife.NationalId},
+                    {"SexLookupId",DivorceEvent.DivorcedWife.SexLookupId},
+                    {"ReligionLookupId",DivorceEvent.DivorcedWife.ReligionLookupId},
+                    {"EducationalStatusLookupId",DivorceEvent.DivorcedWife.EducationalStatusLookupId},
+                    {"TypeOfWorkLookupId",DivorceEvent.DivorcedWife.TypeOfWorkLookupId},
+                    {"MarriageStatusLookupId",DivorceEvent.DivorcedWife.MarriageStatusLookupId},
+                    {"ResidentAddressId",DivorceEvent.DivorcedWife.ResidentAddressId},
+            };
+            DivorceEvent.DivorcedWife = HelperService.UpdateObjectFeilds<PersonalInfo>(existingWife, divorcedWifeFeilds);
             dbContext.DivorceEvents.Update(DivorceEvent);
         }
         public bool exists(Guid id)
         {
             return dbContext.DivorceEvents.Where(m => m.Id == id).Any();
         }
-        public async Task InsertOrUpdateAsync(DivorceEvent entity, bool isUpdate, CancellationToken cancellationToken)
+        public async Task InsertOrUpdateAsync(DivorceEvent entity, CancellationToken cancellationToken)
         {
             if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
@@ -61,16 +92,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 entity.DivorcedWifeId = entity.DivorcedWife.Id;
                 entity.DivorcedWife = null;
             }
-            if (isUpdate)
-            {
-                dbContext.DivorceEvents.Update(entity);
-            }
-            else
-            {
-                
+           
                 await base.InsertAsync(entity, cancellationToken);
 
-            }
+            
 
 
 

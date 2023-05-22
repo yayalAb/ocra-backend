@@ -42,7 +42,7 @@ public class AfroMessageService : ISmsService
         using (var client = new HttpClient())
         {
             var url = "https://api.afromessage.com/api/send";
-            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
             var jsonContent = new {
                 to = to,
                 from = _config.From,
@@ -54,7 +54,7 @@ public class AfroMessageService : ISmsService
             request.Headers.Add("Authorization", $"Bearer {_config.Token}");
             var response = await client.SendAsync(request);
             // Ensure the response was successful
-            response.EnsureSuccessStatusCode();
+            // response.EnsureSuccessStatusCode();
 
         }
     

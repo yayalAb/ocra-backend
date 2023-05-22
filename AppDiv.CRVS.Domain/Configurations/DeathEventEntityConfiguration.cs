@@ -30,7 +30,8 @@ namespace AppDiv.CRVS.Domain.Configurations
 
             builder.HasOne(d => d.DeathNotification)
             .WithOne(n => n.DeathEvent)
-            .HasForeignKey<DeathNotification>(m => m.DeathEventId);
+            .HasForeignKey<DeathNotification>(m => m.DeathEventId)
+            .IsRequired(false);
 
         }
     }

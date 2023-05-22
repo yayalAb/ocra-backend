@@ -49,7 +49,8 @@ public enum Page{
    SupportingDocumentTypeLookup,
    FacilityLookup,
    DeliveryTypeLookup,
-   PaymentWayLookup
+   PaymentWayLookup,
+   MarriageApplication
 
 
 

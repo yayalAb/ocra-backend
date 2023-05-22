@@ -51,6 +51,13 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(new SearchEventQuery { SearchString = SearchString });
         }
+        [HttpGet]
+        [Route("SearchPaymentExamptionRequest")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> searchPaymentExamptionRequest([FromQuery]  GetPaymentExamptionRequestQuery query)
+        {
+            return await _mediator.Send(query);
+        }
     }
 }
 

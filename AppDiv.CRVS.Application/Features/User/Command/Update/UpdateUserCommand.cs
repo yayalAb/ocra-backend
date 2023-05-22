@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
@@ -21,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public string Id { get; set; }
         public string? UserName { get; set; }
         public string? Email { get; set; }
+        public Guid AddressId {get; set; }
         public string? UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
@@ -42,16 +44,21 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         }
         public async Task<UserResponseDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var contact = new ContactInfo
-            {
-                Id = request.PersonalInfo.ContactInfo.Id,
-                Email = request.Email,
-                Phone = request.PersonalInfo.ContactInfo.Phone,
-                HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
-                Website = request.PersonalInfo.ContactInfo.Website,
-                Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
-                ModifiedAt = DateTime.Now
-            };
+            if(!isValidBase64String(request.UserImage)){
+                throw new BadRequestException("user Image is invalid base64String");
+            }
+           
+            // var contact = new ContactInfo
+            // {
+            //     Id = request.PersonalInfo.ContactInfo.Id,
+            //     Email = request.Email,
+            //     Phone = request.PersonalInfo.ContactInfo.Phone,
+            //     HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
+            //     Website = request.PersonalInfo.ContactInfo.Website,
+            //     Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
+            //     ModifiedAt = DateTime.Now
+            // };
+
             // 2e946713-6676-49ff-8a64-5b43772a6574 group
             // 15911d9e-2196-47b0-845d-bd99ca25467f addres
             // 16f8409c-1bbc-4d5e-a530-30aec3076772 lookup
@@ -76,7 +83,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 TitleLookupId = request.PersonalInfo.TitleLookupId,
                 ReligionLookupId = request.PersonalInfo.ReligionLookupId,
                 ModifiedAt = DateTime.Now,
-                ContactInfo = contact
+                ContactInfo = CustomMapper.Mapper.Map<ContactInfo>(request.PersonalInfo.ContactInfo)
 
             };
             var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
@@ -88,6 +95,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 Id = request.Id,
                 UserName = request.UserName,
                 Email = request.Email,
+                AddressId = request.AddressId,
                 UserGroups = listGroup,
                 PersonalInfo = person
 
@@ -96,14 +104,16 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             try
             {
                 await _identityService.UpdateUserAsync(user);
+                if(request.UserImage !=null){
 
                 var file = request.UserImage;
                 var folderName = Path.Combine("Resources", "UserProfiles");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
                 var fileName = request.Id;
                 logger.LogCritical(file);
-
+                
                 await _fileService.UploadBase64FileAsync(file, fileName, pathToSave, FileMode.Create);
+                }
             }
             catch (Exception exp)
             {
@@ -118,6 +128,25 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
 
             };
             return userResponse;
+        }
+         private bool isValidBase64String(string? base64String)
+        {
+            if (base64String == null)
+            {
+                return true;
+            }
+            try
+            {
+                Regex regex = new Regex(@"^[\w/\:.-]+;base64,");
+                base64String = regex.Replace(base64String, string.Empty);
+
+                Convert.FromBase64String(base64String);
+                return true;
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
         }
     }
 }
