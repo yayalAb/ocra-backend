@@ -11,5 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface ICourtRepository : IBaseRepository<Court>
     {
         Task<Court> GetByIdAsync(Guid id);
+        public bool CourtCaseExists(Guid id);
+
     }
 }
