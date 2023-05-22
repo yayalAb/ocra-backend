@@ -30,8 +30,9 @@ namespace AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries
         public async Task<List<MarriageApplicationSearchDto>> Handle(SearchMarriageapplicationQuery request, CancellationToken cancellationToken)
         {
             var marriageApplication = _marriageApplicationRepository.GetAll()
-            .Where(model =>
-                            EF.Functions.Like(model.GroomInfo.FirstNameStr, $"%{request.SearchString}%")
+            .Include(model => model.MarriageEvent)
+            .Where(model => model.MarriageEvent == null &&
+                          (EF.Functions.Like(model.GroomInfo.FirstNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.GroomInfo.LastNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.GroomInfo.MiddleNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.BrideInfo.FirstNameStr, $"%{request.SearchString}%")
@@ -39,7 +40,8 @@ namespace AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries
                         || EF.Functions.Like(model.BrideInfo.MiddleNameStr, $"%{request.SearchString}%")
                          || EF.Functions.Like(model.CivilRegOfficer.FirstNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.CivilRegOfficer.LastNameStr, $"%{request.SearchString}%")
-                        || EF.Functions.Like(model.CivilRegOfficer.MiddleNameStr, $"%{request.SearchString}%"))
+                        || EF.Functions.Like(model.CivilRegOfficer.MiddleNameStr, $"%{request.SearchString}%")
+                        ))
 
                         .Select(x => new MarriageApplicationSearchDto
                         {
