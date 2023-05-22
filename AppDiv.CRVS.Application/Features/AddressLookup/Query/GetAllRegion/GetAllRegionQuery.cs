@@ -34,7 +34,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
                         Region = c.AddressNameLang,
                         Country = c.ParentAddress != null ? c.ParentAddress.AddressNameLang : null,
                         Code = c.Code,
-                        StatisticCode = c.StatisticCode
+                        StatisticCode = c.StatisticCode,
+                        AdminType = string.IsNullOrEmpty(c.AdminTypeLookup.ValueLang) ? null : c.AdminTypeLookup.ValueLang
                     }).ToList()
                     , request.PageCount ?? 1, request.PageSize ?? 10);
         }

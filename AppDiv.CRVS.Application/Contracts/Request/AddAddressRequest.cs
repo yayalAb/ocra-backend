@@ -10,6 +10,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public int AdminLevel { get; set; } = 1;
         public Guid? AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
+        public Guid? AdminTypeLookupId { get; set; }
 
     }
 }

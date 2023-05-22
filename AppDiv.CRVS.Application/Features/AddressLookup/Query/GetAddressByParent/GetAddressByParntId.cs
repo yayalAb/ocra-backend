@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParent
@@ -25,13 +26,16 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParen
         public async Task<List<AddressForLookupDTO>> Handle(GetAddressByParntId request, CancellationToken cancellationToken)
         {
             // var Addresss = await _mediator.Send(new GetAllAddressQuery());
-            var selectedAddress = _AddresslookupRepository.GetAll().Where(x => x.ParentAddressId == (Guid.Equals(request.Id, Guid.Empty) ? null : request.Id));
+            var selectedAddress = _AddresslookupRepository.GetAll().
+             Include(ad => ad.AdminTypeLookup)
+            .Where(x => x.ParentAddressId == (Guid.Equals(request.Id, Guid.Empty) ? null : request.Id));
             // var lng = "";
             var formatedAddress = selectedAddress.Select(an => new AddressForLookupDTO
             {
                 id = an.Id,
                 ParentAddressId = an.ParentAddressId,
-                AddressName = an.AddressNameLang
+                AddressName = an.AddressNameLang,
+                AdminType = string.IsNullOrEmpty(an.AdminTypeLookup.ValueLang) ? "" : an.AdminTypeLookup.ValueLang
             });
 
             return formatedAddress.ToList();            //CustomMapper.Mapper.Map<List<AddressForLookupDTO>>(formatedAddress);

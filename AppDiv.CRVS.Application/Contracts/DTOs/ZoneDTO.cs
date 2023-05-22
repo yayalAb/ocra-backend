@@ -10,5 +10,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 
         public string StatisticCode { get; set; }
         public string Code { get; set; }
+        public string? AdminType { get; set; }
     }
 }

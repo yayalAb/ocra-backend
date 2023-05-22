@@ -55,7 +55,7 @@ namespace AppDiv.CRVS.Infrastructure
 
         public async Task TrySeedAsync()
         {
-            await SeedUser();
+            // await SeedUser();
             await SeedSetting();
 
 
