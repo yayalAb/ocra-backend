@@ -11,6 +11,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid EventOwenerId { get; set; }
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
+
+        public string? EventDateEt { get; set; }
+        public string? EventRegDateEt { get; set; }
         public Guid EventAddressId { get; set; }
         public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
