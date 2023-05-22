@@ -61,40 +61,28 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             marriageEvent.BrideInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(existingBrideInfo, keyValuePair2);
 
 
-        //     var witnessIds = new List<Guid>();
+            var witnessIds = new List<Guid>();
 
-        //     marriageEvent.Witnesses?.ToList().ForEach(async witness =>
-        //     {
-        //         witnessIds.Add(witness.WitnessPersonalInfo.Id);
-        //     });
-        //   var existingWitnesses =  await dbContext.PersonalInfos.Where(ug => witnessIds.Contains(ug.Id)).ToListAsync();
-        //   marriageEvent.Witnesses?.ToList().ForEach(witness =>{
-        //  var keyValuePair3 = new Dictionary<string, object>{
-        //                 {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
-        //                 {"NationalId",witness.WitnessPersonalInfo.NationalId},
-        //                 {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId}
-        //             };
-        //             witness.WitnessPersonalInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(existingWitness, keyValuePair3);
+            marriageEvent.Witnesses?.ToList().ForEach(async witness =>
+            {
+                witnessIds.Add(witness.WitnessPersonalInfo.Id);
+            });
+            var existingWitnesses = await dbContext.PersonalInfos.Where(ug => witnessIds.Contains(ug.Id)).ToListAsync();
 
-        //   });
-            // marriageEvent.Witnesses?.ToList().ForEach(async witness =>
-            // {
-            //     if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
-            //     {
-            //         var existingWitness = await dbContext.PersonalInfos.FindAsync(witness.WitnessPersonalInfo.Id);
-            //         if (existingWitness == null)
-            //         {
-            //             throw new NotFoundException($"bride info with the provided id is not found");
-            //         }
-            //         var keyValuePair3 = new Dictionary<string, object>{
-            //             {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
-            //             {"NationalId",witness.WitnessPersonalInfo.NationalId},
-            //             {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId}
-            //         };
-            //         witness.WitnessPersonalInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(existingWitness, keyValuePair3);
-
-            //     }
-            // });
+            marriageEvent.Witnesses.ToList().ForEach(witness =>
+            {
+                witness.WitnessPersonalInfo = existingWitnesses.Where(w => w.Id == witness.WitnessPersonalInfo.Id).FirstOrDefault();
+                if (witness.WitnessPersonalInfo == null)
+                {
+                    throw new NotFoundException("witnessinfo with id {} not found");
+                }
+                var keyValuePair3 = new Dictionary<string, object>{
+                        {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
+                        {"NationalId",witness.WitnessPersonalInfo.NationalId},
+                        {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId}
+                    };
+                witness.WitnessPersonalInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(witness.WitnessPersonalInfo, keyValuePair3);
+            });
 
             dbContext.MarriageEvents.Update(marriageEvent);
         }
