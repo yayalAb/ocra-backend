@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using FluentValidation;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 {
@@ -11,7 +12,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IPersonalInfoRepository _PersonalInfo;
         private readonly ILookupRepository _LookupsRepo;
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
-        public CreatAdoptionCommandValidator(IAdoptionEventRepository repo, IAddressLookupRepository address, IPersonalInfoRepository PersonalInfo, ILookupRepository LookupsRepo, IPaymentExamptionRequestRepository PaymentExaptionRepo)
+
+        public CreatAdoptionCommandValidator(IAdoptionEventRepository repo, IAddressLookupRepository address,
+        IPersonalInfoRepository PersonalInfo, ILookupRepository LookupsRepo,
+        IPaymentExamptionRequestRepository PaymentExaptionRepo)
         {
             _repo = repo;
             _address = address;
@@ -55,10 +59,12 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             RuleFor(e => e.Adoption.Event.CivilRegOfficerId)
                 .MustAsync(ValidateForignkeyPersonalInfo)
                 .WithMessage("A {PropertyName} does not  exists.");
-
+            RuleFor(e => e.Adoption.Event.CertificateId)
+                .MustAsync(ValidateCertifcateId)
+                .WithMessage("The last 4 digit must be int.");
             RuleFor(p => p.Adoption.Event.EventOwener.BirthDate)
             .NotEmpty().WithMessage("{PropertyName} is required.")
-            .GreaterThan(p => DateTime.Now).WithMessage("Not valid bith date");
+            .LessThan(p => DateTime.Now).WithMessage("Not valid bith date");
 
         }
         private async Task<bool> ValidateForignkeyAddress(Guid request, CancellationToken token)
@@ -110,6 +116,19 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             else
             {
                 return true;
+            }
+        }
+
+        private async Task<bool> ValidateCertifcateId(string CertId, CancellationToken token)
+        {
+            var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
+            if (valid)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
             }
         }
     }
