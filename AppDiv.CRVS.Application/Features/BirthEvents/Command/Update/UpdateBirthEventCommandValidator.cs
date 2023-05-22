@@ -38,18 +38,19 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 RuleFor(p => p.Id).Must(id => id == birth.BirthNotification.Id).WithMessage("Invalid birth Notification Id");
                 RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(_repo.Lookup));
             }
-            RuleFor(p => p.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
+            RuleFor(p => p.Event.EventOwener.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
             RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator((_repo.Lookup, _repo.Address), request.Father));
 
-            RuleFor(p => p.Id).Must(id => id == birth.Father.Id).WithMessage("Invalid father Id");
+            RuleFor(p => p.Father.Id).Must(id => id == birth.Father.Id).WithMessage("Invalid father Id");
             RuleFor(p => p.Father).SetValidator(new FatherValidator((_repo.Lookup, _repo.Address)));
 
-            RuleFor(p => p.Id).Must(id => id == birth.Mother.Id).WithMessage("Invalid mother Id");
+            RuleFor(p => p.Mother.Id).Must(id => id == birth.Mother.Id).WithMessage("Invalid mother Id");
             RuleFor(p => p.Mother).SetValidator(new MotherValidator((_repo.Lookup, _repo.Address)));
 
             if (request.Event.EventRegistrar != null)
             {
                 RuleFor(p => p.Event.EventRegistrar.Id).Must(id => id == birth.Event.EventRegistrar.Id).WithMessage("Invalid registrar Id");
+                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id).Must(id => id == birth.Event.EventRegistrar.RegistrarInfo.Id).WithMessage("Invalid registrar Person Id");
                 RuleFor(p => p.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator((_repo.Lookup, _repo.Address)));
             }
             // }

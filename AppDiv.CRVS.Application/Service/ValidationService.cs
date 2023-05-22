@@ -45,12 +45,12 @@ namespace AppDiv.CRVS.Application.Service
         public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IPersonalInfoRepository repo, string propertyName)
         {
             // repository = repo;
-            return ruleBuilder.MustAsync(async (pr, c)
+            return ruleBuilder.Must((pr)
                             =>
                             {
                                 Guid.TryParse(pr, out Guid guid);
-                                var person = await repo.GetAsync(guid);
-                                return person == null ? false : true;
+                                var person = repo.Exists(guid);
+                                return person;
                             }).WithMessage($"'{propertyName}' Unable to Get The Person");
         }
         public static IRuleBuilderOptions<T, string?> ForeignKeyWithPaymentExamptionRequest<T>(this IRuleBuilder<T, string?> ruleBuilder, IPaymentExamptionRequestRepository repo, string propertyName)

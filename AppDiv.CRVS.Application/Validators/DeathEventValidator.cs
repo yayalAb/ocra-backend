@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Validators
             _repo = repo;
             RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityLookupId");
             RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityTypeLookupId");
-            RuleFor(p => p.BirthCertificateId).NotEmpty().NotNull();
+            // RuleFor(p => p.BirthCertificateId).NotEmpty().NotNull();
             RuleFor(p => p.PlaceOfFuneral).NotEmpty().NotNull();
             // RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
             // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();

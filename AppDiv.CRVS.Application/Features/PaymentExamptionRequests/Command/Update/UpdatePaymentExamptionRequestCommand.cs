@@ -16,14 +16,13 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Upda
     // Customer create command with CustomerResponse
     public class UpdatePaymentExamptionRequestCommand : IRequest<PaymentExamptionRequestDTO>
     {
-
         public Guid Id { get; set; }
-        public JObject Reason { get; set; }
+        public LanguageModel Reason { get; set; }
         public string? ExamptedClientId { get; set; }
         public string? ExamptedClientFullName { get; set; }
         public DateTime ExamptedDate { get; set; }
         public string ExamptedBy { get; set; }
-        public string? NumberOfClient { get; set; }
+        public int? NumberOfClient { get; set; }
 
         public UpdatePaymentExamptionRequestCommand()
         {
