@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Application.Validators
         public BirthRegistrarValidator((ILookupRepository Lookup, IAddressLookupRepository Address) repo)
         {
             _repo = repo;
+            RuleFor(p => p).NotNull();
+            RuleFor(p => p.RelationshipLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Registrar.RelationshipLookupId");
             RuleFor(p => p.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
@@ -30,6 +32,7 @@ namespace AppDiv.CRVS.Application.Validators
         public DeathRegistrarValidator((ILookupRepository Lookup, IAddressLookupRepository Address) repo)
         {
             _repo = repo;
+            RuleFor(p => p.RelationshipLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo.Lookup, "Registrar.RelationshipLookupId");
             RuleFor(p => p.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
