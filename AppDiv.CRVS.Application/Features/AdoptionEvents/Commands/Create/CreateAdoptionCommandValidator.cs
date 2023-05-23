@@ -230,15 +230,14 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     return false;
                 }
 
-                // }
-                // else
-                // {
-                //     return false;
-                // }
+            }
+            else
+            {
                 return false;
             }
         }
     }
+}
 
 
 
