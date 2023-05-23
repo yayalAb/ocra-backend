@@ -218,18 +218,11 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
         private async Task<bool> ValidateDateEt(string DateEt, CancellationToken token)
         {
-            if (DateTime.TryParse(DateEt, out _))
-            {
-                DateTime ethiodate = _dateConverter.EthiopicToGregorian(DateEt);
-                if (ethiodate <= DateTime.Now)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
 
+            DateTime ethiodate = _dateConverter.EthiopicToGregorian(DateEt);
+            if (ethiodate <= DateTime.Now)
+            {
+                return true;
             }
             else
             {
