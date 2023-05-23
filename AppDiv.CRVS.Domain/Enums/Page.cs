@@ -50,9 +50,10 @@ public enum Page{
    FacilityLookup,
    DeliveryTypeLookup,
    PaymentWayLookup,
-   MarriageApplication
-
-
+   MarriageApplication,
+   AdministrativeLevelLookup,
+   DuringDeath,
+   CauseOfDeath
 
 
 }

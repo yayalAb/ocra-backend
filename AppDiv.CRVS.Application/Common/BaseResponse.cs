@@ -31,7 +31,7 @@ namespace AppDiv.CRVS.Application.Common
 
         public bool Success { get; set; }
         public string Message { get; set; }
-        public int Status { get; set; }
+        public int Status { get; set; } = 200;
         public List<string> ValidationErrors { get; set; }
     }
 }

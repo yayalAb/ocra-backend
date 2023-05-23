@@ -72,15 +72,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             foreach (var error in validationResult.Errors)
                                 CreateMarriageEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
                             CreateMarriageEventCommandResponse.Message = CreateMarriageEventCommandResponse.ValidationErrors[0];
+                            CreateMarriageEventCommandResponse.Status = 400;
                         }
                         if (CreateMarriageEventCommandResponse.Success)
                         {
 
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
-           
-
-                            // logger.LogCritical($"yyyyyyyyyy......{request.Event.EventRegistrar.Relationshi}")
+        
                             marriageEvent.Event.EventType = "Marriage";
                             await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
 
@@ -95,8 +94,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             } 
 
                         }
-                        
-                        // return new CreateMarriageEventCommandResponse { Message = "Marriage Event created Successfully" };
+                        CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully" ;
                         await transaction.CommitAsync();
                         return CreateMarriageEventCommandResponse;
 

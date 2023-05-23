@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
              var existingWife =  dbContext.PersonalInfos.Find(DivorceEvent.DivorcedWife.Id);
             if (existingWife == null)
             {
-                throw new NotFoundException($"divorce event with the provided id is not found");
+                throw new NotFoundException($"divorce event owner info with the provided id is not found");
             }
              var divorcedWifeFeilds = new Dictionary<string, object>{
                     {"NationalId",DivorceEvent.DivorcedWife.NationalId},
