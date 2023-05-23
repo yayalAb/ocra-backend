@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class FatherInfoDTO : PersonInfoDTO
     {
-        public DateTime BirthDate { get; set; }
+        public string BirthDateEt { get; set; }
         public Guid? BirthAddressId { get; set; }
     }
 }

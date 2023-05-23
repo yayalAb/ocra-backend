@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Application.Validators
             // RuleFor(p => p.LastName.or).Must(f => f == father.MiddleName.or).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
             // RuleFor(p => p.LastName.am).Must(f => f == father.MiddleName.am).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
             RuleFor(p => p.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SexLookupId");
-            RuleFor(p => p.BirthDate).NotEmpty().NotNull();
+            RuleFor(p => p.BirthDateEt).NotEmpty().NotNull();
             RuleFor(p => p.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "NationalityLookupId");
             RuleFor(p => p.BirthAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "BirthAddressId");
         }

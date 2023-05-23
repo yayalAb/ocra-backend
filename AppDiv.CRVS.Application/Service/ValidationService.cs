@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using FluentValidation;
+using EthiopianCalendar;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -90,6 +92,24 @@ namespace AppDiv.CRVS.Application.Service
         public static IRuleBuilderOptions<T, string?> NotGuidEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
         {
             return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("{PropertyName} must not be null.").WithMessage("'{PropertyName}' is requered");
+        }
+
+        public static IRuleBuilderOptions<T, string> IsAbove18<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
+        {
+
+            return ruleBuilder.Must(d =>
+                {
+                    try
+                    {
+                        DateTime birthDate = DateTime.Parse(d);
+                        EthiopianDate etDate = DateTime.Now.ToEthiopianDate();
+                        return etDate.Year - birthDate.Year >= 18;
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+                }).WithMessage($"'{propertyName}' should be above 18.");
         }
 
 
