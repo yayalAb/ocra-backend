@@ -22,8 +22,8 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Registrar.SexLookupId");
             RuleFor(p => p.RegistrarInfo.NationalId.ToString()).NotNull().NotEmpty();
             RuleFor(p => p.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "Registrar.ResidentAddressId");
-            RuleFor(p => p.RegistrarInfo.BirthDateEt).NotEmpty().NotNull();
-            // .IsAbove18("Registrar age");
+            RuleFor(p => p.RegistrarInfo.BirthDateEt).NotEmpty().NotNull()
+            .IsAbove18("Registrar age");
             // .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
         }
     }

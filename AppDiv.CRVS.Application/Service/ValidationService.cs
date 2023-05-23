@@ -9,7 +9,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using FluentValidation;
-using EthiopianCalendar;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -102,9 +102,11 @@ namespace AppDiv.CRVS.Application.Service
                     try
                     {
                         DateTime birthDate = DateTime.Parse(d);
-                        EthiopianDate etDate = DateTime.Now.ToEthiopianDate();
-                        return etDate.Year - birthDate.Year >= 18;
-                    }
+                        var converter =  new CustomDateConverter(d);
+                        DateTime etDate = converter.gorgorianDate;
+
+                        return  DateTime.Now.Year - etDate.Year >= 18;
+                }
                     catch (Exception e)
                     {
                         return false;
@@ -118,8 +120,8 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
-                        DateTime birthDate = DateTime.Parse(d);
-                        var etDate = birthDate.ToEthiopianDate();
+                         var converter =  new CustomDateConverter(d);
+                      
                         return true;
                     }
                     catch (Exception e)
