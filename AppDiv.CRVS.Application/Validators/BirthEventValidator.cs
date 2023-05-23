@@ -17,7 +17,8 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "TypeOfBirthLookupId");
             // RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
             // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
-            RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull();
+            RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull().Must(c => 
+                        { return int.TryParse(c.Substring(c.Length - 4), out _) ? true : false;}).WithMessage("The last 4 digit of Birth Event certificate must be int.");
             RuleFor(p => p.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");
         }
     }

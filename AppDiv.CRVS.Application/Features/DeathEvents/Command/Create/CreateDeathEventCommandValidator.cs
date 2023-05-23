@@ -29,16 +29,9 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             {
                 RuleFor(p => p.DeathEvent.DuringDeath).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "DuringDeath"); ;
             }
-            // RuleFor(p => p.DeathEvent.BirthCertificateId).NotEmpty().NotNull();
-            // RuleFor(p => p.DeathEvent.PlaceOfFuneral).NotEmpty().NotNull();
             if (request.DeathEvent.DeathNotification != null)
             {
                 RuleFor(p => p.DeathEvent.DeathNotification).SetValidator(new DeathNotificationValidator(_repo.Lookup));
-                // RuleFor(p => p.DeathEvent.DeathNotification.CauseOfDeathInfoTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "CauseOfDeathInfoTypeLookupId");
-                // // RuleFor(p => p.DeathNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-                // RuleFor(p => p.DeathEvent.DeathNotification.CauseOfDeath).NotEmpty().NotNull();
-                // RuleFor(p => p.DeathEvent.DeathNotification.CauseOfDeathInfoTypeLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo.Lookup, "CauseOfDeathInfoTypeLookupId");
-                // RuleFor(p => p.DeathEvent.DeathNotification.DeathNotificationSerialNumber).NotEmpty().NotNull();
             }
             if (!string.IsNullOrEmpty(request.DeathEvent.Event.EventOwener.Id.ToString()) && request.DeathEvent.Event.EventOwener.Id != Guid.Empty)
             {
