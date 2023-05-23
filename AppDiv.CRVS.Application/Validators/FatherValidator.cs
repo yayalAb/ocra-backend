@@ -30,8 +30,8 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.MarriageStatusLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.MarriageStatusLookupId");
             RuleFor(p => p.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "Father.ResidentAddressId");
             RuleFor(p => p.NationLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.NationLookupId");
-            RuleFor(p => p.BirthDateEt).NotEmpty().NotNull();
-            // .IsValidDate("Father Birth date");
+            RuleFor(p => p.BirthDateEt).NotEmpty().NotNull()
+            .IsValidDate("Father Birth date");
             // .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
             RuleFor(p => p.BirthAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "Father.BirthAddressId");
         }
