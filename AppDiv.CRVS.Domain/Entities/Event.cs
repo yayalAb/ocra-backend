@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
-using EthiopianCalendar;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
@@ -45,7 +45,8 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 EventDateEt = value;
-                EventDate = new EthiopianDate(DateTime.Parse(EventDateEt).Year, DateTime.Parse(EventDateEt).Month, DateTime.Parse(EventDateEt).Day).ToGregorianDate();
+
+                EventDate = new CustomDateConverter(EventDateEt).gorgorianDate;
             }
         }
         [NotMapped]
@@ -54,7 +55,7 @@ namespace AppDiv.CRVS.Domain.Entities
             get { return _EventRegDateEt; }
             set
             {
-                EventRegDate = new EthiopianDate(DateTime.Parse(EventRegDateEt).Year, DateTime.Parse(EventRegDateEt).Month, DateTime.Parse(EventRegDateEt).Day).ToGregorianDate();
+                EventRegDate = new CustomDateConverter(EventRegDateEt).gorgorianDate;
             }
         }
     }

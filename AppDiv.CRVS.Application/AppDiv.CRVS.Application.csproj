@@ -9,7 +9,6 @@
 
   <ItemGroup>
 	 
-	  <PackageReference Include="EthiopianCalendar" Version="2.1.1" />
 	 
 	  <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.0" />
 	  <PackageReference Include="AutoMapper" Version="10.1.1" />

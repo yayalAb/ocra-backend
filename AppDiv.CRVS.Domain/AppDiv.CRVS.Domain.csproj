@@ -6,7 +6,6 @@
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
 	<ItemGroup>
-		<PackageReference Include="EthiopianCalendar" Version="2.1.1" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.0" />
 		<!-- <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.0" /> -->
 		<PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
@@ -15,4 +14,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.10" />
 
 	</ItemGroup>
+	<ItemGroup>
+    <ProjectReference Include="..\AppDiv.CRVS.Utility\AppDiv.CRVS.Utility.csproj" />
+  </ItemGroup>
 </Project>

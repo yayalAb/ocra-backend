@@ -1,9 +1,10 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Utility.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using EthiopianCalendar;
+
 
 
 namespace AppDiv.CRVS.Domain.Entities
@@ -35,7 +36,7 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 BirthDateEt = value;
-                BirthDate = new EthiopianDate(DateTime.Parse(BirthDateEt).Year, DateTime.Parse(BirthDateEt).Month, DateTime.Parse(BirthDateEt).Day).ToGregorianDate();
+                BirthDate = new CustomDateConverter(BirthDateEt).gorgorianDate;;
             }
         }
         [NotMapped]
