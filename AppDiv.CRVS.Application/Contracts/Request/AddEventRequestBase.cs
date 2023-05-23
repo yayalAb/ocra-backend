@@ -9,8 +9,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string? CivilRegOfficeCode { get; set; }
         public string EventType { get; set; }
         public string CertificateId { get; set; }
-        public DateTime EventDate { get; set; }
-        public DateTime EventRegDate { get; set; }
+        public string? EventDateEt { get; set; }
+        public string? EventRegDateEt { get; set; }
         public Guid EventAddressId { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;

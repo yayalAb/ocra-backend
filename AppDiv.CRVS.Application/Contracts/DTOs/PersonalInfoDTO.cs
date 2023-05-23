@@ -12,6 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
+        public string? BirthDateEt { get; set; }
         public DateTime? BirthDate { get; set; }
         public string? NationalId { get; set; }
         public string? PlaceOfBirthLookup { get; set; }

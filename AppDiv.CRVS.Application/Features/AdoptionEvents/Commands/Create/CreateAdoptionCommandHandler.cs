@@ -22,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IPersonalInfoRepository _PersonalInfo;
         private readonly ILookupRepository _LookupsRepo;
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
+        private readonly IEventRepository _EventRepository;
         public CreateAdoptionCommandHandler(
                                         IPersonalInfoRepository PersonalInfo,
                                         IAddressLookupRepository addressRepository,
@@ -30,7 +31,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         IAdoptionEventRepository AdoptionEventRepository,
                                         IPersonalInfoRepository personalInfoRepository,
                                         IFileService fileService, ILookupRepository LookupsRepo,
-                                        IPaymentExamptionRequestRepository PaymentExaptionRepo)
+                                        IPaymentExamptionRequestRepository PaymentExaptionRepo,
+                                        IEventRepository EventRepository)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -41,12 +43,15 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _PersonalInfo = PersonalInfo;
             _LookupsRepo = LookupsRepo;
             _PaymentExaptionRepo = PaymentExaptionRepo;
+            _EventRepository = EventRepository;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
             var CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse();
 
-            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository, _addressRepository, _PersonalInfo, _LookupsRepo, _PaymentExaptionRepo);
+            var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository,
+                                                            _addressRepository, _PersonalInfo, _LookupsRepo,
+                                                            _PaymentExaptionRepo, _EventRepository);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
             if (validationResult.Errors.Count > 0)
             {

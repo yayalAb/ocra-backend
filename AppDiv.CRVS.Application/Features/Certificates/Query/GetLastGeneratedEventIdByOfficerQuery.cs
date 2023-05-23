@@ -51,7 +51,6 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             DateTime gregorianDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
             EthiopianDate ethiopianDate = new EthiopianDate(gregorianDate);
             var year = request.LastYear ? ethiopianDate.Year - 1 : ethiopianDate.Year;
-            // EthiopianDate ethiopianDate = new EthiopianDate(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
             var lastEventIdInfo = events
             .Where(e => e.CivilRegOfficer.ApplicationUser.AddressId == officer.AddressId && e.EventRegDate.Year == year)
                 .OrderByDescending(e => e.CertificateId.Substring(e.CertificateId.Length - 4)).FirstOrDefault();

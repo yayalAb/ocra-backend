@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using FluentValidation;
+using EthiopianCalendar;
 using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
@@ -12,16 +13,20 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IPersonalInfoRepository _PersonalInfo;
         private readonly ILookupRepository _LookupsRepo;
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
+        private readonly IEventRepository _EventRepository;
 
         public CreatAdoptionCommandValidator(IAdoptionEventRepository repo, IAddressLookupRepository address,
         IPersonalInfoRepository PersonalInfo, ILookupRepository LookupsRepo,
-        IPaymentExamptionRequestRepository PaymentExaptionRepo)
+        IPaymentExamptionRequestRepository PaymentExaptionRepo,
+        IEventRepository EventRepository
+        )
         {
             _repo = repo;
             _address = address;
             _PersonalInfo = PersonalInfo;
             _LookupsRepo = LookupsRepo;
             _PaymentExaptionRepo = PaymentExaptionRepo;
+            _EventRepository = EventRepository;
             RuleFor(e => e.Adoption.Id)
                .MustAsync(CheckIdOnCeate)
                .WithMessage("A {PropertyName} must be null on create.");
@@ -63,10 +68,27 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .WithMessage("A {PropertyName} does not  exists.");
             RuleFor(e => e.Adoption.Event.CertificateId)
                 .MustAsync(ValidateCertifcateId)
-                .WithMessage("The last 4 digit of  {PropertyName} must be int.");
-            RuleFor(p => p.Adoption.Event.EventOwener.BirthDate)
-            .NotEmpty().WithMessage("{PropertyName} is required.")
-            .LessThan(p => DateTime.Now).WithMessage("Not valid bith date");
+                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.");
+            RuleFor(p => p.Adoption.Event.EventOwener.BirthDateEt)
+            .MustAsync(ValidateDateEt)
+               .WithMessage("{PropertyName} is invalid date.");
+            RuleFor(p => p.Adoption.AdoptiveFather.BirthDateEt)
+                .MustAsync(ValidateDateEt)
+                .WithMessage("{PropertyName} is invalid date.");
+
+            RuleFor(p => p.Adoption.AdoptiveMother.BirthDateEt)
+                .MustAsync(ValidateDateEt)
+                .WithMessage("{PropertyName} is invalid date.");
+
+            RuleFor(p => p.Adoption.Event.EventDateEt)
+                .MustAsync(ValidateDateEt)
+                .WithMessage("{PropertyName} is invalid date.");
+            RuleFor(p => p.Adoption.Event.EventRegDateEt)
+                .MustAsync(ValidateDateEt)
+                .WithMessage("{PropertyName} is invalid date.");
+            RuleFor(p => p.Adoption.CourtCase.ConfirmedDateEt)
+                   .MustAsync(ValidateDateEt)
+                   .WithMessage("{PropertyName} is invalid date.");
             RuleFor(e => e.Adoption.AdoptiveMother.Id)
                .MustAsync(ValidateNulleblePersonalInfoForignkey)
                .WithMessage("{PropertyName} is must be null or Person Foreign key.");
@@ -165,7 +187,16 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
             if (valid)
             {
-                return true;
+                var certfcate = _EventRepository.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefault();
+                if (certfcate == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
             }
             else
             {
@@ -178,6 +209,28 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             if (Id == Guid.Empty || Id == null)
             {
                 return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+
+        private async Task<bool> ValidateDateEt(string DateEt, CancellationToken token)
+        {
+            if (DateTime.TryParse(DateEt, out _))
+            {
+                DateTime ethiodate = new EthiopianDate(DateTime.Parse(DateEt).Year, DateTime.Parse(DateEt).Month, DateTime.Parse(DateEt).Day).ToGregorianDate();
+                if (ethiodate <= DateTime.Now)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
             }
             else
             {
