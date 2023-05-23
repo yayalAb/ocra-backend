@@ -5,8 +5,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using EthiopianCalendar;
-
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.Customers.Query
 {
@@ -49,8 +48,11 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             var events = _eventRepository.GetAllQueryableAsync();
 
             DateTime gregorianDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            EthiopianDate ethiopianDate = new EthiopianDate(gregorianDate);
-            var year = request.LastYear ? ethiopianDate.Year - 1 : ethiopianDate.Year;
+     
+            var converter = new CustomDateConverter(DateTime.Now);
+            string etDate = converter.ethiopianDate;
+            int enteredYear = converter.getSplitted(etDate).year;
+            var year = request.LastYear ? enteredYear - 1 : enteredYear;
             var lastEventIdInfo = events
             .Where(e => e.CivilRegOfficer.ApplicationUser.AddressId == officer.AddressId && e.EventRegDate.Year == year)
                 .OrderByDescending(e => e.CertificateId.Substring(e.CertificateId.Length - 4)).FirstOrDefault();

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
-using EthiopianCalendar;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
@@ -22,7 +22,9 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 ConfirmedDateEt = value;
-                ConfirmedDate = new EthiopianDate(DateTime.Parse(ConfirmedDateEt).Year, DateTime.Parse(ConfirmedDateEt).Month, DateTime.Parse(ConfirmedDateEt).Day).ToGregorianDate();
+                ConfirmedDate = new CustomDateConverter(ConfirmedDateEt).gorgorianDate;
+
+              
             }
         }
     }

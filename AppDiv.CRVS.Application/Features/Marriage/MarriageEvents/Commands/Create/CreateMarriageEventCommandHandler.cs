@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                                  IMarriageApplicationRepository marriageApplicationRepository,
                                                  ILookupRepository lookupRepository,
                                                  IDivorceEventRepository divorceEventRepository,
-                                                 IEventPaymentRequestService paymentRequestService ,
+                                                 IEventPaymentRequestService paymentRequestService,
                                                  IAddressLookupRepository addressRepository,
                                                  IPaymentExamptionRequestRepository paymentExamptionRequestRepository,
                                                  ILogger<CreateMarriageEventCommandHandler> logger)
@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             this.logger = logger;
         }
 
-        public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken )
+        public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
         {
 
             var executionStrategy = _marriageEventRepository.Database.CreateExecutionStrategy();
@@ -61,7 +61,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     {
                         var CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse();
 
-                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository , _divorceEventRepository,_marriageEventRepository,_paymentExamptionRequestRepository, _addressRepository);
+                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors
@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
-        
+
                             marriageEvent.Event.EventType = "Marriage";
                             await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
 
@@ -88,14 +88,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             //TODO: //
                             _eventDocumentService.saveSupportingDocuments(marriageEvent.Event.EventSupportingDocuments, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             // create payment request for the event if it is not exempted
-                            if(!marriageEvent.Event.IsExampted){
+                            if (!marriageEvent.Event.IsExampted)
+                            {
 
-                            await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event.Id, cancellationToken);
-                            } 
+                                await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event.Id, cancellationToken);
+                            }
 
+                            CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
+                            await transaction.CommitAsync();
                         }
-                        CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully" ;
-                        await transaction.CommitAsync();
                         return CreateMarriageEventCommandResponse;
 
 

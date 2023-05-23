@@ -112,8 +112,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             //only resident address is required
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
-            RuleFor(e => e.BrideInfo.BirthDate)
-            .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
+            // RuleFor(e => e.BrideInfo.BirthDate)
+            // .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
             RuleFor(e => e.Event.EventOwener.BirthDate)
             .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
 

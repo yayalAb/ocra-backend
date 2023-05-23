@@ -1,7 +1,6 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using FluentValidation;
-using EthiopianCalendar;
-using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 {
@@ -14,6 +13,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly ILookupRepository _LookupsRepo;
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
         private readonly IEventRepository _EventRepository;
+        private readonly CustomDateConverter _dateConverter;
 
         public CreatAdoptionCommandValidator(IAdoptionEventRepository repo, IAddressLookupRepository address,
         IPersonalInfoRepository PersonalInfo, ILookupRepository LookupsRepo,
@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         IEventRepository EventRepository
         )
         {
+            _dateConverter = new CustomDateConverter();
             _repo = repo;
             _address = address;
             _PersonalInfo = PersonalInfo;
@@ -217,27 +218,27 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
         private async Task<bool> ValidateDateEt(string DateEt, CancellationToken token)
         {
-            // if (DateTime.TryParse(DateEt, out _))
-            // {
-            //     DateTime ethiodate = new EthiopianDate(DateTime.Parse(DateEt).Year, DateTime.Parse(DateEt).Month, DateTime.Parse(DateEt).Day).ToGregorianDate();
-            //     if (ethiodate <= DateTime.Now)
-            //     {
-            //         return true;
-            //     }
-            //     else
-            //     {
-            //         return false;
-            //     }
+            if (DateTime.TryParse(DateEt, out _))
+            {
+                DateTime ethiodate = _dateConverter.EthiopicToGregorian(DateEt);
+                if (ethiodate <= DateTime.Now)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
 
-            // }
-            // else
-            // {
-            //     return false;
-            // }
-            return false;
+                // }
+                // else
+                // {
+                //     return false;
+                // }
+                return false;
+            }
         }
     }
-}
 
 
 

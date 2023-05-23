@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
+using AppDiv.CRVS.Utility.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -34,13 +35,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             new List<string>{
 
                 "MarriageTypeId","ApplicationId","BrideInfo",
-                    "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDate",
+                    "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName",
+                    // "BrideInfo.BirthDateEt",
                     "BrideInfo.NationalId","BrideInfo.SexLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
                     "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDate",
                     "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
-                    "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
+                    "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDateEt",
                     "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
@@ -114,9 +116,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             //only resident address is required
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
-            RuleFor(e => e.BrideInfo.BirthDate)
-            .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
-            RuleFor(e => e.Event.EventOwener.BirthDate)
+            // RuleFor(e => e.BrideInfo.BirthDate)
+            // .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
+            RuleFor(e => e.Event.EventOwener.BirthDateEt)
             .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
 
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
@@ -151,6 +153,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                .NotEmpty()
                .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
            });
+            // When(e => !isCivilMarriage(e.MarriageTypeId), () => {
+            //     RuleFor(e => e.ApplicationId)
+            //     .Must(id => id ==null).WithMessage("MarriageApplicationId must be null if marriage type is not civil marriage");
+            // });
             When(e => isCivilMarriage(e.MarriageTypeId), () =>
             {
                 RuleFor(e => e.ApplicationId)
@@ -187,7 +193,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)
         {
-           return  _marriageEventRepo.GetAllQueryableAsync().Where(m =>m.ApplicationId == marriageApplicationId).Any();
+           return !( _marriageEventRepo.GetAllQueryableAsync().Where(m =>m.ApplicationId == marriageApplicationId).Any());
         }
 
         private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
@@ -233,10 +239,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             {
                 return false;
             }
-            // marriageType.ValueStr.Contains(Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower())
-            return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
-             || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
-             || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();
+          return   marriageType.ValueStr.ToLower().Contains(Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower());
+            // return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
+            //  || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
+            //  || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();
 
 
         }
@@ -286,9 +292,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return marriageStatus.ValueStr.Contains(Enum.GetName<MarriageStatus>(MarriageStatus.widowed)!.ToLower());
         }
 
-        private bool BeAbove18YearsOld(DateTime birthDate)
+        private bool BeAbove18YearsOld(string birthDate)
         {
-            return DateTime.Now.Year - birthDate.Year >= 18;
+            string etDate = "2015-13-05";
+            DateTime.Parse(etDate);
+            DateTime converted = new CustomDateConverter(birthDate).gorgorianDate;
+            return DateTime.Now.Year - converted.Year >= 18;
         }
 
 
