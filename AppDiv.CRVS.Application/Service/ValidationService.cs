@@ -111,6 +111,23 @@ namespace AppDiv.CRVS.Application.Service
                     }
                 }).WithMessage($"'{propertyName}' should be above 18.");
         }
+        public static IRuleBuilderOptions<T, string> IsValidDate<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
+        {
+
+            return ruleBuilder.Must(d =>
+                {
+                    try
+                    {
+                        DateTime birthDate = DateTime.Parse(d);
+                        var etDate = birthDate.ToEthiopianDate();
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+                }).WithMessage($"'{propertyName}' Not Valid Ethiopian date.");
+        }
 
 
 
