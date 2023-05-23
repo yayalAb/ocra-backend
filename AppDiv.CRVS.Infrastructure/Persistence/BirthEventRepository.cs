@@ -28,7 +28,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(d => d.Mother)
                             .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
-                            .Include(d => d.Event).ThenInclude(e => e.EventRegistrar)
+                            .Include(d => d.Event).ThenInclude(e => e.EventRegistrar).ThenInclude(r => r.RegistrarInfo)
                             .FirstOrDefaultAsync(d => d.Id == id);
         }
 

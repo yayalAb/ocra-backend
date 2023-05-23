@@ -32,7 +32,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             // RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
             // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
             RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventRegDate).NotEmpty().NotNull().Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
+            RuleFor(p => p.Event.EventRegDateEt).NotEmpty().NotNull();
+            // .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
             RuleFor(p => p.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");
             RuleFor(p => p.Event.EventOwener.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.Event.EventOwener.FirstName.am).NotEmpty().NotNull();

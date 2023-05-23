@@ -12,7 +12,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public JObject Reason { get; set; }
         public string? ExamptedClientId { get; set; }
         public string? ExamptedClientFullName { get; set; }
-        public DateTime ExamptedDate { get; set; }
+        // public DateTime ExamptedDate { get; set; }
+        public string ExamptedDateEt { get; set; }
         public string ExamptedBy { get; set; }
         public int? NumberOfClient { get; set; }
         public string CertificateType { get; set; }

@@ -8,7 +8,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class BirthRegistrarPersonalInfoDTO : RegistrarPersonalInfoDTO
     {
         public Guid SexLookupId { get; set; }
-        public DateTime BirthDate { get; set; }
+        // public DateTime BirthDate { get; set; }
+        public string BirthDateEt { get; set; }
         public Guid BirthAddressId { get; set; }
     }
 }
