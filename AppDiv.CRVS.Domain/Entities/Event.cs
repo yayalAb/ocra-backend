@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
+using EthiopianCalendar;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
@@ -12,8 +14,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
 
-        public string? EventDateEt { get; set; }
-        public string? EventRegDateEt { get; set; }
+        public string EventDateEt { get; set; }
+        public string EventRegDateEt { get; set; }
+
         public Guid EventAddressId { get; set; }
         public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
@@ -35,6 +38,24 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public virtual MarriageEvent MarriageEvent { get; set; }
         public virtual ICollection<SupportingDocument> EventSupportingDocuments { get; set; }
-
+        [NotMapped]
+        public string? _EventDateEt
+        {
+            get { return EventDateEt; }
+            set
+            {
+                EventDateEt = value;
+                EventDate = new EthiopianDate(DateTime.Parse(EventDateEt).Year, DateTime.Parse(EventDateEt).Month, DateTime.Parse(EventDateEt).Day).ToGregorianDate();
+            }
+        }
+        [NotMapped]
+        public string? _EventRegDateEt
+        {
+            get { return _EventRegDateEt; }
+            set
+            {
+                EventRegDate = new EthiopianDate(DateTime.Parse(EventRegDateEt).Year, DateTime.Parse(EventRegDateEt).Month, DateTime.Parse(EventRegDateEt).Day).ToGregorianDate();
+            }
+        }
     }
 }

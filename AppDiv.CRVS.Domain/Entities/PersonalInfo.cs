@@ -3,6 +3,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using EthiopianCalendar;
+
 
 namespace AppDiv.CRVS.Domain.Entities
 {
@@ -11,9 +13,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public string FirstNameStr { get; set; }
         public string? MiddleNameStr { get; set; }
         public string? LastNameStr { get; set; }
+        public string? NationalId { get; set; }
         public DateTime? BirthDate { get; set; }
         public string? BirthDateEt { get; set; }
-        public string? NationalId { get; set; }
         public Guid SexLookupId { get; set; }
         public Guid? PlaceOfBirthLookupId { get; set; }
         public Guid? NationalityLookupId { get; set; }
@@ -26,7 +28,16 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? ResidentAddressId { get; set; }
         public Guid? NationLookupId { get; set; }
         public Guid? ContactInfoId { get; set; }
-
+        [NotMapped]
+        public string? _BirthDateEt
+        {
+            get { return BirthDateEt; }
+            set
+            {
+                BirthDateEt = value;
+                BirthDate = new EthiopianDate(DateTime.Parse(BirthDateEt).Year, DateTime.Parse(BirthDateEt).Month, DateTime.Parse(BirthDateEt).Day).ToGregorianDate();
+            }
+        }
         [NotMapped]
         public JObject? FirstName
         {

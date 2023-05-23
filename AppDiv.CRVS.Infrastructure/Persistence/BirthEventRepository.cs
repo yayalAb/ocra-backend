@@ -96,7 +96,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.NationLookupId = entity.Mother?.NationLookupId;
                     selectedperson.BirthDate = entity.Father?.BirthDate;
                     selectedperson.BirthAddressId = entity.Father?.BirthAddressId;
-
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.MotherId = entity.Mother.Id;
                     entity.Mother = null;
