@@ -217,23 +217,24 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
         private async Task<bool> ValidateDateEt(string DateEt, CancellationToken token)
         {
-            if (DateTime.TryParse(DateEt, out _))
-            {
-                DateTime ethiodate = new EthiopianDate(DateTime.Parse(DateEt).Year, DateTime.Parse(DateEt).Month, DateTime.Parse(DateEt).Day).ToGregorianDate();
-                if (ethiodate <= DateTime.Now)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
+            // if (DateTime.TryParse(DateEt, out _))
+            // {
+            //     DateTime ethiodate = new EthiopianDate(DateTime.Parse(DateEt).Year, DateTime.Parse(DateEt).Month, DateTime.Parse(DateEt).Day).ToGregorianDate();
+            //     if (ethiodate <= DateTime.Now)
+            //     {
+            //         return true;
+            //     }
+            //     else
+            //     {
+            //         return false;
+            //     }
 
-            }
-            else
-            {
-                return false;
-            }
+            // }
+            // else
+            // {
+            //     return false;
+            // }
+            return false;
         }
     }
 }
