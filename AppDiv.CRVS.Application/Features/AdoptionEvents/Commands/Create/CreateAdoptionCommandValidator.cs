@@ -103,8 +103,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             RuleFor(e => e.Adoption.CourtCase.Id)
                 .MustAsync(CheckIdOnCeate)
                 .WithMessage("{PropertyName} is must be null on Create.");
-
-
         }
         private async Task<bool> ValidateForignkeyAddress(Guid request, CancellationToken token)
         {
