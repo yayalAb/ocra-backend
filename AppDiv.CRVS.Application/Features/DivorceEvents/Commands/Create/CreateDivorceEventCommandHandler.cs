@@ -1,10 +1,7 @@
-﻿using AppDiv.CRVS.Application.Exceptions;
-using AppDiv.CRVS.Application.Contracts.DTOs;
+﻿
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
-using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -58,6 +55,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             foreach (var error in validationResult.Errors)
                                 createDivorceEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
                             createDivorceEventCommandResponse.Message = createDivorceEventCommandResponse.ValidationErrors[0];
+                            createDivorceEventCommandResponse.Status = 400;
                         }
                         if (createDivorceEventCommandResponse.Success)
                         {
@@ -69,9 +67,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                             _eventDocumentService.saveSupportingDocuments(divorceEvent.Event.EventSupportingDocuments, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
 
+                            createDivorceEventCommandResponse.Message = "Divorce event created successfully";
+                            await transaction.CommitAsync();
                         }
-                        createDivorceEventCommandResponse.Message = "Divorce event created successfully";
-                        await transaction.CommitAsync();
                         return createDivorceEventCommandResponse;
                     }
                     catch (System.Exception)
