@@ -40,8 +40,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "BrideInfo.NationalId","BrideInfo.SexLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDate",
-                    "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
+                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDateEt",
+                    "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDateEt",
                     "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
@@ -165,9 +165,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
-                RuleFor(e => e.Event.EventRegDate)
-                .MustAsync(async (model, eventRegDate, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDate, model))
-                .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
+                // RuleFor(e => e.Event.EventDateEt)
+                // .MustAsync(async (model, eventRegDate, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDate, model))
+                // .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
             });
             When(e => e.Event.IsExampted, () =>
             {

@@ -32,13 +32,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             new List<string>{
      
                 "Id","MarriageTypeId","ApplicationId","BrideInfo","BrideInfo.Id","Event.Id","Event.EventOwener.Id",
-                    "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDate",
+                    "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDateEt",
                     "BrideInfo.NationalId","BrideInfo.SexLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDate",
-                    "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
-                    "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDate",
+                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDateEt",
+                    "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
+                    "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDateEt",
                     "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
@@ -114,8 +114,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
             // RuleFor(e => e.BrideInfo.BirthDate)
             // .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
-            RuleFor(e => e.Event.EventOwener.BirthDate)
-            .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
+            // RuleFor(e => e.Event.EventOwener.BirthDateEt)
+            // .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
 
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
@@ -157,9 +157,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                 .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
-                RuleFor(e => e.Event.EventRegDate)
-                .MustAsync(async (model, eventRegDate, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDate, model))
-                .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
+                // RuleFor(e => e.Event.EventRegDateEt)
+                // .MustAsync(async (model, eventRegDate, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDate, model))
+                // .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
             });
             When(e => e.Event.IsExampted, () =>
             {
