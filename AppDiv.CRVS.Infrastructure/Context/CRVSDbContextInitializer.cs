@@ -56,6 +56,7 @@ namespace AppDiv.CRVS.Infrastructure
         public async Task TrySeedAsync()
         {
             // await SeedUser();
+            await SeedSystemLookups();
             await SeedSetting();
 
 
@@ -245,6 +246,116 @@ namespace AppDiv.CRVS.Infrastructure
 
         }
 
+        public async Task SeedSystemLookups()
+        {
+            var eventTypeLookups = new List<Lookup>();
+            EnumDictionary.eventTypeDict.ToList().ForEach(eventType =>
+            {
+                eventTypeLookups.Add(new Lookup
+                {
+                    Key = "event",
+                    Value = new JObject{
+                        {"en", eventType.Value.en},
+                        {"am", eventType.Value.am},
+                        {"or", eventType.Value.or}
+                    },
+                    IsSystemLookup = true,
+                    StatisticCode = eventType.Value.statisticCode,
+                    Code = eventType.Value.code
+                });
+            });
+            var facilityLookups = new List<Lookup>();
+            EnumDictionary.facilityDict.ToList().ForEach(facility =>
+            {
+                facilityLookups.Add(new Lookup
+                {
+                    Key = "facility",
+                    Value = new JObject{
+                        {"en", facility.Value.en},
+                        {"am", facility.Value.am},
+                        {"or", facility.Value.or}
+                    },
+                    IsSystemLookup = true,
+                    StatisticCode = facility.Value.statisticCode,
+                    Code = facility.Value.code
+                });
+            });
+            var marriageStatusLookups = new List<Lookup>();
+            EnumDictionary.marriageStatusDict.ToList().ForEach(marriageStatus =>
+            {
+                marriageStatusLookups.Add(new Lookup
+                {
+                    Key = "marriage-status",
+                    Value = new JObject{
+                        {"en", marriageStatus.Value.en},
+                        {"am", marriageStatus.Value.am},
+                        {"or", marriageStatus.Value.or}
+                    },
+                    IsSystemLookup = true,
+                    StatisticCode = marriageStatus.Value.statisticCode,
+                    Code = marriageStatus.Value.code
+                });
+            });
+            var marriageTypeLookups = new List<Lookup>();
+            EnumDictionary.marriageTypeDict.ToList().ForEach(marriageType =>
+            {
+                marriageTypeLookups.Add(new Lookup
+                {
+                    Key = "form-of-marriage",
+                    Value = new JObject{
+                        {"en", marriageType.Value.en},
+                        {"am", marriageType.Value.am},
+                        {"or", marriageType.Value.or}
+                    },
+                    IsSystemLookup = true,
+                    StatisticCode = marriageType.Value.statisticCode,
+                    Code = marriageType.Value.code
+                });
+            });
+            var paymentTypeLookups = new List<Lookup>();
+            EnumDictionary.paymentTypeDict.ToList().ForEach(paymentType =>
+            {
+                paymentTypeLookups.Add(new Lookup
+                {
+                    Key = "payment-type",
+                    Value = new JObject{
+                        {"en", paymentType.Value.en},
+                        {"am", paymentType.Value.am},
+                        {"or", paymentType.Value.or}
+                    },
+                    IsSystemLookup = true,
+                    StatisticCode = paymentType.Value.statisticCode,
+                    Code = paymentType.Value.code
+                });
+            });
+            if (!_context.Lookups.Where(l => l.Key == "event").Any())
+            {
 
+                await _context.Lookups.AddRangeAsync(eventTypeLookups);
+            }
+            if (!_context.Lookups.Where(l => l.Key == "facility").Any())
+            {
+
+                await _context.Lookups.AddRangeAsync(facilityLookups);
+            }
+            if (!_context.Lookups.Where(l => l.Key == "marriage-status").Any())
+            {
+                await _context.Lookups.AddRangeAsync(marriageStatusLookups);
+            }
+            if (!_context.Lookups.Where(l => l.Key == "form-of-marriage").Any())
+            {
+                await _context.Lookups.AddRangeAsync(marriageTypeLookups);
+            }
+            if (!_context.Lookups.Where(l => l.Key == "payment-type").Any())
+            {
+
+                await _context.Lookups.AddRangeAsync(paymentTypeLookups);
+            }
+            await _context.SaveChangesAsync();
+
+
+
+
+        }
     }
 }

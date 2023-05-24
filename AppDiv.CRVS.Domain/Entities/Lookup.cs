@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? DescriptionStr { get; set; }
         public string? StatisticCode { get; set; }
         public string? Code { get; set; }
+        public bool IsSystemLookup { get; set; }= false;
         [NotMapped]
         public JObject? Description
         {
