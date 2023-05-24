@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string Description { get; set; }
         public string DocumentUrl { get; set; }
         public string Type {get; set;}
+        public string Label { get; set; }
 
         public virtual Event Event { get; set; }
         public virtual PaymentExamption PaymentExamption { get; set;}
