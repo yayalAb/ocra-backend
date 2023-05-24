@@ -23,13 +23,13 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
             _addressRepo = addressRepo;
             _eventRepo = eventRepo;
             _courtRepo = courtRepo;
-            var fieldNames = new List<string>{"DivorcedWife","DivorcedWife.Id","DataOfMarriage", "DivorceReason", "CourtCase","NumberOfChildren","Event",
+            var fieldNames = new List<string>{"DivorcedWife","DivorcedWife.Id","DateOfMarriageEt", "DivorceReason", "CourtCase","NumberOfChildren","Event",
             "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId","DivorcedWife.SexLookupId",
             "DivorcedWife.BirthAddressId","DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
             "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
-            "CourtCase","CourtCase.Id","CourtCase.CourtCaseNumber","CourtCase.ConfirmedDate",
-            "Event.Id","Event.CertificateId", "Event.EventDate",
-            "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
+            "CourtCase","CourtCase.Id","CourtCase.CourtCaseNumber","CourtCase.ConfirmedDateEt",
+            "Event.Id","Event.CertificateId", "Event.EventDateEt",
+            "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
             "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName",
             "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
             "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",

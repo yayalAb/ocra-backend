@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Utility.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -11,6 +12,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? WifeBirthCertificateId { get; set; }
         public string? HusbandBirthCertificate { get; set; }
         public DateTime DateOfMarriage { get; set; }
+        public string? DateOfMarriageEt {get;set ;}
         public string DivorceReasonStr { get; set; }
         public Guid CourtCaseId { get; set; }
         public int NumberOfChildren { get; set; }
@@ -28,6 +30,19 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 DivorceReasonStr = value.ToString();
+            }
+        }
+
+        [NotMapped]
+        public string? _DateOfMarriageEt
+        {
+            get { return DateOfMarriageEt; }
+            set
+            {
+                DateOfMarriageEt = value;
+                DateOfMarriage = new CustomDateConverter(DateOfMarriageEt).gorgorianDate;
+
+              
             }
         }
 

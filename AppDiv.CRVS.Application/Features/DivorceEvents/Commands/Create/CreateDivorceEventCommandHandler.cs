@@ -16,6 +16,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly IEventDocumentService _eventDocumentService;
         private readonly ILookupRepository _lookupRepository;
         private readonly IAddressLookupRepository _addressLookupRepository;
+        private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly ICourtRepository _courtRepository;
 
         public CreateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
@@ -23,6 +24,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                                 IEventDocumentService eventDocumentService,
                                                 ILookupRepository lookupRepository,
                                                 IAddressLookupRepository addressLookupRepository,
+                                                IEventPaymentRequestService paymentRequestService,
                                                 ICourtRepository courtRepository)
         {
             _DivorceEventRepository = DivorceEventRepository;
@@ -30,6 +32,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _eventDocumentService = eventDocumentService;
             _lookupRepository = lookupRepository;
             _addressLookupRepository = addressLookupRepository;
+            _paymentRequestService = paymentRequestService;
             _courtRepository = courtRepository;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
@@ -66,7 +69,12 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, cancellationToken);
                             await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                             _eventDocumentService.saveSupportingDocuments(divorceEvent.Event.EventSupportingDocuments, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
+                            // create payment request for the event if it is not exempted
+                            if (!divorceEvent.Event.IsExampted)
+                            {
 
+                                await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event.Id, cancellationToken);
+                            }
                             createDivorceEventCommandResponse.Message = "Divorce event created successfully";
                             await transaction.CommitAsync();
                         }

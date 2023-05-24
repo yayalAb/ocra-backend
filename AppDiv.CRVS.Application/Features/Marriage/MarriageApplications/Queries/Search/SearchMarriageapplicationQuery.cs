@@ -49,7 +49,8 @@ namespace AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries
                             GroomFullName = x.GroomInfo.FirstNameLang + " " + x.GroomInfo.MiddleNameLang + " " + x.GroomInfo.LastNameLang,
                             BridFullName = x.BrideInfo.FirstNameLang + " " + x.BrideInfo.MiddleNameLang + " " + x.BrideInfo.LastNameLang,
                             CicilRegOfficerFullName = x.CivilRegOfficer.FirstNameLang + " " + x.CivilRegOfficer.MiddleNameLang + " " + x.CivilRegOfficer.LastNameLang,
-                            ApplicationDate = x.ApplicationDate
+                            ApplicationDate = x.ApplicationDate,
+                            ApplicationDateEt = x.ApplicationDateEt
                         }).Take(50);
 
 
