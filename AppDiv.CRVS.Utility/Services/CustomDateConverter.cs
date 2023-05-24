@@ -140,87 +140,87 @@ namespace AppDiv.CRVS.Utility.Services
         }
         public (int day, int month, int year) getSplitted(string etDate)
         {
-            return this.getSplitted(etDate,"dd/mm/yyyy");
+            return this.getSplitted(etDate, "dd/mm/yyyy");
         }
-            public (int day, int month, int year) getSplitted(string etDate, string pattern)
+        public (int day, int month, int year) getSplitted(string etDate, string pattern)
+        {
+            int day = 0, month = 0, year = 0;
+            var patternList = pattern.Split('/');
+            var date = etDate.Split('/');
+            if (patternList.Length == 1)
             {
-                int day = 0, month = 0, year = 0;
-                var patternList = pattern.Split('/');
-                var date = etDate.Split('/');
-                if (patternList.Length == 1)
-                {
-                    patternList = patternList.ToList()[0].Split("-");
-                }
-                if (date.Length == 1)
-                {
-                    date = date.ToList()[0].Split("-");
-                }
-                for (int i = 0; i < patternList.Length; i++)
-                {
-                    if (patternList[i] == "mm")
-                    {
-                        month = int.Parse(date[i]);
-                    }
-                    else if (patternList[i] == "yyyy")
-                    {
-                        year = int.Parse(date[i]);
-                    }
-                    else if (patternList[i] == "dd")
-                    {
-                        day = int.Parse(date[i]);
-                    }
-                    else
-                    {
-                        throw new Exception("message");
-                    }
-                }
-                return (day, month, year);
+                patternList = patternList.ToList()[0].Split("-");
             }
-            public DateTime EthiopicToGregorian(string etDate, string pattern)
+            if (date.Length == 1)
             {
-                var (day, month, year) = getSplitted(etDate, pattern);
-                etDate = $"{day}/{month}/{year}";
-                this.EthiopicToGregorian(etDate);
-                return DateTime.Now;
+                date = date.ToList()[0].Split("-");
             }
-
-            //    
-            //	** ********************************************************************************
-            //	**  Conversion Methods To/From the Ethiopic & Gregorian Calendars
-            //	** ********************************************************************************
-
-            /// <summary>
-            /// Converts Ethiopic date to Gregorian date. The Ethiopic date format should be dd/mm/yyyy
-            /// </summary>
-            /// <param name="etDate">Ethiopic date in dd/mm/yyyy format</param>
-            /// <returns>Gregorian date in a DateTime instance</returns>
-            public DateTime EthiopicToGregorian(string etDate)
+            for (int i = 0; i < patternList.Length; i++)
             {
-                var date = etDate.Split('/');
-
-                int day, month, year;
-                if (date.Length == 1)
+                if (patternList[i] == "mm")
                 {
-                    date = date[0].Split('-');
+                    month = int.Parse(date[i]);
                 }
-                if (date.Length == 1)
+                else if (patternList[i] == "yyyy")
                 {
-                    throw new Exception("invalide Date format");
+                    year = int.Parse(date[i]);
                 }
-
-
-                day = Convert.ToInt32(date[0]);
-                month = Convert.ToInt32(date[1]);
-                year = Convert.ToInt32(date[2]);
-
-
-                var temp = EthiopicToGregorian(year, month, day);
-
-                int y = Convert.ToInt32(temp[0]);
-                int m = Convert.ToInt32(temp[1]);
-                int d = Convert.ToInt32(temp[2]);
-                return new DateTime(y, m, d);
+                else if (patternList[i] == "dd")
+                {
+                    day = int.Parse(date[i]);
+                }
+                else
+                {
+                    throw new Exception("message");
+                }
             }
+            return (day, month, year);
+        }
+        public DateTime EthiopicToGregorian(string etDate, string pattern)
+        {
+            var (day, month, year) = getSplitted(etDate, pattern);
+            etDate = $"{day}/{month}/{year}";
+            this.EthiopicToGregorian(etDate);
+            return DateTime.Now;
+        }
+
+        //    
+        //	** ********************************************************************************
+        //	**  Conversion Methods To/From the Ethiopic & Gregorian Calendars
+        //	** ********************************************************************************
+
+        /// <summary>
+        /// Converts Ethiopic date to Gregorian date. The Ethiopic date format should be dd/mm/yyyy
+        /// </summary>
+        /// <param name="etDate">Ethiopic date in dd/mm/yyyy format</param>
+        /// <returns>Gregorian date in a DateTime instance</returns>
+        public DateTime EthiopicToGregorian(string etDate)
+        {
+            var date = etDate.Split('/');
+
+            int day, month, year;
+            if (date.Length == 1)
+            {
+                date = date[0].Split('-');
+            }
+            if (date.Length == 1)
+            {
+                throw new Exception("invalide Date format");
+            }
+
+
+            day = Convert.ToInt32(date[0]);
+            month = Convert.ToInt32(date[1]);
+            year = Convert.ToInt32(date[2]);
+
+
+            var temp = EthiopicToGregorian(year, month, day);
+
+            int y = Convert.ToInt32(temp[0]);
+            int m = Convert.ToInt32(temp[1]);
+            int d = Convert.ToInt32(temp[2]);
+            return new DateTime(y, m, d);
+        }
 
         public virtual int[] EthiopicToGregorian(int era)
         {
@@ -502,9 +502,10 @@ namespace AppDiv.CRVS.Utility.Services
 
         private CustomDateConverter ec = new CustomDateConverter();
         private string[] monthNames = { "መስከረም", "ጥቅምት", "ኅዳር", "ታህሣሥ", "ጥር", "የካቲት", "መጋቢት", "ሚያዝያ", "ግንቦት", "ሰኔ", "ሐምሌ", "ነሐሴ", "ጳጉሜ" };
+
+        private string[] monthNamesOr = { "Fulbaana", "Onkololeessa", "Sadaasa", "Mudde", "Amajjii", "Gurraandhala", "Bitootessa", "Eebla", "Caamsaa", "Waxabajjii", "Adoolessa", "Hagayya", "Qaam'ee" };
         private string[] dayNames = { "እሑድ", "ሰኞ", "ማክሰኞ", "ረቡዕ", "ሓሙስ", "ዓርብ", "ቅዳሜ" };
         private string[] eraNames = { "ዓ/ም", "ዓ/ዓ" };
-
         public EthiopicDateTime(DateTime gcDateTime)
         {
             _incomingDay = gcDateTime.Day;
@@ -514,6 +515,11 @@ namespace AppDiv.CRVS.Utility.Services
             _dayOfWeek = GetETDayOfWeek(gcDateTime);
 
             DoConvertion();
+        }
+        public string month;
+        public EthiopicDateTime(int month, string lang)
+        {
+            this.month = GetETMonthNameAm(month, lang);
         }
 
         public EthiopicDateTime(int day, int month, int year)
@@ -580,6 +586,20 @@ namespace AppDiv.CRVS.Utility.Services
         private string GetETMonthName(int month)
         {
             return monthNames[month - 1];
+        }
+        public string GetETMonthNameAm(int month, string lnag)
+        {
+            if (lnag == "or")
+            {
+                return monthNamesOr[month - 1];
+
+            }
+            else
+            {
+                return monthNames[month - 1];
+
+            }
+
         }
 
         private void DoConvertion()
