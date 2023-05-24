@@ -60,7 +60,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator());
             }
 
-            if (request.Event.PaymentExamption != null)
+            if (request.Event.PaymentExamption != null && request.Event.IsExampted)
             {
                 // RuleFor(p => p.Event.PaymentExamption.Id).Must(id => id == birth.Event.PaymentExamption.Id).WithMessage("Invalid paymentExamption Id");
                 RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(_repo.ExamptionRequest));

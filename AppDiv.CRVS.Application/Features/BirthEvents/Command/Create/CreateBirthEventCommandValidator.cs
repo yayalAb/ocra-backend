@@ -65,7 +65,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                 RuleFor(p => p.BirthEvent.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator());
             }
 
-            if (request.BirthEvent.Event.PaymentExamption != null)
+            if (request.BirthEvent.Event.PaymentExamption != null && request.BirthEvent.Event.IsExampted)
             {
                 RuleFor(p => p.BirthEvent.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(_repo.ExamptionRequest));
             }
