@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly ILookupRepository _LookupsRepo;
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
         private readonly IEventRepository _EventRepository;
+        private readonly IEventPaymentRequestService _paymentRequestService;
         public CreateAdoptionCommandHandler(
                                         IPersonalInfoRepository PersonalInfo,
                                         IAddressLookupRepository addressRepository,
@@ -32,7 +33,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         IPersonalInfoRepository personalInfoRepository,
                                         IFileService fileService, ILookupRepository LookupsRepo,
                                         IPaymentExamptionRequestRepository PaymentExaptionRepo,
-                                        IEventRepository EventRepository)
+                                        IEventRepository EventRepository,
+                                        IEventPaymentRequestService paymentRequestService)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -44,6 +46,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _LookupsRepo = LookupsRepo;
             _PaymentExaptionRepo = PaymentExaptionRepo;
             _EventRepository = EventRepository;
+            _paymentRequestService = paymentRequestService;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
@@ -122,6 +125,11 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                     await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
                     _eventDocumentService.saveSupportingDocuments(adoptionEvent?.Event?.EventSupportingDocuments, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
+                    if (!adoptionEvent.Event.IsExampted)
+                    {
+
+                        await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event.Id, cancellationToken);
+                    }
                     CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                     {
                         Success = true,
