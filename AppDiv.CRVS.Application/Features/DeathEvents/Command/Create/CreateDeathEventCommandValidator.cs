@@ -59,7 +59,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 
             }
 
-            if (request.DeathEvent.Event.PaymentExamption != null)
+            if (request.DeathEvent.Event.PaymentExamption != null && request.DeathEvent.Event.IsExampted)
             {
                 RuleFor(p => p.DeathEvent.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(_repo.ExamptionRequest));
                 // RuleFor(p => p.DeathEvent.Event.PaymentExamption.ExamptionRequestId.ToString()).NotGuidEmpty().ForeignKeyWithPaymentExamptionRequest(_repo.ExamptionRequest, "Event.PaymentExamption.ExamptionRequestId");

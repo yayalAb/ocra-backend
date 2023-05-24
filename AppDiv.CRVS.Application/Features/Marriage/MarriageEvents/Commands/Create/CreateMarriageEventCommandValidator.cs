@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
                 "MarriageTypeId","ApplicationId","BrideInfo",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName",
-                    // "BrideInfo.BirthDateEt",
+                    "BrideInfo.BirthDateEt",
                     "BrideInfo.NationalId","BrideInfo.SexLookupId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
@@ -116,8 +116,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             //only resident address is required
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
-            // RuleFor(e => e.BrideInfo.BirthDate)
-            // .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
+            RuleFor(e => e.BrideInfo.BirthDateEt)
+            .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
             .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
 
@@ -165,9 +165,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
-                // RuleFor(e => e.Event.EventDateEt)
-                // .MustAsync(async (model, eventRegDate, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDate, model))
-                // .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
+                RuleFor(e => e.Event.EventDateEt)
+                .MustAsync(async (model, eventRegDateEt, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDateEt, model))
+                .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
             });
             When(e => e.Event.IsExampted, () =>
             {
@@ -219,12 +219,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         }
 
 
-        private async Task<bool> Be30DaysAfterMarriageApplicationDateAsync(DateTime marriageRegDate, CreateMarriageEventCommand marriageEvent)
+        private async Task<bool> Be30DaysAfterMarriageApplicationDateAsync(string marriageRegDateEt, CreateMarriageEventCommand marriageEvent)
         {
             var application = await _marriageApplicationRepo.GetAsync(marriageEvent.ApplicationId!);
+            var converted = new CustomDateConverter(marriageRegDateEt).gorgorianDate;
 
 
-            return (marriageRegDate - application.ApplicationDate).Days >= 30;
+            return (converted - application.ApplicationDate).Days >= 30;
         }
 
         private bool BeFoundInMarriageApplicationTable(Guid? applicationId)
@@ -294,8 +295,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         private bool BeAbove18YearsOld(string birthDate)
         {
-            string etDate = "2015-13-05";
-            DateTime.Parse(etDate);
             DateTime converted = new CustomDateConverter(birthDate).gorgorianDate;
             return DateTime.Now.Year - converted.Year >= 18;
         }
