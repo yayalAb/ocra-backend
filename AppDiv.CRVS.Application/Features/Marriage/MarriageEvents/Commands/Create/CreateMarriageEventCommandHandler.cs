@@ -98,10 +98,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             await transaction.CommitAsync();
                         }
                         return CreateMarriageEventCommandResponse;
-
-
-
-
                     }
                     catch (Exception)
                     {
@@ -111,10 +107,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 }
 
             });
-
-
-
-
         }
     }
 }

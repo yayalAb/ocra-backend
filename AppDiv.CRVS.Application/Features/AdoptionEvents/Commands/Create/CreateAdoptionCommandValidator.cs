@@ -85,8 +85,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .MustAsync(ValidateDateEt)
                 .WithMessage("{PropertyName} is invalid date.");
             RuleFor(p => p.Adoption.Event.EventRegDateEt)
-                .MustAsync(ValidateDateEt)
-                .WithMessage("{PropertyName} is invalid date.");
+                .MustAsync(ValidateRegDateEt)
+                .WithMessage("{PropertyName} is must be this year or last year.");
             RuleFor(p => p.Adoption.CourtCase.ConfirmedDateEt)
                    .MustAsync(ValidateDateEt)
                    .WithMessage("{PropertyName} is invalid date.");
@@ -221,6 +221,22 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
             DateTime ethiodate = _dateConverter.EthiopicToGregorian(DateEt);
             if (ethiodate <= DateTime.Now)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private async Task<bool> ValidateRegDateEt(string DateEt, CancellationToken token)
+        {
+
+
+            DateTime ethiodate = _dateConverter.EthiopicToGregorian(DateEt);
+            Console.WriteLine("date et {0} date now {1} reg date {2} date {3}", ethiodate.Year, DateTime.Now.Year, DateEt, ethiodate);
+            if ((ethiodate.Year == DateTime.Now.Year) || (ethiodate.Year == DateTime.Now.Year - 1))
             {
                 return true;
             }
