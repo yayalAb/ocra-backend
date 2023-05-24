@@ -46,36 +46,39 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             {
                 throw new NotFoundException("officer not found");
             }
-            var events = _eventRepository.GetAllQueryableAsync();
-            request.year = string.IsNullOrEmpty(request.year) ? new CustomDateConverter(DateTime.Now).ethiopianDate : request.year;
-
-            DateTime gregorianDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-
-            DateTime SentYear = new CustomDateConverter(request.year).gorgorianDate;
-            DateTime nowYear = DateTime.Now;
-            DateTime year = (string.IsNullOrEmpty(request.year) || SentYear.Year == nowYear.Year) ? nowYear : nowYear.AddYears(-1);
-            var ethiopiandate = new CustomDateConverter(year).ethiopianDate;
-            var lastEventIdInfo = events
-            .Where(e => e.CivilRegOfficer.ApplicationUser.AddressId == officer.AddressId && e.EventRegDate.Year == year.Year)
-                .OrderByDescending(e => e.CertificateId.Substring(e.CertificateId.Length - 4)).FirstOrDefault();
-            if (lastEventIdInfo == null)
+            try
             {
-                return new
+                request.year = string.IsNullOrEmpty(request.year) ? new CustomDateConverter(DateTime.Now).ethiopianDate : request.year;
+                DateTime SentYear = new CustomDateConverter(request.year).gorgorianDate;
+                DateTime nowYear = DateTime.Now;
+                DateTime year = (string.IsNullOrEmpty(request.year) || SentYear.Year == nowYear.Year) ? nowYear : nowYear.AddYears(-1);
+                var ethiopiandate = new CustomDateConverter(year).ethiopianDate;
+                var lastEventIdInfo = _eventRepository.GetAllQueryableAsync()
+                .Where(e => e.CivilRegOfficer.ApplicationUser.AddressId == officer.AddressId && e.EventRegDate.Year == year.Year)
+                    .OrderByDescending(e => e.CertificateId.Substring(e.CertificateId.Length - 4)).FirstOrDefault();
+                if (lastEventIdInfo == null)
                 {
-                    LastIdNumber = 0000,
-                    AddressCode = officer?.Address?.Code,
-                    year = ethiopiandate
-                };
+                    return new
+                    {
+                        LastIdNumber = 0000,
+                        AddressCode = officer?.Address?.Code,
+                        year = ethiopiandate
+                    };
 
+                }
+                else
+                {
+                    return new
+                    {
+                        LastIdNumber = int.Parse(lastEventIdInfo?.CertificateId?.Substring(lastEventIdInfo.CertificateId.Length - 4)),
+                        AddressCode = officer?.Address?.Code,
+                        year = ethiopiandate
+                    };
+                }
             }
-            else
+            catch (Exception)
             {
-                return new
-                {
-                    LastIdNumber = int.Parse(lastEventIdInfo?.CertificateId?.Substring(lastEventIdInfo.CertificateId.Length - 4)),
-                    AddressCode = officer?.Address?.Code,
-                    year = ethiopiandate
-                };
+                throw new NotFoundException("please Check the dat format, the date format must be dd/mm/yyyy");
             }
         }
     }
