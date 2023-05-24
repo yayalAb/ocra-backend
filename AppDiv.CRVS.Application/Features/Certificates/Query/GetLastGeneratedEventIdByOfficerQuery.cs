@@ -47,6 +47,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 throw new NotFoundException("officer not found");
             }
             var events = _eventRepository.GetAllQueryableAsync();
+            request.year = string.IsNullOrEmpty(request.year) ? new CustomDateConverter(DateTime.Now).ethiopianDate : request.year;
 
             DateTime gregorianDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
 
