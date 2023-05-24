@@ -59,6 +59,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                         if (validationResult.Errors.Count > 0)
                         {
                             createDeathCommandResponse.Success = false;
+                            createDeathCommandResponse.Status = 400;
                             createDeathCommandResponse.ValidationErrors = new List<string>();
                             foreach (var error in validationResult.Errors)
                                 createDeathCommandResponse.ValidationErrors.Add(error.ErrorMessage);
@@ -87,6 +88,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             catch (System.Exception ex)
                             {
                                 createDeathCommandResponse.Success = false;
+                                createDeathCommandResponse.Status = 400;
                                 throw;
                             }
                             createDeathCommandResponse.Message = "Death Event created Successfully";
