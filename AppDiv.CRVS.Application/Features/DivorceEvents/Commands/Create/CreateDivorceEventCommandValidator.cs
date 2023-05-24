@@ -22,13 +22,13 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _lookupRepo = lookupRepo;
             _addressRepo = addressRepo;
             _courtRepo = courtRepo;
-            var fieldNames = new List<string>{"DivorcedWife","DataOfMarriage", "DivorceReason", "CourtCase","NumberOfChildren","Event",
+            var fieldNames = new List<string>{"DivorcedWife","DateOfMarriageEt", "DivorceReason", "CourtCase","NumberOfChildren","Event",
             "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId","DivorcedWife.SexLookupId",
             "DivorcedWife.BirthAddressId","DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
             "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
-            "CourtCase.CourtCaseNumber","CourtCase.ConfirmedDate",
-            "Event.CertificateId", "Event.EventDate",
-            "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
+            "CourtCase.CourtCaseNumber","CourtCase.ConfirmedDateEt",
+            "Event.CertificateId", "Event.EventDateEt",
+            "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
             "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName",
             "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
             "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",

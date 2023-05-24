@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public DateTime ApplicationDate { get; set; }
+        public string ApplicationDateEt { get; set; }
+
         public Guid ApplicationAddressId { get; set; }
         public Guid BrideInfoId { get; set; }
         public Guid GroomInfoId { get; set; }

@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
     // Customer create command with CustomerResponse
     public record CreateMarriageApplicationCommand: IRequest<CreateMarriageApplicationCommandResponse>
     {
-        public DateTime ApplicationDate { get; set; }
+        public string ApplicationDateEt { get; set; }
         public Guid ApplicationAddressId { get; set; }
         public BrideInfoDTO BrideInfo { get; set;}
         public GroomInfoDTO GroomInfo { get; set;}
