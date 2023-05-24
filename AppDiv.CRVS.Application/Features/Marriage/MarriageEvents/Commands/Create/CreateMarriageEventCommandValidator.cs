@@ -21,7 +21,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepo;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo,IMarriageEventRepository marriageEventRepo,IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -65,7 +65,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .Must(BeFoundInLookupTable)
                     .WithMessage("{PropertyName} with the provided id is not found");
 
-                
+
             }
             foreach (var fieldName in fieldNames)
             {
@@ -76,7 +76,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .NotEmpty()
                     .WithMessage("{PropertyName} must not be empty.");
 
-                
+
             }
             var addressFeilds = new List<string>{
                 "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .MustAsync(BeFoundInAddressTable)
                     .WithMessage("{PropertyName} with the provided id is not found");
 
-                
+
             }
             RuleFor(e => e.Event.CivilRegOfficerId)
                 .Cascade(CascadeMode.StopOnFirstFailure)
@@ -165,9 +165,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
-                RuleFor(e => e.Event.EventDateEt)
+                RuleFor(e => e.Event.EventRegDateEt)
                 .MustAsync(async (model, eventRegDateEt, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDateEt, model))
                 .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
+            });
+            When(e => !e.Event.IsExampted, () =>
+            {
+                RuleFor(e => e.Event.PaymentExamption)
+                .Must(pe => pe == null).WithMessage("payment examption must be null if isExampted = false");
             });
             When(e => e.Event.IsExampted, () =>
             {
@@ -193,7 +198,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)
         {
-           return !( _marriageEventRepo.GetAllQueryableAsync().Where(m =>m.ApplicationId == marriageApplicationId).Any());
+            return !(_marriageEventRepo.GetAllQueryableAsync().Where(m => m.ApplicationId == marriageApplicationId).Any());
         }
 
         private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
@@ -240,7 +245,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             {
                 return false;
             }
-          return   marriageType.ValueStr.ToLower().Contains(Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower());
+            return marriageType.ValueStr.ToLower().Contains(Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower());
             // return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
             //  || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
             //  || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();

@@ -2,6 +2,7 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
+using AppDiv.CRVS.Utility.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
@@ -18,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepo;
         private readonly IAddressLookupRepository _addressRepo;
 
-        public UpdateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo,IMarriageEventRepository marriageEventRepo,IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo)
+        public UpdateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -30,7 +31,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
             var fieldNames =
             new List<string>{
-     
+
                 "Id","MarriageTypeId","ApplicationId","BrideInfo","BrideInfo.Id","Event.Id","Event.EventOwener.Id",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDateEt",
                     "BrideInfo.NationalId","BrideInfo.SexLookupId",
@@ -61,7 +62,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     .Must(BeFoundInLookupTable)
                     .WithMessage("{PropertyName} with the provided id is not found");
 
-                
+
             }
             foreach (var fieldName in fieldNames)
             {
@@ -72,7 +73,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     .NotEmpty()
                     .WithMessage("{PropertyName} must not be empty.");
 
-                
+
             }
             var addressFeilds = new List<string>{
                 "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
@@ -85,7 +86,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     .MustAsync(BeFoundInAddressTable)
                     .WithMessage("{PropertyName} with the provided id is not found");
 
-                
+
             }
             RuleFor(e => e.Event.CivilRegOfficerId)
                 .Cascade(CascadeMode.StopOnFirstFailure)
@@ -112,10 +113,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             //only resident address is required
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
-            // RuleFor(e => e.BrideInfo.BirthDate)
-            // .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
-            // RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            // .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
+            RuleFor(e => e.BrideInfo.BirthDateEt)
+            .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
+            RuleFor(e => e.Event.EventOwener.BirthDateEt)
+            .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
 
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
@@ -157,9 +158,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                 .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
-                // RuleFor(e => e.Event.EventRegDateEt)
-                // .MustAsync(async (model, eventRegDate, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDate, model))
-                // .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
+                RuleFor(e => e.Event.EventRegDateEt)
+               .MustAsync(async (model, eventRegDateEt, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDateEt, model))
+               .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
             });
             When(e => e.Event.IsExampted, () =>
             {
@@ -183,7 +184,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)
         {
-           return  _marriageEventRepo.GetAllQueryableAsync().Where(m =>m.ApplicationId == marriageApplicationId).Any();
+            return _marriageEventRepo.GetAllQueryableAsync().Where(m => m.ApplicationId == marriageApplicationId).Any();
         }
 
         private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
@@ -209,13 +210,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         }
 
 
-        private async Task<bool> Be30DaysAfterMarriageApplicationDateAsync(DateTime marriageRegDate, UpdateMarriageEventCommand marriageEvent)
+        private async Task<bool> Be30DaysAfterMarriageApplicationDateAsync(string marriageRegDateEt, UpdateMarriageEventCommand marriageEvent)
         {
             var application = await _marriageApplicationRepo.GetAsync(marriageEvent.ApplicationId!);
+            var converted = new CustomDateConverter(marriageRegDateEt).gorgorianDate;
 
 
-            return (marriageRegDate - application.ApplicationDate).Days >= 30;
+            return (converted - application.ApplicationDate).Days >= 30;
         }
+
 
         private bool BeFoundInMarriageApplicationTable(Guid? applicationId)
         {
@@ -229,10 +232,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             {
                 return false;
             }
-            // marriageType.ValueStr.Contains(Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower())
-            return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
-             || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
-             || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();
+            return marriageType.ValueStr.ToLower().Contains(Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower());
+            // return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
+            //  || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
+            //  || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();
 
 
         }
@@ -281,10 +284,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             }
             return marriageStatus.ValueStr.Contains(Enum.GetName<MarriageStatus>(MarriageStatus.widowed)!.ToLower());
         }
-
-        private bool BeAbove18YearsOld(DateTime birthDate)
+        private bool BeAbove18YearsOld(string birthDate)
         {
-            return DateTime.Now.Year - birthDate.Year >= 18;
+            DateTime converted = new CustomDateConverter(birthDate).gorgorianDate;
+            return DateTime.Now.Year - converted.Year >= 18;
         }
 
 

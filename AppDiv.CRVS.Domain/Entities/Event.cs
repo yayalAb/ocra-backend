@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get { return _EventRegDateEt; }
             set
-            {
+            {   EventRegDateEt = value;
                 EventRegDate = new CustomDateConverter(EventRegDateEt).gorgorianDate;
             }
         }
