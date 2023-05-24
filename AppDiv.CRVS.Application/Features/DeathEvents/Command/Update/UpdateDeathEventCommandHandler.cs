@@ -41,6 +41,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             if (validationResult.Errors.Count > 0)
             {
                 updateDeathEventCommandResponse.Success = false;
+                updateDeathEventCommandResponse.Status = 400;
                 updateDeathEventCommandResponse.ValidationErrors = new List<string>();
                 foreach (var error in validationResult.Errors)
                     updateDeathEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);

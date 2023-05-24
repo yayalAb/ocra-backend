@@ -61,6 +61,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                         if (validationResult.Errors.Count > 0)
                         {
                             createBirthEventCommandResponse.Success = false;
+                            createBirthEventCommandResponse.Status = 400;
                             createBirthEventCommandResponse.ValidationErrors = new List<string>();
                             foreach (var error in validationResult.Errors)
                                 createBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
@@ -91,6 +92,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             catch (System.Exception ex)
                             {
                                 createBirthEventCommandResponse.Success = false;
+                                createBirthEventCommandResponse.Status = 400;
                                 throw;
                             }
                             createBirthEventCommandResponse.Message = "Birth Event created Successfully";

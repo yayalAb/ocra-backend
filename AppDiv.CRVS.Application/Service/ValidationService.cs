@@ -77,7 +77,7 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
                         Convert.FromBase64String(myString);
-                        return d.Type == null || d.Type == "" ? false :
+                        return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
                             (d.Description == null || d.Description == "") ? false : true;
                     }
                     catch (FormatException)
@@ -113,6 +113,7 @@ namespace AppDiv.CRVS.Application.Service
                     }
                 }).WithMessage($"'{propertyName}' should be above 18.");
         }
+
         public static IRuleBuilderOptions<T, string> IsValidDate<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
         {
 
@@ -120,15 +121,32 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
-                         var converter =  new CustomDateConverter(d);
-                      
-                        return true;
+                        var dateConverter = new CustomDateConverter();
+                        DateTime date = dateConverter.EthiopicToGregorian(d);
+                        return date < DateTime.Now ? true : false;
                     }
                     catch (Exception e)
                     {
                         return false;
                     }
                 }).WithMessage($"'{propertyName}' Not Valid Ethiopian date.");
+        }
+        public static IRuleBuilderOptions<T, string> IsValidRegistrationDate<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
+        {
+            return ruleBuilder.Must(d =>
+                {
+                    try
+                    {
+                        var dateConverter = new CustomDateConverter();
+                        DateTime ethiodate = dateConverter.EthiopicToGregorian(d);
+
+                        return ((ethiodate.Year == DateTime.Now.Year) || (ethiodate.Year == DateTime.Now.Year - 1)) ? true : false;
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+                }).WithMessage($"'{propertyName}' is must be this year or last year.");
         }
 
 

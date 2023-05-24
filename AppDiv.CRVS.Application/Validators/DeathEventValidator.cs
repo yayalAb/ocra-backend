@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Validators
             // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
             RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull().Must(c =>
                         { return int.TryParse(c.Substring(c.Length - 4), out _) ? true : false; }).WithMessage("The last 4 digit of Death Event certificate must be int.");
-            RuleFor(p => p.Event.EventRegDateEt).NotEmpty().NotNull();
+            RuleFor(p => p.Event.EventRegDateEt).NotEmpty().NotNull().IsValidRegistrationDate("Event EventRegDateEt");
             RuleFor(p => p.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");
         }
     }

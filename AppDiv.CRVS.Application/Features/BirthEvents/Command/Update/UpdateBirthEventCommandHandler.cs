@@ -51,6 +51,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                         if (validationResult.Errors.Count > 0)
                         {
                             updateBirthEventCommandResponse.Success = false;
+                            updateBirthEventCommandResponse.Status = 400;
                             updateBirthEventCommandResponse.ValidationErrors = new List<string>();
                             foreach (var error in validationResult.Errors)
                                 updateBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
@@ -74,7 +75,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             catch (System.Exception)
                             {
                                 updateBirthEventCommandResponse.Message = "Something went wrong.";
-                                updateBirthEventCommandResponse.Status = 200;
+                                updateBirthEventCommandResponse.Status = 400;
                                 throw;
                             }
                             updateBirthEventCommandResponse.Message = "Birth Event Updated Successfully";
