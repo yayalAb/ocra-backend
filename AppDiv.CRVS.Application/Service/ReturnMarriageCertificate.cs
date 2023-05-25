@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -18,7 +19,10 @@ namespace AppDiv.CRVS.Application.Service
             (string am, string or)? address = (marriage.Event?.EventAddressId == Guid.Empty
                || marriage.Event?.EventAddressId == null) ? null :
                _DateAndAddressService.addressFormat(marriage.Event.EventAddressId);
-               
+
+            var convertor = new CustomDateConverter();
+            var CreatedAtEt = convertor.GregorianToEthiopic(marriage.Event.CreatedAt);
+
             (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new MarriageCertificateDTO()
             {
@@ -46,21 +50,24 @@ namespace AppDiv.CRVS.Application.Service
                 GroomNationalityOr = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 GroomNationalityAm = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
-                MarriageMonth = marriage.Event.EventDate.Month.ToString(),
-                MarriageDay = marriage.Event.EventDate.Day.ToString(),
-                MarriageYear = marriage.Event.EventDate.Year.ToString(),
+                MarriageMonth = new EthiopicDateTime(convertor.getSplitted(marriage.Event?.EventDateEt).month, "or").month,
+                MarriageMonthAm = new EthiopicDateTime(convertor.getSplitted(marriage.Event?.EventDateEt).month, "Am").month,
+                MarriageDay = convertor.getSplitted(marriage.Event?.EventDateEt).day.ToString(),
+                MarriageYear = convertor.getSplitted(marriage.Event?.EventDateEt).year.ToString(),
 
-                // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
+                // BirthAddressAm = marriage.Event?.EventAddress?.Id.ToString(),
                 MarriageAddressAm = address?.am,
                 MarriageAddressOr = address?.or,
 
-                EventRegisteredMonth = marriage.Event.EventRegDate.Month.ToString(),
-                EventRegisteredDay = marriage.Event.EventRegDate.Day.ToString(),
-                EventRegisteredYear = marriage.Event.EventRegDate.Year.ToString(),
+                EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(marriage.Event.EventRegDateEt).month, "or").month,
+                EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(marriage.Event.EventRegDateEt).month, "am").month,
+                EventRegisteredDay = convertor.getSplitted(marriage.Event.EventRegDateEt).day.ToString(),
+                EventRegisteredYear = convertor.getSplitted(marriage.Event.EventRegDateEt).year.ToString(),
 
-                GeneratedMonth = marriage.Event.CreatedAt.Month.ToString(),
-                GeneratedDay = marriage.Event.CreatedAt.Day.ToString(),
-                GeneratedYear = marriage.Event.CreatedAt.Year.ToString(),
+                GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
+                GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
+                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
+                GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),
 
                 CivileRegOfficerFullNameOr = marriage.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
                                            + marriage.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " "

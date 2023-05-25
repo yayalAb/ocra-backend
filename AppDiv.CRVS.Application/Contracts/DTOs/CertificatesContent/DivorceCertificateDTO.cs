@@ -33,18 +33,21 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         public string? HusbandNationalityOr { get; set; }
         public string? HusbandNationalityAm { get; set; }
 
-        public string? DivorceMonth { get; set; }
+        public string? DivorceMonthOr { get; set; }
+        public string? DivorceMonthAm { get; set; }
         public string? DivorceDay { get; set; }
         public string? DivorceYear { get; set; }
 
         public string? DivorceAddressOr { get; set; }
         public string? DivorceAddressAm { get; set; }
 
-        public string? EventRegisteredMonth { get; set; }
+        public string? EventRegisteredMonthOr { get; set; }
+        public string? EventRegisteredMonthAm { get; set; }
         public string? EventRegisteredDay { get; set; }
         public string? EventRegisteredYear { get; set; }
 
-        public string? GeneratedMonth { get; set; }
+        public string? GeneratedMonthOr { get; set; }
+        public string? GeneratedMonthAm { get; set; }
         public string? GeneratedDay { get; set; }
         public string? GeneratedYear { get; set; }
 

@@ -40,10 +40,11 @@ namespace AppDiv.CRVS.Application.Service
                 GenderAm = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
                 GenderOr = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
 
-                BirthMonth = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventDateEt).month, "or").month,
-                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventDateEt).month, "Am").month,
-                BirthDay = convertor.getSplitted(adoption.Event.EventDateEt).day.ToString(),
-                BirthYear = convertor.getSplitted(adoption.Event.EventDateEt).year.ToString(),
+                BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).month, "or").month,
+                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).month, "Am").month,
+                BirthDay = convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).day.ToString(),
+                BirthYear = convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).year.ToString(),
+
                 BirthAddressAm = address?.am,
                 BirthAddressOr = address?.or,
                 NationalityOr = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
@@ -62,13 +63,13 @@ namespace AppDiv.CRVS.Application.Service
                     + " " + adoption.AdoptiveFather?.MiddleName?.Value<string>("am") + " " + adoption.AdoptiveFather?.LastName?.Value<string>("am"),
                 FatherNationalityOr = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("or"),
                 FatherNationalityAm = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("am"),
-                EventRegisteredMonth = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventRegDateEt).month, "or").month,
+                EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventRegDateEt).month, "or").month,
                 EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventRegDateEt).month, "am").month,
                 EventRegisteredDay = convertor.getSplitted(adoption.Event.EventRegDateEt).day.ToString(),
                 EventRegisteredYear = convertor.getSplitted(adoption.Event.EventRegDateEt).year.ToString(),
 
 
-                GeneratedMonth = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
+                GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
                 GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
                 GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
                 GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),

@@ -20,30 +20,37 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
 
         public string? LastNameAm { get; set; }
         public string? LastNameOr { get; set; }
-        public LookupDTO? Title { get; set; }
+
+
+        public string? TitleOr { get; set; }
+        public string? TitleAm { get; set; }
 
         public string? GenderAm { get; set; }
         public string? GenderOr { get; set; }
 
-        public string? BirthMonth { get; set; }
+        public string? BirthMonthOr { get; set; }
+        public string? BirthMonthAm { get; set; }
         public string? BirthDay { get; set; }
         public string? BirthYear { get; set; }
 
         public string? DeathPlaceOr { get; set; }
         public string? DeathPlaceAm { get; set; }
 
-        public string? DeathMonth { get; set; }
+        public string? DeathMonthOr { get; set; }
+        public string? DeathMonthAm { get; set; }
         public string? DeathDay { get; set; }
         public string? DeathYear { get; set; }
 
         public string? NationalityOr { get; set; }
         public string? NationalityAm { get; set; }
 
-        public string? EventRegisteredMonth { get; set; }
+        public string? EventRegisteredMonthOr { get; set; }
+        public string? EventRegisteredMonthAm { get; set; }
         public string? EventRegisteredDay { get; set; }
         public string? EventRegisteredYear { get; set; }
 
-        public string? GeneratedMonth { get; set; }
+        public string? GeneratedMonthOr { get; set; }
+        public string? GeneratedMonthAm { get; set; }
         public string? GeneratedDay { get; set; }
         public string? GeneratedYear { get; set; }
 

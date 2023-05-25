@@ -23,7 +23,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? GenderAm { get; set; }
         public string? GenderOr { get; set; }
 
-        public string? BirthMonth { get; set; }
+        public string? BirthMonthOr { get; set; }
+        public string? BirthMonthAm { get; set; }
         public string? BirthDay { get; set; }
         public string? BirthYear { get; set; }
 
@@ -58,11 +59,13 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? FatherNationalityOr { get; set; }
         public string? FatherNationalityAm { get; set; }
 
-        public string? EventRegisteredMonth { get; set; }
+        public string? EventRegisteredMonthOr { get; set; }
+        public string? EventRegisteredMonthAm { get; set; }
         public string? EventRegisteredDay { get; set; }
         public string? EventRegisteredYear { get; set; }
 
-        public string? GeneratedMonth { get; set; }
+        public string? GeneratedMonthOr { get; set; }
+        public string? GeneratedMonthAm { get; set; }
         public string? GeneratedDay { get; set; }
         public string? GeneratedYear { get; set; }
 
