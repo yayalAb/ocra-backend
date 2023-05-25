@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Service
             (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
 
             var convertor = new CustomDateConverter();
-            var CreatedAtEt = convertor.GregorianToEthiopic(adoption.Event.CreatedAt);
+            var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
 
             // var mon=monthname.
             return new AdoptionCertificateDTO()
@@ -40,11 +40,10 @@ namespace AppDiv.CRVS.Application.Service
                 GenderAm = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
                 GenderOr = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
 
-                BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).month, "or").month,
-                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).month, "Am").month,
-                BirthDay = convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).day.ToString(),
-                BirthYear = convertor.getSplitted(adoption.Event.EventOwener.BirthDateEt).year.ToString(),
-
+                BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventDateEt).month, "or").month,
+                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventDateEt).month, "Am").month,
+                BirthDay = convertor.getSplitted(adoption.Event.EventDateEt).day.ToString(),
+                BirthYear = convertor.getSplitted(adoption.Event.EventDateEt).year.ToString(),
                 BirthAddressAm = address?.am,
                 BirthAddressOr = address?.or,
                 NationalityOr = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
