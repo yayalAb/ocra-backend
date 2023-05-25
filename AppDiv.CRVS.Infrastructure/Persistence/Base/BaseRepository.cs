@@ -44,6 +44,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         //     return _dbContext.Set<T>().Where(key in);
         // }
 
+        public bool CheckForeignKey<TEntity>(Guid id) where TEntity : BaseAuditableEntity
+        {
+            return this._dbContext.Set<TEntity>().Where(e => e.Id == id).Any();
+        }
         public virtual async Task<IEnumerable<T>> GetAllWithAsync(params string[] eagerLoadedProperties)
         {
             var list = _dbContext.Set<T>().AsQueryable();
