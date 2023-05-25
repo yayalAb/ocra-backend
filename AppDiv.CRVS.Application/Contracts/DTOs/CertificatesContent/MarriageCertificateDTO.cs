@@ -10,7 +10,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
     {
         public string? CertifcateId { get; set; }
         public string? RegBookNo { get; set; }
-        public string? BirthCertifcateId { get; set; }
+        // public string? BirthCertifcateId { get; set; }
+        public string? BirthCertificateGroomId { get; set; }
+        public string? BirthCertificateBrideId { get; set; }
 
         public string? BrideFirstNameOr { get; set; }
         public string? BrideFirstNameAm { get; set; }
@@ -18,6 +20,11 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         public string? BrideMiddleNameAm { get; set; }
         public string? BrideLastNameOr { get; set; }
         public string? BrideLastNameAm { get; set; }
+
+        public string? BrideBirthMonthOr { get; set; }
+        public string? BrideBirthMonthAm { get; set; }
+        public string? BrideBirthDay { get; set; }
+        public string? BrideBirthYear { get; set; }
 
         public string? BrideNationalityOr { get; set; }
         public string? BrideNationalityAm { get; set; }
@@ -29,10 +36,15 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         public string? GroomLastNameOr { get; set; }
         public string? GroomLastNameAm { get; set; }
 
+        public string? GroomBirthMonthOr { get; set; }
+        public string? GroomBirthMonthAm { get; set; }
+        public string? GroomBirthDay { get; set; }
+        public string? GroomBirthYear { get; set; }
+
         public string? GroomNationalityOr { get; set; }
         public string? GroomNationalityAm { get; set; }
 
-        public string? MarriageMonth { get; set; }
+        public string? MarriageMonthOr { get; set; }
         public string? MarriageMonthAm { get; set; }
         public string? MarriageDay { get; set; }
         public string? MarriageYear { get; set; }

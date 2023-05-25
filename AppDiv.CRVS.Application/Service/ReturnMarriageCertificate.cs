@@ -27,6 +27,8 @@ namespace AppDiv.CRVS.Application.Service
             return new MarriageCertificateDTO()
             {
                 CertifcateId = marriage.Event.CertificateId,
+                BirthCertificateGroomId = marriage.BirthCertificateGroomId,
+                BirthCertificateBrideId = marriage.BirthCertificateBrideId,
                 RegBookNo = marriage.Event.RegBookNo,
                 // BrideBirthCertifcateId = marriage.BirthCertificateBrideId,
                 BrideFirstNameAm = marriage.BrideInfo.FirstName?.Value<string>("am"),
@@ -35,6 +37,11 @@ namespace AppDiv.CRVS.Application.Service
                 BrideFirstNameOr = marriage.BrideInfo.FirstName?.Value<string>("or"),
                 BrideMiddleNameOr = marriage.BrideInfo.MiddleName?.Value<string>("or"),
                 BrideLastNameOr = marriage.BrideInfo.LastName?.Value<string>("or"),
+
+                BrideBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(marriage.BrideInfo?.BirthDateEt).month, "or").month,
+                BrideBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(marriage.BrideInfo?.BirthDateEt).month, "Am").month,
+                BrideBirthDay = convertor.getSplitted(marriage.BrideInfo?.BirthDateEt).day.ToString(),
+                BrideBirthYear = convertor.getSplitted(marriage.BrideInfo?.BirthDateEt).year.ToString(),
 
                 BrideNationalityOr = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 BrideNationalityAm = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
@@ -47,10 +54,15 @@ namespace AppDiv.CRVS.Application.Service
                 GroomMiddleNameOr = marriage.Event.EventOwener?.MiddleName?.Value<string>("or"),
                 GroomLastNameOr = marriage.Event.EventOwener?.LastName?.Value<string>("or"),
 
+                GroomBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(marriage.Event?.EventOwener?.BirthDateEt).month, "or").month,
+                GroomBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(marriage.Event?.EventOwener?.BirthDateEt).month, "Am").month,
+                GroomBirthDay = convertor.getSplitted(marriage.Event?.EventOwener?.BirthDateEt).day.ToString(),
+                GroomBirthYear = convertor.getSplitted(marriage.Event?.EventOwener?.BirthDateEt).year.ToString(),
+
                 GroomNationalityOr = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 GroomNationalityAm = marriage.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
-                MarriageMonth = new EthiopicDateTime(convertor.getSplitted(marriage.Event?.EventDateEt).month, "or").month,
+                MarriageMonthOr = new EthiopicDateTime(convertor.getSplitted(marriage.Event?.EventDateEt).month, "or").month,
                 MarriageMonthAm = new EthiopicDateTime(convertor.getSplitted(marriage.Event?.EventDateEt).month, "Am").month,
                 MarriageDay = convertor.getSplitted(marriage.Event?.EventDateEt).day.ToString(),
                 MarriageYear = convertor.getSplitted(marriage.Event?.EventDateEt).year.ToString(),
