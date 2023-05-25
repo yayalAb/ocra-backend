@@ -15,6 +15,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public void Attach(PersonalInfo personalInfo);
         public PersonalInfo GetById(Guid id);
         public bool CheckPerson(Guid id);
+        public bool Exists(Guid id);
 
     }
 }

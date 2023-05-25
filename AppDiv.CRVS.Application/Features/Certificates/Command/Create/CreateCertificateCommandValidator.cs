@@ -18,17 +18,12 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Create
     {
         private readonly ICertificateRepository _repo;
         private readonly ILogger<CreateCertificateCommand> log;
-        // private readonly IMediator _mediator;
-        public readonly ICustomValidator<CreateCertificateCommand> validator;
-        public CreateCertificateCommandValidator(ICertificateRepository repo, ILogger<CreateCertificateCommand> log
-        , ICustomValidator<CreateCertificateCommand> validator
-        )
+        public CreateCertificateCommandValidator(ICertificateRepository repo, ILogger<CreateCertificateCommand> log)
         {
-            this.validator = validator;
 
             _repo = repo;
             this.log = log;
-            RuleFor(p => p.Certificate.EventId).MustAsync(validator.CheckForForeignKeyAsync);
+            // RuleFor(p => p.Certificate.EventId).MustAsync(validator.CheckForForeignKeyAsync);
             // validator.CheckForForeignKeyAsync)
             //     (x, y, z) =>
             // {

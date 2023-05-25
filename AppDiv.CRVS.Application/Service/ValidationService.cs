@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using FluentValidation;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -45,12 +47,12 @@ namespace AppDiv.CRVS.Application.Service
         public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IPersonalInfoRepository repo, string propertyName)
         {
             // repository = repo;
-            return ruleBuilder.MustAsync(async (pr, c)
+            return ruleBuilder.Must((pr)
                             =>
                             {
                                 Guid.TryParse(pr, out Guid guid);
-                                var person = await repo.GetAsync(guid);
-                                return person == null ? false : true;
+                                var person = repo.Exists(guid);
+                                return person;
                             }).WithMessage($"'{propertyName}' Unable to Get The Person");
         }
         public static IRuleBuilderOptions<T, string?> ForeignKeyWithPaymentExamptionRequest<T>(this IRuleBuilder<T, string?> ruleBuilder, IPaymentExamptionRequestRepository repo, string propertyName)
@@ -73,8 +75,9 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
-                        Convert.FromBase64String(d.base64String);
-                        return d.Type == null || d.Type == "" ? false :
+                        string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
+                        Convert.FromBase64String(myString);
+                        return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
                             (d.Description == null || d.Description == "") ? false : true;
                     }
                     catch (FormatException)
@@ -89,6 +92,61 @@ namespace AppDiv.CRVS.Application.Service
         public static IRuleBuilderOptions<T, string?> NotGuidEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
         {
             return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("{PropertyName} must not be null.").WithMessage("'{PropertyName}' is requered");
+        }
+
+        public static IRuleBuilderOptions<T, string> IsAbove18<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
+        {
+
+            return ruleBuilder.Must(d =>
+                {
+                    try
+                    {
+                        DateTime birthDate = DateTime.Parse(d);
+                        var converter =  new CustomDateConverter(d);
+                        DateTime etDate = converter.gorgorianDate;
+
+                        return  DateTime.Now.Year - etDate.Year >= 18;
+                }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+                }).WithMessage($"'{propertyName}' should be above 18.");
+        }
+
+        public static IRuleBuilderOptions<T, string> IsValidDate<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
+        {
+
+            return ruleBuilder.Must(d =>
+                {
+                    try
+                    {
+                        var dateConverter = new CustomDateConverter();
+                        DateTime date = dateConverter.EthiopicToGregorian(d);
+                        return date < DateTime.Now ? true : false;
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+                }).WithMessage($"'{propertyName}' Not Valid Ethiopian date.");
+        }
+        public static IRuleBuilderOptions<T, string> IsValidRegistrationDate<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
+        {
+            return ruleBuilder.Must(d =>
+                {
+                    try
+                    {
+                        var dateConverter = new CustomDateConverter();
+                        DateTime ethiodate = dateConverter.EthiopicToGregorian(d);
+
+                        return ((ethiodate.Year == DateTime.Now.Year) || (ethiodate.Year == DateTime.Now.Year - 1)) ? true : false;
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+                }).WithMessage($"'{propertyName}' is must be this year or last year.");
         }
 
 

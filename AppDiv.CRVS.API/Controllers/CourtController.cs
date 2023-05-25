@@ -32,6 +32,14 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(await Mediator.Send(new GetAllCourtQuery()));
         }
 
+        [HttpGet("Lookup")]
+        public async Task<IActionResult> GetAllLookup()
+        {
+            return Ok(await Mediator.Send(new GetAllForLookup()));
+        }
+
+
+
         [HttpDelete("Delete/{id}")]
         public async Task<Object> DeleteCourt(Guid id)
         {

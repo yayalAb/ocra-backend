@@ -11,6 +11,12 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.DeliveryTypeLookup)
                .WithMany(n => n.DeliveryTypeNavigation)
                .HasForeignKey(m => m.DeliveryTypeLookupId);
+
+            // builder.HasOne(m => m.BirthEvent)
+            //    .WithOne(n => n.BirthNotification)
+            //    .HasForeignKey<BirthNotification>(m => m.BirthEventId)
+            //    .IsRequired(false);
+
         }
     }
 }

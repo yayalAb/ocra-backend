@@ -1,6 +1,7 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -12,7 +13,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             this._dbContext = dbContext;
         }
-
+        public DatabaseFacade Database => _dbContext.Database;
         public virtual async Task<AdoptionEvent?> GetWithAsync(Guid id)
         {
             return await _dbContext.AdoptionEvents

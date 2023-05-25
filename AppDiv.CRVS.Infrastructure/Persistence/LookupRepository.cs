@@ -30,8 +30,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return base.GetFirstEntryAsync(x => x.Key.Equals(key), q => q.Id, Utility.Contracts.SortingDirection.Ascending);
         }
 
-        public Lookup? GetLookupById(Guid id){
+        public Lookup? GetLookupById(Guid id)
+        {
             return dbContext.Lookups.Find(id);
         }
+
+        // public bool Exists(Guid id)
+        // {
+        //     return dbContext.Lookups.Where(p => p.Id == id).Any();
+        // }
     }
 }

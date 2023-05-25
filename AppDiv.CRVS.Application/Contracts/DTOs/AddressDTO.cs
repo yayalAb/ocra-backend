@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public int AdminLevel { get; set; }
         public Guid? AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
+        public Guid? AdminTypeLookupId { get; set; }
         public AddressDTO ParentAddress { get; set; }
     }
 }

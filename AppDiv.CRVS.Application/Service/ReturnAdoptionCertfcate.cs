@@ -2,6 +2,8 @@ using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Utility.Services;
+
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -19,6 +21,11 @@ namespace AppDiv.CRVS.Application.Service
                _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId);
 
             (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
+
+            var convertor = new CustomDateConverter();
+            var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
+
+            // var mon=monthname.
             return new AdoptionCertificateDTO()
             {
                 CertifcateId = adoption.Event.CertificateId,
@@ -33,9 +40,10 @@ namespace AppDiv.CRVS.Application.Service
                 GenderAm = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
                 GenderOr = adoption.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
 
-                BirthMonth = adoption.Event.EventDate.Month.ToString(),
-                BirthDay = adoption.Event.EventDate.Day.ToString(),
-                BirthYear = adoption.Event.EventDate.Year.ToString(),
+                BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventDateEt).month, "or").month,
+                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventDateEt).month, "Am").month,
+                BirthDay = convertor.getSplitted(adoption.Event.EventDateEt).day.ToString(),
+                BirthYear = convertor.getSplitted(adoption.Event.EventDateEt).year.ToString(),
                 BirthAddressAm = address?.am,
                 BirthAddressOr = address?.or,
                 NationalityOr = adoption.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
@@ -54,20 +62,23 @@ namespace AppDiv.CRVS.Application.Service
                     + " " + adoption.AdoptiveFather?.MiddleName?.Value<string>("am") + " " + adoption.AdoptiveFather?.LastName?.Value<string>("am"),
                 FatherNationalityOr = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("or"),
                 FatherNationalityAm = adoption.AdoptiveFather?.NationalityLookup?.Value?.Value<string>("am"),
-                EventRegisteredMonth = adoption.Event.EventRegDate.Month.ToString(),
-                EventRegisteredDay = adoption.Event.EventRegDate.Day.ToString(),
-                EventRegisteredYear = adoption.Event.EventRegDate.Year.ToString(),
-                GeneratedMonth = adoption.Event.CreatedAt.Month.ToString(),
-                GeneratedDay = adoption.Event.CreatedAt.Day.ToString(),
-                GeneratedYear = adoption.Event.CreatedAt.Year.ToString(),
+                EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventRegDateEt).month, "or").month,
+                EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(adoption.Event.EventRegDateEt).month, "am").month,
+                EventRegisteredDay = convertor.getSplitted(adoption.Event.EventRegDateEt).day.ToString(),
+                EventRegisteredYear = convertor.getSplitted(adoption.Event.EventRegDateEt).year.ToString(),
+
+
+                GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
+                GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
+                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
+                GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),
+
+
                 CivileRegOfficerFullNameOr = adoption.Event.CivilRegOfficer?.FirstName?.Value<string>("or")
                     + " " + adoption.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " " + adoption.Event.CivilRegOfficer?.LastName?.Value<string>("or"),
                 CivileRegOfficerFullNameAm = adoption.Event.CivilRegOfficer?.FirstName?.Value<string>("am")
                     + " " + adoption.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " " + adoption.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
-
-
                 //splited address
-
                 CountryOr = splitedAddress.or?.ElementAtOrDefault(0),
                 CountryAm = splitedAddress.am?.ElementAtOrDefault(0),
                 RegionOr = splitedAddress.or?.ElementAtOrDefault(1),

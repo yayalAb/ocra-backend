@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.Event)
                 .WithOne(n => n.BirthEvent)
                 .HasForeignKey<BirthEvent>(m => m.EventId);
+
         }
     }
 }

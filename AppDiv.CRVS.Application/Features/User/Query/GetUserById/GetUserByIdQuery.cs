@@ -50,6 +50,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
             return new FetchSingleUserResponseDTO{
                 Id = userData.Id,
                 UserName = userData.UserName,
+                AddressId = userData.AddressId,
                 Email = userData.Email,
                 UserGroups = userData.UserGroups.Select(u => u.Id).ToList(),
                 PersonalInfo = CustomMapper.Mapper.Map<AddPersonalInfoRequest>(userData.PersonalInfo)

@@ -6,11 +6,13 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class DeathEventRepository : BaseRepository<DeathEvent>, IDeathEventRepository
     {
+        public DatabaseFacade Database => _dbContext.Database;
         private readonly CRVSDbContext _dbContext;
 
         public DeathEventRepository(CRVSDbContext dbContext) : base(dbContext)
@@ -36,6 +38,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 {
+
                     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
                     selectedperson.NationalId = entity.Event?.EventOwener?.NationalId;
                     selectedperson.NationalityLookupId = entity.Event?.EventOwener?.NationalityLookupId;
@@ -64,11 +67,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.NationLookupId = entity.Event?.EventRegistrar?.RegistrarInfo?.NationLookupId;
                     selectedperson.TitleLookupId = entity.Event?.EventOwener?.TitleLookupId;
 
-                    _dbContext.PersonalInfos.Update(entity.Event.EventRegistrar?.RegistrarInfo);
+                    _dbContext.PersonalInfos.Update(selectedperson);
                     entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
                     entity.Event.EventRegistrar.RegistrarInfo = null;
                 }
-
+                // await _dbContext.DeathEvents.AddAsync(entity,cancellationToken);
                 await base.InsertAsync(entity, cancellationToken);
             }
             catch (System.Exception)

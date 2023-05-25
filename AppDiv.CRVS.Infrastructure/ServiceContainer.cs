@@ -12,7 +12,6 @@ using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Services;
 using Twilio.Clients;
 using AppDiv.CRVS.Application.Interfaces;
-using AppDiv.CRVS.Infrastructure.Persistence.Base;
 using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -29,9 +28,12 @@ namespace AppDiv.CRVS.Infrastructure
             // );
             services.AddDbContext<CRVSDbContext>(
                 options =>
-            options.UseMySql(configuration.GetConnectionString("CRVSConnectionString"),
-                  Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.29-mysql"),
-                  mySqlOptions => mySqlOptions.EnableRetryOnFailure()));
+                {
+                    // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+                    options.UseMySql(configuration.GetConnectionString("CRVSConnectionString"),
+                        Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.29-mysql"),
+                        mySqlOptions => mySqlOptions.EnableRetryOnFailure());
+                });
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                       .AddEntityFrameworkStores<CRVSDbContext>()
@@ -79,7 +81,6 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
-            services.AddScoped(typeof(ICustomValidator<>), typeof(CustomValidator<>));
             services.AddTransient<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ILookupRepository, LookupRepository>();
             services.AddScoped<ISettingRepository, SettingRepository>();
@@ -101,8 +102,8 @@ namespace AppDiv.CRVS.Infrastructure
 
 
 
-            services.AddTransient<IDeathEventRepository, DeathEventRepository>();
-            services.AddTransient<IBirthEventRepository, BirthEventRepository>();
+            services.AddScoped<IDeathEventRepository, DeathEventRepository>();
+            services.AddScoped<IBirthEventRepository, BirthEventRepository>();
             services.AddTransient<IDivorceEventRepository, DivorceEventRepository>();
 
 

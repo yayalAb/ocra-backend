@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -18,8 +19,10 @@ namespace AppDiv.CRVS.Application.Service
             (string am, string or)? address = (birth.Event?.EventAddressId == Guid.Empty
                || birth.Event?.EventAddressId == null) ? null :
                _DateAndAddressService.addressFormat(birth.Event.EventAddressId);
+            var convertor = new CustomDateConverter();
+            var CreatedAtEt = convertor.GregorianToEthiopic(birth.Event.CreatedAt);
 
-
+            (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new BirthCertificateDTO()
             {
                 CertifcateId = birth.Event.CertificateId,
@@ -35,9 +38,10 @@ namespace AppDiv.CRVS.Application.Service
                 GenderAm = birth.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
                 GenderOr = birth.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
 
-                BirthMonth = birth.Event.EventDate.Month.ToString(),
-                BirthDay = birth.Event.EventDate.Day.ToString(),
-                BirthYear = birth.Event.EventDate.Year.ToString(),
+                BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).month, "or").month,
+                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).month, "Am").month,
+                BirthDay = convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).day.ToString(),
+                BirthYear = convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 BirthAddressAm = address?.am,
@@ -63,13 +67,15 @@ namespace AppDiv.CRVS.Application.Service
                 FatherNationalityOr = birth.Father?.NationalityLookup?.Value?.Value<string>("or"),
                 FatherNationalityAm = birth.Father?.NationalityLookup?.Value?.Value<string>("am"),
 
-                EventRegisteredMonth = birth.Event.EventRegDate.Month.ToString(),
-                EventRegisteredDay = birth.Event.EventRegDate.Day.ToString(),
-                EventRegisteredYear = birth.Event.EventRegDate.Year.ToString(),
+                EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventRegDateEt).month, "or").month,
+                EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventRegDateEt).month, "am").month,
+                EventRegisteredDay = convertor.getSplitted(birth.Event.EventRegDateEt).day.ToString(),
+                EventRegisteredYear = convertor.getSplitted(birth.Event.EventRegDateEt).year.ToString(),
 
-                GeneratedMonth = birth.Event.CreatedAt.Month.ToString(),
-                GeneratedDay = birth.Event.CreatedAt.Day.ToString(),
-                GeneratedYear = birth.Event.CreatedAt.Year.ToString(),
+                GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
+                GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
+                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
+                GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),
 
                 CivileRegOfficerFullNameOr = birth.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
                                            + birth.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " "
@@ -77,6 +83,19 @@ namespace AppDiv.CRVS.Application.Service
                 CivileRegOfficerFullNameAm = birth.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
                                            + birth.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + birth.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
+
+                CountryOr = splitedAddress.or.ElementAtOrDefault(0),
+                CountryAm = splitedAddress.am.ElementAtOrDefault(0),
+                RegionOr = splitedAddress.or.ElementAtOrDefault(1),
+                RegionAm = splitedAddress.am.ElementAtOrDefault(1),
+                ZoneOr = splitedAddress.or.ElementAtOrDefault(2),
+                ZoneAm = splitedAddress.am.ElementAtOrDefault(2),
+                WoredaOr = splitedAddress.or.ElementAtOrDefault(3),
+                WoredaAm = splitedAddress.am.ElementAtOrDefault(3),
+                CityOr = splitedAddress.or.ElementAtOrDefault(4),
+                CityAm = splitedAddress.am.ElementAtOrDefault(4),
+                KebeleOr = splitedAddress.or.ElementAtOrDefault(5),
+                KebeleAm = splitedAddress.am.ElementAtOrDefault(5),
 
             };
         }

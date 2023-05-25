@@ -7,6 +7,7 @@ using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
@@ -19,13 +20,15 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepository;
         private readonly IPersonalInfoRepository _person;
         private readonly IPaymentExamptionRequestRepository _paymentExamption;
+        private readonly IEventPaymentRequestService _paymentRequestService;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventDocumentService eventDocumentService,
                                               ILookupRepository lookupRepository,
                                               IAddressLookupRepository addressRepository,
                                               IPersonalInfoRepository person,
-                                              IPaymentExamptionRequestRepository paymentExamption)
+                                              IPaymentExamptionRequestRepository paymentExamption,
+                                              IEventPaymentRequestService paymentRequestService)
         {
             this._eventDocumentService = eventDocumentService;
             this._birthEventRepository = birthEventRepository;
@@ -33,43 +36,80 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             this._lookupRepository = lookupRepository;
             this._person = person;
             this._paymentExamption = paymentExamption;
+            this._paymentRequestService = paymentRequestService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
-
-            // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request.customer);           
-
-            var createBirthEventCommandResponse = new CreateBirthEventCommandResponse();
-
-            var validator = new CreateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), request);
-            var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-            //Check and log validation errors
-            if (validationResult.Errors.Count > 0)
+            var executionStrategy = _birthEventRepository.Database.CreateExecutionStrategy();
+            return await executionStrategy.ExecuteAsync(async () =>
             {
-                createBirthEventCommandResponse.Success = false;
-                createBirthEventCommandResponse.ValidationErrors = new List<string>();
-                foreach (var error in validationResult.Errors)
-                    createBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                createBirthEventCommandResponse.Message = createBirthEventCommandResponse.ValidationErrors[0];
-            }
-            if (createBirthEventCommandResponse.Success)
-            {
-                // var docs = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
 
-                var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
-                birthEvent.Event.EventType = "Birth";
+                using (var transaction = _birthEventRepository.Database.BeginTransaction())
+                {
 
-                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
-                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                    try
 
-                var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
-                var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
+                    {
+                        // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request.customer);           
 
-                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "BirthEvents");
+                        var createBirthEventCommandResponse = new CreateBirthEventCommandResponse();
 
-            }
-            return createBirthEventCommandResponse;
+                        var validator = new CreateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), request);
+                        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+                        //Check and log validation errors
+                        if (validationResult.Errors.Count > 0)
+                        {
+                            createBirthEventCommandResponse.Success = false;
+                            createBirthEventCommandResponse.Status = 400;
+                            createBirthEventCommandResponse.ValidationErrors = new List<string>();
+                            foreach (var error in validationResult.Errors)
+                                createBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
+                            createBirthEventCommandResponse.Message = createBirthEventCommandResponse.ValidationErrors[0];
+                        }
+                        if (createBirthEventCommandResponse.Success)
+                        {
+                            // var docs = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
+
+                            try
+                            {
+                                var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                                birthEvent.Event.EventType = "Birth";
+
+                                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
+                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+
+                                var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
+                                var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
+
+                                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
+                                if (!birthEvent.Event.IsExampted)
+                                {
+                                    await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event.Id, cancellationToken);
+                                }
+
+                            }
+                            catch (System.Exception ex)
+                            {
+                                createBirthEventCommandResponse.Success = false;
+                                createBirthEventCommandResponse.Status = 400;
+                                throw;
+                            }
+                            createBirthEventCommandResponse.Message = "Birth Event created Successfully";
+                            createBirthEventCommandResponse.Status = 200;
+                            await transaction.CommitAsync();
+                        }
+                        return createBirthEventCommandResponse;
+
+                    }
+                    catch (Exception)
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                }
+
+            });
         }
     }
 }

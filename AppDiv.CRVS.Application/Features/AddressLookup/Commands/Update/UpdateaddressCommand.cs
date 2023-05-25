@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
         public int AdminLevel { get; set; }
         public Guid? AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
+        public Guid? AdminTypeLookupId { get; set; }
     }
 
     public class UpdateaddressCommandHandler : IRequestHandler<UpdateaddressCommand, AddressDTO>
@@ -44,6 +45,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
                 AdminLevel = request.AdminLevel,
                 AreaTypeLookupId = request?.AreaTypeLookupId,
                 ParentAddressId = request?.ParentAddressId,
+                AdminTypeLookupId = request?.AdminTypeLookupId
             };
             try
             {

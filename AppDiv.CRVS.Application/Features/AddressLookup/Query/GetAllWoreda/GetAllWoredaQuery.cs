@@ -49,7 +49,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda
                                             ? a.ParentAddress.ParentAddress.ParentAddress.AddressNameLang
                                             : null,
                         Code = a.Code,
-                        StatisticCode = a.StatisticCode
+                        StatisticCode = a.StatisticCode,
+                        AdminType = string.IsNullOrEmpty(a.AdminTypeLookup.ValueLang) ? null : a.AdminTypeLookup.ValueLang
                     }).ToList()
                     , request.PageCount ?? 1, request.PageSize ?? 10);
         }

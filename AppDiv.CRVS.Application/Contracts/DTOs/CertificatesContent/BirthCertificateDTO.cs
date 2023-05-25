@@ -23,12 +23,11 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? GenderAm { get; set; }
         public string? GenderOr { get; set; }
 
-        // public DateTime? BirthDate { get; set; }
-        public string? BirthMonth { get; set; }
+        public string? BirthMonthOr { get; set; }
+        public string? BirthMonthAm { get; set; }
         public string? BirthDay { get; set; }
         public string? BirthYear { get; set; }
 
-        // public AddressDTO? BirthPlace { get; set; }
         public string? BirthAddressOr { get; set; }
         public string? BirthAddressAm { get; set; }
 
@@ -45,44 +44,31 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? KebeleOr { get; set; }
         public string? KebeleAm { get; set; }
 
-        // public LookupDTO? ChildNationality { get; set; }
         public string? NationalityOr { get; set; }
         public string? NationalityAm { get; set; }
 
-        // public JObject? MotherFirstName { get; set; }
-        // public JObject? MotherMiddleName { get; set; }
-        // public JObject? MotherLastName { get; set; }
         public string? MotherFullNameOr { get; set; }
         public string? MotherFullNameAm { get; set; }
 
-        // public LookupDTO? MotherNationality { get; set; }
         public string? MotherNationalityOr { get; set; }
         public string? MotherNationalityAm { get; set; }
 
-        // public JObject? FatherFirstName { get; set; }
-        // public JObject? FatherMiddleName { get; set; }
-        // public JObject? FatherLastName { get; set; }
         public string? FatherFullNameOr { get; set; }
         public string? FatherFullNameAm { get; set; }
 
-        // public LookupDTO? FatherNationality { get; set; }
         public string? FatherNationalityOr { get; set; }
         public string? FatherNationalityAm { get; set; }
 
-        // public DateTime? EventRegDate { get; set; }
-        public string? EventRegisteredMonth { get; set; }
+        public string? EventRegisteredMonthOr { get; set; }
+        public string? EventRegisteredMonthAm { get; set; }
         public string? EventRegisteredDay { get; set; }
         public string? EventRegisteredYear { get; set; }
 
-        // public DateTime? CertificateGenerationDate { get; set; } = DateTime.Now;
-        public string? GeneratedMonth { get; set; }
+        public string? GeneratedMonthOr { get; set; }
+        public string? GeneratedMonthAm { get; set; }
         public string? GeneratedDay { get; set; }
         public string? GeneratedYear { get; set; }
 
-
-        // public JObject? CivilRegOfficerFirstName { get; set; }
-        // public JObject? CivilRegOfficerMiddleName { get; set; }
-        // public JObject? CivilRegOfficerLastName { get; set; }
         public string? CivileRegOfficerFullNameOr { get; set; }
         public string? CivileRegOfficerFullNameAm { get; set; }
 

@@ -46,7 +46,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
                     Code = request.Address.Code,
                     AdminLevel = request.Address.AdminLevel,
                     AreaTypeLookupId = request.Address.AreaTypeLookupId,
-                    ParentAddressId = request.Address.ParentAddressId
+                    ParentAddressId = request.Address.ParentAddressId,
+                    AdminTypeLookupId = request.Address.AdminTypeLookupId
                 };
                 //
                 await _AddressRepository.InsertAsync(Address, cancellationToken);

@@ -22,13 +22,13 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _lookupRepo = lookupRepo;
             _addressRepo = addressRepo;
             _courtRepo = courtRepo;
-            var fieldNames = new List<string>{"DivorcedWife","DataOfMarriage", "DivorceReason", "CourtCase","NumberOfChildren","Event",
+            var fieldNames = new List<string>{"DivorcedWife","DateOfMarriageEt", "DivorceReason", "CourtCase","NumberOfChildren","Event",
             "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId","DivorcedWife.SexLookupId",
             "DivorcedWife.BirthAddressId","DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
             "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
-            "CourtCase.CourtCaseNumber","CourtCase.ConfirmedDate",
-            "Event.CertificateId", "Event.EventDate",
-            "Event.EventRegDate","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
+            "CourtCase.CourtCaseNumber","CourtCase.ConfirmedDateEt",
+            "Event.CertificateId", "Event.EventDateEt",
+            "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
             "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName",
             "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
             "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                 // add more validation rules for the field here, if needed
             }
-              var lookupFeilds = new List<string>{
+            var lookupFeilds = new List<string>{
                 "DivorcedWife.SexLookupId",
                 "DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId",
                 "DivorcedWife.EducationalStatusLookupId","DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId",
@@ -55,7 +55,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                 "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                 "Event.EventOwener.NationLookupId"
             };
-             foreach (var lookupFeild in lookupFeilds)
+            foreach (var lookupFeild in lookupFeilds)
             {
                 var rule = RuleFor(GetNestedProperty<CreateDivorceEventCommand>(lookupFeild))
                     .Cascade(CascadeMode.StopOnFirstFailure)
@@ -77,30 +77,30 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                 // add more validation rules for the field here, if needed
             }
-               When(e => e.Event.IsExampted, () =>
-            {
-                RuleFor(e => e.Event.PaymentExamption)
-                    .Cascade(CascadeMode.StopOnFirstFailure)
-                    .NotEmpty().WithMessage("payment Examption cannot be empty if isExapmted = true")
-                    .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
+            When(e => e.Event.IsExampted, () =>
+         {
+             RuleFor(e => e.Event.PaymentExamption)
+                 .Cascade(CascadeMode.StopOnFirstFailure)
+                 .NotEmpty().WithMessage("payment Examption cannot be empty if isExapmted = true")
+                 .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
 
-            });
+         });
             RuleFor(e => e.Event.CivilRegOfficerId)
                 .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotNull().WithMessage("civilRegOfficerId cannot be null")
                 .NotEmpty().WithMessage("civilRegOfficerId cannot be empty")
                 .Must(BeFoundInPersonalInfoTable).WithMessage("civilRegistrar officer with the provided id is not found");
-             When(e => e.CourtCase.CourtId ==null, () =>
-            {
-                RuleFor(e => e.CourtCase.Court)
-                    .Cascade(CascadeMode.StopOnFirstFailure)
-                    .NotEmpty().WithMessage("court cannot be empty if courtId is null")
-                    .NotNull().WithMessage("court cannot be null if courtId is null");
+            When(e => e.CourtCase.Court.Id == null, () =>
+           {
+               RuleFor(e => e.CourtCase.Court)
+                   .Cascade(CascadeMode.StopOnFirstFailure)
+                   .NotEmpty().WithMessage("court cannot be empty if courtId is null")
+                   .NotNull().WithMessage("court cannot be null if courtId is null");
 
-            });
-            When(e => e.CourtCase.Court ==null, () =>
+           });
+            When(e => e.CourtCase.Court == null, () =>
             {
-                RuleFor(e => e.CourtCase.CourtId)
+                RuleFor(e => e.CourtCase.Court.Id)
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotEmpty().WithMessage("court cannot be empty if courtId is null")
                     .NotNull().WithMessage("court cannot be null if courtId is null")
@@ -110,10 +110,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
         private async Task<bool> BeFoundInCourtTable(Guid? courtId, CancellationToken token)
         {
-            return courtId != null &&(await _courtRepo.GetAsync(courtId)) !=null;
+            return courtId != null && (await _courtRepo.GetAsync(courtId)) != null;
         }
 
-        private async Task<bool> BeFoundInAddressTable(object addressId , CancellationToken token)
+        private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
         {
             return addressId != null && (await _addressRepo.GetAsync(addressId)) != null;
 

@@ -11,55 +11,64 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         public string? CertifcateId { get; set; }
         public string? RegBookNo { get; set; }
         public string? BirthCertifcateId { get; set; }
-        // public JObject? FirstName { get; set; }
+        
         public string? FirstNameAm { get; set; }
         public string? FirstNameOr { get; set; }
 
-        // public JObject? MiddleName { get; set; }
         public string? MiddleNameAm { get; set; }
         public string? MiddleNameOr { get; set; }
 
-        // public JObject? LastName { get; set; }
         public string? LastNameAm { get; set; }
         public string? LastNameOr { get; set; }
-        public LookupDTO? Title { get; set; }
 
-        // public LookupDTO? Gender { get; set; }
+
+        public string? TitleOr { get; set; }
+        public string? TitleAm { get; set; }
+
         public string? GenderAm { get; set; }
         public string? GenderOr { get; set; }
 
-        // public DateTime? BirthDate { get; set; }
-        public string? BirthMonth { get; set; }
+        public string? BirthMonthOr { get; set; }
+        public string? BirthMonthAm { get; set; }
         public string? BirthDay { get; set; }
         public string? BirthYear { get; set; }
 
-        // public AddressDTO? DeathPlace { get; set; }
         public string? DeathPlaceOr { get; set; }
         public string? DeathPlaceAm { get; set; }
 
-        // public DateTime? DeathDate { get; set; }
-        public string? DeathMonth { get; set; }
+        public string? DeathMonthOr { get; set; }
+        public string? DeathMonthAm { get; set; }
         public string? DeathDay { get; set; }
         public string? DeathYear { get; set; }
 
-        // public LookupDTO? Nationality { get; set; }
         public string? NationalityOr { get; set; }
         public string? NationalityAm { get; set; }
 
-        // public DateTime? EventRegDate { get; set; }
-        public string? EventRegisteredMonth { get; set; }
+        public string? EventRegisteredMonthOr { get; set; }
+        public string? EventRegisteredMonthAm { get; set; }
         public string? EventRegisteredDay { get; set; }
         public string? EventRegisteredYear { get; set; }
 
-        // public DateTime? CertificateGenerationDate { get; set; } = DateTime.Now;
-        public string? GeneratedMonth { get; set; }
+        public string? GeneratedMonthOr { get; set; }
+        public string? GeneratedMonthAm { get; set; }
         public string? GeneratedDay { get; set; }
         public string? GeneratedYear { get; set; }
 
-        // public JObject? CivilRegOfficerFirstName { get; set; }
-        // public JObject? CivilRegOfficerMiddleName { get; set; }
-        // public JObject? CivilRegOfficerLastName { get; set; }
         public string? CivileRegOfficerFullNameOr { get; set; }
         public string? CivileRegOfficerFullNameAm { get; set; }
+
+        //splited Address
+        public string? CountryOr { get; set; }
+        public string? CountryAm { get; set; }
+        public string? RegionOr { get; set; }
+        public string? RegionAm { get; set; }
+        public string? ZoneOr { get; set; }
+        public string? ZoneAm { get; set; }
+        public string? WoredaOr { get; set; }
+        public string? WoredaAm { get; set; }
+        public string? CityOr { get; set; }
+        public string? CityAm { get; set; }
+        public string? KebeleOr { get; set; }
+        public string? KebeleAm { get; set; }
     }
 }

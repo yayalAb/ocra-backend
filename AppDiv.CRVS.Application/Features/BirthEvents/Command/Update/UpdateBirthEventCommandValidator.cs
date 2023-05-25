@@ -3,6 +3,7 @@ using System.Net.Cache;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Validators;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Repositories;
 using FluentValidation;
@@ -15,117 +16,55 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Domain.Entities;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
     public class UpdateBirthEventCommandValidator : AbstractValidator<UpdateBirthEventCommand>
     {
+        // private readonly BirthEvent _birth;
         private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) _repo;
-        // private readonly IMediator _mediator;
-        // private readonly ILogger<UpdateBirthEventCommandValidator> log;
-        public UpdateBirthEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) repo, UpdateBirthEventCommand request
-        // , ILogger<CreateBirthEventCommandValidator> log
-        )
+
+        public UpdateBirthEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) repo,
+                                                BirthEvent birth, UpdateBirthEventCommand request)
         {
             _repo = repo;
+            RuleFor(p => p.Id).Must(id => id == birth.Id).WithMessage("Invalid birth Id");
+            RuleFor(p => CustomMapper.Mapper.Map<AddBirthEventRequest>(p)).SetValidator(new BirthEventValidator((_repo.Lookup, _repo.Person)));
+            if (request.BirthNotification != null)
+            {
+                // RuleFor(p => p.Id).Must(id => id == birth.BirthNotification.Id).WithMessage("Invalid birth Notification Id");
+                RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(_repo.Lookup));
+            }
+            // RuleFor(p => p.Event.EventOwener.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
+            RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator((_repo.Lookup, _repo.Address), request.Father));
 
-            RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityLookupId");
-            RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "FacilityTypeLookupId");
-            RuleFor(p => p.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "BirthPlaceId");
-            RuleFor(p => p.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "TypeOfBirthLookupId");
-            RuleFor(p => p.BirthNotification.DeliveryTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "DeliveryTypeLookupId");
-            RuleFor(p => p.BirthNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SkilledProfLookupId");
-            RuleFor(p => p.BirthNotification.WeightAtBirth).NotEmpty().NotNull();
-            RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
-            RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
-            RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull();
-            RuleFor(p => p.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo.Person, "CivilRegOfficerId");
-            RuleFor(p => p.Event.EventOwener.FirstName.or).NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.FirstName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.MiddleName.or).Must(f => f == request.Father.FirstName.or).WithMessage("The child's father name and his father first name does not match.").NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.MiddleName.am).Must(f => f == request.Father.FirstName.am).WithMessage("The child's father's name and his father's first name do not match.").NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.LastName.or).Must(f => f == request.Father.MiddleName.or).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.LastName.am).Must(f => f == request.Father.MiddleName.am).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
-            RuleFor(p => p.Event.EventOwener.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "SexLookupId");
-            RuleFor(p => p.Event.EventOwener.BirthDate).NotEmpty().NotNull();
-            // RuleFor(p => p.Event.EventOwener.PlaceOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "PlaceOfBirthLookupId");
-            RuleFor(p => p.Event.EventOwener.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "NationalityLookupId");
-            RuleFor(p => p.Event.EventOwener.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "ResidentAddressId");
+            // RuleFor(p => p.Father.Id).Must(id => id == birth.Father.Id).WithMessage("Invalid father Id");
+            RuleFor(p => p.Father).SetValidator(new FatherValidator((_repo.Lookup, _repo.Address)));
 
-
-            // if (request.Father != null)
-            // {
-            // RuleFor(p => p.Father.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person, "Father.Id");
-            RuleFor(p => p.Father.FirstName.or).NotEmpty().NotNull();
-            RuleFor(p => p.Father.FirstName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Father.MiddleName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Father.MiddleName.or).NotEmpty().NotNull();
-            RuleFor(p => p.Father.LastName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Father.LastName.or).NotEmpty().NotNull();
-            RuleFor(p => p.Father.NationalId).NotGuidEmpty();
-            RuleFor(p => p.Father.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.SexLookupId");
-            RuleFor(p => p.Father.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.NationalityLookupId");
-            RuleFor(p => p.Father.ReligionLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.ReligionLookupId");
-            RuleFor(p => p.Father.EducationalStatusLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.EducationalStatusLookupId");
-            RuleFor(p => p.Father.TypeOfWorkLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.TypeOfWorkLookupId");
-            RuleFor(p => p.Father.MarriageStatusLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.MarriageStatusLookupId");
-            RuleFor(p => p.Father.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "Father.ResidentAddressId");
-            RuleFor(p => p.Father.NationLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Father.NationLookupId");
-            RuleFor(p => p.Father.BirthDate).NotEmpty().NotNull()
-                    .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
-
-
-            // }
+            // RuleFor(p => p.Mother.Id).Must(id => id == birth.Mother.Id).WithMessage("Invalid mother Id");
+            RuleFor(p => p.Mother).SetValidator(new MotherValidator((_repo.Lookup, _repo.Address)));
 
             if (request.Event.EventRegistrar != null)
             {
-                // RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person, "RegistrarInfo.Id");
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.MiddleName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.LastName.or).NotEmpty().NotNull();
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.LastName.am).NotEmpty().NotNull();
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Registrar.SexLookupId");
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "Registrar.ResidentAddressId");
-                RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.BirthDate).NotEmpty().NotNull()
-                    .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
+                // RuleFor(p => p.Event.EventRegistrar.Id).Must(id => id == birth.Event.EventRegistrar.Id).WithMessage("Invalid registrar Id");
+                // RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id).Must(id => id == birth.Event.EventRegistrar.RegistrarInfo.Id).WithMessage("Invalid registrar Person Id");
+                RuleFor(p => p.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator((_repo.Lookup, _repo.Address)));
             }
-            // if(request.Father == null && request.Mother == null)
-            // {
-            //     RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person);
             // }
-
-            // if (request.Mother != null)
-            // {
-            // RuleFor(p => p.Mother.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo.Person, "Mother.Id");
-            RuleFor(p => p.Mother.FirstName.or).NotEmpty().NotNull();
-            RuleFor(p => p.Mother.FirstName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Mother.MiddleName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Mother.MiddleName.or).NotEmpty().NotNull();
-            RuleFor(p => p.Mother.LastName.am).NotEmpty().NotNull();
-            RuleFor(p => p.Mother.LastName.or).NotEmpty().NotNull();
-            RuleFor(p => p.Mother.NationalId).NotGuidEmpty();
-            RuleFor(p => p.Mother.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.SexLookupId");
-            RuleFor(p => p.Mother.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.NationalityLookupId");
-            RuleFor(p => p.Mother.ReligionLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.ReligionLookupId");
-            RuleFor(p => p.Mother.EducationalStatusLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.EducationalStatusLookupId");
-            RuleFor(p => p.Mother.TypeOfWorkLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.TypeOfWorkLookupId");
-            RuleFor(p => p.Mother.MarriageStatusLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.MarriageStatusLookupId");
-            RuleFor(p => p.Mother.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo.Address, "Mother.ResidentAddressId");
-            RuleFor(p => p.Mother.NationLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.NationLookupId");
-
             if (request.Event.EventSupportingDocuments != null)
             {
-                RuleFor(p => p.Event.EventSupportingDocuments).SupportingDocNull("Event.EventSupportingDocuments").NotEmpty().NotNull();
+                // RuleFor(p => p.Event.EventSupportingDocuments.Id).Must(id => id == birth.Event.EventSupportingDocuments.Id).WithMessage("Invalid registrar Id");
+                RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator());
             }
 
-            if (request.Event.PaymentExamption != null)
+            if (request.Event.PaymentExamption != null && request.Event.IsExampted)
             {
-                RuleFor(p => p.Event.PaymentExamption.ExamptionRequestId.ToString()).NotGuidEmpty().ForeignKeyWithPaymentExamptionRequest(_repo.ExamptionRequest, "Event.PaymentExamption.ExamptionRequestId");
-                RuleFor(p => p.Event.PaymentExamption.SupportingDocuments).SupportingDocNull("Event.PaymentExamption.EventSupportingDocuments").NotEmpty().NotNull();
+                // RuleFor(p => p.Event.PaymentExamption.Id).Must(id => id == birth.Event.PaymentExamption.Id).WithMessage("Invalid paymentExamption Id");
+                RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(_repo.ExamptionRequest));
             }
-            // }
         }
 
     }

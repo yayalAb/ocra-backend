@@ -51,6 +51,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return false;
         }
 
+        public bool Exists(Guid id)
+        {
+            return dbContext.PersonalInfos.Where(p => p.Id == id).Any();
+        }
+
 
     }
 }

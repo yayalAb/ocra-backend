@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? DescriptionStr { get; set; }
         public string? StatisticCode { get; set; }
         public string? Code { get; set; }
+        public bool IsSystemLookup { get; set; }= false;
         [NotMapped]
         public JObject? Description
         {
@@ -39,6 +40,7 @@ namespace AppDiv.CRVS.Domain.Entities
         }
         // public virtual ICollection<Address> AddressAdminLevelNavigation { get; set; }
         public virtual ICollection<Address> AddressAreaTypeNavigation { get; set; }
+        public virtual ICollection<Address> AdminTypeNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonSexNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonPlaceOfBirthNavigation { get; set; }
         public virtual ICollection<PersonalInfo> PersonNationalityNavigation { get; set; }
@@ -61,10 +63,10 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<DeathEvent> DeathFacilityNavigation { get; set; }
         public virtual ICollection<DeathNotification> CauseOfDeathInfoTypeNavigation { get; set; }
         public virtual ICollection<MarriageEvent> MarriageTypeNavigation { get; set; }
-        public virtual ICollection<Payment> PaymentNavigation { get;set;}
-        public virtual ICollection<CourtCase> CourtsCaseCourtNavigation { get;set;}
+        public virtual ICollection<Payment> PaymentNavigation { get; set; }
+        public virtual ICollection<CourtCase> CourtsCaseCourtNavigation { get; set; }
 
-        
+
         // public virtual ICollection<PaymentRate> PaymentRateNationNavigation { get; set; }
         [NotMapped]
         public string? ValueLang

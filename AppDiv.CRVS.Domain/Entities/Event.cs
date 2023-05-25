@@ -1,4 +1,6 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
@@ -11,6 +13,10 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid EventOwenerId { get; set; }
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
+
+        public string EventDateEt { get; set; }
+        public string EventRegDateEt { get; set; }
+
         public Guid EventAddressId { get; set; }
         public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
@@ -32,6 +38,25 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public virtual MarriageEvent MarriageEvent { get; set; }
         public virtual ICollection<SupportingDocument> EventSupportingDocuments { get; set; }
+        [NotMapped]
+        public string? _EventDateEt
+        {
+            get { return EventDateEt; }
+            set
+            {
+                EventDateEt = value;
 
+                EventDate = new CustomDateConverter(EventDateEt).gorgorianDate;
+            }
+        }
+        [NotMapped]
+        public string? _EventRegDateEt
+        {
+            get { return _EventRegDateEt; }
+            set
+            {   EventRegDateEt = value;
+                EventRegDate = new CustomDateConverter(EventRegDateEt).gorgorianDate;
+            }
+        }
     }
 }

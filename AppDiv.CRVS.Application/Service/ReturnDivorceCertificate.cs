@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -19,7 +20,10 @@ namespace AppDiv.CRVS.Application.Service
                || divorce.Event?.EventAddressId == null) ? null :
                _DateAndAddressService.addressFormat(divorce.Event.EventAddressId);
 
+            var convertor = new CustomDateConverter();
+            var CreatedAtEt = convertor.GregorianToEthiopic(divorce.Event.CreatedAt);
 
+            (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new DivorceCertificateDTO()
             {
                 CertifcateId = divorce.Event?.CertificateId,
@@ -46,21 +50,24 @@ namespace AppDiv.CRVS.Application.Service
                 HusbandNationalityOr = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 HusbandNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
-                DivorceMonth = divorce.Event.EventDate.Month.ToString(),
-                DivorceDay = divorce.Event.EventDate.Day.ToString(),
-                DivorceYear = divorce.Event.EventDate.Year.ToString(),
+                DivorceMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.Event?.EventDateEt).month, "or").month,
+                DivorceMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.Event?.EventDateEt).month, "Am").month,
+                DivorceDay = convertor.getSplitted(divorce.Event?.EventDateEt).day.ToString(),
+                DivorceYear = convertor.getSplitted(divorce.Event?.EventDateEt).year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 DivorceAddressAm = address?.am,
                 DivorceAddressOr = address?.or,
 
-                EventRegisteredMonth = divorce.Event.EventRegDate.Month.ToString(),
-                EventRegisteredDay = divorce.Event.EventRegDate.Day.ToString(),
-                EventRegisteredYear = divorce.Event.EventRegDate.Year.ToString(),
+                EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventRegDateEt).month, "or").month,
+                EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventRegDateEt).month, "am").month,
+                EventRegisteredDay = convertor.getSplitted(divorce.Event.EventRegDateEt).day.ToString(),
+                EventRegisteredYear = convertor.getSplitted(divorce.Event.EventRegDateEt).year.ToString(),
 
-                GeneratedMonth = divorce.Event.CreatedAt.Month.ToString(),
-                GeneratedDay = divorce.Event.CreatedAt.Day.ToString(),
-                GeneratedYear = divorce.Event.CreatedAt.Year.ToString(),
+                GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
+                GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
+                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
+                GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),
 
                 CivileRegOfficerFullNameOr = divorce.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
                                            + divorce.Event.CivilRegOfficer?.MiddleName?.Value<string>("or") + " "
@@ -68,7 +75,18 @@ namespace AppDiv.CRVS.Application.Service
                 CivileRegOfficerFullNameAm = divorce.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
                                            + divorce.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + divorce.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
-
+                CountryOr = splitedAddress.or.ElementAtOrDefault(0),
+                CountryAm = splitedAddress.am.ElementAtOrDefault(0),
+                RegionOr = splitedAddress.or.ElementAtOrDefault(1),
+                RegionAm = splitedAddress.am.ElementAtOrDefault(1),
+                ZoneOr = splitedAddress.or.ElementAtOrDefault(2),
+                ZoneAm = splitedAddress.am.ElementAtOrDefault(2),
+                WoredaOr = splitedAddress.or.ElementAtOrDefault(3),
+                WoredaAm = splitedAddress.am.ElementAtOrDefault(3),
+                CityOr = splitedAddress.or.ElementAtOrDefault(4),
+                CityAm = splitedAddress.am.ElementAtOrDefault(4),
+                KebeleOr = splitedAddress.or.ElementAtOrDefault(5),
+                KebeleAm = splitedAddress.am.ElementAtOrDefault(5),
 
             };
         }

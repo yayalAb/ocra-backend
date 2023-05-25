@@ -1,8 +1,11 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Utility.Services;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+
 
 namespace AppDiv.CRVS.Domain.Entities
 {
@@ -11,8 +14,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public string FirstNameStr { get; set; }
         public string? MiddleNameStr { get; set; }
         public string? LastNameStr { get; set; }
-        public DateTime? BirthDate { get; set; }
         public string? NationalId { get; set; }
+        public DateTime? BirthDate { get; set; }
+        public string? BirthDateEt { get; set; }
         public Guid SexLookupId { get; set; }
         public Guid? PlaceOfBirthLookupId { get; set; }
         public Guid? NationalityLookupId { get; set; }
@@ -23,9 +27,18 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? MarriageStatusLookupId { get; set; }
         public Guid? BirthAddressId { get; set; }
         public Guid? ResidentAddressId { get; set; }
-
         public Guid? NationLookupId { get; set; }
         public Guid? ContactInfoId { get; set; }
+        [NotMapped]
+        public string? _BirthDateEt
+        {
+            get { return BirthDateEt; }
+            set
+            {
+                BirthDateEt = value;
+                BirthDate = new CustomDateConverter(BirthDateEt).gorgorianDate;;
+            }
+        }
         [NotMapped]
         public JObject? FirstName
         {
@@ -116,11 +129,6 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<MarriageApplication> MarriageApplicationBrideInfo { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplicationGroomInfo { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplicationCivilRegOfficer { get; set; }
-
-
-
-
-
 
     }
 }
