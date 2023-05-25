@@ -81,8 +81,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             await _dbContext.DivorceEvents
                                 .Include(m => m.CourtCase)
                                 .Include(m => m.DivorcedWife).ThenInclude(p => p.NationalityLookup)
+                                .Include(m => m.DivorcedWife).ThenInclude(p => p.BirthAddress)
                                 .Include(m => m.Event).ThenInclude(e => e.EventAddress)
                                 .Include(m => m.Event.EventOwener).ThenInclude(p => p.NationalityLookup)
+                                .Include(m => m.Event.EventOwener).ThenInclude(p => p.BirthAddress)
                                 .Include(d => d.Event).ThenInclude(e => e.CivilRegOfficer)
                                 .Where(m => m.EventId == eventId).FirstOrDefaultAsync());
             }

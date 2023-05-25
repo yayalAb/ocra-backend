@@ -11,7 +11,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public string? CertifcateId { get; set; }
         public string? RegBookNo { get; set; }
-        public string? BirthCertifcateId { get; set; }
 
         public string? ChildFirstNameOr { get; set; }
         public string? ChildFirstNameAm { get; set; }
