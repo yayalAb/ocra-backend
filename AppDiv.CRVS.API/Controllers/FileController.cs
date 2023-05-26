@@ -15,14 +15,16 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<IActionResult> Get([FromQuery] Guid id , [FromQuery]string fileType)
+        public async Task<IActionResult> Get([FromQuery] Guid id , [FromQuery]string fileType ,[FromQuery] string? eventType)
         {
-              var response = _fileService.getFile(id.ToString(),fileType);
+        
+              var response = _fileService.getFile(id.ToString(),fileType , eventType);
 
             return File(response.file,
                             "application/octet-stream"
                             , response.fileName+response.fileExtenion);
         }
 
+         
     }
 }
