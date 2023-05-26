@@ -34,10 +34,32 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .FirstOrDefaultAsync(d => d.Id == id);
         }
 
+        private PersonalInfo? UpdatePerson(PersonalInfo oldPerson)
+        {
+            if (!string.IsNullOrEmpty(oldPerson.Id.ToString()) && oldPerson.Id != Guid.Empty)
+            {
+                PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == oldPerson.Id);
+                if (selectedperson != null)
+                {
+                    selectedperson.NationalId = oldPerson?.NationalId;
+                    selectedperson.NationalityLookupId = oldPerson?.NationalityLookupId;
+                    selectedperson.ReligionLookupId = oldPerson?.ReligionLookupId;
+                    selectedperson.EducationalStatusLookupId = oldPerson?.EducationalStatusLookupId;
+                    selectedperson.TypeOfWorkLookupId = oldPerson?.TypeOfWorkLookupId;
+                    selectedperson.MarriageStatusLookupId = oldPerson?.MarriageStatusLookupId;
+                    selectedperson.NationLookupId = oldPerson?.NationLookupId;
+                }
+
+                return selectedperson;
+            }
+            return null;
+        }
+
         public async Task InsertOrUpdateAsync(BirthEvent entity, CancellationToken cancellationToken)
         {
             try
             {
+                entity.Event.EventType = "Birth";
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
                 if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
@@ -47,6 +69,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.SexLookupId = entity.Event.EventOwener.SexLookupId;
                     selectedperson.BirthDate = entity.Event?.EventOwener?.BirthDate;
                     selectedperson.NationalityLookupId = entity.Event?.EventOwener?.NationalityLookupId;
+                    selectedperson.BirthDate = entity.Event?.EventOwener?.BirthDate;
                     selectedperson.BirthAddressId = entity.Event?.EventOwener?.BirthAddressId;
 
                     _dbContext.PersonalInfos.Update(selectedperson);
@@ -56,14 +79,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 if (entity.Event.InformantType == "Police Officer" || entity.Event.InformantType == "Legal Guardian" ||
                     !string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()) && entity.Event.EventRegistrar?.RegistrarInfo?.Id != Guid.Empty)
                 {
-                    PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventRegistrar.RegistrarInfo.Id);
-                    selectedperson.NationalId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationLookupId;
+                    PersonalInfo selectedperson = this.UpdatePerson(entity.Event.EventRegistrar?.RegistrarInfo);
 
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.Event.EventRegistrar.RegistrarInfoId = entity.Event.EventRegistrar.RegistrarInfo.Id;
@@ -71,16 +87,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 }
                 if (!string.IsNullOrEmpty(entity.Father?.Id.ToString()) && entity.Father?.Id != Guid.Empty)
                 {
-                    PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Father.Id);
-                    selectedperson.NationalId = entity.Father?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Father?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Father?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Father?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Father?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Father?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Father?.NationLookupId;
-                    selectedperson.BirthDate = entity.Father?.BirthDate;
-                    selectedperson.BirthAddressId = entity.Father?.BirthAddressId;
+                    PersonalInfo selectedperson = this.UpdatePerson(entity.Father);
 
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.FatherId = entity.Father.Id;
@@ -88,16 +95,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 }
                 if (!string.IsNullOrEmpty(entity.Mother?.Id.ToString()) && entity.Mother?.Id != Guid.Empty)
                 {
-                    PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Mother.Id);
-                    selectedperson.NationalId = entity.Mother?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Mother?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Mother?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Mother?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Mother?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Mother?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Mother?.NationLookupId;
-                    selectedperson.BirthDate = entity.Father?.BirthDate;
-                    selectedperson.BirthAddressId = entity.Father?.BirthAddressId;
+                    PersonalInfo selectedperson = this.UpdatePerson(entity.Mother);
+
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.MotherId = entity.Mother.Id;
                     entity.Mother = null;

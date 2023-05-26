@@ -74,7 +74,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             try
                             {
                                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
-                                birthEvent.Event.EventType = "Birth";
 
                                 await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
