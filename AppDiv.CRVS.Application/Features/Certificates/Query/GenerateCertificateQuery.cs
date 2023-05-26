@@ -17,11 +17,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Query
 {
     public class CertificateResponseDTO
     {
+        public EventImagesDTO Images { get; set; } = null;
         public JObject Content { get; set; }
         public Guid? TemplateId { get; set; }
 
@@ -78,7 +80,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         }
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
-            // var Response = new object();
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _certificateRepository.GetContent(request.Id);
@@ -91,27 +92,20 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
             }
+            var response = new CertificateResponseDTO();
 
             if (selectedEvent.EventType == "Marriage" || content.marriage != null)
             {
                 (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage();
-                return new MarriageCertificateResponseDTO()
+                response.Images = new EventImagesDTO
                 {
-                    BrideImage = $"File?id={image.Bride}&fileType=SupportingDocuments&eventType=Marriage",
-                    GroomImage = $"File?id={image.Groom}&fileType=SupportingDocuments&eventType=Marriage",
-                    Content = certificate.Content,
-                    TemplateId = certificateTemplateId?.Id
+                    BrideImage = $"File?id={image.Bride}&amp;fileType=SupportingDocuments&amp;eventType=Marriage",
+                    GroomImage = $"File?id={image.Groom}&amp;fileType=SupportingDocuments&amp;eventType=Marriage",
                 };
             }
-            else
-            {
-                return new CertificateResponseDTO()
-                {
-                    Content = certificate.Content,
-                    TemplateId = certificateTemplateId?.Id
-                };
-            }
-            // return Response;
+            response.Content = certificate.Content;
+            response.TemplateId = certificateTemplateId?.Id;
+            return response;
         }
 
     }

@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.Application.Service
             (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new MarriageCertificateDTO()
             {
-                CertifcateId = marriage.Event.CertificateId,
+                CertifcateId = marriage.Event?.CertificateId,
                 BirthCertificateGroomId = marriage.BirthCertificateGroomId,
                 BirthCertificateBrideId = marriage.BirthCertificateBrideId,
                 RegBookNo = marriage.Event.RegBookNo,
