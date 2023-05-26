@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Domain.Entities;
+﻿using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using System.Linq.Expressions;
 
@@ -6,7 +7,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence.Base
 {
     public interface IBaseRepository<T> where T : class
     {
-
+        bool CheckForeignKey<TEntity>(Guid id) where TEntity : BaseAuditableEntity;
         void Delete(Expression<Func<T, bool>> predicate = null);
         void Delete(IEnumerable<T> entities);
         void Delete(T entity);

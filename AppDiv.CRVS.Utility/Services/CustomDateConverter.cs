@@ -267,9 +267,16 @@ namespace AppDiv.CRVS.Utility.Services
 
         public virtual string GregorianToEthiopic(DateTime gcDate)
         {
-            var date = GregorianToEthiopic(gcDate.Year, gcDate.Month, gcDate.Day);
-            var result = string.Format("{0}/{1}/{2}", date[2], date[1], date[0]);
-            return result;
+            try
+            {
+                var date = GregorianToEthiopic(gcDate.Year, gcDate.Month, gcDate.Day);
+                var result = string.Format("{0}/{1}/{2}", date[2], date[1], date[0]);
+                return result;
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
 
         public virtual int[] GregorianToEthiopic()

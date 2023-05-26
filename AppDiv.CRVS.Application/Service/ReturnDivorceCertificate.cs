@@ -19,6 +19,14 @@ namespace AppDiv.CRVS.Application.Service
             (string am, string or)? address = (divorce.Event?.EventAddressId == Guid.Empty
                || divorce.Event?.EventAddressId == null) ? null :
                _DateAndAddressService.addressFormat(divorce.Event.EventAddressId);
+            // wife birth address
+            (string am, string or)? wifeBirthAddress = (divorce.DivorcedWife?.BirthAddressId == Guid.Empty
+               || divorce.DivorcedWife?.BirthAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(divorce.DivorcedWife?.BirthAddressId);
+            // husband birth address
+            (string am, string or)? husbandBirthAddress = (divorce.Event.EventOwener?.BirthAddressId == Guid.Empty
+               || divorce.Event?.EventOwener?.BirthAddressId == null) ? null :
+               _DateAndAddressService.addressFormat(divorce.Event.EventOwener?.BirthAddressId);
 
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(divorce.Event.CreatedAt);
@@ -36,6 +44,14 @@ namespace AppDiv.CRVS.Application.Service
                 WifeMiddleNameOr = divorce.DivorcedWife.MiddleName?.Value<string>("or"),
                 WifeLastNameOr = divorce.DivorcedWife.LastName?.Value<string>("or"),
 
+                WifeBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).month, "or").month,
+                WifeBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).month, "Am").month,
+                WifeBirthDay = convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).day.ToString(),
+                WifeBirthYear = convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).year.ToString(),
+
+                WifeBirthAddressAm = wifeBirthAddress?.am,
+                WifeBirthAddressOr = wifeBirthAddress?.or,
+
                 WifeNationalityOr = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 WifeNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
 
@@ -46,6 +62,14 @@ namespace AppDiv.CRVS.Application.Service
                 HusbandFirstNameOr = divorce.Event.EventOwener?.FirstName?.Value<string>("or"),
                 HusbandMiddleNameOr = divorce.Event.EventOwener?.MiddleName?.Value<string>("or"),
                 HusbandLastNameOr = divorce.Event.EventOwener?.LastName?.Value<string>("or"),
+
+                HusbandBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).month, "or").month,
+                HusbandBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).month, "Am").month,
+                HusbandBirthDay = convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).day.ToString(),
+                HusbandBirthYear = convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).year.ToString(),
+
+                HusbandBirthAddressAm = husbandBirthAddress?.am,
+                HusbandBirthAddressOr = husbandBirthAddress?.or,
 
                 HusbandNationalityOr = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
                 HusbandNationalityAm = divorce.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("am"),
@@ -75,6 +99,7 @@ namespace AppDiv.CRVS.Application.Service
                 CivileRegOfficerFullNameAm = divorce.Event.CivilRegOfficer?.FirstName?.Value<string>("am") + " "
                                            + divorce.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + divorce.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
+
                 CountryOr = splitedAddress.or.ElementAtOrDefault(0),
                 CountryAm = splitedAddress.am.ElementAtOrDefault(0),
                 RegionOr = splitedAddress.or.ElementAtOrDefault(1),

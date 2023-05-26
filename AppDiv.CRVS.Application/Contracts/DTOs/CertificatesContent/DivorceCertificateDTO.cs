@@ -19,6 +19,14 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         public string? WifeLastNameOr { get; set; }
         public string? WifeLastNameAm { get; set; }
 
+        public string? WifeBirthMonthOr { get; set; }
+        public string? WifeBirthMonthAm { get; set; }
+        public string? WifeBirthDay { get; set; }
+        public string? WifeBirthYear { get; set; }
+
+        public string? WifeBirthAddressOr { get; set; }
+        public string? WifeBirthAddressAm { get; set; }
+
         public string? WifeNationalityOr { get; set; }
         public string? WifeNationalityAm { get; set; }
 
@@ -29,6 +37,14 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent
         public string? HusbandMiddleNameAm { get; set; }
         public string? HusbandLastNameOr { get; set; }
         public string? HusbandLastNameAm { get; set; }
+
+        public string? HusbandBirthMonthOr { get; set; }
+        public string? HusbandBirthMonthAm { get; set; }
+        public string? HusbandBirthDay { get; set; }
+        public string? HusbandBirthYear { get; set; }
+
+        public string? HusbandBirthAddressOr { get; set; }
+        public string? HusbandBirthAddressAm { get; set; }
 
         public string? HusbandNationalityOr { get; set; }
         public string? HusbandNationalityAm { get; set; }

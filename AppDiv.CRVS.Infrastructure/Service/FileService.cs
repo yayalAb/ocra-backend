@@ -60,11 +60,11 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
             try
             {
-                 if (!Directory.Exists(pathToSave))
-                    {
-                        // If folder does not exist, create it
-                        Directory.CreateDirectory(pathToSave);
-                    }
+                if (!Directory.Exists(pathToSave))
+                {
+                    // If folder does not exist, create it
+                    Directory.CreateDirectory(pathToSave);
+                }
 
                 // Convert the Base64 string to a byte array.
                 string myString = base64String.Substring(base64String.IndexOf(',') + 1);
@@ -114,10 +114,19 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
 
         }
-        public (byte[] file, string fileName, string fileExtenion) getFile(string fileId, string folder)
+        public (byte[] file, string fileName, string fileExtenion) getFile(string fileId, string folder, string? eventType)
         {
+            try
+            {
+                string folderName;
+            if (eventType != null)
+            {
+                folderName = Path.Combine("Resources", folder, eventType);
+            }
+            else{
 
-            var folderName = Path.Combine("Resources", folder);
+            folderName = Path.Combine("Resources", folder);
+            }
             var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
             var matchingFiles = Directory.GetFiles(fullPath, fileId + "*");
@@ -137,6 +146,13 @@ namespace AppDiv.CRVS.Infrastructure.Services
             ;
             return (file: fileContent, fileName: actualFileName, fileExtenion: fileExtension);
 
+            }
+            catch (System.IO.DirectoryNotFoundException e)
+            {
+                
+                throw new BadRequestException($"could not find the directory of the path specified:\n{e.Message}");
+            }
+            
         }
 
         private string? getFileExtension(byte[] bytes)
@@ -148,6 +164,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
             return format?.FileExtensions.FirstOrDefault();
 
         }
+        
 
     }
 }
