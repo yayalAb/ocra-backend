@@ -112,6 +112,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IPaymentRateRepository, PaymentRateRepository>();
             services.AddTransient<IPaymentRepository, PaymentRepository>();
             services.AddTransient<IPaymentRequestRepository, PaymentRequestRepository>();
+            services.AddTransient<ISupportingDocumentRepository, SupportingDocumentRepository>();
 
             services.AddTransient<IEventRepository, EventRepository>();
 

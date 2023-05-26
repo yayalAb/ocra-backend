@@ -1,4 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Create;
 using AppDiv.CRVS.Application.Interfaces;
@@ -52,9 +53,19 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
         private readonly ICertificateGenerator _CertificateGenerator;
         private readonly ILogger<GenerateCertificateHandler> _ILogger;
+        private readonly IFileService _fileService;
+        private readonly ISupportingDocumentRepository _supportingDocumentRepository;
 
 
-        public GenerateCertificateHandler(ILogger<GenerateCertificateHandler> ILogger, ICertificateGenerator CertificateGenerator, IBirthEventRepository IBirthEventRepository, ICertificateTemplateRepository ICertificateTemplateRepository, ICertificateRepository CertificateRepository, IMediator mediato, IEventRepository eventRepository)
+        public GenerateCertificateHandler(ILogger<GenerateCertificateHandler> ILogger,
+                                        ICertificateGenerator CertificateGenerator,
+                                        IBirthEventRepository IBirthEventRepository,
+                                        ICertificateTemplateRepository ICertificateTemplateRepository,
+                                        ICertificateRepository CertificateRepository,
+                                        IMediator mediato,
+                                        IEventRepository eventRepository,
+                                        IFileService fileService,
+                                        ISupportingDocumentRepository supportingDocumentRepository)
         {
             _certificateRepository = CertificateRepository;
             _eventRepository = eventRepository;
@@ -62,9 +73,12 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             _IBirthEventRepository = IBirthEventRepository;
             _CertificateGenerator = CertificateGenerator;
             _ILogger = ILogger;
+            _fileService = fileService;
+            _supportingDocumentRepository = supportingDocumentRepository;
         }
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
+            // var Response = new object();
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _certificateRepository.GetContent(request.Id);
@@ -77,12 +91,28 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
             }
-            var Response = new CertificateResponseDTO()
+
+            if (selectedEvent.EventType == "Marriage" || content.marriage != null)
             {
-                Content = certificate.Content,
-                TemplateId = certificateTemplateId?.Id
-            };
-            return Response;
+                (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage();
+                return new MarriageCertificateResponseDTO()
+                {
+                    BrideImage = $"File?id={image.Bride}&fileType=SupportingDocuments&eventType=Marriage",
+                    GroomImage = $"File?id={image.Groom}&fileType=SupportingDocuments&eventType=Marriage",
+                    Content = certificate.Content,
+                    TemplateId = certificateTemplateId?.Id
+                };
+            }
+            else
+            {
+                return new CertificateResponseDTO()
+                {
+                    Content = certificate.Content,
+                    TemplateId = certificateTemplateId?.Id
+                };
+            }
+            // return Response;
         }
+
     }
 }
