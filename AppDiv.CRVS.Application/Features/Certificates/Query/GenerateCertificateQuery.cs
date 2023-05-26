@@ -99,8 +99,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage();
                 response.Images = new EventImagesDTO
                 {
-                    BrideImage = $"File?id={image.Bride}&amp;fileType=SupportingDocuments&amp;eventType=Marriage",
-                    GroomImage = $"File?id={image.Groom}&amp;fileType=SupportingDocuments&amp;eventType=Marriage",
+                    BrideImage = $"File?id={image.Bride}&fileType=SupportingDocuments&eventType=Marriage",
+                    GroomImage = $"File?id={image.Groom}&fileType=SupportingDocuments&eventType=Marriage",
                 };
             }
             response.Content = certificate.Content;
