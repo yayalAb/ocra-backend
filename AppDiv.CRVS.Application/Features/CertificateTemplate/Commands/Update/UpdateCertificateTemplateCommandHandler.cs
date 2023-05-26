@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
         private readonly ILogger<UpdateCertificateTemplateCommandHandler> _logger;
         private readonly IFileService _fileService;
 
-        public UpdateCertificateTemplateCommandHandler(ICertificateTemplateRepository certificateTemplateRepository, ILogger<UpdateCertificateTemplateCommandHandler> logger , IFileService fileService)
+        public UpdateCertificateTemplateCommandHandler(ICertificateTemplateRepository certificateTemplateRepository, ILogger<UpdateCertificateTemplateCommandHandler> logger, IFileService fileService)
         {
             _certificateTemplateRepository = certificateTemplateRepository;
             _logger = logger;
@@ -26,10 +26,12 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
             try
             {
                 var certificate = await _certificateTemplateRepository.GetAsync(request.Id);
-                if(certificate == null){
+                if (certificate == null)
+                {
                     throw new NotFoundException($"certificateTemplate with id {request.Id} is not found");
                 }
-                await _certificateTemplateRepository.UpdateAsync(certificate,  x => x.Id);
+                certificate.ModifiedAt = DateTime.Now;
+                await _certificateTemplateRepository.UpdateAsync(certificate, x => x.Id);
                 await _certificateTemplateRepository.SaveChangesAsync(cancellationToken);
                 var file = request.SvgFile;
                 var folderName = Path.Combine("Resources", "CertificateTemplates");
@@ -38,13 +40,12 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update
                 var fileExtension = Path.GetExtension(file.FileName);
                 var fileName = $"{request.Id}{fileExtension}";
 
-                _fileService.UploadFormFile(file,fileName,pathToSave,FileMode.Create);
+                _fileService.UploadFormFile(file, fileName, pathToSave, FileMode.Create);
 
-                return new UpdateCertificateTemplateResponse{
+                return new UpdateCertificateTemplateResponse
+                {
                     Message = "certificate template updated successfully"
                 };
-
-
 
             }
             catch (System.Exception)
