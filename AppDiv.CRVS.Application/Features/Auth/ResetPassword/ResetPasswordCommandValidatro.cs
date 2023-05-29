@@ -1,31 +1,26 @@
-﻿using System.Text.RegularExpressions;
+using System.Text.RegularExpressions;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Features.Auth.ResetPassword;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using FluentValidation;
 
-namespace AppDiv.CRVS.Application.Features.Auth.ChangePassword
+namespace AppDiv.CRVS.Application.Features.Auth.ResetPassword
 {
-    internal class ChangePasswordCommandValidator : AbstractValidator<ChangePasswordCommand>
+    internal class ResetPasswordCommandValidator : AbstractValidator<ResetPasswordCommand>
     {
         private readonly ISettingRepository _settingRepository;
 
-        public ChangePasswordCommandValidator(ISettingRepository settingRepository)
+        public ResetPasswordCommandValidator(ISettingRepository settingRepository)
         {
             _settingRepository = settingRepository;
-            RuleFor(u => u.UserName)
-                .NotEmpty()
-                .NotNull();
-
-            RuleFor(u => u.NewPassword)
-             .NotEmpty()
-             .NotNull();
-            RuleFor(u => u.OldPassword)
-             .NotEmpty()
-             .NotNull();
-            RuleFor(u => u.NewPassword)
+            RuleFor(u => u.resetPassword.UserName)
+            .NotEmpty()
+            .NotNull();
+           
+            RuleFor(u => u.resetPassword.Password)
               .NotNull()
               .NotEmpty()
-              .Must(BeValid).WithMessage("invalid password: \n password does not satisfy password policy set in setting")
+              .Must(BeValid).WithMessage("invalid password")
             //   .Matches("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{6,}$").WithMessage("password must be atleast 6 digit long and must contain atlist one number one number and 1 special character")
               ;
         }

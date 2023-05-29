@@ -53,7 +53,10 @@ public enum Page{
    MarriageApplication,
    AdministrativeLevelLookup,
    DuringDeath,
-   CauseOfDeath
+   CauseOfDeath,
+   AreaTypeLookup,
+   MartialStatusFemaleLookup,
+   MartialStatusMaleLookup
 
 
 }
