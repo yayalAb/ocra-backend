@@ -30,12 +30,12 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
             if (request.IsRegion)
             {
                 parentID = _AddresslookupRepository.GetAll()
-                          .Where(x => x.Defualt == true && x.ParentAddressId == null).FirstOrDefault().Id;
+                          .Where(x => x.IsDefault == true && x.ParentAddressId == null).FirstOrDefault().Id;
             }
             else
             {
                 parentID = _AddresslookupRepository.GetAll()
-                        .Where(x => x.Defualt == true && x.ParentAddressId != null).FirstOrDefault().Id;
+                        .Where(x => x.IsDefault == true && x.ParentAddressId != null).FirstOrDefault().Id;
             }
 
             var selectedAddress = _AddresslookupRepository.GetAll().
