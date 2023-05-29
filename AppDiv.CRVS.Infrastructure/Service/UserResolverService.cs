@@ -1,24 +1,25 @@
 ﻿
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 // using AppDiv.CRVS.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Infrastructure.Services
 {
-    public class UserResolverService : IUserResolverService 
-    
+    public class UserResolverService : IUserResolverService
+
     {
         private readonly IHttpContextAccessor httpContext;
         private readonly ILogger<UserResolverService> _logger;
+
+
         public UserResolverService(IHttpContextAccessor httpContext, ILogger<UserResolverService> logger)
         {
             this.httpContext = httpContext;
             _logger = logger;
-
-           
-
         }
 
         public string GetUserEmail()
