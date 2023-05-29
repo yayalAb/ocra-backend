@@ -26,9 +26,6 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Create
             // .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
             RuleFor(p => p.PaymentRate.EventLookupId)
                 .Must(x => x != Guid.Empty).WithMessage("Event must not be empty.");
-
-            RuleFor(p => p.PaymentRate.AddressId)
-                .Must(x => x != Guid.Empty).WithMessage("Address must not be empty.");
             RuleFor(pr => pr.PaymentRate.Amount)
                 .NotEmpty().WithMessage("{PropertyName} is required.")
                 .NotNull();

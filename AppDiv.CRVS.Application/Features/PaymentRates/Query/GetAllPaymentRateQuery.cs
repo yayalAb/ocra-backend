@@ -50,8 +50,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
                                     PaymentType = pr.PaymentTypeLookup.ValueLang != null ? pr.PaymentTypeLookup.ValueLang : "",
                                     EventId = pr.EventLookupId,
                                     Event = pr.EventLookup.ValueLang != null ? pr.EventLookup.ValueLang : "",
-                                    AddressId = pr.AddressId,
-                                    Address = pr.Address.AddressNameLang != null ? pr.Address.AddressNameLang : "",
+                                    IsForeign = pr.IsForeign,
                                     Amount = pr.Amount,
                                     Status = pr.Status
                                     // Description = g.Description.Value<string>("eng")

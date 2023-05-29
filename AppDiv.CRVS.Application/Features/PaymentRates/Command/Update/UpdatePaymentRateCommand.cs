@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Update
         public Guid Id { get; set; }
         public Guid PaymentTypeLookupId { get; set; }
         public Guid EventLookupId { get; set; }
-        public Guid AddressId { get; set; }
+        public bool IsForeign { get; set; }
         public float Amount { get; set; }
         public bool Status { get; set; }
     }
@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Update
                 Id = request.Id,
                 PaymentTypeLookupId = request.PaymentTypeLookupId,
                 EventLookupId = request.EventLookupId,
-                AddressId = request.AddressId,
+                IsForeign = request.IsForeign,
                 Amount = request.Amount,
                 Status = request.Status,
                 ModifiedAt = DateTime.Now

@@ -30,8 +30,8 @@ namespace AppDiv.CRVS.Application.Service
                 .Where(p => EF.Functions.Like(p.EventLookup.ValueStr.ToLower(), $"%{eventType}%"))
                 .Where(p => EF.Functions.Like(p.PaymentTypeLookup.ValueStr.ToLower(), $"%{paymentType}%"))
                 .FirstOrDefaultAsync();
-                // 
-                //  throw new NotFoundException("payment rate not found");
+            // 
+            //  throw new NotFoundException("payment rate not found");
             if (paymentRate == null)
             {
                 throw new NotFoundException("payment rate not found");

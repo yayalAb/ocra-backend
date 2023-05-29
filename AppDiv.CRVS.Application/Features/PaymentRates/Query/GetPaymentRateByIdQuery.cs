@@ -34,13 +34,10 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         }
         public async Task<PaymentRateDTO> Handle(GetPaymentRateByIdQuery request, CancellationToken cancellationToken)
         {
-            // var customers = await _mediator.Send(new GetAllCustomerQuery());
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {
                                                     { "PaymentTypeLookup", NavigationPropertyType.REFERENCE },
-                                                    { "EventLookup", NavigationPropertyType.REFERENCE },
-                                                    { "Address", NavigationPropertyType.REFERENCE }
-
+                                                    { "EventLookup", NavigationPropertyType.REFERENCE }
                                                 };
             var selectedPaymentRate = await _paymentRateRepository.GetWithAsync(request.Id, explicitLoadedProperties);
             return CustomMapper.Mapper.Map<PaymentRateDTO>(selectedPaymentRate);

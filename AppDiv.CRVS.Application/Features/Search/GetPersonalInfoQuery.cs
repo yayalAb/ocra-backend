@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Application.Features.Search
     public class GetPersonalInfoQuery : IRequest<object>
     {
         public string SearchString { get; set; }
+        public string gender { get; set; }
+        public int age { get; set; }
 
     }
 
@@ -32,7 +34,8 @@ namespace AppDiv.CRVS.Application.Features.Search
                                             || EF.Functions.Like(model.SexLookup.ValueStr, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.TypeOfWorkLookup.ValueStr, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.TitleLookup.ValueStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.MarraigeStatusLookup.ValueStr, $"%{request.SearchString}%"))
+                                            || EF.Functions.Like(model.MarraigeStatusLookup.ValueStr, $"%{request.SearchString}%")
+                                            && ((EF.Functions.Like(model.SexLookup.ValueStr, $"%{request.gender}%"))))
                                                     .Select(an => new PersonalInfoSearchDTO
                                                     {
                                                         Id = an.Id,

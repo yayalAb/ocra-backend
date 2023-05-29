@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string FirstNameStr { get; set; }
         public string? MiddleNameStr { get; set; }
         public string? LastNameStr { get; set; }
+        public string? PhoneNumber { get; set; }
         public string? NationalId { get; set; }
         public DateTime? BirthDate { get; set; }
         public string? BirthDateEt { get; set; }
@@ -36,7 +37,7 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 BirthDateEt = value;
-                BirthDate = new CustomDateConverter(BirthDateEt).gorgorianDate;;
+                BirthDate = new CustomDateConverter(BirthDateEt).gorgorianDate; ;
             }
         }
         [NotMapped]

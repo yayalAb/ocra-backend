@@ -12,8 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid PaymentTypeId { get; set; }
         public string Event { get; set; }
         public Guid EventId { get; set; }
-        public string Address { get; set; }
-        public Guid AddressId { get; set; }
+        public bool IsForeign { get; set; }
         public float Amount { get; set; }
         public bool Status { get; set; }
 

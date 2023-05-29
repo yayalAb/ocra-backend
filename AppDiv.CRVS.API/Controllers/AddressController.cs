@@ -12,6 +12,7 @@ using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -112,6 +113,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(new GetAddressByParntId { Id = parentId });
         }
 
+        [HttpGet]
+        [Route("DefualtAddress")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<AddressForLookupDTO>> DefualtAddress([FromQuery] bool IsRegion)
+        {
+            return await _mediator.Send(new DefualtAddressQuery { IsRegion = IsRegion });
+        }
         [HttpGet]
         [Route("administrativeLavel")]
         [ProducesResponseType(StatusCodes.Status200OK)]

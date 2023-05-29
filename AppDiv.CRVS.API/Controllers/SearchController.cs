@@ -23,9 +23,9 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("SearchPersonalInfo")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> SearchPersonalInfo([FromQuery] string SearchString)
+        public async Task<object> SearchPersonalInfo([FromQuery] string SearchString, string gender, int age)
         {
-            return await _mediator.Send(new GetPersonalInfoQuery { SearchString = SearchString });
+            return await _mediator.Send(new GetPersonalInfoQuery { SearchString = SearchString, gender = gender, age = age });
         }
 
         [HttpGet]
@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("SearchPaymentExamptionRequest")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> searchPaymentExamptionRequest([FromQuery]  GetPaymentExamptionRequestQuery query)
+        public async Task<object> searchPaymentExamptionRequest([FromQuery] GetPaymentExamptionRequestQuery query)
         {
             return await _mediator.Send(query);
         }
