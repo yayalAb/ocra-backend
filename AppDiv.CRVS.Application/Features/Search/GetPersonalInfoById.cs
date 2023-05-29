@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.Search
                 FirstName = an.FirstName,
                 MiddleName = an.MiddleName,
                 LastName = an.LastName,
-                BirthDate = an.BirthDate,
+                BirthDateEt = an.BirthDateEt,
                 NationalId = an.NationalId,
                 SexLookupId = an.SexLookupId,
                 PlaceOfBirthLookupId = an.PlaceOfBirthLookupId,
