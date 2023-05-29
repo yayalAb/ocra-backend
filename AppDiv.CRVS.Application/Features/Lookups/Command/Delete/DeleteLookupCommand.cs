@@ -1,4 +1,5 @@
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
@@ -33,6 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
 
         public async Task<BaseResponse> Handle(DeleteLookupCommand request, CancellationToken cancellationToken)
         {
+            var response = new BaseResponse();
             try
             {
                 // _Ilog.lo
@@ -40,20 +42,15 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
 
                 await _lookupRepository.DeleteAsync(request.Id);
                 await _lookupRepository.SaveChangesAsync(cancellationToken);
+
+                response.Deleted("Lookup");
             }
-            catch (Exception exp)
+            catch (Exception e)
             {
-                throw (new ApplicationException(exp.Message));
+                response.BadRequest("Cannot delete the specified lookup because it is being used.");
             }
 
-            var res = new BaseResponse
-            {
-                Success = true,
-                Message = "Lookup information has been deleted!"
-            };
-
-
-            return res;
+            return response;
         }
     }
 }

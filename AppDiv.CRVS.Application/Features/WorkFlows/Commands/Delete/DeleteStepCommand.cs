@@ -34,25 +34,21 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
 
         public async Task<BaseResponse> Handle(DeleteStepCommand request, CancellationToken cancellationToken)
         {
+            var res = new BaseResponse();
             try
             {
                 var workFlowEntity = await _stepRepository.GetAsync(request.Id);
                 // if(workFlowEntity.workflow.Id)
                 await _stepRepository.DeleteAsync(request.Id);
                 await _stepRepository.SaveChangesAsync(cancellationToken);
+                res.Deleted("Step");
 
             }
             catch (Exception exp)
             {
-                throw (new ApplicationException(exp.Message));
+                res.BadRequest("Unble to delete the specified step");
+                // throw (new ApplicationException(exp.Message));
             }
-            var res = new BaseResponse
-            {
-                Success = true,
-                Message = "Step information has been deleted!"
-            };
-
-
             return res;
         }
     }

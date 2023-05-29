@@ -7,6 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class DeadPersonalInfoDTO : PersonInfoDTO
     {
+        public Guid SexLookupId { get; set; }
         public string BirthDateEt { get; set; }
         public Guid ResidentAddressId { get; set; }
         public Guid TitleLookupId { get; set; }

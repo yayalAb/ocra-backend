@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             {
                                 request.DeathEvent.DuringDeath = request.DeathEvent.DuringDeath == "" ? "Null" : request.DeathEvent.DuringDeath;
                                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
-                                deathEvent.Event.EventType = "Death";
+
 
                                 await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);

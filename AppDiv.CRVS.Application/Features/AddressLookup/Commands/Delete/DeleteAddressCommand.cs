@@ -28,24 +28,21 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
 
         public async Task<BaseResponse> Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
         {
+            var response = new BaseResponse();
             try
             {
                 var addressEntity = await _addressRepository.GetByIdAsync(request.Id);
                 await _addressRepository.DeleteAsync(request.Id);
                 await _addressRepository.SaveChangesAsync(cancellationToken);
+
+                response.Deleted("Address");
+
             }
             catch (Exception exp)
             {
-                throw (new ApplicationException(exp.Message));
+                response.BadRequest("Unable to delete the specified address.");
             }
-            var res = new BaseResponse
-            {
-                Success = true,
-                Message = "Address information has been deleted!"
-            };
-
-
-            return res;
+            return response;
         }
     }
 }

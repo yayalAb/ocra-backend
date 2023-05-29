@@ -79,10 +79,23 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                             try
                             {
                                 request.Adoption.Event.EventType = "Adoption";
+                                request.Adoption.AdoptiveFather.SexLookupId = _LookupsRepo.GetAll().Where(l => l.Key == "sex")
+                                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                                        || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                                        || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                                    .Select(l => l.Id).FirstOrDefault();
+
+                                request.Adoption.AdoptiveMother.SexLookupId = _LookupsRepo.GetAll().Where(l => l.Key == "sex")
+                                                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                                                        .Select(l => l.Id).FirstOrDefault();
+
                                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
                                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
+                                    selectedperson.SexLookupId = adoptionEvent.AdoptiveFather.SexLookupId;
                                     selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
                                     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
@@ -97,8 +110,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 }
                                 if (adoptionEvent.AdoptiveMother?.Id != null && adoptionEvent.AdoptiveMother?.Id != Guid.Empty)
                                 {
-
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
+                                    selectedperson.SexLookupId = adoptionEvent.AdoptiveMother.SexLookupId;
                                     selectedperson.NationalId = adoptionEvent.AdoptiveMother?.NationalId;
                                     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveMother?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveMother?.ReligionLookupId;

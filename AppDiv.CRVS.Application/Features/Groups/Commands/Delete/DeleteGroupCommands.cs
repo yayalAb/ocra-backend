@@ -29,22 +29,20 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
 
         public async Task<BaseResponse> Handle(DeleteGroupCommands request, CancellationToken cancellationToken)
         {
+            var res = new BaseResponse();
             try
             {
                 var groupEntity = await _groupRepository.GetAsync(request.Id);
 
                 await _groupRepository.DeleteAsync(request.Id);
                 await _groupRepository.SaveChangesAsync(cancellationToken);
+                res.Deleted("Group");
             }
             catch (Exception exp)
             {
+                res.BadRequest("Unable to delete the specified group.");
                 throw (new ApplicationException(exp.Message));
             }
-            var res = new BaseResponse
-            {
-                Success = true,
-                Message = "Group  information has been deleted!"
-            };
             return res;
         }
     }

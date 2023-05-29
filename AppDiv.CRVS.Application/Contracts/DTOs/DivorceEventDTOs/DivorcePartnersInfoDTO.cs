@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public JObject MiddleName { get; set; }
         public JObject LastName { get; set; }
         public string NationalId { get; set; }
-        public Guid SexLookupId { get; set; }
+        // public Guid SexLookupId { get; set; }
         public Guid BirthAddressId { get; set; }
         public Guid NationalityLookupId { get; set; }
         public Guid ReligionLookupId { get; set; }
@@ -19,5 +19,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid MarriageStatusLookupId { get; set; }
         public Guid ResidentAddressId { get; set; }
         public Guid NationLookupId { get; set; }
+        public string? PhoneNumber { get; set; }
     }
 }

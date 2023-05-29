@@ -28,21 +28,18 @@ namespace AppDiv.CRVS.Application.Features.Courts.Commmands.Delete
 
         public async Task<BaseResponse> Handle(DeleteCourtCommand request, CancellationToken cancellationToken)
         {
+            var res = new BaseResponse();
             try
             {
                 var courtEntity = await _courtRepository.GetByIdAsync(request.Id);
                 await _courtRepository.DeleteAsync(request.Id);
                 await _courtRepository.SaveChangesAsync(cancellationToken);
+                res.Deleted("Court");
             }
             catch (Exception exp)
             {
-                throw (new ApplicationException(exp.Message));
+                res.BadRequest("Unable to delete the specified court");
             }
-            var res = new BaseResponse
-            {
-                Success = true,
-                Message = "Court information has been deleted!"
-            };
             return res;
         }
     }

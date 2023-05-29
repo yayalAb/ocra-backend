@@ -106,8 +106,19 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken)
         {
+            entity.BrideInfo.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                        .Select(l => l.Id).FirstOrDefault();
+            entity.Event.EventOwener.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+                                                .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                .Select(l => l.Id).FirstOrDefault();
             if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
+
                 //find and update existing personalInfo
                 var keyValuePair = new Dictionary<string, object>{
                     {"SexLookupId" ,entity.Event.EventOwener.SexLookupId},
@@ -124,6 +135,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
             if (entity.BrideInfo.Id != null && entity.BrideInfo.Id != Guid.Empty)
             {
+
                 var keyValuePair = new Dictionary<string, object>{
                     {"NationalId",entity.BrideInfo.NationalId},
                     {"SexLookupId",entity.BrideInfo.SexLookupId},
