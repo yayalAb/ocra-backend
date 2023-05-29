@@ -37,23 +37,21 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
 
         public async Task<BaseResponse> Handle(DeleteWorkFlowCommad request, CancellationToken cancellationToken)
         {
+            var res = new BaseResponse();
             try
             {
                 var workFlowEntity = await _workflowRepository.GetByIdAsync(request.Id);
 
                 await _workflowRepository.DeleteAsync(request.Id);
                 await _workflowRepository.SaveChangesAsync(cancellationToken);
+                res.Deleted("Workflow");
 
             }
             catch (Exception exp)
             {
-                throw (new ApplicationException(exp.Message));
+                res.BadRequest("Unable to delete the specified workflow");
+                // throw (new ApplicationException(exp.Message));
             }
-            var res = new BaseResponse
-            {
-                Success = true,
-                Message = "Step information has been deleted!"
-            };
 
             return res;
         }

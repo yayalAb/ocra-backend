@@ -33,5 +33,20 @@ namespace AppDiv.CRVS.Application.Common
         public string Message { get; set; }
         public int Status { get; set; } = 200;
         public List<string> ValidationErrors { get; set; }
+
+        public void BadRequest(string message = null)
+        {
+            this.Success = false;
+            this.Status = 400;
+            this.Message = message;
+        }
+
+        public void Deleted(string entityName = null)
+        {
+            this.Success = true;
+            this.Status = 200;
+            this.Message = $"{entityName} information has been deleted!";
+        }
+
     }
 }
