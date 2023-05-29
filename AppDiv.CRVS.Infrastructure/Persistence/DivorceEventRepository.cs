@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
@@ -27,10 +28,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 throw new NotFoundException($"divorce event with the provided id is not found");
             }
+            Guid male = dbContext.Lookups.Where(l => l.Key == "sex")
+                                                .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                .Select(l => l.Id).FirstOrDefault();
 
             var eventOwnerFeilds = new Dictionary<string, object>{
                     {"NationalId",DivorceEvent.Event.EventOwener.NationalId},
-                    {"SexLookupId",DivorceEvent.Event.EventOwener.SexLookupId},
+                    {"SexLookupId",male},
                     {"ReligionLookupId",DivorceEvent.Event.EventOwener.ReligionLookupId},
                     {"EducationalStatusLookupId",DivorceEvent.Event.EventOwener.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId",DivorceEvent.Event.EventOwener.TypeOfWorkLookupId},
@@ -43,9 +49,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 throw new NotFoundException($"divorce event owner info with the provided id is not found");
             }
+            Guid female = dbContext.Lookups.Where(l => l.Key == "sex")
+                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                        .Select(l => l.Id).FirstOrDefault();
              var divorcedWifeFeilds = new Dictionary<string, object>{
                     {"NationalId",DivorceEvent.DivorcedWife.NationalId},
-                    {"SexLookupId",DivorceEvent.DivorcedWife.SexLookupId},
+                    {"SexLookupId",female},
                     {"ReligionLookupId",DivorceEvent.DivorcedWife.ReligionLookupId},
                     {"EducationalStatusLookupId",DivorceEvent.DivorcedWife.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId",DivorceEvent.DivorcedWife.TypeOfWorkLookupId},
@@ -61,6 +72,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task InsertOrUpdateAsync(DivorceEvent entity, CancellationToken cancellationToken)
         {
+            entity.Event.EventOwener.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+                                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                            || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                            || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                        .Select(l => l.Id).FirstOrDefault();
+            entity.DivorcedWife.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                                        || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                                        || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                                    .Select(l => l.Id).FirstOrDefault();
             if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
                 var keyValuePair = new Dictionary<string, object>{

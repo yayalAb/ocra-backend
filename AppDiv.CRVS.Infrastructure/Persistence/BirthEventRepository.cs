@@ -62,6 +62,17 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 entity.Event.EventType = "Birth";
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
+                entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
+                                                .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                .Select(l => l.Id).FirstOrDefault();
+                entity.Mother.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
+                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                        .Select(l => l.Id).FirstOrDefault();
+
                 if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 {
                     PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
@@ -87,16 +98,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 }
                 if (!string.IsNullOrEmpty(entity.Father?.Id.ToString()) && entity.Father?.Id != Guid.Empty)
                 {
-                    PersonalInfo selectedperson = this.UpdatePerson(entity.Father);
 
+                    PersonalInfo selectedperson = this.UpdatePerson(entity.Father);
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.FatherId = entity.Father.Id;
                     entity.Father = null;
                 }
                 if (!string.IsNullOrEmpty(entity.Mother?.Id.ToString()) && entity.Mother?.Id != Guid.Empty)
                 {
-                    PersonalInfo selectedperson = this.UpdatePerson(entity.Mother);
 
+                    PersonalInfo selectedperson = this.UpdatePerson(entity.Mother);
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.MotherId = entity.Mother.Id;
                     entity.Mother = null;

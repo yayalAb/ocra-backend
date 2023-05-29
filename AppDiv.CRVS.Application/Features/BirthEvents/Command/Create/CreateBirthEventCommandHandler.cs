@@ -8,6 +8,7 @@ using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationExcep
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
@@ -21,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IPersonalInfoRepository _person;
         private readonly IPaymentExamptionRequestRepository _paymentExamption;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly ILogger<CreateBirthEventCommandHandler> _logger;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventDocumentService eventDocumentService,
@@ -28,7 +30,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                               IAddressLookupRepository addressRepository,
                                               IPersonalInfoRepository person,
                                               IPaymentExamptionRequestRepository paymentExamption,
-                                              IEventPaymentRequestService paymentRequestService)
+                                              IEventPaymentRequestService paymentRequestService,
+                                              ILogger<CreateBirthEventCommandHandler> logger)
         {
             this._eventDocumentService = eventDocumentService;
             this._birthEventRepository = birthEventRepository;
@@ -37,6 +40,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             this._person = person;
             this._paymentExamption = paymentExamption;
             this._paymentRequestService = paymentRequestService;
+            this._logger = logger;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -50,8 +54,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                     try
 
                     {
-                        // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request.customer);           
-
                         var createBirthEventCommandResponse = new CreateBirthEventCommandResponse();
 
                         var validator = new CreateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), request);
