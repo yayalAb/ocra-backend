@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? ResidentAddressId { get; set; }
         public Guid? NationLookupId { get; set; }
         public Guid? ContactInfoId { get; set; }
+        public string? PhoneNumber { get; set; }
         [NotMapped]
         public string? _BirthDateEt
         {
