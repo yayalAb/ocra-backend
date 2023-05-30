@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Service
             var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
 
 
-            eventDocs.ToList().ForEach(doc =>
+            eventDocs?.ToList().ForEach(doc =>
             {
                 _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
             });
