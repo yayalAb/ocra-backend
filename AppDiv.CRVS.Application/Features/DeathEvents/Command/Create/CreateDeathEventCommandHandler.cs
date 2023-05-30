@@ -82,7 +82,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Death");
                                 if (!deathEvent.Event.IsExampted)
                                 {
-                                    await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event.Id, cancellationToken);
+                                    await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, cancellationToken);
                                 }
                             }
                             catch (System.Exception ex)

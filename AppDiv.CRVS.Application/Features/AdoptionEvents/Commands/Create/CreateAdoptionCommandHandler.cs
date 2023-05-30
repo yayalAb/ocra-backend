@@ -154,7 +154,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 if (!adoptionEvent.Event.IsExampted)
                                 {
 
-                                    await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event.Id, cancellationToken);
+                                    await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, cancellationToken);
                                 }
                                 await transaction.CommitAsync();
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse

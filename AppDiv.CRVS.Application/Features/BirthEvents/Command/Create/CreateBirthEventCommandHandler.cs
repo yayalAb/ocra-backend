@@ -86,7 +86,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
                                 if (!birthEvent.Event.IsExampted)
                                 {
-                                    await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event.Id, cancellationToken);
+                                    await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, cancellationToken);
                                 }
 
                             }

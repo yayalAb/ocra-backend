@@ -73,7 +73,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             if (!divorceEvent.Event.IsExampted)
                             {
 
-                                await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event.Id, cancellationToken);
+                                await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, cancellationToken);
                             }
                             createDivorceEventCommandResponse.Message = "Divorce event created successfully";
                             await transaction.CommitAsync();

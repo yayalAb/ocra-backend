@@ -91,7 +91,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             if (!marriageEvent.Event.IsExampted)
                             {
 
-                                await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event.Id, cancellationToken);
+                                await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, cancellationToken);
                             }
 
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
