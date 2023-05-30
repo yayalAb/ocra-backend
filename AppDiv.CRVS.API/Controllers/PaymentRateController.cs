@@ -71,9 +71,11 @@ namespace AppDiv.CRVS.API.Controllers
         {
             try
             {
-                string result = string.Empty;
-                result = await Mediator.Send(new DeletePaymentRateCommand(id));
-                return Ok(result);
+                var result = await Mediator.Send(new DeletePaymentRateCommand(id));
+                if (result.Success)
+                    return Ok(result);
+                else
+                    return BadRequest(result);
             }
             catch (Exception exp)
             {
