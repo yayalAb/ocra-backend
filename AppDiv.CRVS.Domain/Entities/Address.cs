@@ -11,7 +11,6 @@ namespace AppDiv.CRVS.Domain.Entities
         public string AddressNameStr { get; set; }
         public string StatisticCode { get; set; }
         public string Code { get; set; }
-        public bool? IsDefault { get; set; } = false;
         public int AdminLevel { get; set; } = 1;
         public Guid? AdminTypeLookupId { get; set; }
         public Guid? AreaTypeLookupId { get; set; }

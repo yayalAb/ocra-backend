@@ -1,3 +1,4 @@
+using System;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
@@ -11,7 +12,7 @@ namespace AppDiv.CRVS.Application.Features.Search
     public class GetPersonalInfoQuery : IRequest<object>
     {
         public string SearchString { get; set; }
-        public string gender { get; set; }
+        public string? gender { get; set; }
         public int age { get; set; }
 
     }
@@ -27,28 +28,50 @@ namespace AppDiv.CRVS.Application.Features.Search
         public async Task<object> Handle(GetPersonalInfoQuery request, CancellationToken cancellationToken)
         {
             var SelectedInfo = _PersonaInfoRepository.GetAll().Where(model =>
-                                                EF.Functions.Like(model.FirstNameStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.MiddleNameStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.LastNameStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.NationalId, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.SexLookup.ValueStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.TypeOfWorkLookup.ValueStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.TitleLookup.ValueStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.MarraigeStatusLookup.ValueStr, $"%{request.SearchString}%")
-                                            && ((EF.Functions.Like(model.SexLookup.ValueStr, $"%{request.gender}%"))))
-                                                    .Select(an => new PersonalInfoSearchDTO
-                                                    {
-                                                        Id = an.Id,
-                                                        FirstName = an.FirstNameLang,
-                                                        MiddleName = an.MiddleNameLang,
-                                                        LastName = an.LastNameLang,
-                                                        NationalId = an.NationalId,
-                                                        NationalityLookup = string.IsNullOrEmpty(an.NationalityLookup.ValueLang) ? null : an.NationalityLookup.ValueLang,
-                                                        TitleLookup = string.IsNullOrEmpty(an.TitleLookup.ValueLang) ? null : an.TitleLookup.ValueLang,
-                                                        TypeOfWorkLookup = string.IsNullOrEmpty(an.TypeOfWorkLookup.ValueLang) ? null : an.TypeOfWorkLookup.ValueLang
-                                                    }).Take(50);
-
-            return SelectedInfo;
+                                               EF.Functions.Like(model.FirstNameStr, $"%{request.SearchString}%")
+                                           || EF.Functions.Like(model.MiddleNameStr, $"%{request.SearchString}%")
+                                           || EF.Functions.Like(model.LastNameStr, $"%{request.SearchString}%")
+                                           || EF.Functions.Like(model.NationalId, $"%{request.SearchString}%")
+                                           || EF.Functions.Like(model.SexLookup.ValueStr, $"%{request.SearchString}%")
+                                           || EF.Functions.Like(model.TypeOfWorkLookup.ValueStr, $"%{request.SearchString}%")
+                                           || EF.Functions.Like(model.TitleLookup.ValueStr, $"%{request.SearchString}%")
+                                           || EF.Functions.Like(model.MarraigeStatusLookup.ValueStr, $"%{request.SearchString}%"));
+            if (request.gender == null || request.age == null)
+            {
+                return SelectedInfo.Select(an => new PersonalInfoSearchDTO
+                {
+                    Id = an.Id,
+                    FirstName = an.FirstNameLang,
+                    MiddleName = an.MiddleNameLang,
+                    LastName = an.LastNameLang,
+                    NationalId = an.NationalId,
+                    BirthDateEt = an.BirthDateEt,
+                    Gender = string.IsNullOrEmpty(an.SexLookup.ValueLang) ? null : an.SexLookup.ValueLang,
+                    Address = string.IsNullOrEmpty(an.BirthAddress.AddressNameLang) ? null : an.BirthAddress.AddressNameLang,
+                    NationalityLookup = string.IsNullOrEmpty(an.NationalityLookup.ValueLang) ? null : an.NationalityLookup.ValueLang,
+                    TitleLookup = string.IsNullOrEmpty(an.TitleLookup.ValueLang) ? null : an.TitleLookup.ValueLang,
+                    TypeOfWorkLookup = string.IsNullOrEmpty(an.TypeOfWorkLookup.ValueLang) ? null : an.TypeOfWorkLookup.ValueLang
+                }).Take(50);
+            }
+            else
+            {
+                return SelectedInfo.Where(model => EF.Functions.Like(model.SexLookup.ValueStr, $"%{request.gender}%")
+                && (model.BirthDate.HasValue ? model.BirthDate.Value : default(DateTime)) <= DateTime.Now.AddYears(-request.age))
+                .Select(an => new PersonalInfoSearchDTO
+                {
+                    Id = an.Id,
+                    FirstName = an.FirstNameLang,
+                    MiddleName = an.MiddleNameLang,
+                    LastName = an.LastNameLang,
+                    NationalId = an.NationalId,
+                    BirthDateEt = an.BirthDateEt,
+                    Gender = string.IsNullOrEmpty(an.SexLookup.ValueLang) ? null : an.SexLookup.ValueLang,
+                    Address = string.IsNullOrEmpty(an.BirthAddress.AddressNameLang) ? null : an.BirthAddress.AddressNameLang,
+                    NationalityLookup = string.IsNullOrEmpty(an.NationalityLookup.ValueLang) ? null : an.NationalityLookup.ValueLang,
+                    TitleLookup = string.IsNullOrEmpty(an.TitleLookup.ValueLang) ? null : an.TitleLookup.ValueLang,
+                    TypeOfWorkLookup = string.IsNullOrEmpty(an.TypeOfWorkLookup.ValueLang) ? null : an.TypeOfWorkLookup.ValueLang
+                }).Take(50);
+            }
         }
     }
 }
