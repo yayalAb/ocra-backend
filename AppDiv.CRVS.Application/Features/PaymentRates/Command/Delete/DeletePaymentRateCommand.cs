@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
+﻿using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
 {
     // Customer create command with string response
-    public class DeletePaymentRateCommand : IRequest<String>
+    public class DeletePaymentRateCommand : IRequest<BaseResponse>
     {
         public Guid Id { get; private set; }
 
@@ -21,7 +22,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
     }
 
     // Customer delete command handler with string response as output
-    public class DeletePaymentRateCommmandHandler : IRequestHandler<DeletePaymentRateCommand, String>
+    public class DeletePaymentRateCommmandHandler : IRequestHandler<DeletePaymentRateCommand, BaseResponse>
     {
         private readonly IPaymentRateRepository _paymentRateRepository;
         public DeletePaymentRateCommmandHandler(IPaymentRateRepository paymentRateRepository)
@@ -29,8 +30,9 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
             _paymentRateRepository = paymentRateRepository;
         }
 
-        public async Task<string> Handle(DeletePaymentRateCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeletePaymentRateCommand request, CancellationToken cancellationToken)
         {
+            var response = new BaseResponse();
             try
             {
                 var paymentRateEntity = await _paymentRateRepository.GetByIdAsync(request.Id);
@@ -38,20 +40,19 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
                 {
                     await _paymentRateRepository.DeleteAsync(request.Id);
                     await _paymentRateRepository.SaveChangesAsync(cancellationToken);
+                    response.Deleted("Payment rate");
                 }
                 else
                 {
-                    return "There is no payment rate with the specified id";
+                    response.BadRequest("There is no payment rate with the specified id");
                 }
-
 
             }
             catch (Exception exp)
             {
-                throw (new ApplicationException(exp.Message));
+                response.BadRequest("Unable to delete the payment rate.");
             }
-
-            return "Payment Rate information has been deleted!";
+            return response;
         }
     }
 }
