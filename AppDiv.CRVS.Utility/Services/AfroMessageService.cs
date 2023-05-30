@@ -36,28 +36,40 @@ public class AfroMessageService : ISmsService
         }
         return otpCode;
     }
-    public async Task SendSMS(string to , string message){
-        if(to != null){
-
-        using (var client = new HttpClient())
+    public async Task SendSMS(string to, string message)
+    {
+        if (to != null)
         {
-            var url = "https://api.afromessage.com/api/send";
-            var request = new HttpRequestMessage(HttpMethod.Post, url);
-            var jsonContent = new {
-                to = to,
-                from = _config.From,
-                sender = _config.Sender,
-                message = message,
-            };
-            var json = JsonConvert.SerializeObject(jsonContent);
-            request.Content = new StringContent(json, Encoding.UTF8, "application/json");
-            request.Headers.Add("Authorization", $"Bearer {_config.Token}");
-            var response = await client.SendAsync(request);
-            // Ensure the response was successful
-            // response.EnsureSuccessStatusCode();
+
+            using (var client = new HttpClient())
+            {
+                var url = "https://api.afromessage.com/api/send";
+                var request = new HttpRequestMessage(HttpMethod.Post, url);
+                var jsonContent = new
+                {
+                    to = to,
+                    from = _config.From,
+                    sender = _config.Sender,
+                    message = message,
+                };
+                var json = JsonConvert.SerializeObject(jsonContent);
+                request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+                request.Headers.Add("Authorization", $"Bearer {_config.Token}");
+                var response = await client.SendAsync(request);
+                // Ensure the response was successful
+                // response.EnsureSuccessStatusCode();
+
+            }
 
         }
-    
+
+    }
+    public async Task SendBulkSMS(List<string> tos, string message)
+    {
+
+        foreach (var to in tos)
+        {
+            await this.SendSMS(to, message);
         }
     }
 

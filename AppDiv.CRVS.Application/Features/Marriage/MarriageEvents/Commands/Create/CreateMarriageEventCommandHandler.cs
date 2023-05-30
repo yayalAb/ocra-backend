@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 {
@@ -21,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepository;
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepository;
+        private readonly ISmsService _smsService;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
 
         public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
@@ -32,6 +34,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                                  IEventPaymentRequestService paymentRequestService,
                                                  IAddressLookupRepository addressRepository,
                                                  IPaymentExamptionRequestRepository paymentExamptionRequestRepository,
+                                                 ISmsService smsService , 
                                                  ILogger<CreateMarriageEventCommandHandler> logger)
         {
             _marriageEventRepository = marriageEventRepository;
@@ -43,6 +46,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _paymentRequestService = paymentRequestService;
             _addressRepository = addressRepository;
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
+            _smsService = smsService;
             this.logger = logger;
         }
 
@@ -90,8 +94,18 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             // create payment request for the event if it is not exempted
                             if (!marriageEvent.Event.IsExampted)
                             {
-
-                                await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, cancellationToken);
+                                var amount = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, cancellationToken);
+                                 string message = $"Dear Customer,\nThis is to inform you that your request for Marriage certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {amount} to finance office.\nThank you for choosing OCRA";
+                                List<string> msgRecepients = new List<string>();
+                                if (marriageEvent.BrideInfo?.PhoneNumber != null)
+                                {
+                                    msgRecepients.Add(marriageEvent.BrideInfo.PhoneNumber);
+                                }
+                                if (marriageEvent.Event.EventOwener?.PhoneNumber != null)
+                                {
+                                    msgRecepients.Add(marriageEvent.Event.EventOwener.PhoneNumber);
+                                }
+                                await _smsService.SendBulkSMS(msgRecepients, message);
                             }
 
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";

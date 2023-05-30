@@ -10,6 +10,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using System.Diagnostics;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {
@@ -22,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepository;
         private readonly IPersonalInfoRepository _person;
         private readonly IPaymentExamptionRequestRepository _paymentExamption;
+        private readonly ISmsService _smsService;
         private readonly IEventPaymentRequestService _paymentRequestService;
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventDocumentService eventDocumentService,
@@ -29,16 +31,18 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                               IAddressLookupRepository addressRepository,
                                               IPersonalInfoRepository person,
                                               IPaymentExamptionRequestRepository paymentExamption,
+                                              ISmsService smsService,
                                               IEventPaymentRequestService paymentRequestService)
 
         {
-            this._deathEventRepository = deathEventRepository;
-            this._eventDocumentService = eventDocumentService;
-            this._addressRepository = addressRepository;
-            this._lookupRepository = lookupRepository;
-            this._person = person;
-            this._paymentExamption = paymentExamption;
-            this._paymentRequestService = paymentRequestService;
+            _deathEventRepository = deathEventRepository;
+            _eventDocumentService = eventDocumentService;
+            _addressRepository = addressRepository;
+            _lookupRepository = lookupRepository;
+            _person = person;
+            _paymentExamption = paymentExamption;
+            _smsService = smsService;
+            _paymentRequestService = paymentRequestService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -82,7 +86,13 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Death");
                                 if (!deathEvent.Event.IsExampted)
                                 {
-                                    await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, cancellationToken);
+                                    var amount = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, cancellationToken);
+                                    string message = $"Dear Customer,\nThis is to inform you that your request for Death certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {amount} to finance office.\nThank you for choosing OCRA";
+                                    if (deathEvent.Event.EventRegistrar?.RegistrarInfo.PhoneNumber != null)
+                                    {
+                                        await _smsService.SendSMS(deathEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber, message);
+                                    }
+                                    //
                                 }
                             }
                             catch (System.Exception ex)

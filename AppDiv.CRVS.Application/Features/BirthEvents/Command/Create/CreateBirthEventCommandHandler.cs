@@ -1,14 +1,12 @@
-﻿using AppDiv.CRVS.Application.Exceptions;
-using AppDiv.CRVS.Application.Contracts.DTOs;
+﻿
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
-using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
@@ -22,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IPersonalInfoRepository _person;
         private readonly IPaymentExamptionRequestRepository _paymentExamption;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly ISmsService _smsService;
         private readonly ILogger<CreateBirthEventCommandHandler> _logger;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
@@ -31,16 +30,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                               IPersonalInfoRepository person,
                                               IPaymentExamptionRequestRepository paymentExamption,
                                               IEventPaymentRequestService paymentRequestService,
+                                              ISmsService smsService,
                                               ILogger<CreateBirthEventCommandHandler> logger)
         {
-            this._eventDocumentService = eventDocumentService;
-            this._birthEventRepository = birthEventRepository;
-            this._addressRepository = addressRepository;
-            this._lookupRepository = lookupRepository;
-            this._person = person;
-            this._paymentExamption = paymentExamption;
-            this._paymentRequestService = paymentRequestService;
-            this._logger = logger;
+            _eventDocumentService = eventDocumentService;
+            _birthEventRepository = birthEventRepository;
+            _addressRepository = addressRepository;
+            _lookupRepository = lookupRepository;
+            _person = person;
+            _paymentExamption = paymentExamption;
+            _paymentRequestService = paymentRequestService;
+            _smsService = smsService;
+            _logger = logger;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -86,7 +87,23 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
                                 if (!birthEvent.Event.IsExampted)
                                 {
-                                    await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, cancellationToken);
+                                   var amount = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, cancellationToken);
+                                    string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {amount} to finance office.\nThank you for choosing OCRA";
+                                    List<string> msgRecepients = new List<string>();
+                                    if (birthEvent.Mother.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(birthEvent.Mother.PhoneNumber);
+                                    }
+                                    if (birthEvent.Father?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(birthEvent.Father.PhoneNumber);
+                                    }
+                                    if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(birthEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber);
+                                    }
+                                    await _smsService.SendBulkSMS(msgRecepients, message);
+                                    
                                 }
 
                             }

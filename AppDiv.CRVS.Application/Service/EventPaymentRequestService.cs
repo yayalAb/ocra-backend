@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Service
             _paymentRateRepository = paymentRateRepository;
             _paymentRequestRepository = paymentRequestRepository;
         }
-        public async Task CreatePaymentRequest(string eventType, Event Event, CancellationToken cancellationToken)
+        public async Task<float> CreatePaymentRequest(string eventType, Event Event, CancellationToken cancellationToken)
         {
             var isForeign = !(Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ethiopia")
                                  || Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ኢትዮጵያ")
@@ -56,7 +56,7 @@ namespace AppDiv.CRVS.Application.Service
             await _paymentRequestRepository.InsertAsync(paymentRequest, cancellationToken);
             await _paymentRequestRepository.SaveChangesAsync(cancellationToken);
 
-
+            return paymentRate.Amount;
         }
 
     }

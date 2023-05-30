@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 {
@@ -25,6 +26,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
         private readonly IEventRepository _EventRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly ISmsService _smsService;
+
         public CreateAdoptionCommandHandler(
                                         IPersonalInfoRepository PersonalInfo,
                                         IAddressLookupRepository addressRepository,
@@ -35,7 +38,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         IFileService fileService, ILookupRepository LookupsRepo,
                                         IPaymentExamptionRequestRepository PaymentExaptionRepo,
                                         IEventRepository EventRepository,
-                                        IEventPaymentRequestService paymentRequestService)
+                                        IEventPaymentRequestService paymentRequestService,
+                                        ISmsService smsService)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -48,6 +52,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _PaymentExaptionRepo = PaymentExaptionRepo;
             _EventRepository = EventRepository;
             _paymentRequestService = paymentRequestService;
+            _smsService = smsService;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
@@ -153,8 +158,21 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 _eventDocumentService.saveSupportingDocuments(adoptionEvent?.Event?.EventSupportingDocuments, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                                 if (!adoptionEvent.Event.IsExampted)
                                 {
+                                    //--create payment request and send sms notification to the users
+                                    float amount = await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, cancellationToken);
+                                    string message = $"Dear Customer,\nThis is to inform you that your request for Adoption certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {amount} to finance office.\nThank you for choosing OCRA";
+                                    List<string> msgRecepients = new List<string>();
+                                    if (adoptionEvent.AdoptiveFather?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(adoptionEvent.AdoptiveFather.PhoneNumber);
+                                    }
+                                    if (adoptionEvent.AdoptiveMother?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(adoptionEvent.AdoptiveMother.PhoneNumber);
+                                    }
+                                    await _smsService.SendBulkSMS(msgRecepients, message);
+                                    //
 
-                                    await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, cancellationToken);
                                 }
                                 await transaction.CommitAsync();
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
