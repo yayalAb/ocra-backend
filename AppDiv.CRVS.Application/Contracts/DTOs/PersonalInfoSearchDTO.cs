@@ -16,6 +16,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? NationalityLookup { get; set; }
         public string? TitleLookup { get; set; }
         public string? TypeOfWorkLookup { get; set; }
+        public string? BirthDateEt { get; set; }
+        public string? Address { get; set; }
+        public string? Gender { get; set; }
+        public int? Age { get; set; }
 
 
     }

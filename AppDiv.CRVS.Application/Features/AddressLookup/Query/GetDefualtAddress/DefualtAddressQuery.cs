@@ -7,6 +7,7 @@ using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
 {
@@ -20,32 +21,40 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
     public class DefualtAddressQueryHandler : IRequestHandler<DefualtAddressQuery, List<AddressForLookupDTO>>
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
+        private readonly ISettingRepository _SettinglookupRepository;
 
-        public DefualtAddressQueryHandler(IAddressLookupRepository AddresslookupRepository)
+        public DefualtAddressQueryHandler(IAddressLookupRepository AddresslookupRepository, ISettingRepository SettinglookupRepository)
         {
             _AddresslookupRepository = AddresslookupRepository;
+            _SettinglookupRepository = SettinglookupRepository;
         }
         public async Task<List<AddressForLookupDTO>> Handle(DefualtAddressQuery request, CancellationToken cancellationToken)
         {
-            // var Addresss = await _mediator.Send(new GetAllAddressQuery());
-            var parentID = new Address();
+            var defualtAddress = _SettinglookupRepository.GetAll().Where(x => x.Key == "generalSetting").FirstOrDefault();
+            if (defualtAddress == null)
+            {
+                throw new NotFoundException("Defualt Address not Found");
+            }
+            Guid defualtCountryId = new Guid(defualtAddress.Value.Value<JObject>("defaults").Value<string>("default_country"));
+            Guid defualtRegionId = new Guid(defualtAddress.Value.Value<JObject>("defaults").Value<string>("default_country"));
+
+
+            Guid parentId = Guid.Empty;
             if (request.IsRegion)
             {
-                parentID = _AddresslookupRepository.GetAll()
-                          .Where(x => x.IsDefault == true && x.ParentAddressId == null).FirstOrDefault();
+                parentId = defualtCountryId;
             }
             else
             {
-                parentID = _AddresslookupRepository.GetAll()
-                        .Where(x => x.IsDefault == true && x.ParentAddressId != null).FirstOrDefault();
+                parentId = defualtRegionId;
             }
-            if (parentID == null)
+            if (parentId == null)
             {
                 throw new NotFoundException("not found");
             }
             var selectedAddress = _AddresslookupRepository.GetAll().
              Include(ad => ad.AdminTypeLookup)
-            .Where(x => x.ParentAddressId == (Guid.Equals(parentID.Id, Guid.Empty) ? null : parentID.Id));
+            .Where(x => x.ParentAddressId == (Guid.Equals(parentId, Guid.Empty) ? null : parentId));
             // var lng = "";
             var formatedAddress = selectedAddress.Select(an => new AddressForLookupDTO
             {
