@@ -1,13 +1,34 @@
 
 
 using System.Reflection;
+using AppDiv.CRVS.Application.Exceptions;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Infrastructure.Services
 {
-    public static class HelperService
+    public class HelperService
 
     {
+        private readonly CRVSDbContext _context;
 
+        public HelperService(CRVSDbContext context)
+        {
+            _context = context;
+        }
+
+    
+
+        public  JObject getPasswordPolicy()
+        {
+
+            var policy = _context.Settings.Where(s => s.Key.ToLower() == "passwordpolicy")
+                    .Select(s => s.Value).FirstOrDefault();
+            if (policy == null)
+            {
+                throw new NotFoundException("password policy setting not found");
+            }
+            return policy;
+        }
         public static T UpdateObjectFeilds<T>(T personalInfo, Dictionary<string, object> fieldValues)
         {
             foreach (var fieldValue in fieldValues)

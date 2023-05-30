@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     {
         public Guid PaymentTypeLookupId { get; set; }
         public Guid EventLookupId { get; set; }
-        public Guid AddressId { get; set; }
+        public bool IsForeign { get; set; } = false;
         public float Amount { get; set; }
         public bool Status { get; set; }
     }

@@ -10,13 +10,11 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public Guid PaymentTypeLookupId { get; set; }
         public Guid EventLookupId { get; set; }
-        public Guid AddressId { get; set; }
         public float Amount { get; set; }
         public bool Status { get; set; }
-
+        public bool IsForeign { get; set; }
         public virtual Lookup PaymentTypeLookup { get; set; }
         public virtual Lookup EventLookup { get; set; }
-        public virtual Address Address { get; set; }
         public virtual ICollection<PaymentRequest> PaymentRatePaymentRequests { get; set; }
 
     }

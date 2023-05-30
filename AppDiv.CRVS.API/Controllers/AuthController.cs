@@ -22,19 +22,38 @@ namespace AppDiv.CRVS.API.Controllers
         // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)
         {
+
             return Ok(await Mediator.Send(command));
         }
         [HttpPost("resetPassword")]
         // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            var res = await Mediator.Send(command);
+            if (res.Success)
+            {
+
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res);
+            }
         }
         [HttpPost("changePassword")]
         // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            var res = await Mediator.Send(command);
+            if (res.Success)
+            {
+
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res);
+            }
         }
     }
 }
