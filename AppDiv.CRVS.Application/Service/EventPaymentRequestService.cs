@@ -20,15 +20,20 @@ namespace AppDiv.CRVS.Application.Service
             _paymentRateRepository = paymentRateRepository;
             _paymentRequestRepository = paymentRequestRepository;
         }
-        public async Task CreatePaymentRequest(string eventType, Guid eventId, CancellationToken cancellationToken)
+        public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, CancellationToken cancellationToken)
         {
+            var isForeign = !(Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ethiopia")
+                                 || Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ኢትዮጵያ")
+                                  || Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("itoophiyaa"));
             var paymentType = (Enum.GetName<PaymentType>(PaymentType.CertificateGeneration)!).ToLower();
             eventType = eventType.ToLower();
             var paymentRate = await _paymentRateRepository.GetAllQueryableAsync()
                 .Include(p => p.PaymentTypeLookup)
                 .Include(p => p.EventLookup)
+                .Where(p => p.IsForeign == isForeign)
                 .Where(p => EF.Functions.Like(p.EventLookup.ValueStr.ToLower(), $"%{eventType}%"))
                 .Where(p => EF.Functions.Like(p.PaymentTypeLookup.ValueStr.ToLower(), $"%{paymentType}%"))
+
                 .FirstOrDefaultAsync();
             // 
             //  throw new NotFoundException("payment rate not found");
@@ -36,11 +41,20 @@ namespace AppDiv.CRVS.Application.Service
             {
                 throw new NotFoundException("payment rate not found");
             }
+            string paymentCode = "";
+            do
+            {
+                paymentCode = HelperService.GenerateRandomCode();
+            }
+            while (_paymentRequestRepository.GetAll().Any(x => x.PaymentCode == paymentCode));
+
+
             var paymentRequest = new PaymentRequest
             {
-                EventId = eventId,
+                EventId = Event.Id,
                 Amount = paymentRate.Amount,
                 status = false,
+                PaymentCode = paymentCode,
                 PaymentRateId = paymentRate.Id,
                 Reason = new JObject{
                         {"en",$"for {eventType}  certificate generation payment "},
@@ -51,7 +65,7 @@ namespace AppDiv.CRVS.Application.Service
             await _paymentRequestRepository.InsertAsync(paymentRequest, cancellationToken);
             await _paymentRequestRepository.SaveChangesAsync(cancellationToken);
 
-
+            return (amount: paymentRate.Amount, code: paymentCode);
         }
 
     }
