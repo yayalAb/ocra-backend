@@ -59,7 +59,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 using (var transaction = _AdoptionEventRepository.Database.BeginTransaction())
                 {
                     try
-
                     {
                         var CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse();
                         var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository,
@@ -95,7 +94,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
-                                    selectedperson.SexLookupId = adoptionEvent.AdoptiveFather.SexLookupId;
+                                    // selectedperson.SexLookupId = adoptionEvent.AdoptiveFather.SexLookupId;
                                     selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
                                     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
@@ -112,7 +111,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 if (adoptionEvent.AdoptiveMother?.Id != null && adoptionEvent.AdoptiveMother?.Id != Guid.Empty)
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
-                                    selectedperson.SexLookupId = adoptionEvent.AdoptiveMother.SexLookupId;
+                                    // selectedperson.SexLookupId = adoptionEvent.AdoptiveMother.SexLookupId;
                                     selectedperson.NationalId = adoptionEvent.AdoptiveMother?.NationalId;
                                     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveMother?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveMother?.ReligionLookupId;

@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
             public LanguageModel? LastName { get; set; }
             public string? BirthDateEt { get; set; }
             public string? NationalId { get; set; }
-            public Guid SexLookupId { get; set; }
+            public Guid? SexLookupId { get; set; }
             public Guid? BirthAddressId { get; set; }
             public Guid? ResidentAddressId { get; set; }
             public Guid NationalityLookupId { get; set; }
