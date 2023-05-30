@@ -76,7 +76,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
                             try
                             {
-                                request.BirthEvent.Father.SexLookupId = request.BirthEvent.Mother.SexLookupId = new Guid();
                                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
 
                                 await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
