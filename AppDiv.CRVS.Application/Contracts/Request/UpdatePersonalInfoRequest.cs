@@ -27,8 +27,9 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid? MarriageStatusLookupId { get; set; }
         public Guid? BirthAddressId { get; set; }
         public Guid? ResidentAddressId { get; set; }
-
         public Guid? NationLookupId { get; set; }
+        public string? PhoneNumber { get; set; }
+
         public UpdateContactInfoRequest? ContactInfo { get; set; }
     }
 }

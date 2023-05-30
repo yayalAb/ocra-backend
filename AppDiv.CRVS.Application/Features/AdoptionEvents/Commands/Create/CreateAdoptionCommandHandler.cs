@@ -103,6 +103,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveFather?.TypeOfWorkLookupId;
                                     selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveFather?.MarriageStatusLookupId;
                                     selectedperson.NationLookupId = adoptionEvent.AdoptiveFather?.NationLookupId;
+                                    selectedperson.PhoneNumber = adoptionEvent.AdoptiveFather?.PhoneNumber;
 
                                     _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(selectedperson));
                                     adoptionEvent.AdoptiveFatherId = adoptionEvent.AdoptiveFather.Id;
@@ -119,6 +120,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveMother?.TypeOfWorkLookupId;
                                     selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveMother?.MarriageStatusLookupId;
                                     selectedperson.NationLookupId = adoptionEvent.AdoptiveMother?.NationLookupId;
+                                    selectedperson.PhoneNumber = adoptionEvent.AdoptiveMother?.PhoneNumber;
 
                                     _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(selectedperson));
                                     adoptionEvent.AdoptiveMotherId = adoptionEvent.AdoptiveMother.Id;
@@ -134,6 +136,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     selectedperson.TypeOfWorkLookupId = adoptionEvent.Event?.EventOwener?.TypeOfWorkLookupId;
                                     selectedperson.MarriageStatusLookupId = adoptionEvent.Event?.EventOwener?.MarriageStatusLookupId;
                                     selectedperson.NationLookupId = adoptionEvent.Event?.EventOwener?.NationLookupId;
+                                    selectedperson.PhoneNumber = adoptionEvent.Event?.EventOwener?.PhoneNumber;
 
                                     _personalInfoRepository.EFUpdate(CustomMapper.Mapper.Map<PersonalInfo>(selectedperson));
                                     adoptionEvent.Event.EventOwenerId = adoptionEvent.Event.EventOwener.Id;
