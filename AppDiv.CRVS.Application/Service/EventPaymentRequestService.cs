@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Service
             _paymentRateRepository = paymentRateRepository;
             _paymentRequestRepository = paymentRequestRepository;
         }
-        public async Task<float> CreatePaymentRequest(string eventType, Event Event, CancellationToken cancellationToken)
+        public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, CancellationToken cancellationToken)
         {
             var isForeign = !(Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ethiopia")
                                  || Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ኢትዮጵያ")
@@ -41,11 +41,20 @@ namespace AppDiv.CRVS.Application.Service
             {
                 throw new NotFoundException("payment rate not found");
             }
+            string paymentCode = "";
+            do
+            {
+                paymentCode = HelperService.GenerateRandomCode();
+            }
+            while (_paymentRequestRepository.GetAll().Any(x => x.PaymentCode == paymentCode));
+
+
             var paymentRequest = new PaymentRequest
             {
                 EventId = Event.Id,
                 Amount = paymentRate.Amount,
                 status = false,
+                PaymentCode = paymentCode,
                 PaymentRateId = paymentRate.Id,
                 Reason = new JObject{
                         {"en",$"for {eventType}  certificate generation payment "},
@@ -56,7 +65,7 @@ namespace AppDiv.CRVS.Application.Service
             await _paymentRequestRepository.InsertAsync(paymentRequest, cancellationToken);
             await _paymentRequestRepository.SaveChangesAsync(cancellationToken);
 
-            return paymentRate.Amount;
+            return (amount: paymentRate.Amount, code: paymentCode);
         }
 
     }

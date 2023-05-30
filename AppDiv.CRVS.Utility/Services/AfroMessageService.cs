@@ -41,7 +41,7 @@ public class AfroMessageService : ISmsService
         if (to != null)
         {
 
-            using (var client = new HttpClient())
+            using (var client = new HttpClient{Timeout = TimeSpan.FromSeconds(100)})
             {
                 var url = "https://api.afromessage.com/api/send";
                 var request = new HttpRequestMessage(HttpMethod.Post, url);

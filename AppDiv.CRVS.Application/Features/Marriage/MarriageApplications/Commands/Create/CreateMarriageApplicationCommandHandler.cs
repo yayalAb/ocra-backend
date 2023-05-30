@@ -26,17 +26,17 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
             try
             {
                 var marriageApplication = CustomMapper.Mapper.Map<MarriageApplication>(request);
-                marriageApplication.BrideInfo.SexLookupId = _lookupRepo.GetAll().Where(l => l.Key == "sex")
-                                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
-                                                                        || EF.Functions.Like(l.ValueStr, "%Dhiira%")
-                                                                        || EF.Functions.Like(l.ValueStr, "%Male%"))
-                                                                    .Select(l => l.Id).FirstOrDefault();
+                // marriageApplication.BrideInfo.SexLookupId = _lookupRepo.GetAll().Where(l => l.Key == "sex")
+                //                                                     .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                //                                                         || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                //                                                         || EF.Functions.Like(l.ValueStr, "%Male%"))
+                //                                                     .Select(l => l.Id).FirstOrDefault();
 
-                marriageApplication.GroomInfo.SexLookupId = _lookupRepo.GetAll().Where(l => l.Key == "sex")
-                                                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
-                                                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
-                                                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
-                                                                        .Select(l => l.Id).FirstOrDefault();
+                // marriageApplication.GroomInfo.SexLookupId = _lookupRepo.GetAll().Where(l => l.Key == "sex")
+                //                                                         .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                //                                                             || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                //                                                             || EF.Functions.Like(l.ValueStr, "%Female%"))
+                //                                                         .Select(l => l.Id).FirstOrDefault();
                 await _marriageApplicationRepository.InsertAsync(
                     marriageApplication,
                     cancellationToken);

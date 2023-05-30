@@ -94,8 +94,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             // create payment request for the event if it is not exempted
                             if (!marriageEvent.Event.IsExampted)
                             {
-                                var amount = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, cancellationToken);
-                                 string message = $"Dear Customer,\nThis is to inform you that your request for Marriage certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {amount} to finance office.\nThank you for choosing OCRA";
+                             (float amount , string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, cancellationToken);
+                                 string message = $"Dear Customer,\nThis is to inform you that your request for Marriage certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
                                 List<string> msgRecepients = new List<string>();
                                 if (marriageEvent.BrideInfo?.PhoneNumber != null)
                                 {
