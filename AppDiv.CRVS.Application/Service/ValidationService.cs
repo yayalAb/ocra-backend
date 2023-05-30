@@ -101,11 +101,8 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
-                        DateTime birthDate = DateTime.Parse(d);
-                        var converter =  new CustomDateConverter(d);
-                        DateTime etDate = converter.gorgorianDate;
-
-                        return  DateTime.Now.Year - etDate.Year >= 18;
+                        DateTime converted = new CustomDateConverter(d).gorgorianDate;
+                        return DateTime.Now.Year - converted.Year >= 18;
                 }
                     catch (Exception e)
                     {

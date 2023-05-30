@@ -12,5 +12,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public IQueryable<MarriageApplication> GetAllQueryableAsync();
         public void EFUpdate(MarriageApplication marriageApplication);
         public bool exists(Guid id);
+        new public Task InsertAsync(MarriageApplication entity, CancellationToken cancellationToken);
     }
 }
