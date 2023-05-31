@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("SearchPersonalInfo")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> SearchPersonalInfo([FromQuery] string SearchString, string? gender, int? age)
+        public async Task<object> SearchPersonalInfo([FromQuery] string SearchString, string? gender, int age)
         {
             return await _mediator.Send(new GetPersonalInfoQuery { SearchString = SearchString, gender = gender, age = age });
         }
