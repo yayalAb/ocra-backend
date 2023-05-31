@@ -14,31 +14,22 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
     public class CreateBirthEventCommandHandler : IRequestHandler<CreateBirthEventCommand, CreateBirthEventCommandResponse>
     {
         private readonly IBirthEventRepository _birthEventRepository;
-        private readonly ILookupRepository _lookupRepository;
+        private readonly IEventRepository _eventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IAddressLookupRepository _addressRepository;
-        private readonly IPersonalInfoRepository _person;
-        private readonly IPaymentExamptionRequestRepository _paymentExamption;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly ISmsService _smsService;
         private readonly ILogger<CreateBirthEventCommandHandler> _logger;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
+                                              IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
-                                              ILookupRepository lookupRepository,
-                                              IAddressLookupRepository addressRepository,
-                                              IPersonalInfoRepository person,
-                                              IPaymentExamptionRequestRepository paymentExamption,
                                               IEventPaymentRequestService paymentRequestService,
                                               ISmsService smsService,
                                               ILogger<CreateBirthEventCommandHandler> logger)
         {
             _eventDocumentService = eventDocumentService;
+            _eventRepository = eventRepository;
             _birthEventRepository = birthEventRepository;
-            _addressRepository = addressRepository;
-            _lookupRepository = lookupRepository;
-            _person = person;
-            _paymentExamption = paymentExamption;
             _paymentRequestService = paymentRequestService;
             _smsService = smsService;
             _logger = logger;
@@ -57,7 +48,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                     {
                         var createBirthEventCommandResponse = new CreateBirthEventCommandResponse();
 
-                        var validator = new CreateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), request);
+                        var validator = new CreateBirthEventCommandValidator(_eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors
@@ -81,7 +72,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
-                                var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
+                                var supportingDocuments = birthEvent.Event?.EventSupportingDocuments;
                                 var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
 
                                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
@@ -90,13 +81,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                    (float amount , string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, cancellationToken);
                                     string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
                                     List<string> msgRecepients = new List<string>();
-                                    if (birthEvent.Mother.PhoneNumber != null)
+                                    if (birthEvent.Mother?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent.Mother.PhoneNumber);
+                                        msgRecepients.Add(birthEvent.Mother?.PhoneNumber);
                                     }
                                     if (birthEvent.Father?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent.Father.PhoneNumber);
+                                        msgRecepients.Add(birthEvent.Father?.PhoneNumber);
                                     }
                                     if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
                                     {

@@ -10,31 +10,22 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
     public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, UpdateDeathEventCommandResponse>
     {
         private readonly IDeathEventRepository _deathEventRepository;
-        private readonly ILookupRepository _lookupRepository;
+        private readonly IEventRepository _eventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IAddressLookupRepository _addressRepository;
-        private readonly IPersonalInfoRepository _person;
-        private readonly IPaymentExamptionRequestRepository _paymentExamption;
         public UpdateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
-                                              IEventDocumentService eventDocumentService,
-                                              ILookupRepository lookupRepository,
-                                              IAddressLookupRepository addressRepository,
-                                              IPersonalInfoRepository person,
-                                              IPaymentExamptionRequestRepository paymentExamption)
+                                              IEventRepository eventRepository,
+                                              IEventDocumentService eventDocumentService)
         {
             this._deathEventRepository = deathEventRepository;
+            this._eventRepository = eventRepository;
             this._eventDocumentService = eventDocumentService;
-            this._addressRepository = addressRepository;
-            this._lookupRepository = lookupRepository;
-            this._person = person;
-            this._paymentExamption = paymentExamption;
         }
         public async Task<UpdateDeathEventCommandResponse> Handle(UpdateDeathEventCommand request, CancellationToken cancellationToken)
         {
 
             var updateDeathEventCommandResponse = new UpdateDeathEventCommandResponse();
 
-            var validator = new UpdateDeathEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), request);
+            var validator = new UpdateDeathEventCommandValidator(_eventRepository);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors

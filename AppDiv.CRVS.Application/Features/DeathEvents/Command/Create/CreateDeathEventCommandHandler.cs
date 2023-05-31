@@ -18,29 +18,20 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
     public class CreateDeathEventCommandHandler : IRequestHandler<CreateDeathEventCommand, CreateDeathEventCommandResponse>
     {
         private readonly IDeathEventRepository _deathEventRepository;
-        private readonly ILookupRepository _lookupRepository;
+        private readonly IEventRepository _eventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IAddressLookupRepository _addressRepository;
-        private readonly IPersonalInfoRepository _person;
-        private readonly IPaymentExamptionRequestRepository _paymentExamption;
         private readonly ISmsService _smsService;
         private readonly IEventPaymentRequestService _paymentRequestService;
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
+                                              IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
-                                              ILookupRepository lookupRepository,
-                                              IAddressLookupRepository addressRepository,
-                                              IPersonalInfoRepository person,
-                                              IPaymentExamptionRequestRepository paymentExamption,
                                               ISmsService smsService,
                                               IEventPaymentRequestService paymentRequestService)
 
         {
             _deathEventRepository = deathEventRepository;
+            _eventRepository = eventRepository;
             _eventDocumentService = eventDocumentService;
-            _addressRepository = addressRepository;
-            _lookupRepository = lookupRepository;
-            _person = person;
-            _paymentExamption = paymentExamption;
             _smsService = smsService;
             _paymentRequestService = paymentRequestService;
         }
@@ -56,7 +47,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                     {
                         var createDeathCommandResponse = new CreateDeathEventCommandResponse();
 
-                        var validator = new CreateDeathEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), request);
+                        var validator = new CreateDeathEventCommandValidator(_eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors

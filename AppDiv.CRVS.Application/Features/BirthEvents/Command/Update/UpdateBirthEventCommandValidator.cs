@@ -24,47 +24,30 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
     public class UpdateBirthEventCommandValidator : AbstractValidator<UpdateBirthEventCommand>
     {
-        // private readonly BirthEvent _birth;
-        private readonly (ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) _repo;
-
-        public UpdateBirthEventCommandValidator((ILookupRepository Lookup, IAddressLookupRepository Address, IPersonalInfoRepository Person, IPaymentExamptionRequestRepository ExamptionRequest) repo,
-                                                BirthEvent birth, UpdateBirthEventCommand request)
+        public UpdateBirthEventCommandValidator(IEventRepository eventRepo, BirthEvent birth)
         {
-            _repo = repo;
             RuleFor(p => p.Id).Must(id => id == birth.Id).WithMessage("Invalid birth Id");
-            RuleFor(p => CustomMapper.Mapper.Map<AddBirthEventRequest>(p)).SetValidator(new BirthEventValidator((_repo.Lookup, _repo.Person)));
-            if (request.BirthNotification != null)
-            {
-                // RuleFor(p => p.Id).Must(id => id == birth.BirthNotification.Id).WithMessage("Invalid birth Notification Id");
-                RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(_repo.Lookup));
-            }
-            // RuleFor(p => p.Event.EventOwener.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
-            RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator((_repo.Lookup, _repo.Address), request.Father));
+            RuleFor(p => CustomMapper.Mapper.Map<AddBirthEventRequest>(p)).SetValidator(new BirthEventValidator(eventRepo));
+            RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo))
+                    .When(p => p.BirthNotification != null);
 
-            // RuleFor(p => p.Father.Id).Must(id => id == birth.Father.Id).WithMessage("Invalid father Id");
-            RuleFor(p => p.Father).SetValidator(new FatherValidator((_repo.Lookup, _repo.Address)));
+            RuleFor(p => p.Event.EventOwener.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
+            RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
 
-            // RuleFor(p => p.Mother.Id).Must(id => id == birth.Mother.Id).WithMessage("Invalid mother Id");
-            RuleFor(p => p.Mother).SetValidator(new MotherValidator((_repo.Lookup, _repo.Address)));
+            RuleFor(p => p.Father.Id).Must(id => id == birth.Father.Id).WithMessage("Invalid father Id");
+            RuleFor(p => p.Father).SetValidator(new FatherValidator(eventRepo));
 
-            if (request.Event.EventRegistrar != null)
-            {
-                // RuleFor(p => p.Event.EventRegistrar.Id).Must(id => id == birth.Event.EventRegistrar.Id).WithMessage("Invalid registrar Id");
-                // RuleFor(p => p.Event.EventRegistrar.RegistrarInfo.Id).Must(id => id == birth.Event.EventRegistrar.RegistrarInfo.Id).WithMessage("Invalid registrar Person Id");
-                RuleFor(p => p.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator((_repo.Lookup, _repo.Address)));
-            }
-            // }
-            if (request.Event.EventSupportingDocuments != null)
-            {
-                // RuleFor(p => p.Event.EventSupportingDocuments.Id).Must(id => id == birth.Event.EventSupportingDocuments.Id).WithMessage("Invalid registrar Id");
-                RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator());
-            }
+            RuleFor(p => p.Mother.Id).Must(id => id == birth.Mother.Id).WithMessage("Invalid mother Id");
+            RuleFor(p => p.Mother).SetValidator(new MotherValidator(eventRepo));
 
-            if (request.Event.PaymentExamption != null && request.Event.IsExampted)
-            {
-                // RuleFor(p => p.Event.PaymentExamption.Id).Must(id => id == birth.Event.PaymentExamption.Id).WithMessage("Invalid paymentExamption Id");
-                RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(_repo.ExamptionRequest));
-            }
+            RuleFor(p => p.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator(eventRepo))
+                    .When(p => (p.Event.EventRegistrar != null
+                            || p.Event.InformantType.ToLower() == "legal guardian"
+                            || p.Event.InformantType.ToLower() == "police officer"));
+            RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator())
+                    .When(p => (p.Event.EventSupportingDocuments != null));
+            RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo))
+                    .When(p => (p.Event.IsExampted));
         }
 
     }

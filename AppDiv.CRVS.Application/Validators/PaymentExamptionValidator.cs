@@ -7,12 +7,13 @@ namespace AppDiv.CRVS.Application.Validators
 {
     public class PaymentExamptionValidator : AbstractValidator<AddPaymentExamptionRequest>
     {
-        private readonly IPaymentExamptionRequestRepository _repo;
-        public PaymentExamptionValidator(IPaymentExamptionRequestRepository repo)
+        private readonly IEventRepository _repo;
+        public PaymentExamptionValidator(IEventRepository repo)
         {
             _repo = repo;
+            RuleFor(p => p).NotNull().NotEmpty().WithMessage("Payment Examption Can not be empty or null if the is exampted is true.");
             RuleFor(p => p.ExamptionRequestId.ToString()).NotGuidEmpty().ForeignKeyWithPaymentExamptionRequest(_repo, "Event.PaymentExamption.ExamptionRequestId");
-            RuleFor(p => p.SupportingDocuments).SupportingDocNull("Event.PaymentExamption.EventSupportingDocuments").NotEmpty().NotNull();
+            RuleFor(p => p.SupportingDocuments).NotEmpty().NotNull().SupportingDocNull("Event.PaymentExamption.EventSupportingDocuments");
         }
     }
 }

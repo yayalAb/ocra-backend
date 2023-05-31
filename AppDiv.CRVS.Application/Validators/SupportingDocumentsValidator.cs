@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Validators
     {
         public SupportingDocumentsValidator()
         {
-            RuleFor(p => p).SupportingDocNull("Event.EventSupportingDocuments").NotEmpty().NotNull();
+            RuleFor(p => p).NotEmpty().NotNull().SupportingDocNull("Event.EventSupportingDocuments");
         }
     }
 }

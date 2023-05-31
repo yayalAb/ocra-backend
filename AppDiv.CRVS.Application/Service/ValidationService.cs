@@ -20,54 +20,51 @@ namespace AppDiv.CRVS.Application.Service
         //     return !id.HasValue && id.Equals(Guid.Empty);
         // }
         // private static IBaseRepository<BaseAuditableEntity> repository;
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithLookup<T>(this IRuleBuilder<T, string?> ruleBuilder, ILookupRepository repo, string propertyName)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithLookup<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName)
         {
             // repository = repo;
             return ruleBuilder.MustAsync(async (lookup, c)
                         =>
             {
                 Guid.TryParse(lookup, out Guid guid);
-                var look = await repo.GetAsync(guid);
-                return look == null ? false : true;
+                return repo.CheckForeignKey<Lookup>(guid);
             }).WithMessage($"'{propertyName}' Unable to Get The Lookup");
         }
 
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithAddress<T>(this IRuleBuilder<T, string?> ruleBuilder, IAddressLookupRepository repo, string propertyName)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithAddress<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName)
         {
             // repository = repo;
             return ruleBuilder.MustAsync(async (ad, c)
                         =>
             {
                 Guid.TryParse(ad, out Guid guid);
-                var address = await repo.GetAsync(guid);
-                return address == null ? false : true;
+                return repo.CheckForeignKey<Address>(guid);
             }).WithMessage($"'{propertyName}' Unable to Get The Address");
         }
 
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IPersonalInfoRepository repo, string propertyName)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPerson<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName)
         {
             // repository = repo;
             return ruleBuilder.Must((pr)
                             =>
                             {
                                 Guid.TryParse(pr, out Guid guid);
-                                var person = repo.Exists(guid);
-                                return person;
+                                return repo.CheckForeignKey<PersonalInfo>(guid);
                             }).WithMessage($"'{propertyName}' Unable to Get The Person");
         }
-        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPaymentExamptionRequest<T>(this IRuleBuilder<T, string?> ruleBuilder, IPaymentExamptionRequestRepository repo, string propertyName)
+        public static IRuleBuilderOptions<T, string?> ForeignKeyWithPaymentExamptionRequest<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName)
         {
             // repository = repo;
             return ruleBuilder.MustAsync(async (r, c)
                             =>
                             {
                                 Guid.TryParse(r, out Guid guid);
-                                var e = await repo.GetAsync(guid);
-                                return e == null ? false : true;
+                                return repo.CheckForeignKey<PaymentExamptionRequest>(guid);
                             }).WithMessage($"'{propertyName}' Unable to Get The PaymentExamption Request");
         }
         public static IRuleBuilderOptions<T, ICollection<AddSupportingDocumentRequest>?> SupportingDocNull<T>(this IRuleBuilder<T, ICollection<AddSupportingDocumentRequest>?> ruleBuilder, string propertyName)
         {
+            var message = new List<string>();
             // repository = repo;
             return ruleBuilder.Must(docs =>
             {
@@ -76,17 +73,51 @@ namespace AppDiv.CRVS.Application.Service
                     try
                     {
                         string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
-                        Convert.FromBase64String(myString);
-                        return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
-                            (d.Description == null || d.Description == "") ? false : true;
+                        // Convert.FromBase64String(myString);
+                        if (d.Label == null || d.Label == "")
+                        {
+                            message.Add("Label is required.");
+                            // return false;
+                        }
+                        if (d.Type == null || d.Type == "")
+                        {
+                            message.Add("Type is required.");
+                            // return false;
+                        }
+                        if (d.Description == null || d.Description == "")
+                        {
+                            message.Add("Description is required.");
+                            // return false;
+                        }
+                        // return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
+                        //     (d.Description == null || d.Description == "") ? false : true;
                     }
                     catch (FormatException)
                     {
-                        return false;
+                        message.Add("Invalid Base64String.");
+                        // return false;
                     }
                 }
-                return true;
-            }).WithMessage($"'{propertyName}' Check your supporting documents");
+
+                return message.Count > 0 ? false : true;
+            }).WithMessage($"'{propertyName}' Check your supporting documents {string.Join("\n\t", message)}");
+        }
+
+        public static IRuleBuilderOptions<T, string?> ValidCertificate<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName)
+        {
+            return ruleBuilder.Must(c =>
+            {
+                var valid = int.TryParse(c.Substring(c.Length - 4), out _);
+                if (valid)
+                {
+                    var certfcate = repo.GetAll().Where(x => x.CertificateId == c).FirstOrDefault();
+                    return certfcate == null;
+                }
+                else
+                {
+                    return false;
+                }
+            }).WithMessage($"The last 4 digit of  {propertyName} must be int., and must be unique.");
         }
 
         public static IRuleBuilderOptions<T, string?> NotGuidEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
