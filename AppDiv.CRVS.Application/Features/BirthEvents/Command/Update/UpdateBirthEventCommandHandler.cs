@@ -11,27 +11,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
     public class UpdateBirthEventCommandHandler : IRequestHandler<UpdateBirthEventCommand, UpdateBirthEventCommandResponse>
     {
         private readonly IBirthEventRepository _birthEventRepository;
-        private readonly ILookupRepository _lookupRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IAddressLookupRepository _addressRepository;
-        private readonly IPersonalInfoRepository _person;
-        private readonly IPaymentExamptionRequestRepository _paymentExamption;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly IEventRepository _eventRepository;
 
         public UpdateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
+                                              IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
-                                              ILookupRepository lookupRepository,
-                                              IAddressLookupRepository addressRepository,
-                                              IPersonalInfoRepository person,
-                                              IPaymentExamptionRequestRepository paymentExamption,
                                               IEventPaymentRequestService paymentRequestService)
         {
             this._eventDocumentService = eventDocumentService;
+            this._eventRepository = eventRepository;
             this._birthEventRepository = birthEventRepository;
-            this._addressRepository = addressRepository;
-            this._lookupRepository = lookupRepository;
-            this._person = person;
-            this._paymentExamption = paymentExamption;
             this._paymentRequestService = paymentRequestService;
         }
         public async Task<UpdateBirthEventCommandResponse> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
@@ -45,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     {
                         var updateBirthEventCommandResponse = new UpdateBirthEventCommandResponse();
                         var birth = await _birthEventRepository.GetWithIncludedAsync(request.Id);
-                        var validator = new UpdateBirthEventCommandValidator((_lookupRepository, _addressRepository, _person, _paymentExamption), birth, request);
+                        var validator = new UpdateBirthEventCommandValidator(_eventRepository, birth);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
                         //Check and log validation errors
                         if (validationResult.Errors.Count > 0)
