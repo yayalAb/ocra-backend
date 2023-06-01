@@ -13,6 +13,8 @@ namespace AppDiv.CRVS.Domain
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual Address Address { get;set;}
         public virtual ICollection<UserGroup> UserGroups { get; set; }
+        public virtual ICollection<CertificateSerialTransfer> SenderCertificateSerialTransfers {get; set; }
+        public virtual ICollection<CertificateSerialTransfer> RecieverCertificateSerialTransfers {get; set; }
 
     }
 }

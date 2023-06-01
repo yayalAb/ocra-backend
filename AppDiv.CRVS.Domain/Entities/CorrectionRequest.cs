@@ -1,3 +1,4 @@
+
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
 using Newtonsoft.Json;
@@ -5,15 +6,27 @@ using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
-    public class Certificate : BaseAuditableEntity
+    public class CorrectionRequest : BaseAuditableEntity
     {
+        public string? DescriptionStr { get; set; }
         public Guid EventId { get; set; }
+        public bool RequestStatus { get; set; } = false;
         public string ContentStr { get; set; }
-        public bool Status { get; set; }
-        public bool AuthenticationStatus { get; set; }
-        public int PrintCount { get; set; }
-        public string CertificateSerialNumber { get; set; }
+        public int currentStep { get; set; }
+        public Guid RequestId { get; set; }
 
+        [NotMapped]
+        public JObject Description
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(DescriptionStr) ? "{}" : DescriptionStr);
+            }
+            set
+            {
+                DescriptionStr = value.ToString();
+            }
+        }
         [NotMapped]
         public JObject Content
         {
@@ -28,7 +41,7 @@ namespace AppDiv.CRVS.Domain.Entities
         }
 
         public virtual Event Event { get; set; }
-        public ICollection<AuthenticationRequest> AuthenticationRequests { get; set; }
+        public virtual Request Request { get; set; }
 
     }
 }

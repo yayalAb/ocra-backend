@@ -23,6 +23,9 @@ namespace AppDiv.CRVS.Domain.Configuration
                 .WithMany(n => n.ChildAddresses)
                 .HasForeignKey(m => m.ParentAddressId)
                 .IsRequired(false);
+            builder.HasMany(m => m.CertificateSerialRanges)
+                .WithOne(n => n.Address)
+                .HasForeignKey(n => n.AddressId);
 
 
         }

@@ -14,17 +14,26 @@ namespace AppDiv.CRVS.Application.Service
     {
         private readonly IPaymentRateRepository _paymentRateRepository;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
+        private readonly ILookupRepository _lookupRepository;
 
-        public EventPaymentRequestService(IPaymentRateRepository paymentRateRepository, IPaymentRequestRepository paymentRequestRepository)
+        public EventPaymentRequestService(IPaymentRateRepository paymentRateRepository, IPaymentRequestRepository paymentRequestRepository, ILookupRepository lookupRepository)
         {
             _paymentRateRepository = paymentRateRepository;
             _paymentRequestRepository = paymentRequestRepository;
+            _lookupRepository = lookupRepository;
         }
         public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, CancellationToken cancellationToken)
         {
-            var isForeign = !(Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ethiopia")
-                                 || Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("ኢትዮጵያ")
-                                  || Event.EventOwener.NationalityLookup.ValueStr.ToLower().Contains("itoophiyaa"));
+            var nationalityLookup = await _lookupRepository.GetAsync(Event.EventOwener.NationalityLookupId);
+            if (nationalityLookup == null)
+            {
+                throw new NotFoundException($"nationality with id = {Event.EventOwener.NationalityLookupId} is not found");
+            }
+
+
+            var isForeign = !(nationalityLookup.ValueStr.ToLower().Contains("ethiopia")
+                                 || nationalityLookup.ValueStr.ToLower().Contains("ኢትዮጵያ")
+                                  || nationalityLookup.ValueStr.ToLower().Contains("itoophiyaa"));
             var paymentType = (Enum.GetName<PaymentType>(PaymentType.CertificateGeneration)!).ToLower();
             eventType = eventType.ToLower();
             var paymentRate = await _paymentRateRepository.GetAllQueryableAsync()
