@@ -28,6 +28,32 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return await _dbContext.Certificates.Where(c => c.EventId == id).ToListAsync();
         }
 
+        public async Task<Event?>? GetArchive(Guid id)
+        {
+            var eventType = _dbContext.Events.Where(e => e.Id == id).Select(e => e.EventType).FirstOrDefault();
+            var e = _dbContext.Events
+                                .Where(e => e.Id == id)
+                                .Include(m => m.EventAddress)
+                                .Include(m => m.EventOwener).ThenInclude(p => p.NationalityLookup)
+                                .Include(m => m.EventOwener).ThenInclude(p => p.NationLookup)
+                                .Include(m => m.EventOwener).ThenInclude(p => p.ReligionLookup)
+                                .Include(m => m.EventOwener).ThenInclude(p => p.BirthAddress)
+                                .Include(d => d.CivilRegOfficer);
+            // var n =
+
+            return await (eventType switch
+            {
+                "Birth" => e.Include(e => e.BirthEvent).FirstOrDefaultAsync(),
+                "Death" => e.Include(e => e.DeathEventNavigation).FirstOrDefaultAsync(),
+                "Adoption" => e.Include(e => e.AdoptionEvent).FirstOrDefaultAsync(),
+                "Divorce" => e.Include(e => e.DivorceEvent).FirstOrDefaultAsync(),
+                "Marriage" => e.Include(e => e.MarriageEvent).FirstOrDefaultAsync(),
+                _ => null
+            });
+            // return await _dbContext.Certificates.Where(c => c.EventId == id).ToListAsync();
+
+        }
+
         public async Task<(BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce)> GetContent(Guid eventId)
         {
             var eventType = _dbContext.Events.Where(e => e.Id == eventId).Select(e => e.EventType).FirstOrDefault();

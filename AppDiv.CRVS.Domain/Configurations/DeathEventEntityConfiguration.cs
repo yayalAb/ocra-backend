@@ -24,6 +24,11 @@ namespace AppDiv.CRVS.Domain.Configurations
                .WithMany(n => n.DeathFacilityNavigation)
                .HasForeignKey(m => m.FacilityLookupId);
 
+            builder.HasOne(m => m.DuringDeathLookup)
+               .WithMany(n => n.DuringDeathNavigation)
+               .HasForeignKey(m => m.DuringDeathId)
+               .IsRequired(false);
+
             builder.HasOne(d => d.Event)
             .WithOne(n => n.DeathEventNavigation)
             .HasForeignKey<DeathEvent>(m => m.EventId);
