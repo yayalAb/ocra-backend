@@ -401,6 +401,49 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.ToTable("Certificates");
                 });
 
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CertificateHistory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CerteficateId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<Guid>("CivilRegOfficerId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("ModifiedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("ModifiedBy")
+                        .HasColumnType("char(36)");
+
+                    b.Property<string>("PrintType")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ReasonStr")
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("SrialNo")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CerteficateId");
+
+                    b.HasIndex("CivilRegOfficerId");
+
+                    b.ToTable("CertificateHistorys");
+                });
+
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CertificateTemplate", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1830,6 +1873,25 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("Event");
                 });
 
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CertificateHistory", b =>
+                {
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.Certificate", "Certeficate")
+                        .WithMany("CertificateHistoryCertificate")
+                        .HasForeignKey("CerteficateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("AppDiv.CRVS.Domain.Entities.PersonalInfo", "CivilRegOfficer")
+                        .WithMany("CertificateHistoryCivilRegOfficer")
+                        .HasForeignKey("CivilRegOfficerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Certeficate");
+
+                    b.Navigation("CivilRegOfficer");
+                });
+
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Court", b =>
                 {
                     b.HasOne("AppDiv.CRVS.Domain.Entities.Address", "Address")
@@ -2355,6 +2417,11 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.Certificate", b =>
+                {
+                    b.Navigation("CertificateHistoryCertificate");
+                });
+
             modelBuilder.Entity("AppDiv.CRVS.Domain.Entities.CourtCase", b =>
                 {
                     b.Navigation("AdoptionEventCourtCase")
@@ -2497,6 +2564,8 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                     b.Navigation("BirthFatherNavigation");
 
                     b.Navigation("BirthMotherNavigation");
+
+                    b.Navigation("CertificateHistoryCivilRegOfficer");
 
                     b.Navigation("DivorceWifeNavigation");
 

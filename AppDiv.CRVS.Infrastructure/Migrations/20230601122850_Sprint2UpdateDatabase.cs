@@ -1241,6 +1241,42 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 .Annotation("MySql:CharSet", "utf8mb4");
 
             migrationBuilder.CreateTable(
+                name: "CertificateHistorys",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    ReasonStr = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    SrialNo = table.Column<string>(type: "longtext", nullable: false)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CivilRegOfficerId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    CerteficateId = table.Column<Guid>(type: "char(36)", nullable: false, collation: "ascii_general_ci"),
+                    PrintType = table.Column<string>(type: "longtext", nullable: true)
+                        .Annotation("MySql:CharSet", "utf8mb4"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime(6)", nullable: false),
+                    CreatedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci"),
+                    ModifiedBy = table.Column<Guid>(type: "char(36)", nullable: true, collation: "ascii_general_ci")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CertificateHistorys", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CertificateHistorys_Certificates_CerteficateId",
+                        column: x => x.CerteficateId,
+                        principalTable: "Certificates",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CertificateHistorys_PersonalInfos_CivilRegOfficerId",
+                        column: x => x.CivilRegOfficerId,
+                        principalTable: "PersonalInfos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                })
+                .Annotation("MySql:CharSet", "utf8mb4");
+
+            migrationBuilder.CreateTable(
                 name: "DeathNotifications",
                 columns: table => new
                 {
@@ -1519,6 +1555,16 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "IX_BirthNotifications_SkilledProfLookupId",
                 table: "BirthNotifications",
                 column: "SkilledProfLookupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CertificateHistorys_CerteficateId",
+                table: "CertificateHistorys",
+                column: "CerteficateId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CertificateHistorys_CivilRegOfficerId",
+                table: "CertificateHistorys",
+                column: "CivilRegOfficerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Certificates_EventId",
@@ -1831,7 +1877,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
                 name: "BirthNotifications");
 
             migrationBuilder.DropTable(
-                name: "Certificates");
+                name: "CertificateHistorys");
 
             migrationBuilder.DropTable(
                 name: "CertificateTemplates");
@@ -1868,6 +1914,9 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
 
             migrationBuilder.DropTable(
                 name: "BirthEvents");
+
+            migrationBuilder.DropTable(
+                name: "Certificates");
 
             migrationBuilder.DropTable(
                 name: "DeathEvents");

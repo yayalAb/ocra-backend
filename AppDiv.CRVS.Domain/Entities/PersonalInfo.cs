@@ -130,6 +130,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<MarriageApplication> MarriageApplicationBrideInfo { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplicationGroomInfo { get; set; }
         public virtual ICollection<MarriageApplication> MarriageApplicationCivilRegOfficer { get; set; }
+        public virtual ICollection<CertificateHistory> CertificateHistoryCivilRegOfficer { get; set; }
 
     }
 }

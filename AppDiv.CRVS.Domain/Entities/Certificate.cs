@@ -28,6 +28,7 @@ namespace AppDiv.CRVS.Domain.Entities
         }
 
         public virtual Event Event { get; set; }
+        public virtual ICollection<CertificateHistory> CertificateHistoryCertificate { get; set; }
 
     }
 }

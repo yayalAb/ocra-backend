@@ -50,32 +50,32 @@ namespace AppDiv.CRVS.Infrastructure
                       .AddDefaultTokenProviders();
 
 
-             services.Configure<IdentityOptions>(options =>
-                {
-                    // Default Lockout settings.
-                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
-                    options.Lockout.MaxFailedAccessAttempts = 5;
-                    options.Lockout.AllowedForNewUsers = true;
-                    // Default Password settings.
-                    options.Password.RequireDigit = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireNonAlphanumeric = false; // For special character
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequiredLength = 3;
-                    options.Password.RequiredUniqueChars = 0;
+            services.Configure<IdentityOptions>(options =>
+               {
+                   // Default Lockout settings.
+                   options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
+                   options.Lockout.MaxFailedAccessAttempts = 5;
+                   options.Lockout.AllowedForNewUsers = true;
+                   // Default Password settings.
+                   options.Password.RequireDigit = false;
+                   options.Password.RequireLowercase = false;
+                   options.Password.RequireNonAlphanumeric = false; // For special character
+                   options.Password.RequireUppercase = false;
+                   options.Password.RequiredLength = 3;
+                   options.Password.RequiredUniqueChars = 0;
 
-                    // //TODO:add policy object names
-                    // options.Password.RequireDigit = passwordpolicy.Value<bool>("number");
-                    // options.Password.RequireLowercase = passwordpolicy.Value<bool>("lowerCase");
-                    // options.Password.RequireNonAlphanumeric = passwordpolicy.Value<bool>("otherCharacter"); // For special character
-                    // options.Password.RequireUppercase = passwordpolicy.Value<bool>("upperCase");
-                    // options.Password.RequiredLength = passwordpolicy.Value<int>("minLength");
-                    // options.Password.RequiredUniqueChars = 0;
-                    // Default SignIn settings.
-                    options.SignIn.RequireConfirmedEmail = false;
-                    options.SignIn.RequireConfirmedPhoneNumber = false;
-                    options.User.RequireUniqueEmail = true;
-                });
+                   // //TODO:add policy object names
+                   // options.Password.RequireDigit = passwordpolicy.Value<bool>("number");
+                   // options.Password.RequireLowercase = passwordpolicy.Value<bool>("lowerCase");
+                   // options.Password.RequireNonAlphanumeric = passwordpolicy.Value<bool>("otherCharacter"); // For special character
+                   // options.Password.RequireUppercase = passwordpolicy.Value<bool>("upperCase");
+                   // options.Password.RequiredLength = passwordpolicy.Value<int>("minLength");
+                   // options.Password.RequiredUniqueChars = 0;
+                   // Default SignIn settings.
+                   options.SignIn.RequireConfirmedEmail = false;
+                   options.SignIn.RequireConfirmedPhoneNumber = false;
+                   options.User.RequireUniqueEmail = true;
+               });
             #endregion identity
 
 
@@ -144,6 +144,10 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();
+            services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
+            services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
+
+
             // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
 
 
