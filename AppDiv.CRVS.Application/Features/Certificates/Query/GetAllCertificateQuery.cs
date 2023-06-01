@@ -18,6 +18,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public Guid CivilRegOfficerId { get; set; }
+
     }
 
     public class GetAllCertificateHandler : IRequestHandler<GetAllCertificateQuery, PaginatedList<CertificateDTO>>
@@ -32,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         {
             return await PaginatedList<CertificateDTO>
                             .CreateAsync(
-                                _CertificateRepository.GetAll().Select(c => new CertificateDTO
+                                _CertificateRepository.GetAll().Where(x => x.Event.CivilRegOfficerId == request.CivilRegOfficerId).Select(c => new CertificateDTO
                                 {
                                     Id = c.Id,
                                     EventId = c.EventId,
@@ -44,8 +46,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                     // Description = g.Description.Value<string>("eng")
                                 }).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
-            // var CertificateResponse = CustomMapper.Mapper.Map<List<CertificateDTO>>(CertificateList);
-            // return CertificateResponse;
         }
     }
 }
