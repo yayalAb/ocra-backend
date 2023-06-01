@@ -112,6 +112,12 @@ namespace AppDiv.CRVS.Infrastructure
                 modelBuilder.ApplyConfiguration(new DeathEventEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new DeathNotificationEntityConfiguration());
 
+                modelBuilder.ApplyConfiguration(new TransactionEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new RequestEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new CertificateSerialTransferEntityConfiguration());
+
+
+
 
             }
             #endregion

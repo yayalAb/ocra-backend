@@ -38,6 +38,8 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public virtual MarriageEvent MarriageEvent { get; set; }
         public virtual ICollection<SupportingDocument> EventSupportingDocuments { get; set; }
+        public virtual ICollection<CorrectionRequest> CorrectionRequests {get; set; 
+        }
         [NotMapped]
         public string? _EventDateEt
         {

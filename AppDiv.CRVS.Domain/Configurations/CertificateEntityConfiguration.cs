@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -15,6 +12,10 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.Event)
                 .WithMany(n => n.EventCertificates)
                 .HasForeignKey(m => m.EventId);
+            builder.HasMany(m => m.AuthenticationRequests)
+                .WithOne(n => n.Certificate)
+                .HasForeignKey(n => n.RequestId);
+
         }
     }
 }

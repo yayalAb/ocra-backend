@@ -101,7 +101,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MigrateDatabase();
+    // app.MigrateDatabase();
     using (var scope = app.Services.CreateScope())
     {
         var initialiser = scope.ServiceProvider.GetRequiredService<CRVSDbContextInitializer>();
