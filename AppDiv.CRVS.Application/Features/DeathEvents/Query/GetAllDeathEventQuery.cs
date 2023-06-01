@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Query
                                     Id = de.Id,
                                     FacilityTypeLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityTypeLookup),
                                     FacilityLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityLookup),
-                                    DuringDeath = de.DuringDeath,
+                                    DuringDeathLookup = CustomMapper.Mapper.Map<LookupDTO>(de.DuringDeathLookup),
                                     PlaceOfFuneral = de.PlaceOfFuneral,
                                     DeathNotification = CustomMapper.Mapper.Map<DeathNotificationDTO>(de.DeathNotification),
                                     Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
