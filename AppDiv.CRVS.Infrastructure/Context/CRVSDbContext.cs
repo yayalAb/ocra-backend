@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<Workflow> Workflows { get; set; }
         public DbSet<Step> Steps { get; set; }
         public DbSet<ContactInfo> ContactInfos { get; set; }
-        
+
         public DbSet<AdoptionEvent> AdoptionEvents { get; set; }
         public DbSet<BirthEvent> BirthEvents { get; set; }
         public DbSet<BirthNotification> BirthNotifications { get; set; }
@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<DeathEvent> DeathEvents { get; set; }
         public DbSet<DeathNotification> DeathNotifications { get; set; }
         public DbSet<DivorceEvent> DivorceEvents { get; set; }
-        public DbSet<Event> Events { get; set; } 
+        public DbSet<Event> Events { get; set; }
         public DbSet<PaymentRate> PaymentRates { get; set; }
         public DbSet<MarriageEvent> MarriageEvents { get; set; }
         public DbSet<MarriageApplication> MarriageApplications { get; set; }
@@ -55,6 +55,9 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<Registrar> Registrars { get; set; }
         public DbSet<SupportingDocument> SupportingDocuments { get; set; }
         public DbSet<Witness> Witnesses { get; set; }
+        public DbSet<CertificateHistory> CertificateHistorys { get; set; }
+
+
 
 
 
@@ -99,7 +102,7 @@ namespace AppDiv.CRVS.Infrastructure
                 modelBuilder.ApplyConfiguration(new MarriageEventEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new MarriageApplicationEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new WitnessEntityConfiguration());
-                
+
                 modelBuilder.ApplyConfiguration(new AdoptionEventEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new DivorceEventEntityConfiguration());
 
@@ -108,6 +111,12 @@ namespace AppDiv.CRVS.Infrastructure
 
                 modelBuilder.ApplyConfiguration(new DeathEventEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new DeathNotificationEntityConfiguration());
+
+                modelBuilder.ApplyConfiguration(new TransactionEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new RequestEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new CertificateSerialTransferEntityConfiguration());
+
+
 
 
             }

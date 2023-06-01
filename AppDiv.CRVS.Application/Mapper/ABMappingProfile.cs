@@ -43,7 +43,7 @@ using Newtonsoft.Json.Linq;
 namespace AppDiv.CRVS.Application.Mapper
 {
 
-  
+
     internal class CRVSMappingProfile : Profile
     {
         public CRVSMappingProfile()
@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
         }
-       
+
 
         private void ApplyMappingsFromAssembly(Assembly assembly)
         {
@@ -216,6 +216,9 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<RegistrarForDeathRequest, Registrar>().ReverseMap();
             CreateMap<RegistrarForMarriageRequest, Registrar>().ReverseMap();
             CreateMap<RegistrarForDivorceRequest, Registrar>().ReverseMap();
+
+            CreateMap<AddCertificateHistoryRequest, CertificateHistory>().ReverseMap();
+
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
             var mapFromType = typeof(IMapFrom<>);

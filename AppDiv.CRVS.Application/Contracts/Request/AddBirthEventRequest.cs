@@ -8,8 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class AddBirthEventRequest
     {
-        // public Guid FatherId { get; set; }
-        // public Guid MotherId { get; set; }
+
         public Guid FacilityTypeLookupId { get; set; }
         public Guid FacilityLookupId { get; set; }
         public Guid BirthPlaceId { get; set; }
