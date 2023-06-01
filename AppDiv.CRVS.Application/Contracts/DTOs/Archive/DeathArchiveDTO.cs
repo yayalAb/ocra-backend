@@ -56,8 +56,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? CauseOfDeathInfoTypeOr { get; set; }
         public string? CauseOfDeathInfoTypeAm { get; set; }
 
-        public string? DeathNotificationSerialNumberOr { get; set; }
-        public string? DeathNotificationSerialNumberAm { get; set; }
+        public string? DeathNotificationSerialNumber { get; set; }
+        // public string? DeathNotificationSerialNumberAm { get; set; }
 
     }
 }

@@ -6,17 +6,18 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Interfaces.Archive;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
-    public class ReturnAdoptionArchive
+    public class ReturnAdoptionArchive : IReturnAdoptionArchive
     {
         IDateAndAddressService _DateAndAddressService;
         public ReturnAdoptionArchive(IDateAndAddressService DateAndAddressService)
         {
             _DateAndAddressService = DateAndAddressService;
         }
-        AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo)
+        public AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo)
         {
             (string am, string or)? address = (adoption.EventOwener?.BirthAddressId == Guid.Empty
                || adoption.EventOwener?.BirthAddressId == null) ? null :

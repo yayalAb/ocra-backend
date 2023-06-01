@@ -8,6 +8,8 @@ using Microsoft.Extensions.Configuration;
 using AppDiv.CRVS.Application.Common.Behaviours;
 using FluentValidation;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Interfaces.Archive;
+using AppDiv.CRVS.Application.Service.ArchiveService;
 
 namespace AppDiv.CRVS.Application
 {
@@ -32,6 +34,12 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IReturnBirthCertificate, ReturnBirthCertificate>();
             services.AddScoped<IReturnMarriageCertificate, ReturnMarriageCertificate>();
             services.AddScoped<IReturnDivorceCertificate, ReturnDivorceCertificate>();
+
+            services.AddScoped<IReturnAdoptionArchive, ReturnAdoptionArchive>();
+            services.AddScoped<IReturnDeathArchive, ReturnDeathArchive>();
+            services.AddScoped<IReturnBirthArchive, ReturnBirthArchive>();
+            services.AddScoped<IReturnMarriageArchive, ReturnMarriageArchive>();
+            services.AddScoped<IReturnDivorceArchive, ReturnDivorceArchive>();
 
 
             return services;

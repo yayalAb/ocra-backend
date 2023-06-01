@@ -7,8 +7,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
     public class BirthArchiveDTO : BirthCertificateDTO
     {
-        public float? ChildWeightAtBirthOr { get; set; }
-        public float? ChildWeightAtBirthAm { get; set; }
+        public float? ChildWeightAtBirth { get; set; }
+        // public float? ChildWeightAtBirthAm { get; set; }
 
         public string? DeliveryTypeOr { get; set; }
         public string? DeliveryTypeAm { get; set; }
@@ -19,13 +19,13 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? TypeOfBirthOr { get; set; }
         public string? TypeOfBirthAm { get; set; }
 
-        public string? NotificationSerialNumberOr { get; set; }
-        public string? NotificationSerialNumberAm { get; set; }
+        public string? NotificationSerialNumber { get; set; }
+        // public string? NotificationSerialNumberAm { get; set; }
 
         // Mother
 
-        public string? MotherNationalIdOr { get; set; }
-        public string? MotherNationalIdAm { get; set; }
+        public string? MotherNationalId { get; set; }
+        // public string? MotherNationalIdAm { get; set; }
 
         public string? MotherBirthMonthOr { get; set; }
         public string? MotherBirthMonthAm { get; set; }
