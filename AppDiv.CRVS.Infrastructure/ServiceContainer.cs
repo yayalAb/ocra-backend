@@ -144,6 +144,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();
+            services.AddScoped<IArchiveGenerator, ArchiveGenerator>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
 

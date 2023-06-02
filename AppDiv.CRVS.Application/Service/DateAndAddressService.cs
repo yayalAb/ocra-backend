@@ -17,7 +17,6 @@ namespace AppDiv.CRVS.Application.Service
             _Ilogger = Ilogger;
         }
         public (string, string) addressFormat(Guid? id)
-
         {
             var Address = _AddresslookupRepository.GetAll()
                                    .Where(a => a.Id == id).FirstOrDefault();
