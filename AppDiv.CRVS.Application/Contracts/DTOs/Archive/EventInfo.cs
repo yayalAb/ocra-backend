@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
-    public class EventInfo
+    public class EventInfoArchive
     {
         public string? EventMonthOr { get; set; }
         public string? EventMonthAm { get; set; }

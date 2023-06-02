@@ -41,6 +41,7 @@ using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive;
+using AppDiv.CRVS.Application.Contracts.DTOs.Archive.BirthArchive;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -223,7 +224,11 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddCertificateHistoryRequest, CertificateHistory>().ReverseMap();
 
             CreateMap<Person, Officer>().ReverseMap();
+            CreateMap<Person, RegistrarArchive>().ReverseMap();
             CreateMap<Person, AdoptedChild>().ReverseMap();
+            CreateMap<Person, Child>().ReverseMap();
+            CreateMap<EventInfoArchive, AdoptionInfo>().ReverseMap();
+            CreateMap<EventInfoArchive, BirthInfo>().ReverseMap();
 
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 

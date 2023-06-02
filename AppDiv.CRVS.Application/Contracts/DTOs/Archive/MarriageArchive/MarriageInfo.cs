@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.MarriageArchive
 {
-    public class MarriageInfo : EventInfo
+    public class MarriageInfo : EventInfoArchive
     {
         public string? MarriageTypeOr { get; set; }
         public string? MarriageTypeAm { get; set; }

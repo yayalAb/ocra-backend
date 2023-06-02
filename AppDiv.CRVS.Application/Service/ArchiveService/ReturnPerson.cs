@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     public static class ReturnPerson
     {
         private static CustomDateConverter convertor = new CustomDateConverter();
-        public static EventInfo GetEventInfo(Event events, IDateAndAddressService dateAndAddressService)
+        public static EventInfoArchive GetEventInfo(Event events, IDateAndAddressService dateAndAddressService)
         {
             (string am, string or)? address = (events.EventAddressId == Guid.Empty
                || events.EventAddressId == null) ? null :
@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             (string[] am, string[] or) splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);
             // var convertor = new CustomDateConverter();
-            return new EventInfo
+            return new EventInfoArchive
             {
                 EventMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "or")?.month,
                 EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "Am")?.month,
