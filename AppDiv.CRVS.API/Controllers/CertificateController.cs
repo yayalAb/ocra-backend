@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Features.Certificates.Command.Create;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Delete;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Update;
 using AppDiv.CRVS.Application.Features.Certificates.Query;
+using AppDiv.CRVS.Application.Features.Archives.Query;
 using AppDiv.CRVS.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -24,6 +25,13 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<object> GetCertificate([FromQuery] Guid id, string? serialNo, bool IsPrint = false)
         {
             return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint });
+        }
+
+        [HttpGet("Archive")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> GetArchive([FromQuery] Guid id, bool IsPrint = false)
+        {
+            return await Mediator.Send(new GenerateArchiveQuery { Id = id, IsPrint = IsPrint });
         }
 
         [HttpPost("Create")]
