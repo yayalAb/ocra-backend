@@ -146,6 +146,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
+            services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
+
+
 
 
             // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();

@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
                 throw new NotFoundException("Defualt Address not Found");
             }
             Guid defualtCountryId = new Guid(defualtAddress.Value.Value<JObject>("defaults").Value<string>("default_country"));
-            Guid defualtRegionId = new Guid(defualtAddress.Value.Value<JObject>("defaults").Value<string>("default_country"));
+            Guid defualtRegionId = new Guid(defualtAddress.Value.Value<JObject>("defaults").Value<string>("default_region"));
 
 
             Guid parentId = Guid.Empty;

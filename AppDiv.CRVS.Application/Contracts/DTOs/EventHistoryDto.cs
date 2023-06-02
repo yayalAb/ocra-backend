@@ -12,7 +12,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? Status { get; set; }
         public string Event { get; set; }
         public string? Informant { get; set; }
-        public string EventId { get; set; }
+        public string CerificateId { get; set; }
+        public Guid EventId { get; set; }
         public string? EventDate { get; set; }
         public string? EventAddress { get; set; }
         public List<EventHistory>? Historys { get; set; }
@@ -21,7 +22,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class EventHistory
     {
         public string? Action { get; set; }
-        public DateTime? Date { get; set; }
+        public string? Date { get; set; }
         public string? By { get; set; }
         public string? Type { get; set; }
         public string? Address { get; set; }
