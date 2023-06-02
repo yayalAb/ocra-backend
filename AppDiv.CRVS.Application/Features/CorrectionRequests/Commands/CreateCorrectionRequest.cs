@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.Request;
 using MediatR;
 
-namespace AppDiv.CRVS.Application.Features.CorrectionRequest.Commands
+namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 {
 
     public record CreateCorrectionRequest(AddCorrectionRequest CorrectionRequest) : IRequest<CreateCorrectionRequestResponse>

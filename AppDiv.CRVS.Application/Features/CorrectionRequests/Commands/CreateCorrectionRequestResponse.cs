@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 
-namespace AppDiv.CRVS.Application.Features.CorrectionRequest.Commands
+namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 {
     public class CreateCorrectionRequestResponse : BaseResponse
     {

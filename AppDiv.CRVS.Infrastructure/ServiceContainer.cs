@@ -137,7 +137,6 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IEventRepository, EventRepository>();
 
 
-
             services.AddScoped<CRVSDbContextInitializer>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
@@ -146,7 +145,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
-            services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
+            services.AddScoped<ICorrectionRequestRepostory, CorrectionRequestRepostory>();
 
 
 
