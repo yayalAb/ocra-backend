@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.DeathArchive
 {
-    public class DeathInfo : EventInfo
+    public class DeathInfo : EventInfoArchive
     {
         public string? CauseOfDeath { get; set; }
 
