@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint });
         }
 
-        [HttpPost("Create")]
+        [HttpPost("CorrectionRequest")]
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateCertificate(CreateCertificateCommand command)
         {

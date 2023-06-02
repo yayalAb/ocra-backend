@@ -13,7 +13,8 @@ namespace AppDiv.CRVS.Domain.Configuration
                .WithMany(m => m.ApplicationUsers);
             builder.HasOne(m => m.Address)
             .WithMany(n => n.ApplicationuserAddresses)
-            .HasForeignKey(m => m.AddressId);
+            .HasForeignKey(m => m.AddressId)
+            .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }
