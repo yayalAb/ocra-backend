@@ -6,10 +6,11 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Interfaces.Archive;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
-    public class ReturnBirthArchive
+    public class ReturnBirthArchive : IReturnBirthArchive
     {
         IDateAndAddressService _dateAndAddressService;
         public ReturnBirthArchive(IDateAndAddressService DateAndAddressService)
@@ -100,6 +101,27 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 KebeleOr = splitedAddress.or.ElementAtOrDefault(5),
                 KebeleAm = splitedAddress.am.ElementAtOrDefault(5),
 
+                // archive
+
+                ChildWeightAtBirth = birth.BirthEvent.BirthNotification.WeightAtBirth,
+
+                DeliveryTypeAm = birth.BirthEvent.BirthNotification.DeliveryTypeLookup.Value?.Value<string>("am"),
+                DeliveryTypeOr = birth.BirthEvent.BirthNotification.DeliveryTypeLookup.Value?.Value<string>("or"),
+
+                SkilledProfessionalOr = birth.BirthEvent.BirthNotification.SkilledProfLookup.Value?.Value<string>("or"),
+                SkilledProfessionalAm = birth.BirthEvent.BirthNotification.SkilledProfLookup.Value?.Value<string>("am"),
+
+                TypeOfBirthOr = birth.BirthEvent.TypeOfBirthLookup.Value?.Value<string>("or"),
+                TypeOfBirthAm = birth.BirthEvent.TypeOfBirthLookup.Value?.Value<string>("am"),
+
+                NotificationSerialNumber = birth.BirthEvent.BirthNotification.NotficationSerialNumber,
+
+                MotherNationalId = birth.BirthEvent.Mother.NationalId,
+
+                MotherBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.BirthEvent.Mother.BirthDateEt).month, "or").month,
+                MotherBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.BirthEvent.Mother.BirthDateEt).month, "Am").month,
+                MotherBirthDay = convertor.getSplitted(birth.EventOwener.BirthDateEt).day.ToString(),
+                MotherBirthYear = convertor.getSplitted(birth.EventOwener.BirthDateEt).year.ToString(),
             };
         }
     }

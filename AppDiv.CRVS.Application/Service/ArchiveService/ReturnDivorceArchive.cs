@@ -6,10 +6,11 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Interfaces.Archive;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
-    public class ReturnDivorceArchive
+    public class ReturnDivorceArchive : IReturnDivorceArchive
     {
         IDateAndAddressService _DateAndAddressService;
         public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService)

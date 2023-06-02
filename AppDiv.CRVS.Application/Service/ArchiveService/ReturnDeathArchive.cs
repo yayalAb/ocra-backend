@@ -6,10 +6,11 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Interfaces.Archive;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
-    public class ReturnDeathArchive
+    public class ReturnDeathArchive : IReturnDeathArchive
     {
         IDateAndAddressService _dateAndAddressService;
         public ReturnDeathArchive(IDateAndAddressService DateAndAddressService)
@@ -150,7 +151,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
                 CauseOfDeath = death.DeathEventNavigation.DeathNotification.CauseOfDeath,
                 // CauseOfDeathOr = death.DeathEventNavigation.DeathNotification.DuringDeathLookup.Value?.Value<string>("or"),
+                CauseOfDeathInfoTypeAm = death.DeathEventNavigation.DeathNotification.CauseOfDeathInfoTypeLookup.Value?.Value<string>("am"),
+                CauseOfDeathInfoTypeOr = death.DeathEventNavigation.DeathNotification.CauseOfDeathInfoTypeLookup.Value?.Value<string>("or"),
 
+
+                DeathNotificationSerialNumber = death.DeathEventNavigation.DeathNotification.DeathNotificationSerialNumber,
 
 
 
