@@ -103,25 +103,27 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
                 // archive
 
-                ChildWeightAtBirth = birth.BirthEvent.BirthNotification.WeightAtBirth,
+                // Child = Fill.Filler<Person, PersonalInfo>(new Person(), birth.EventOwener),
 
-                DeliveryTypeAm = birth.BirthEvent.BirthNotification.DeliveryTypeLookup.Value?.Value<string>("am"),
-                DeliveryTypeOr = birth.BirthEvent.BirthNotification.DeliveryTypeLookup.Value?.Value<string>("or"),
+                // ChildWeightAtBirth = birth.BirthEvent.BirthNotification.WeightAtBirth,
 
-                SkilledProfessionalOr = birth.BirthEvent.BirthNotification.SkilledProfLookup.Value?.Value<string>("or"),
-                SkilledProfessionalAm = birth.BirthEvent.BirthNotification.SkilledProfLookup.Value?.Value<string>("am"),
+                // DeliveryTypeAm = birth.BirthEvent.BirthNotification.DeliveryTypeLookup.Value?.Value<string>("am"),
+                // DeliveryTypeOr = birth.BirthEvent.BirthNotification.DeliveryTypeLookup.Value?.Value<string>("or"),
 
-                TypeOfBirthOr = birth.BirthEvent.TypeOfBirthLookup.Value?.Value<string>("or"),
-                TypeOfBirthAm = birth.BirthEvent.TypeOfBirthLookup.Value?.Value<string>("am"),
+                // SkilledProfessionalOr = birth.BirthEvent.BirthNotification.SkilledProfLookup.Value?.Value<string>("or"),
+                // SkilledProfessionalAm = birth.BirthEvent.BirthNotification.SkilledProfLookup.Value?.Value<string>("am"),
 
-                NotificationSerialNumber = birth.BirthEvent.BirthNotification.NotficationSerialNumber,
+                // TypeOfBirthOr = birth.BirthEvent.TypeOfBirthLookup.Value?.Value<string>("or"),
+                // TypeOfBirthAm = birth.BirthEvent.TypeOfBirthLookup.Value?.Value<string>("am"),
 
-                MotherNationalId = birth.BirthEvent.Mother.NationalId,
+                // NotificationSerialNumber = birth.BirthEvent.BirthNotification.NotficationSerialNumber,
 
-                MotherBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.BirthEvent.Mother.BirthDateEt).month, "or").month,
-                MotherBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.BirthEvent.Mother.BirthDateEt).month, "Am").month,
-                MotherBirthDay = convertor.getSplitted(birth.EventOwener.BirthDateEt).day.ToString(),
-                MotherBirthYear = convertor.getSplitted(birth.EventOwener.BirthDateEt).year.ToString(),
+                // MotherNationalId = birth.BirthEvent.Mother.NationalId,
+
+                // MotherBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.BirthEvent.Mother.BirthDateEt).month, "or").month,
+                // MotherBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.BirthEvent.Mother.BirthDateEt).month, "Am").month,
+                // MotherBirthDay = convertor.getSplitted(birth.EventOwener.BirthDateEt).day.ToString(),
+                // MotherBirthYear = convertor.getSplitted(birth.EventOwener.BirthDateEt).year.ToString(),
             };
         }
     }
