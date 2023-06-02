@@ -18,7 +18,8 @@ namespace AppDiv.CRVS.Domain.Configurations
 
             builder.HasOne(m => m.EventAddress)
                .WithMany(n => n.EventAddresses)
-               .HasForeignKey(m => m.EventAddressId);
+               .HasForeignKey(m => m.EventAddressId)
+               .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(m => m.PaymentExamption)
             .WithOne(n => n.Event)
             .HasForeignKey<PaymentExamption>(n => n.EventId);

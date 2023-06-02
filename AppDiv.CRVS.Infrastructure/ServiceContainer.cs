@@ -117,16 +117,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IMarriageApplicationRepository, MarriageApplicationRepository>();
             services.AddTransient<IMarriageEventRepository, MarriageEventRepository>();
             services.AddTransient<IAdoptionEventRepository, AdoptionEventRepository>();
-
-
-
-
-
             services.AddScoped<IDeathEventRepository, DeathEventRepository>();
             services.AddScoped<IBirthEventRepository, BirthEventRepository>();
             services.AddTransient<IDivorceEventRepository, DivorceEventRepository>();
-
-
 
             services.AddTransient<ICertificateTemplateRepository, CertificateTemplateRepository>();
             services.AddTransient<IPaymentRateRepository, PaymentRateRepository>();
@@ -135,7 +128,6 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<ISupportingDocumentRepository, SupportingDocumentRepository>();
 
             services.AddTransient<IEventRepository, EventRepository>();
-
 
 
             services.AddScoped<CRVSDbContextInitializer>();
@@ -147,6 +139,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IArchiveGenerator, ArchiveGenerator>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
+            services.AddScoped<ICorrectionRequestRepostory, CorrectionRequestRepostory>();
+
+
 
 
             // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();

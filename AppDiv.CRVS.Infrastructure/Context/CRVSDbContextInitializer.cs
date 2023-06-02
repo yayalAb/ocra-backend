@@ -58,8 +58,6 @@ namespace AppDiv.CRVS.Infrastructure
             // await SeedUser();
             await SeedSystemLookups();
             await SeedSetting();
-
-
         }
         public async Task SeedSetting()
         {

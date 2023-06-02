@@ -22,7 +22,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public bool IsPrint { get; set; } = false;
         public string? CertificateSerialNumber { get; set; } = "";
         public Guid CivilRegOfficerId { get; set; }
-        public JObject Reason { get; set; }
+        public JObject? Reason { get; set; }
     }
 
     public class ReprintCertificateCommandHandler : IRequestHandler<ReprintCertificateCommand, CertificateDTO>
@@ -49,7 +49,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                     CerteficateId = request.Id,
                     CivilRegOfficerId = request.CivilRegOfficerId,
                     SrialNo = request.CertificateSerialNumber,
-                    Reason = request.Reason
+                    Reason = request.Reason,
+                    PrintType = "Certificate"
 
                 };
                 try

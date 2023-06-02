@@ -42,6 +42,7 @@ using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.BirthArchive;
+using AppDiv.CRVS.Application.Features.Payments.Command.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -220,8 +221,19 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<RegistrarForDeathRequest, Registrar>().ReverseMap();
             CreateMap<RegistrarForMarriageRequest, Registrar>().ReverseMap();
             CreateMap<RegistrarForDivorceRequest, Registrar>().ReverseMap();
-
+            CreateMap<CreatePaymentCommand, Payment>().ReverseMap();
             CreateMap<AddCertificateHistoryRequest, CertificateHistory>().ReverseMap();
+            CreateMap<Request, AddRequest>().ReverseMap();
+            CreateMap<CorrectionRequest, AddCorrectionRequest>().ReverseMap();
+
+
+
+            CreateMap<Person, Officer>().ReverseMap();
+            CreateMap<Person, RegistrarArchive>().ReverseMap();
+            CreateMap<Person, AdoptedChild>().ReverseMap();
+            CreateMap<Person, Child>().ReverseMap();
+            CreateMap<EventInfoArchive, AdoptionInfo>().ReverseMap();
+            CreateMap<EventInfoArchive, BirthInfo>().ReverseMap();
 
             CreateMap<Person, Officer>().ReverseMap();
             CreateMap<Person, RegistrarArchive>().ReverseMap();
