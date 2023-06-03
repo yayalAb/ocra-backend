@@ -7,6 +7,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive
 {
     public class DivorceInfo : EventInfoArchive
     {
+        public string? WifeBirthCertificateId { get; set; }
+        public string? HusbandBirthCertificateId { get; set; }
+
         public string? MarriageMonthOr { get; set; }
         public string? MarriageMonthAm { get; set; }
         public string? MarriageDay { get; set; }
@@ -25,6 +28,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive
 
         public CourtArchive Court { get; set; }
 
-        public string? NumberOfChildren { get; set; }
+        public int? NumberOfChildren { get; set; }
     }
 }
