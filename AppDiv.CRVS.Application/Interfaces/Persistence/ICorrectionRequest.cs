@@ -9,6 +9,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface ICorrectionRequestRepostory : IBaseRepository<CorrectionRequest>
     {
-
+        Task<CorrectionRequest> GetByIdAsync(Guid id);
     }
 }

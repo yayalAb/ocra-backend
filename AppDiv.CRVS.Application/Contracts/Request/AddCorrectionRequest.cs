@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class AddCorrectionRequest
     {
+        public Guid? Id { get; set; }
         public JObject? Description { get; set; }
         public Guid EventId { get; set; }
         public JObject Content { get; set; }

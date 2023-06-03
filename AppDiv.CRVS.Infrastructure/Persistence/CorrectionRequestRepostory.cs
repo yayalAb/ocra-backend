@@ -14,6 +14,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             _DbContext = dbContext;
         }
+        async Task<CorrectionRequest> ICorrectionRequestRepostory.GetByIdAsync(Guid id)
+        {
+            return await base.GetAsync(id);
+        }
 
     }
 }
