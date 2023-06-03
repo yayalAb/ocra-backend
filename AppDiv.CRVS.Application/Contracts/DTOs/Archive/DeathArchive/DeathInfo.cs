@@ -7,17 +7,22 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.DeathArchive
 {
     public class DeathInfo : EventInfoArchive
     {
-        public string? CauseOfDeath { get; set; }
-
-        public string? CauseOfDeathInfoTypeOr { get; set; }
-        public string? CauseOfDeathInfoTypeAm { get; set; }
-        public string? DeathNotificationSerialNumber { get; set; }
+        public string? BirthCertificateId { get; set; }
 
         public string? DuringDeathOr { get; set; }
         public string? DuringDeathAm { get; set; }
 
-        public string? PlaceOfFuneralOr { get; set; }
-        public string? PlaceOfFuneralAm { get; set; }
+        public string? PlaceOfFuneral { get; set; }
 
+    }
+
+    public class DeathNotificationArchive
+    {
+        public string? CauseOfDeath { get; set; }
+
+        public string? CauseOfDeathInfoTypeOr { get; set; }
+        public string? CauseOfDeathInfoTypeAm { get; set; }
+
+        public string? DeathNotificationSerialNumber { get; set; }
     }
 }

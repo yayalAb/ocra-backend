@@ -23,15 +23,22 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private DeathInfo GetEventInfo(Event death)
         {
             DeathInfo deathInfo = CustomMapper.Mapper.Map<DeathInfo>(ReturnPerson.GetEventInfo(death, _dateAndAddressService));
-            // birthInfo.WeightAtBirth = death.BirthEvent.BirthNotification.WeightAtBirth;
-            // birthInfo.DeliveryTypeOr = death.BirthEvent.BirthNotification.DeliveryTypeLookup?.Value?.Value<string>("or");
-            // birthInfo.DeliveryTypeAm = death.BirthEvent.BirthNotification.DeliveryTypeLookup?.Value?.Value<string>("am");
-            // birthInfo.SkilledProfessionalOr = death.BirthEvent.BirthNotification.SkilledProfLookup?.Value?.Value<string>("or");
-            // birthInfo.SkilledProfessionalAm = death.BirthEvent.BirthNotification.SkilledProfLookup?.Value?.Value<string>("am");
-            // birthInfo.TypeOfBirthOr = death.BirthEvent.TypeOfBirthLookup?.Value?.Value<string>("or");
-            // birthInfo.TypeOfBirthAm = death.BirthEvent.TypeOfBirthLookup?.Value?.Value<string>("am");
-            deathInfo.DeathNotificationSerialNumber = death.DeathEventNavigation.DeathNotification.DeathNotificationSerialNumber;
+            deathInfo.BirthCertificateId = death?.DeathEventNavigation?.BirthCertificateId;
+            deathInfo.PlaceOfFuneral = death?.DeathEventNavigation?.PlaceOfFuneral;
+            deathInfo.DuringDeathAm = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("am");
+            deathInfo.DuringDeathOr = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("or");
             return deathInfo;
+
+        }
+        private DeathNotificationArchive GetNotification(DeathNotification death)
+        {
+            return new DeathNotificationArchive
+            {
+                CauseOfDeath = death?.CauseOfDeath,
+                CauseOfDeathInfoTypeOr = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("or"),
+                CauseOfDeathInfoTypeAm = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("am"),
+                DeathNotificationSerialNumber = death?.DeathNotificationSerialNumber,
+            };
         }
 
         private RegistrarArchive GetRegistrar(Registrar reg)
@@ -65,6 +72,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             {
                 Deceased = ReturnPerson.GetPerson(death.EventOwener, _dateAndAddressService),
                 EventInfo = GetEventInfo(death),
+                Notification = GetNotification(death.DeathEventNavigation.DeathNotification),
                 Registrar = GetRegistrar(death.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService)),

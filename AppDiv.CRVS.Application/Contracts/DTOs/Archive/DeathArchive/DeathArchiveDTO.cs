@@ -10,6 +10,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
     {
         public Person? Deceased { get; set; }
         public DeathInfo? EventInfo { get; set; }
+        public DeathNotificationArchive? Notification { get; set; }
         public RegistrarArchive? Registrar { get; set; }
         public Officer? CivilRegistrarOfficer { get; set; }
     }

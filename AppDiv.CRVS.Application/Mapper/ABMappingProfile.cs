@@ -42,6 +42,9 @@ using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.BirthArchive;
+using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DeathArchive;
+using AppDiv.CRVS.Application.Contracts.DTOs.Archive.MarriageArchive;
+using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive;
 using AppDiv.CRVS.Application.Features.Payments.Command.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
@@ -55,8 +58,6 @@ namespace AppDiv.CRVS.Application.Mapper
             RecognizePostfixes("Lookup");
             // RecognizePrefixes("frm");
             ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
-
-
 
         }
 
@@ -232,15 +233,13 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Person, RegistrarArchive>().ReverseMap();
             CreateMap<Person, AdoptedChild>().ReverseMap();
             CreateMap<Person, Child>().ReverseMap();
+            CreateMap<Person, WitnessArchive>().ReverseMap();
             CreateMap<EventInfoArchive, AdoptionInfo>().ReverseMap();
             CreateMap<EventInfoArchive, BirthInfo>().ReverseMap();
-
-            CreateMap<Person, Officer>().ReverseMap();
-            CreateMap<Person, RegistrarArchive>().ReverseMap();
-            CreateMap<Person, AdoptedChild>().ReverseMap();
-            CreateMap<Person, Child>().ReverseMap();
-            CreateMap<EventInfoArchive, AdoptionInfo>().ReverseMap();
-            CreateMap<EventInfoArchive, BirthInfo>().ReverseMap();
+            CreateMap<EventInfoArchive, DeathInfo>().ReverseMap();
+            CreateMap<EventInfoArchive, MarriageInfo>().ReverseMap();
+            CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
+            // CreateMap<WitnessArchive, Witness>().ReverseMap();
 
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
