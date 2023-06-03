@@ -8,18 +8,17 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class Transaction : BaseAuditableEntity
     {
-       public string OldValueStr {get; set;}
-       public string NewValueStr { get; set; }
-       public Guid WorkflowId {get; set;}
-       public Guid RequestId { get; set; }
-       public Guid CivilRegOfficerId {get; set; }
+        public string OldValueStr { get; set; }
+        public string NewValueStr { get; set; }
+        public Guid WorkflowId { get; set; }
+        public Guid RequestId { get; set; }
+        public Guid CivilRegOfficerId { get; set; }
+        public virtual Workflow Workflow { get; set; }
+        public virtual Request Request { get; set; }
+        public virtual PersonalInfo CivilRegOfficer { get; set; }
 
-       public virtual Workflow Workflow { get; set; }
-       public virtual Request Request {get; set; }
-       public virtual PersonalInfo CivilRegOfficer { get; set; }
 
-       
-       [NotMapped]
+        [NotMapped]
         public JObject OldValue
         {
             get

@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Domain.Base
             }
             else
             {
-                this.lang = "en";
+                this.lang = "or";
             }
 
         }

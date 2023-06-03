@@ -13,15 +13,15 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
         {
             _CorrectionRepository = CorrectionRepository;
 
+
         }
         public async Task<CreateCorrectionRequestResponse> Handle(CreateCorrectionRequest request, CancellationToken cancellationToken)
         {
 
 
             var CreateAddressCommadResponse = new CreateCorrectionRequestResponse();
+            request.CorrectionRequest.Request.RequestType = "CorrectionRequest";
             var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
-
-
             await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
             var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
 

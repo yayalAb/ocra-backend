@@ -38,10 +38,20 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("GetPersonalInfoById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> G([FromQuery] Guid Id)
+        public async Task<object> Get([FromQuery] Guid Id)
         {
             return await _mediator.Send(new GetPersonalInfoById { Id = Id });
         }
+
+        [HttpGet]
+        [Route("GetPersonString")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<GetPersonByIdString> GetPrivew([FromQuery] Guid Id)
+        {
+            return await _mediator.Send(new getPersonForPrivewQuery { Id = Id });
+        }
+
+
 
         [HttpGet]
         [Route("SearchCertificate")]
