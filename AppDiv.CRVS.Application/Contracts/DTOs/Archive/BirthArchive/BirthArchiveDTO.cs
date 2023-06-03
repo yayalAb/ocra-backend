@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public Person? Father { get; set; }
 
         public BirthInfo? EventInfo { get; set; }
+        public BirthNotificationArchive? Notification { get; set; }
         public RegistrarArchive? Registrar { get; set; }
         public Officer? CivilRegistrarOfficer { get; set; }
     }

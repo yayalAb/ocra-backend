@@ -75,6 +75,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? ResidentAddressOr { get; set; }
         public string? ResidentAddressAm { get; set; }
 
+        public string? NationalId { get; set; }
+
         public string? NationalityOr { get; set; }
         public string? NationalityAm { get; set; }
 

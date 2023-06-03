@@ -23,16 +23,25 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private BirthInfo GetEventInfo(Event birth)
         {
             BirthInfo birthInfo = CustomMapper.Mapper.Map<BirthInfo>(ReturnPerson.GetEventInfo(birth, _dateAndAddressService));
-            birthInfo.WeightAtBirth = birth.BirthEvent.BirthNotification.WeightAtBirth;
-            birthInfo.DeliveryTypeOr = birth.BirthEvent.BirthNotification.DeliveryTypeLookup?.Value?.Value<string>("or");
-            birthInfo.DeliveryTypeAm = birth.BirthEvent.BirthNotification.DeliveryTypeLookup?.Value?.Value<string>("am");
-            birthInfo.SkilledProfessionalOr = birth.BirthEvent.BirthNotification.SkilledProfLookup?.Value?.Value<string>("or");
-            birthInfo.SkilledProfessionalAm = birth.BirthEvent.BirthNotification.SkilledProfLookup?.Value?.Value<string>("am");
             birthInfo.TypeOfBirthOr = birth.BirthEvent.TypeOfBirthLookup?.Value?.Value<string>("or");
             birthInfo.TypeOfBirthAm = birth.BirthEvent.TypeOfBirthLookup?.Value?.Value<string>("am");
-            birthInfo.NotificationSerialNumber = birth.BirthEvent.BirthNotification.NotficationSerialNumber;
+            birthInfo.BirthPlaceOr = birth.BirthEvent.BirthPlace?.Value?.Value<string>("or");
+            birthInfo.BirthPlaceAm = birth.BirthEvent.BirthPlace?.Value?.Value<string>("am");
             return birthInfo;
         }
+        private BirthNotificationArchive GetNotification(BirthNotification notification)
+        {
+            return new BirthNotificationArchive
+            {
+                WeightAtBirth = notification?.WeightAtBirth,
+                DeliveryTypeOr = notification?.DeliveryTypeLookup?.Value?.Value<string>("or"),
+                DeliveryTypeAm = notification?.DeliveryTypeLookup?.Value?.Value<string>("am"),
+                SkilledProfessionalOr = notification?.SkilledProfLookup?.Value?.Value<string>("or"),
+                SkilledProfessionalAm = notification?.SkilledProfLookup?.Value?.Value<string>("am"),
+                NotificationSerialNumber = notification?.NotficationSerialNumber,
+            };
+        }
+
 
         private RegistrarArchive GetRegistrar(Registrar reg)
         {
@@ -58,6 +67,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Mother = ReturnPerson.GetPerson(birth.BirthEvent.Mother, _dateAndAddressService),
                 Father = ReturnPerson.GetPerson(birth.BirthEvent.Father, _dateAndAddressService),
                 EventInfo = GetEventInfo(birth),
+                Notification = GetNotification(birth.BirthEvent.BirthNotification),
                 Registrar = GetRegistrar(birth.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(birth.CivilRegOfficer, _dateAndAddressService)),

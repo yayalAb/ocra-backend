@@ -15,13 +15,16 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public static EventInfoArchive GetEventInfo(Event events, IDateAndAddressService dateAndAddressService)
         {
             (string am, string or)? address = (events.EventAddressId == Guid.Empty
-               || events.EventAddressId == null) ? null :
+               || events.EventAddress == null) ? null :
                dateAndAddressService.addressFormat(events.EventAddressId);
 
             (string[] am, string[] or) splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);
             // var convertor = new CustomDateConverter();
             return new EventInfoArchive
             {
+                CertificateId = events?.CertificateId,
+                RegBookNumber = events?.RegBookNo,
+
                 EventMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "or")?.month,
                 EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "Am")?.month,
                 EventDay = convertor.getSplitted(events?.EventDateEt).day.ToString(),
@@ -55,8 +58,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
 
             (string am, string or)? birthAddress = (person?.BirthAddressId == Guid.Empty
-               || person?.BirthAddressId == null) ? null :
+               || person?.BirthAddress == null) ? null :
                dateAndAddressService.addressFormat(person.BirthAddressId);
+
+            (string am, string or)? residentAddress = (person?.ResidentAddressId == Guid.Empty
+               || person?.ResidentAddress == null) ? null :
+               dateAndAddressService.addressFormat(person.ResidentAddressId);
+
             return new Person
             {
                 FirstNameAm = person?.FirstName?.Value<string>("am"),
@@ -70,6 +78,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 GenderAm = person?.SexLookup?.Value?.Value<string>("am"),
                 GenderOr = person?.SexLookup?.Value?.Value<string>("or"),
 
+                NationalId = person?.NationalId,
+
                 BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt).month, "or")?.month,
                 BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt).month, "Am")?.month,
                 BirthDay = convertor.getSplitted(person?.BirthDateEt).day.ToString(),
@@ -77,6 +87,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
                 BirthAddressAm = birthAddress?.am,
                 BirthAddressOr = birthAddress?.or,
+
+                ResidentAddressAm = residentAddress?.am,
+                ResidentAddressOr = residentAddress?.or,
 
                 NationalityOr = person?.NationalityLookup?.Value?.Value<string>("or"),
                 NationalityAm = person?.NationalityLookup?.Value?.Value<string>("am"),
