@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<IEnumerable<Certificate>> GetByEventAsync(Guid id);
         Task<Certificate> GetByIdAsync(Guid id);
-        Task<Event?>? GetArchive(Guid id);
+        // Task<Event?>? GetArchive(Guid id);
         Task<(BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce)> GetContent(Guid eventId);
     }
 }

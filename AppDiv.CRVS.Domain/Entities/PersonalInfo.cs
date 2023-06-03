@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 
 
+
 namespace AppDiv.CRVS.Domain.Entities
 {
     public class PersonalInfo : BaseAuditableEntity
@@ -50,6 +51,13 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 FirstNameStr = value.ToString();
+            }
+        }
+        public string? PropertyLang
+        {
+            get
+            {
+                return FirstName?.Value<string>("am");
             }
         }
 

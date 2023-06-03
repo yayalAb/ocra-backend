@@ -13,6 +13,7 @@ using AppDiv.CRVS.Utility.Services;
 using Twilio.Clients;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Infrastructure.Extensions;
 // using AppDiv.CRVS.Infrastructure.Extensions;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -40,7 +41,7 @@ namespace AppDiv.CRVS.Infrastructure
 
             // #region  elasticSearch    
 
-            // services.AddElasticSearch(configuration);
+            services.AddElasticSearch(configuration);
 
             // #endregion elasticSearch
 
@@ -136,6 +137,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();
+            services.AddScoped<IArchiveGenerator, ArchiveGenerator>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
             services.AddScoped<ICorrectionRequestRepostory, CorrectionRequestRepostory>();

@@ -25,9 +25,16 @@ namespace AppDiv.CRVS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<object> SearchPersonalInfo([FromQuery] string SearchString, string? gender, int age)
         {
+            // return new object{};
             return await _mediator.Send(new GetPersonalInfoQuery { SearchString = SearchString, gender = gender, age = age });
         }
-
+        [HttpGet]
+        [Route("SearchSimilarPersonalInfo")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> SearchSimilarPersonalInfo([FromQuery] SearchSimilarPersonalInfoQuery query)
+        {
+            return Ok(await _mediator.Send(query));
+        }
         [HttpGet]
         [Route("GetPersonalInfoById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
