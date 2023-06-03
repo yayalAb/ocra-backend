@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     public class ReturnAdoptionArchive : IReturnAdoptionArchive
     {
         IDateAndAddressService _DateAndAddressService;
-        private readonly CustomDateConverter _convertor = new CustomDateConverter();
+        private readonly CustomDateConverter _convertor;
         // private readonly IReturnPerson _person;
         public ReturnAdoptionArchive(IDateAndAddressService DateAndAddressService)
         // , IReturnPerson person)
@@ -64,7 +64,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private CourtArchive GetCourt(CourtCase court)
         {
             (string am, string or)? courtAddress = (court.Court.AddressId == Guid.Empty
-               || court.Court.AddressId == null) ? null :
+               || court.Court?.Address == null) ? null :
                _DateAndAddressService.addressFormat(court.Court.AddressId);
             return new CourtArchive
             {
