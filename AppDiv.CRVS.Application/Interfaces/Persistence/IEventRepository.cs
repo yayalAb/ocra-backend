@@ -15,5 +15,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<Event?>? GetArchive(Guid id);
         Task<Event> GetByIdAsync(Guid id);
         Task<bool> CheckForeignKey(Expression<Func<Event, bool>> where, Expression<Func<Event, object>> predicate);
+         public  Task elasticSearchDemo();
+
     }
 }

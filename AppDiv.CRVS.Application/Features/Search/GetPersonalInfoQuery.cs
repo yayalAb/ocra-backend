@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.Search
 {
@@ -14,6 +15,7 @@ namespace AppDiv.CRVS.Application.Features.Search
         public string SearchString { get; set; }
         public string? gender { get; set; }
         public int age { get; set; }
+
 
     }
 
@@ -63,6 +65,7 @@ namespace AppDiv.CRVS.Application.Features.Search
                                  }).Take(50);
 
             return response;
+
 
         }
     }

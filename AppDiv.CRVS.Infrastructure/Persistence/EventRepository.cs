@@ -1,17 +1,21 @@
 using System.Linq.Expressions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class EventRepository : BaseRepository<Event>, IEventRepository
     {
         private readonly CRVSDbContext dbContext;
+        private readonly IElasticClient _elasticClient;
 
-        public EventRepository(CRVSDbContext dbContext) : base(dbContext)
+        public EventRepository(CRVSDbContext dbContext, IElasticClient elasticClient) : base(dbContext)
         {
             this.dbContext = dbContext;
+            _elasticClient = elasticClient;
         }
         async Task<Event> IEventRepository.GetByIdAsync(Guid id)
         {
@@ -26,6 +30,57 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public virtual async Task<bool> CheckForeignKey(Expression<Func<Event, bool>> where, Expression<Func<Event, object>> predicate)
         {
             return await this.dbContext.Events.Include(predicate).Where(where).FirstOrDefaultAsync() != null;
+
+        }
+        public async Task elasticSearchDemo()
+        {
+            if (!_elasticClient.Indices.Exists("person2").Exists)
+            {
+
+                _elasticClient.Indices.Create("person2", index => index.Map<PersonDtoElastic>(x => x.AutoMap()));
+            }
+            // await _elasticClient.IndexDocumentAsync(new PersonDtoElastic
+            // {
+            //     FirstNameStr = "name",
+            //     MiddleNameStr = "name2",
+            //     LastNameStr = "name3",
+            //     NationalId = "kkkk",
+            //     BirthDateEt = "bbbb"
+            // });
+        var response1 =     _elasticClient
+                .IndexMany<PersonDtoElastic>(dbContext.PersonalInfos
+                    .Select(p => new PersonDtoElastic
+                    {
+                        FirstNameStr = p.FirstNameStr,
+                        MiddleNameStr = p.MiddleNameStr,
+                        LastNameStr = p.LastNameStr,
+                        NationalId = p.NationalId,
+                        BirthDateEt = p.BirthDateEt
+                    }), "person2");
+            var response = _elasticClient
+              .SearchAsync<PersonDtoElastic>(s =>
+              s.Query(q => q.QueryString(d => d.Query('*' + "kdjfakl" + '*')))
+              .Size(5000));
+            var result = response.Result.Documents.ToList();
+            var res = await _elasticClient.GetAsync<PersonDtoElastic>(1, idx => idx.Index("person2"));
+            var res2 =   await _elasticClient.SearchAsync<PersonDtoElastic>(s => s
+                                        .Query(q => q
+                                         
+                                            .Match(m => m
+                                                .Field(f => f.NationalId)
+                                                .Query("string")
+                                                
+                                            )
+                                        )
+);
+//             var res3 =   await _elasticClient.SearchAsync<PersonDtoElastic>(s => s
+//                                         .Query(q => q.
+//                                         )
+// );
+         if(!res2.IsValid){
+           var error =  res2.OriginalException?.Message;
+         }
+            var f = true;
 
         }
 

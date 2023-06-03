@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
+using AppDiv.CRVS.Application.Features.Search;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Domain.Entities;
 
@@ -11,6 +14,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<IEnumerable<PersonalInfo>> GetAllAsync();
         Task<PersonalInfo> GetByIdAsync(Guid id);
+        Task<List<PersonalInfoIndex>> SearchElastic(SearchSimilarPersonalInfoQuery queryParams);
         public void EFUpdate(PersonalInfo personalInfo);
         public void Attach(PersonalInfo personalInfo);
         public PersonalInfo GetById(Guid id);
