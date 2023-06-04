@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Application.Features.Search
         }
         public async Task<object> Handle(SearchSimilarPersonalInfoQuery request, CancellationToken cancellationToken)
         {
-         return    await _PersonaInfoRepository.SearchElastic(request);
+         return    await _PersonaInfoRepository.SearchSimilarPersons(request);
             // return new object{};+
 
         }

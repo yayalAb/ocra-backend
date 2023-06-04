@@ -46,6 +46,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DeathArchive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.MarriageArchive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive;
 using AppDiv.CRVS.Application.Features.Payments.Command.Create;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -241,6 +242,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
             // CreateMap<WitnessArchive, Witness>().ReverseMap();
 
+
+            CreateMap<PersonalInfoIndex, PersonalInfoSearchDTO>();
             // CreateMap<List<ApplicationUser>, List<UserResponseDTO>>().ReverseMap();
 
             var mapFromType = typeof(IMapFrom<>);
