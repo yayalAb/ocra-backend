@@ -1,0 +1,16 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Contracts.DTOs;
+
+namespace AppDiv.CRVS.Application.Interfaces
+{
+    public interface INotificationService
+    {
+        public Task CreateNotification(Guid? RequestId,Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId);
+        public Task updateSeenStatus(Guid notificationId);
+        public Task<List<NotificationResponseDTO>> getNotification(Guid groupId);
+
+    }
+}

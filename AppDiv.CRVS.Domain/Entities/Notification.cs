@@ -10,22 +10,10 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public string Type { get; set; }
         public string MessageStr { get; set; }
-        public Guid RequestId {get; set;}
+        public Guid NotificationObjId {get; set; }
+        public bool Seen { get; set; }= false;
+        public Guid? RequestId {get; set;}
         public Guid GroupId { get; set; }
-
-
-        [NotMapped]
-        public JObject Message
-        {
-            get
-            {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(MessageStr) ? "{}" : MessageStr);
-            }
-            set
-            {
-                MessageStr = value.ToString();
-            }
-        }
 
         public virtual UserGroup UserGroup { get; set; }
         public virtual Request Request { get; set; }

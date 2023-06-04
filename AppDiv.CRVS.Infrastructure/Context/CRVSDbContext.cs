@@ -56,6 +56,8 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<SupportingDocument> SupportingDocuments { get; set; }
         public DbSet<Witness> Witnesses { get; set; }
         public DbSet<CertificateHistory> CertificateHistorys { get; set; }
+        public DbSet<Transaction> Transactions {get;set;}
+        public DbSet<Notification> Notifications { get; set; }
 
 
 

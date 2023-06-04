@@ -20,6 +20,14 @@ namespace AppDiv.CRVS.Domain.Configurations
             //     .WithOne(n => n.Request)
             //     .HasForeignKey<AuthenticationRequest>(n => n.RequestId);
 
+             builder.HasMany(m => m.Notifications)
+                .WithOne(n => n.Request)
+                .HasForeignKey(n => n.RequestId)
+                .IsRequired(false);
+
+
+
+
 
         }
 

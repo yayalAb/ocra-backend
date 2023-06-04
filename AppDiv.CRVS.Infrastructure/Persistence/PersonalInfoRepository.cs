@@ -5,9 +5,6 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Domain.Entities;
 using Nest;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Primitives;
-using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
