@@ -42,8 +42,9 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         }
         public async Task<response> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
-            var isLastStep = false;
-            var correctionRequestData = await _CorrectionRequestRepostory.GetAsync(request.Id);
+            var correctionRequestData = _CorrectionRequestRepostory.GetAll()
+            .Include(x => x.Request)
+            .Where(x => x.Id == request.Id).FirstOrDefault();
             if (correctionRequestData.Request.currentStep > 0 &&
          correctionRequestData.Request.currentStep <= _WorkflowService.GetLastWorkflow("change") + 1)
             {
