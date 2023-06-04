@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Authentication.Commands;
+using AppDiv.CRVS.Application.Features.Authentication.Querys;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve;
+using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -34,5 +37,15 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(query);
         }
+
+        [HttpGet("AuthenticationRequestList")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<AuthenticationRequestListDTO>> AuthenticationRequests()
+        {
+            return await _mediator.Send(new GetAuthentcationRequestList());
+        }
+
+
+
     }
 }

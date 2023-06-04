@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
 {
@@ -28,20 +29,37 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
     public class ApproveCorrectionRequestCommand : IRequest<response>
     {
         public Guid Id { get; set; }
-        public JObject? Description { get; set; }
+        public bool IsApprove { get; set; } = false;
     }
     public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, response>
     {
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
-        public ApproveCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory)
+        private readonly IWorkflowService _WorkflowService;
+        public ApproveCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
+            _WorkflowService = WorkflowService;
         }
         public async Task<response> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
             var isLastStep = false;
             var correctionRequestData = await _CorrectionRequestRepostory.GetAsync(request.Id);
-            correctionRequestData.Content = request.Description;
+            if (correctionRequestData.Request.currentStep > 0 &&
+         correctionRequestData.Request.currentStep <= _WorkflowService.GetLastWorkflow("change") + 1)
+            {
+                if (request.IsApprove)
+                {
+                    correctionRequestData.Request.currentStep--;
+                }
+                else
+                {
+                    correctionRequestData.Request.currentStep++;
+                }
+            }
+            else
+            {
+                throw new Exception("the Correction Request on idel state ");
+            }
             correctionRequestData.Request.currentStep = +1;
             try
             {
@@ -65,7 +83,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                     Success = true,
                     Message = "Sucessfully Approved",
                     Id = request.Id,
-                    IsLast = isLastStep
+                    IsLast = correctionRequestData.Request.currentStep == 0
                 }
             };
 

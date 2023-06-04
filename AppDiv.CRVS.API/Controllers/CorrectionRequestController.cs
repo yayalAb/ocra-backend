@@ -73,7 +73,8 @@ namespace AppDiv.CRVS.API.Controllers
                 {
                     if (result.Response.IsLast && result.Response.Message == "Adoption")
                     {
-                        // UpdateAdoptionCommand AdoptionCommand= new UpdateAdoptionCommand(result.data.Content);  
+                        UpdateAdoptionCommand AdoptionCommand = result.data.Content.ToObject<UpdateAdoptionCommand>();
+                        await _mediator.Send(AdoptionCommand);
                     }
                     else if (result.Response.IsLast && result.Response.Message == "Adoption")
                     {

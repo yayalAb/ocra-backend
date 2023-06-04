@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.Authentication.Commands
 {
@@ -29,24 +30,35 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
     {
         private readonly IAuthenticationRepository _AuthenticationnRequestRepostory;
         private readonly ICertificateRepository _CertificateRepository;
-        public AuthenticatCommandHandler(IAuthenticationRepository AuthenticationnRequestRepostory, ICertificateRepository CertificateRepository)
+        private readonly IWorkflowService _WorkflowService;
+        public AuthenticatCommandHandler(IWorkflowService WorkflowService, IAuthenticationRepository AuthenticationnRequestRepostory, ICertificateRepository CertificateRepository)
         {
             _AuthenticationnRequestRepostory = AuthenticationnRequestRepostory;
             _CertificateRepository = CertificateRepository;
+            _WorkflowService = WorkflowService;
         }
         public async Task<BaseResponse> Handle(AuthenticatCommand request, CancellationToken cancellationToken)
         {
             var AuthentcationData = _AuthenticationnRequestRepostory.GetAll()
             .Include(x => x.Request)
             .Where(x => x.RequestId == request.RequestId).FirstOrDefault();
-            if (request.IsApprove)
+            if (AuthentcationData.Request.currentStep > 0 &&
+            AuthentcationData.Request.currentStep <= _WorkflowService.GetLastWorkflow("authentication") + 1)
             {
-                AuthentcationData.Request.currentStep--;
+                if (request.IsApprove)
+                {
+                    AuthentcationData.Request.currentStep--;
+                }
+                else
+                {
+                    AuthentcationData.Request.currentStep++;
+                }
             }
             else
             {
-                AuthentcationData.Request.currentStep++;
+                throw new Exception("the Certefcate Authenticated");
             }
+
 
             if (AuthentcationData.Request.currentStep == 0)
             {
