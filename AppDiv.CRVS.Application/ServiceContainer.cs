@@ -27,8 +27,8 @@ namespace AppDiv.CRVS.Application
             // services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 
             services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IEventDocumentService , EventDocumentService>();
-            services.AddScoped<IEventPaymentRequestService , EventPaymentRequestService>();
+            services.AddScoped<IEventDocumentService, EventDocumentService>();
+            services.AddScoped<IEventPaymentRequestService, EventPaymentRequestService>();
             services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
             services.AddScoped<IReturnDeathCertificate, ReturnDeathCertificate>();
             services.AddScoped<IReturnBirthCertificate, ReturnBirthCertificate>();
@@ -40,6 +40,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IReturnBirthArchive, ReturnBirthArchive>();
             services.AddScoped<IReturnMarriageArchive, ReturnMarriageArchive>();
             services.AddScoped<IReturnDivorceArchive, ReturnDivorceArchive>();
+            services.AddScoped<IWorkflowService, WorkflowService>();
 
 
             return services;

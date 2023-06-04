@@ -15,29 +15,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Common;
 
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
 {
+    public class response
+    {
+        public AddCorrectionRequest data { get; set; }
+        public BaseResponse Response { get; set; }
+    }
     // Customer create command with CustomerResponse
-    public class ApproveCorrectionRequestCommand : IRequest<AddCorrectionRequest>
+    public class ApproveCorrectionRequestCommand : IRequest<response>
     {
         public Guid Id { get; set; }
         public JObject? Description { get; set; }
-        public JObject Content { get; set; }
     }
-    public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, AddCorrectionRequest>
+    public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, response>
     {
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
         public ApproveCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
         }
-        public async Task<AddCorrectionRequest> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
+        public async Task<response> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
+            var isLastStep = false;
             var correctionRequestData = await _CorrectionRequestRepostory.GetAsync(request.Id);
-            correctionRequestData.Description = request.Content;
             correctionRequestData.Content = request.Description;
-            correctionRequestData.currentStep = +1;
+            correctionRequestData.Request.currentStep = +1;
             try
             {
                 await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
@@ -50,8 +55,21 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
             var modifiedLookup = _CorrectionRequestRepostory.GetAll()
             .Where(x => x.Id == request.Id)
             .Include(x => x.Request).FirstOrDefault();
-            var LookupResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedLookup);
-            return LookupResponse;
+            var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedLookup);
+
+            var response = new response
+            {
+                data = CorrectionRequestResponse,
+                Response = new BaseResponse
+                {
+                    Success = true,
+                    Message = "Sucessfully Approved",
+                    Id = request.Id,
+                    IsLast = isLastStep
+                }
+            };
+
+            return response;
         }
     }
 }

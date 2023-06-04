@@ -10,6 +10,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForApproval;
+using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -68,7 +69,43 @@ namespace AppDiv.CRVS.API.Controllers
             try
             {
                 var result = await _mediator.Send(command);
-                return Ok(result);
+                if (result.Response.IsLast)
+                {
+                    if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+                        // UpdateAdoptionCommand AdoptionCommand= new UpdateAdoptionCommand(result.data.Content);  
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+
+                }
+                if (result.Response.Success)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result.Response.Message);
+                }
+
             }
             catch (Exception exp)
             {
