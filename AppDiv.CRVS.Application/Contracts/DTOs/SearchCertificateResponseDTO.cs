@@ -3,8 +3,11 @@
 namespace AppDiv.CRVS.Application.Contracts.DTOs;
 public class SearchCertificateResponseDTO
 {
-    public Guid Id { get; set; }
-    public string? CertifceteType { get; set; }
-    public string? FullName { get; set; }
-
+           public Guid Id { get; set; }
+        public string? FullName { get; set; }
+        public string? Address { get;set; }
+        public string? NationalId { get; set; }
+        public string? CertificateId { get; set; }
+        public string? EventType {get; set; }
+        public string? CertificateSerialNumber {get; set; }
 }

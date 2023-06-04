@@ -159,6 +159,23 @@ namespace AppDiv.CRVS.Application.Service
                     }
                 }).WithMessage($"'{propertyName}' Not Valid Ethiopian date.");
         }
+        public static IRuleBuilderOptions<T, string> NotValidChildDate<T>(this IRuleBuilder<T, string> ruleBuilder)
+        {
+
+            return ruleBuilder.Must(d =>
+                {
+                    try
+                    {
+                        var dateConverter = new CustomDateConverter();
+                        DateTime date = dateConverter.EthiopicToGregorian(d);
+                        return false;
+                    }
+                    catch (Exception e)
+                    {
+                        return false;
+                    }
+                }).WithMessage($"Child age is not valid");
+        }
         public static IRuleBuilderOptions<T, string> IsValidRegistrationDate<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)
         {
             return ruleBuilder.Must(d =>

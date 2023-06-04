@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Validators;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Repositories;
 using FluentValidation;
+using AppDiv.CRVS.Utility.Services;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -22,11 +23,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
     {
         public CreateBirthEventCommandValidator(IEventRepository eventRepo)
         {
+            var dateConverter = new CustomDateConverter();
 
             RuleFor(p => p.BirthEvent).SetValidator(new BirthEventValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Father).SetValidator(new FatherValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Mother).SetValidator(new MotherValidator(eventRepo));
+            RuleFor(p => p.BirthEvent.Event.EventOwener.BirthDateEt).NotValidChildDate()
+                .When(p => (dateConverter.EthiopicToGregorian(p.BirthEvent.Father.BirthDateEt).Year <= dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year)
+                        || (dateConverter.EthiopicToGregorian(p.BirthEvent.Mother.BirthDateEt).Year <= dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year));
+            // .When(p => dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year >= dateConverter.EthiopicToGregorian(p.BirthEvent.Father.BirthDateEt).Year);
             RuleFor(p => p.BirthEvent.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo))
                     .When(p => p.BirthEvent.BirthNotification != null);
             RuleFor(p => p.BirthEvent.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator(eventRepo))
