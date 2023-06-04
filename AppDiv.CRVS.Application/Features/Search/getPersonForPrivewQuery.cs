@@ -32,13 +32,13 @@ namespace AppDiv.CRVS.Application.Features.Search
             var personForAddress = await _PersonaInfoRepository.GetAsync(request.Id);
 
 
-            (string am, string or)? Birthaddress = (personForAddress?.BirthAddressId == Guid.Empty
+            var Birthaddress = (personForAddress?.BirthAddressId == Guid.Empty
                || personForAddress?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(personForAddress.BirthAddressId);
+               _DateAndAddressService.SplitedAddressByLang(personForAddress.BirthAddressId);
 
-            (string am, string or)? Residentaddress = (personForAddress?.BirthAddressId == Guid.Empty
+            var Residentaddress = (personForAddress?.BirthAddressId == Guid.Empty
               || personForAddress?.BirthAddressId == null) ? null :
-              _DateAndAddressService.addressFormat(personForAddress.BirthAddressId);
+              _DateAndAddressService.SplitedAddressByLang(personForAddress.BirthAddressId);
 
 
             var SelectedPerson = _PersonaInfoRepository.GetAll().Where(model => model.Id == request.Id)
@@ -49,7 +49,8 @@ namespace AppDiv.CRVS.Application.Features.Search
                 MiddleName = an.MiddleNameLang,
                 LastName = an.LastNameLang,
                 BirthDateEt = an.BirthDateEt,
-                National = an.NationalId,
+                NationalId = an.NationalId,
+                PhoneNo = an.PhoneNumber,
                 Sex = an.SexLookup.ValueLang,
                 PlaceOfBirth = an.PlaceOfBirthLookup.ValueLang,
                 Nationality = an.NationalityLookup.ValueLang,
@@ -59,11 +60,17 @@ namespace AppDiv.CRVS.Application.Features.Search
                 TypeOfWork = an.TitleLookup.ValueLang,
                 MarriageStatus = an.MarraigeStatusLookup.ValueLang,
                 Nation = an.NationalityLookup.ValueLang,
-                BirthAddressOr = Birthaddress.Value.or,
-                BirthAddressAm = Birthaddress.Value.am,
-                ResidentAddressOr = Residentaddress.Value.or,
-                ResidentAddressAm = Residentaddress.Value.am,
+                BirthAddressCountry = Birthaddress.ElementAtOrDefault(0),
+                BirthAddressRegion = Birthaddress.ElementAtOrDefault(1),
+                BirthAddressZone = Birthaddress.ElementAtOrDefault(2),
+                BirthAddressWoreda = Birthaddress.ElementAtOrDefault(3),
+                BirthAddressKebele = Birthaddress.ElementAtOrDefault(4),
 
+                ResidentAddressCountry = Residentaddress.ElementAtOrDefault(0),
+                ResidentAddressRegion = Residentaddress.ElementAtOrDefault(1),
+                ResidentAddressZone = Residentaddress.ElementAtOrDefault(2),
+                ResidentAddressWoreda = Residentaddress.ElementAtOrDefault(3),
+                ResidentAddressKebele = Residentaddress.ElementAtOrDefault(4),
             }).FirstOrDefault();
             return SelectedPerson;
         }
