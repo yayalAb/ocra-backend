@@ -11,8 +11,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string FirstName { get; set; }
         public string? MiddleName { get; set; }
         public string? LastName { get; set; }
+
+        public string? PhoneNo { get; set; }
         public string? BirthDateEt { get; set; }
-        public string? National { get; set; }
+        public string? NationalId { get; set; }
         public string Sex { get; set; }
         public string? PlaceOfBirth { get; set; }
         public string? Nationality { get; set; }
@@ -22,10 +24,16 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? TypeOfWork { get; set; }
         public string? MarriageStatus { get; set; }
         public string? Nation { get; set; }
-        public string? BirthAddressOr { get; set; }
-        public string? ResidentAddressOr { get; set; }
-        public string? BirthAddressAm { get; set; }
-        public string? ResidentAddressAm { get; set; }
+        public string? BirthAddressCountry { get; set; }
+        public string? BirthAddressRegion { get; set; }
+        public string? BirthAddressZone { get; set; }
+        public string? BirthAddressWoreda { get; set; }
+        public string? BirthAddressKebele { get; set; }
+        public string? ResidentAddressCountry { get; set; }
+        public string? ResidentAddressRegion { get; set; }
+        public string? ResidentAddressZone { get; set; }
+        public string? ResidentAddressWoreda { get; set; }
+        public string? ResidentAddressKebele { get; set; }
 
     }
 }

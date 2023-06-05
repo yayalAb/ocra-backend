@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
         public async Task<AddCorrectionRequest> Handle(updateCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
             var correctionRequestData = await _CorrectionRequestRepostory.GetAsync(request.Id);
-            if (correctionRequestData.currentStep != 0)
+            if (correctionRequestData.Request.currentStep != 0)
             {
                 throw new Exception("you can not edit this request it is Approved");
             }

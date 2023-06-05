@@ -14,7 +14,9 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<IEnumerable<PersonalInfo>> GetAllAsync();
         Task<PersonalInfo> GetByIdAsync(Guid id);
-        Task<List<PersonalInfoIndex>> SearchElastic(SearchSimilarPersonalInfoQuery queryParams);
+        Task<List<PersonSearchResponse>> SearchSimilarPersons(SearchSimilarPersonalInfoQuery queryParams);
+        public  Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query);
+        
         public void EFUpdate(PersonalInfo personalInfo);
         public void Attach(PersonalInfo personalInfo);
         public PersonalInfo GetById(Guid id);

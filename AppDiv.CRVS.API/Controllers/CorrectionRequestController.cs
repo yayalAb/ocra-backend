@@ -10,6 +10,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForApproval;
+using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -63,12 +64,50 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpPut("Approve")]
-        public async Task<ActionResult> Approve(Guid id, [FromBody] ApproveCorrectionRequestCommand command)
+        public async Task<ActionResult> Approve([FromQuery] ApproveCorrectionRequestCommand command)
         {
             try
             {
                 var result = await _mediator.Send(command);
-                return Ok(result);
+                if (result.Response.IsLast)
+                {
+                    if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+                        Console.WriteLine("Updaet Adoption updated controller");
+                        UpdateAdoptionCommand AdoptionCommand = result.data.Content.ToObject<UpdateAdoptionCommand>();
+                        await _mediator.Send(AdoptionCommand);
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+
+                }
+                if (result.Response.Success)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest(result.Response.Message);
+                }
+
             }
             catch (Exception exp)
             {

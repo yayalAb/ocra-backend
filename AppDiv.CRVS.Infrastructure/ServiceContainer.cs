@@ -14,6 +14,7 @@ using Twilio.Clients;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Infrastructure.Extensions;
+using AppDiv.CRVS.Infrastructure.Service;
 // using AppDiv.CRVS.Infrastructure.Extensions;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -141,6 +142,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();
             services.AddScoped<ICertificateHistoryRepository, CertificateHistoryRepository>();
             services.AddScoped<ICorrectionRequestRepostory, CorrectionRequestRepostory>();
+            services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+
+            services.AddScoped<INotificationService, NotificationService>();
 
 
 

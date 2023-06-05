@@ -60,7 +60,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             var executionStrategy = _AdoptionEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-
                 using (var transaction = _AdoptionEventRepository.Database.BeginTransaction())
                 {
                     try
@@ -158,8 +157,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 if (!adoptionEvent.Event.IsExampted)
                                 {
                                     //--create payment request and send sms notification to the users
-                                    (float amount , string code) response = await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, cancellationToken);
-                                    
+                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, cancellationToken);
+
                                     string message = $"Dear Customer,\nThis is to inform you that your request for Adoption certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using  code {response.code}.\n OCRA";
                                     List<string> msgRecepients = new List<string>();
                                     if (adoptionEvent.AdoptiveFather?.PhoneNumber != null)

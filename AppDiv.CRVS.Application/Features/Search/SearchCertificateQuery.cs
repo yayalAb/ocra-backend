@@ -24,17 +24,18 @@ namespace AppDiv.CRVS.Application.Features.Search
         }
         public async Task<object> Handle(SearchCertificateQuery request, CancellationToken cancellationToken)
         {
-            var SelectedInfo = _CertificateRepository.GetAll().Where(model =>
-                                                EF.Functions.Like(model.CertificateSerialNumber, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.ContentStr, $"%{request.SearchString}%"))
-                                                    .Select(an => new SearchCertificateResponseDTO
-                                                    {
-                                                        Id = an.Id,
-                                                        CertifceteType = an.Event.EventType,
-                                                        FullName = an.Event.EventOwener.FirstNameLang + " " + an.Event.EventOwener.MiddleNameLang + " " + an.Event.EventOwener.LastNameLang
-                                                    }).Take(50);
+            // var SelectedInfo = _CertificateRepository.GetAll().Where(model =>
+            //                                     EF.Functions.Like(model.CertificateSerialNumber, $"%{request.SearchString}%")
+            //                                 || EF.Functions.Like(model.ContentStr, $"%{request.SearchString}%"))
+            //                                         .Select(an => new SearchCertificateResponseDTO
+            //                                         {
+            //                                             Id = an.Id,
+            //                                             CertifceteType = an.Event.EventType,
+            //                                             FullName = an.Event.EventOwener.FirstNameLang + " " + an.Event.EventOwener.MiddleNameLang + " " + an.Event.EventOwener.LastNameLang
+            //                                         }).Take(50);
 
-            return SelectedInfo;
+            // return SelectedInfo;
+            return await _CertificateRepository.SearchCertificate(request);
         }
     }
 }

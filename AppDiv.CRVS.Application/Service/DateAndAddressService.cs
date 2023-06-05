@@ -44,6 +44,24 @@ namespace AppDiv.CRVS.Application.Service
             return (addressAm, addressOr);
         }
 
+
+        public string[] SplitedAddressByLang(Guid? id)
+        {
+            string addessSt = "";
+            var Address = _AddresslookupRepository.GetAll()
+                                   .Where(a => a.Id == id).FirstOrDefault();
+            addessSt = Address.AddressNameLang;
+            while (Address?.ParentAddressId != null)
+            {
+                Address = _AddresslookupRepository.GetAll()
+                                    .Where(a => a.Id == Address.ParentAddressId).FirstOrDefault();
+                addessSt = Address.AddressNameLang + "/" + addessSt;
+
+            };
+            string[] address = addessSt.Split("/");
+            return address;
+        }
+
     }
 }
 

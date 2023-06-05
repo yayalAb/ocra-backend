@@ -12,7 +12,6 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid EventId { get; set; }
         public bool RequestStatus { get; set; } = false;
         public string ContentStr { get; set; }
-        public int currentStep { get; set; }
         public Guid RequestId { get; set; }
 
         [NotMapped]

@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
+using AppDiv.CRVS.Application.Features.Search;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Nest;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
@@ -14,9 +18,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
     public class CertificateRepository : BaseRepository<Certificate>, ICertificateRepository
     {
         private readonly CRVSDbContext _dbContext;
-        public CertificateRepository(CRVSDbContext dbContext) : base(dbContext)
+        private readonly IElasticClient _elasticClient;
+
+        public CertificateRepository(CRVSDbContext dbContext, IElasticClient elasticClient) : base(dbContext)
         {
             this._dbContext = dbContext;
+            _elasticClient = elasticClient;
         }
         async Task<Certificate> ICertificateRepository.GetByIdAsync(Guid id)
         {
@@ -26,6 +33,79 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public async Task<IEnumerable<Certificate>> GetByEventAsync(Guid id)
         {
             return await _dbContext.Certificates.Where(c => c.EventId == id).ToListAsync();
+        }
+ public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
+        {
+            // _elasticClient.Indices.Delete("certificate");
+
+            if (!_elasticClient.Indices.Exists("certificate").Exists)
+            {
+
+                var indexRes = _elasticClient
+                   .IndexMany<CertificateIndex>(_dbContext.Certificates
+                       .Select(c => new CertificateIndex
+                       {
+                           Id = c.Id,
+                           EventType = c.Event.EventType,
+                           CertificateId = c.Event.CertificateId,
+                           CertificateSerialNumber = c.CertificateSerialNumber,
+                           ContentStr = c.ContentStr,
+                           FirstNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"),
+                           FirstNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"),
+                           MiddleNameOr = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("or"),
+                           MiddleNameAm = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("am"),
+                           LastNameOr = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or"),
+                           LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
+
+                       }).ToList(), "certificate");
+            }
+
+            var response = _elasticClient.SearchAsync<CertificateIndex>(s => s
+                    .Index("certificate")
+                    .Source(src => src
+                    .Includes(i => i
+                        .Fields(
+                            f => f.Id,
+                            f => f.FirstNameAm,
+                            f => f.FirstNameOr,
+                            f => f.MiddleNameAm,
+                            f => f.MiddleNameOr,
+                            f => f.LastNameAm,
+                            f => f.LastNameOr,
+                            f => f.AddressAm,
+                            f => f.AddressOr,
+                            f => f.NationalId,
+                            f => f.CertificateId,
+                            f => f.EventType,
+                            f => f.CertificateSerialNumber
+
+                        )
+                    ))
+                    .Query(q =>
+                    q
+                    .Wildcard(w => w
+                    .Field(f => f.CertificateSerialNumber).Value($"*{query.SearchString}*")
+                    ) ||
+                     q
+                    .Wildcard(w => w
+                    .Field(f => f.ContentStr).Value($"*{query.SearchString}*")
+                    )
+                    ).Size(50)
+                    );
+            return response.Result.Documents.Select(d => new SearchCertificateResponseDTO
+            {
+                Id = d.Id,
+                FullName = HelperService.getCurrentLanguage().ToLower() == "am"
+                ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
+                : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
+                Address = HelperService.getCurrentLanguage().ToLower() == "am"
+                ? d.AddressAm
+                : d.AddressOr,
+                NationalId = d.NationalId,
+                CertificateId = d.CertificateId,
+                EventType = d.EventType,
+                CertificateSerialNumber = d.CertificateSerialNumber
+            }).ToList();
         }
 
 

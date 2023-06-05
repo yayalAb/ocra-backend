@@ -5,7 +5,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class AdoptionDTO
     {
-
+        public Guid Id { get; set; }
         public Guid BeforeAdoptionAddressId { get; set; }
         public JObject ApprovedName { get; set; }
         public JObject Reason { get; set; }

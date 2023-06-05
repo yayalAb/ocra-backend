@@ -28,9 +28,20 @@ namespace AppDiv.CRVS.Application.Common
             Status = status;
         }
 
+        public BaseResponse(string message, bool success, Guid? Id, bool IsLast)
+        {
+            Success = success;
+            Message = message;
+            Id = Id;
+            IsLast = IsLast;
+        }
+
+
 
         public bool Success { get; set; }
+        public bool IsLast { get; set; }
         public string Message { get; set; }
+        public Guid? Id { get; set; }
         public int Status { get; set; } = 200;
         public List<string> ValidationErrors { get; set; }
 
