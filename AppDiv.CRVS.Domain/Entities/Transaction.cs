@@ -8,42 +8,17 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class Transaction : BaseAuditableEntity
     {
-       public string OldValueStr {get; set;}
-       public string NewValueStr { get; set; }
-       public bool ApprovalStatus {get; set;}
-       public Guid WorkflowId {get; set;}
-       public Guid RequestId { get; set; }
-       public Guid CivilRegOfficerId {get; set; }
-
-       public virtual Workflow Workflow { get; set; }
-       public virtual Request Request {get; set; }
-       public virtual PersonalInfo CivilRegOfficer { get; set; }
- 
-       
-       [NotMapped]
-        public JObject OldValue
-        {
-            get
-            {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(OldValueStr) ? "{}" : OldValueStr);
-            }
-            set
-            {
-                OldValueStr = value.ToString();
-            }
-        }
-        [NotMapped]
-        public JObject NewValue
-        {
-            get
-            {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(NewValueStr) ? "{}" : NewValueStr);
-            }
-            set
-            {
-                NewValueStr = value.ToString();
-            }
-        }
+        //    public string OldValueStr {get; set;}
+        //    public string NewValueStr { get; set; }
+        public int CurrentStep { get; set; }
+        public bool ApprovalStatus { get; set; }
+        public Guid WorkflowId { get; set; }
+        public Guid RequestId { get; set; }
+        public string CivilRegOfficerId { get; set; }
+        public string Remark { get;}
+        public virtual Workflow Workflow { get; set; }
+        public virtual Request Request { get; set; }
+        public virtual ApplicationUser CivilRegOfficer { get; set; }
 
 
     }

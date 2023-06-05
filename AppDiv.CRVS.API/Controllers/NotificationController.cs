@@ -8,8 +8,8 @@ namespace AppDiv.CRVS.API.Controllers
     public class NotificationController : ApiControllerBase
     {
 
-        [HttpGet()]
-        public async Task<IActionResult> GetNotification([FromQuery] GetNotificationByGroupIdQuery query)
+        [HttpPost]
+        public async Task<IActionResult> GetNotification([FromBody] GetNotificationByGroupIdQuery query)
         {
             return Ok(await Mediator.Send(query));
         }

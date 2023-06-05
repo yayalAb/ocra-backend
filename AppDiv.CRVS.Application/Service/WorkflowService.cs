@@ -42,5 +42,15 @@ namespace AppDiv.CRVS.Application.Service
                 return nextStep.step;
             }
         }
+        public Guid GetReceiverGroupId (string workflowType , int step){
+            var groupId = _workflowRepository.GetAll()
+            .Where(w => w.workflowName == workflowType)
+            .Select(w => w.Steps.Where(s => s.step == step).Select(s => s.UserGroupId).FirstOrDefault()
+            ).FirstOrDefault();
+            if(groupId == null ){
+                throw new Exception("user group not found");
+            }
+            return (Guid)groupId;
+        }
     }
 }

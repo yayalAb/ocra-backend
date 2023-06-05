@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Infrastructure.Service
@@ -16,16 +17,17 @@ namespace AppDiv.CRVS.Infrastructure.Service
         {
             _context = context;
         }
-        public async Task CreateNotification(Guid? RequestId,Guid notificationObjId,  string type, string message, Guid groupId, Guid? requestId)
+        public async Task CreateNotification(Guid notificationObjId,  string type, string message, Guid groupId, Guid? requestId, string senderId)
         {
-
+   
             var notification = new Notification
             {
                 Type = type,
                 NotificationObjId = notificationObjId,
                 MessageStr = message,
                 RequestId = requestId,
-                GroupId = groupId
+                GroupId = groupId,
+                SenderId = senderId
             };
             await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
@@ -45,15 +47,31 @@ namespace AppDiv.CRVS.Infrastructure.Service
             
 
         }
-        public async Task<List<NotificationResponseDTO>> getNotification(Guid groupId){
+        public async Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds){
+
             return await _context.Notifications
-                    .Where(n => n.GroupId == groupId && !n.Seen)
+                    .Include(n => n.Sender)
+                        .ThenInclude(s => s.PersonalInfo)
+                    .Include(n => n.Request.CorrectionRequest)
+                    .Include(n => n.Request.AuthenticationRequest)
+                    .Where(n => groupIds.Contains(n.GroupId) && !n.Seen)
                     .Select(n =>new NotificationResponseDTO{
                         Type = n.Type,
+                        EventId = n.Type == Enum.GetName<NotificationType>(NotificationType.correction)
+                                            ? n.Request.CorrectionRequest.EventId
+                                  :n.Type == Enum.GetName<NotificationType>(NotificationType.correction)
+                                  ?n.Request.AuthenticationRequest.Certificate.EventId
+                                  :null,
                         MessageStr = n.MessageStr,
                         NotificationObjId = n.NotificationObjId,
                         RequestId = n.RequestId,
-                        GroupId = n.GroupId
+                        GroupId = n.GroupId,
+                        CreatedAt = n.CreatedAt,
+                        SenderFullName = n.Sender.PersonalInfo.FirstNameLang+" "+
+                                         n.Sender.PersonalInfo.MiddleNameLang+" "+
+                                         n.Sender.PersonalInfo.LastNameLang,
+                        SenderUserName = n.Sender.UserName
+
 
                     })
                     .ToListAsync();
