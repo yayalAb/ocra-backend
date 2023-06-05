@@ -8,9 +8,9 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface INotificationService
     {
-        public Task CreateNotification(Guid? RequestId,Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId);
+        public Task CreateNotification(Guid notificationObjId,  string type, string message, Guid groupId, Guid? requestId, string senderId);
         public Task updateSeenStatus(Guid notificationId);
-        public Task<List<NotificationResponseDTO>> getNotification(Guid groupId);
+        public Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds);
 
     }
 }

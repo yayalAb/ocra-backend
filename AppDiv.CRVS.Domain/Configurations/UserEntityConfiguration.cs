@@ -15,6 +15,9 @@ namespace AppDiv.CRVS.Domain.Configuration
             .WithMany(n => n.ApplicationuserAddresses)
             .HasForeignKey(m => m.AddressId)
             .OnDelete(DeleteBehavior.Restrict);
+            builder.HasMany(m => m.Notifications)
+            .WithOne(n => n.Sender)
+            .HasForeignKey(n => n.SenderId);
         }
     }
 }
