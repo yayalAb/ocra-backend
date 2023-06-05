@@ -38,6 +38,8 @@ using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Update;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Update;
 using static AppDiv.CRVS.Application.Contracts.Request.AdoptionPersonalINformationRequest;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create;
+using AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Command.Create;
+using AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Command.Update;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive;
@@ -228,6 +230,11 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Request, AddRequest>().ReverseMap();
             CreateMap<CorrectionRequest, AddCorrectionRequest>().ReverseMap();
 
+            CreateMap<CertificateSerialTransfer, CertificateTransferDTO>().ReverseMap();
+            CreateMap<CertificateSerialTransfer, AddCertificateTransferRequest>().ReverseMap();
+            CreateMap<CertificateSerialTransfer, CreateCertificateTransferCommand>().ReverseMap();
+            CreateMap<CertificateSerialTransfer, UpdateCertificateTransferCommand>().ReverseMap();
+
 
 
             CreateMap<Person, Officer>().ReverseMap();
@@ -240,6 +247,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<EventInfoArchive, DeathInfo>().ReverseMap();
             CreateMap<EventInfoArchive, MarriageInfo>().ReverseMap();
             CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
+
+
             // CreateMap<WitnessArchive, Witness>().ReverseMap();
 
 

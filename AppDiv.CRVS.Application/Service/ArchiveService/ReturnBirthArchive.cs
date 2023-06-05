@@ -43,11 +43,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         }
 
 
-        private RegistrarArchive GetRegistrar(Registrar reg)
+        private RegistrarArchive? GetRegistrar(Registrar reg)
         {
-            RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg.RegistrarInfo, _dateAndAddressService));
-            regInfo.RelationShipOr = reg.RelationshipLookup.Value?.Value<string>("or");
-            regInfo.RelationShipAm = reg.RelationshipLookup.Value?.Value<string>("am");
+            RegistrarArchive? regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService));
+            regInfo.RelationShipOr = reg?.RelationshipLookup.Value?.Value<string>("or");
+            regInfo.RelationShipAm = reg?.RelationshipLookup.Value?.Value<string>("am");
             return regInfo;
         }
 
