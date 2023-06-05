@@ -44,23 +44,22 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         {
             var correctionRequestData = _CorrectionRequestRepostory.GetAll()
             .Include(x => x.Request)
-            .Where(x => x.Id == request.Id).FirstOrDefault();
+            .Where(x => x.RequestId == request.Id).FirstOrDefault();
 
-            if (correctionRequestData.Request.currentStep > 0 &&
-         correctionRequestData.Request.currentStep <= (_WorkflowService.GetLastWorkflow("change") + 1))
+            int lastworkFlowStep = _WorkflowService.GetLastWorkflow("authentication");
+
+            if (correctionRequestData == null)
             {
-                if (request.IsApprove)
-                {
-                    correctionRequestData.Request.currentStep--;
-                }
-                else
-                {
-                    correctionRequestData.Request.currentStep++;
-                }
+                throw new Exception("no steps found");
+            }
+            if (correctionRequestData.Request.currentStep >= 0 && correctionRequestData.Request.currentStep < _WorkflowService.GetLastWorkflow("change"))
+            {
+                var nextStep = _WorkflowService.GetNextStep("authentication", correctionRequestData.Request.currentStep, request.IsApprove);
+                correctionRequestData.Request.currentStep = nextStep;
             }
             else
             {
-                throw new Exception("the Correction Request on idel state ");
+                throw new Exception("next step doesnot exist");
             }
             try
             {

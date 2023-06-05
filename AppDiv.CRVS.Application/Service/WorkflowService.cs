@@ -22,5 +22,25 @@ namespace AppDiv.CRVS.Application.Service
             .OrderByDescending(x => x.step).FirstOrDefault();
             return lastStep.step;
         }
+        public int GetNextStep(string workflowType, int step, bool isApprove)
+        {
+            if (isApprove)
+            {
+                var nextStep = _stepRepostory.GetAll()
+                            .Include(x => x.workflow)
+                            .Where(x => x.workflow.workflowName == workflowType && x.step > step)
+                            .OrderBy(x => x.step).FirstOrDefault();
+
+                return nextStep.step;
+            }
+            else
+            {
+                var nextStep = _stepRepostory.GetAll()
+                           .Include(x => x.workflow)
+                           .Where(x => x.workflow.workflowName == workflowType && x.step > step)
+                           .OrderByDescending(x => x.step).FirstOrDefault();
+                return nextStep.step;
+            }
+        }
     }
 }

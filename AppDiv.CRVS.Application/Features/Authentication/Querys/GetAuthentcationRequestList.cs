@@ -22,35 +22,41 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
 {
     public class GetAuthentcationRequestList : IRequest<List<AuthenticationRequestListDTO>>
     {
+        public Guid UserId { get; set; }
 
     }
     public class GetAuthentcationRequestListHandler : IRequestHandler<GetAuthentcationRequestList, List<AuthenticationRequestListDTO>>
     {
         private readonly IAuthenticationRepository _AuthenticationRepository;
         private readonly IWorkflowService _WorkflowService;
-        public GetAuthentcationRequestListHandler(IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
+        private readonly IRequestRepostory _RequestRepostory;
+
+        public GetAuthentcationRequestListHandler(IRequestRepostory RequestRepostory, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
         {
             _AuthenticationRepository = AuthenticationRepository;
             _WorkflowService = WorkflowService;
+            _RequestRepostory = RequestRepostory;
         }
         public async Task<List<AuthenticationRequestListDTO>> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
-            var AuthenticationRequestList = _AuthenticationRepository.GetAll()
-            .Include(x => x.Certificate).ThenInclude(x => x.Event)
+            var RequestList = _RequestRepostory.GetAll()
+            .Include(x => x.CivilRegOfficer)
+            .Include(x => x.AuthenticationRequest)
+            .Include(x => x.CorrectionRequest)
             .Select(x => new AuthenticationRequestListDTO
             {
                 Id = x.Id,
-                CertificateId = "certId",
-                RequestType = x.Request.RequestType,
-                CertificateType = "CertType",
+                RequestedBy = x.CivilRegOfficer.FirstNameLang + " " + x.CivilRegOfficer.MiddleNameLang + " " + x.CivilRegOfficer.LastNameLang,
+                RequestType = x.RequestType,
+                CurrentStep = x.currentStep,
                 RequestDate = x.CreatedAt
 
             });
-            if (AuthenticationRequestList == null)
+            if (RequestList == null)
             {
                 throw new Exception("Authentication Request not Exist");
             }
-            return AuthenticationRequestList.ToList();
+            return RequestList.ToList();
         }
     }
 }

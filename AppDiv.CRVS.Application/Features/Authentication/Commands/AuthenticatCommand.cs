@@ -42,30 +42,26 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             var AuthentcationData = _AuthenticationnRequestRepostory.GetAll()
             .Include(x => x.Request)
             .Where(x => x.RequestId == request.RequestId).FirstOrDefault();
-            if (AuthentcationData.Request.currentStep > 0 &&
-            AuthentcationData.Request.currentStep <= _WorkflowService.GetLastWorkflow("authentication") + 1)
+            if (AuthentcationData == null)
             {
-                if (request.IsApprove)
+                throw new Exception("no steps found");
+            }
+            if (AuthentcationData.Request.currentStep >= 0 && AuthentcationData.Request.currentStep < _WorkflowService.GetLastWorkflow("authentication"))
+            {
+                var nextStep = _WorkflowService.GetNextStep("authentication", AuthentcationData.Request.currentStep, request.IsApprove);
+                AuthentcationData.Request.currentStep = nextStep;
+                if (nextStep == _WorkflowService.GetLastWorkflow("authentication"))
                 {
-                    AuthentcationData.Request.currentStep--;
-                }
-                else
-                {
-                    AuthentcationData.Request.currentStep++;
+                    var certificate = await _CertificateRepository.GetAsync(AuthentcationData.CertificateId);
+                    certificate.AuthenticationStatus = true;
+                    await _AuthenticationnRequestRepostory.UpdateAsync(AuthentcationData, x => x.Id);
                 }
             }
             else
             {
-                throw new Exception("the Certefcate Authenticated");
+                throw new Exception("next step doesnot exist");
             }
 
-
-            if (AuthentcationData.Request.currentStep == 0)
-            {
-                var certificate = await _CertificateRepository.GetAsync(AuthentcationData.CertificateId);
-                certificate.AuthenticationStatus = true;
-                await _AuthenticationnRequestRepostory.UpdateAsync(AuthentcationData, x => x.Id);
-            }
             try
             {
                 await _AuthenticationnRequestRepostory.UpdateAsync(AuthentcationData, x => x.Id);
