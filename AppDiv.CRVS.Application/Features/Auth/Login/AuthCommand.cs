@@ -73,6 +73,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Name = userData.UserName,
                 Token = token,
                 PersonalInfoId = userData.PersonalInfoId,
+                GroupIds = userData.UserGroups.Select(g =>g.Id).ToList(),
                 Roles = userRoles.ToList(),
             };
         }

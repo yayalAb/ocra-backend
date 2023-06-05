@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Notification.Queries.GetNotificationByGroupId
 {
     public class GetNotificationByGroupIdQuery : IRequest<List<NotificationResponseDTO>>
     {
-        public Guid GroupId { get; set; }
+        public List<Guid> GroupIds { get; set; }
     }
 
     public class GetNotificationByGroupIdQueryHandler : IRequestHandler<GetNotificationByGroupIdQuery, List<NotificationResponseDTO>>
@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Notification.Queries.GetNotificationByGroupId
         public async Task<List<NotificationResponseDTO>> Handle(GetNotificationByGroupIdQuery request, CancellationToken cancellationToken)
         {
            
-           return await _notificationService.getNotification(request.GroupId);
+           return await _notificationService.getNotification(request.GroupIds);
         }
     }
 }

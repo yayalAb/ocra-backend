@@ -78,7 +78,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             _ILogger.LogCritical(content?.DivorceEvent?.DivorcedWife?.Id.ToString());
             _ILogger.LogCritical(content?.MarriageEvent?.BrideInfo?.Id.ToString());
             var certificate = _archiveGenerator.GetArchive(request, content, birthCertificateNo?.Event?.CertificateId);
-            var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType.Trim().Concat(" Archive").ToString()).FirstOrDefault();
+            var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType + " " + "Archive").FirstOrDefault();
             // if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             // {
             //     selectedEvent.IsCertified = true;

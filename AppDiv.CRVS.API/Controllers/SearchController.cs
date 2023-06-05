@@ -75,6 +75,13 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(query);
         }
+             [HttpGet]
+        [Route("SearchApplicationUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> SearchApplicationUser([FromQuery] SearchUserDropDownQuery query)
+        {
+            return await _mediator.Send(query);
+        }
     }
 }
 

@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,10 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 {
+
+
     // Customer create command with CustomerResponse
-    public class ReprintCertificateCommand : IRequest<CertificateDTO>
+    public class ReprintCertificateCommand : IRequest<object>
     {
 
         public Guid Id { get; set; }
@@ -25,25 +28,34 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public JObject? Reason { get; set; }
     }
 
-    public class ReprintCertificateCommandHandler : IRequestHandler<ReprintCertificateCommand, CertificateDTO>
+    public class ReprintCertificateCommandHandler : IRequestHandler<ReprintCertificateCommand, object>
     {
         private readonly ICertificateRepository _certificateRepository;
         private readonly ICertificateHistoryRepository _CertificateHistoryRepository;
-        public ReprintCertificateCommandHandler(ICertificateRepository certificateRepository, ICertificateHistoryRepository CertificateHistoryRepository)
+        private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
+        public ReprintCertificateCommandHandler(ICertificateTemplateRepository ICertificateTemplateRepository, ICertificateRepository certificateRepository, ICertificateHistoryRepository CertificateHistoryRepository)
         {
             _certificateRepository = certificateRepository;
             _CertificateHistoryRepository = CertificateHistoryRepository;
+            _ICertificateTemplateRepository = ICertificateTemplateRepository;
         }
-        public async Task<CertificateDTO> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
+        public async Task<object> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
-
+            string certId = "";
             if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
-                var certificate = await _certificateRepository.GetAsync(request.Id);
+                var certificate = _certificateRepository.GetAll()
+                .Include(x => x.Event)
+                .Where(x => x.Id == request.Id).FirstOrDefault()
+                ;
                 if (certificate == null)
                 {
                     throw new Exception("Certificate With This Id Not Found");
                 }
+                var certificateTemplateId = _ICertificateTemplateRepository.GetAll()
+                .Where(c => c.CertificateType == certificate.Event.EventType)
+                .FirstOrDefault();
+                certId = certificateTemplateId.Id.ToString();
                 var AddHistory = new AddCertificateHistoryRequest
                 {
                     CerteficateId = request.Id,
@@ -51,7 +63,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                     SrialNo = request.CertificateSerialNumber,
                     Reason = request.Reason,
                     PrintType = "Certificate"
-
                 };
                 try
                 {
@@ -70,7 +81,11 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             var modifiedCertificate = await _certificateRepository.GetAsync(request.Id);
             var CertificateResponse = CustomMapper.Mapper.Map<CertificateDTO>(modifiedCertificate);
 
-            return CertificateResponse;
+            return new
+            {
+                Content = CertificateResponse.Content,
+                certificateTemplateId = certId
+            };
         }
     }
 }

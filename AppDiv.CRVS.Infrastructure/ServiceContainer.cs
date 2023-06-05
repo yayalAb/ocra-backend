@@ -145,6 +145,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ICertificateRangeRepository, CertificateRangeRepository>();
             services.AddScoped<ICorrectionRequestRepostory, CorrectionRequestRepostory>();
             services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
+            services.AddScoped<IRequestRepostory, RequestRepostory>();
 
             services.AddScoped<INotificationService, NotificationService>();
 

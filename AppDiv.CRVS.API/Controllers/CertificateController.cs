@@ -78,7 +78,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Reprint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<CertificateDTO> GetReprint([FromQuery] ReprintCertificateCommand query)
+        public async Task<object> GetReprint([FromQuery] ReprintCertificateCommand query)
         {
             return await Mediator.Send(query);
         }
