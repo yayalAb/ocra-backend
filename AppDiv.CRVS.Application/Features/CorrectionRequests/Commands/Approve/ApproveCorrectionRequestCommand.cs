@@ -45,8 +45,9 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
             var correctionRequestData = _CorrectionRequestRepostory.GetAll()
             .Include(x => x.Request)
             .Where(x => x.Id == request.Id).FirstOrDefault();
+
             if (correctionRequestData.Request.currentStep > 0 &&
-         correctionRequestData.Request.currentStep <= _WorkflowService.GetLastWorkflow("change") + 1)
+         correctionRequestData.Request.currentStep <= (_WorkflowService.GetLastWorkflow("change") + 1))
             {
                 if (request.IsApprove)
                 {
@@ -61,7 +62,6 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
             {
                 throw new Exception("the Correction Request on idel state ");
             }
-            correctionRequestData.Request.currentStep = +1;
             try
             {
                 await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
@@ -82,7 +82,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                 Response = new BaseResponse
                 {
                     Success = true,
-                    Message = "Sucessfully Approved",
+                    Message = "Adoption",
                     Id = request.Id,
                     IsLast = correctionRequestData.Request.currentStep == 0
                 }

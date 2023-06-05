@@ -64,7 +64,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpPut("Approve")]
-        public async Task<ActionResult> Approve(Guid id, [FromBody] ApproveCorrectionRequestCommand command)
+        public async Task<ActionResult> Approve([FromQuery] ApproveCorrectionRequestCommand command)
         {
             try
             {
@@ -73,6 +73,7 @@ namespace AppDiv.CRVS.API.Controllers
                 {
                     if (result.Response.IsLast && result.Response.Message == "Adoption")
                     {
+                        Console.WriteLine("Updaet Adoption updated controller");
                         UpdateAdoptionCommand AdoptionCommand = result.data.Content.ToObject<UpdateAdoptionCommand>();
                         await _mediator.Send(AdoptionCommand);
                     }
