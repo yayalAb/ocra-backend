@@ -11,6 +11,10 @@ using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForApproval;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
+using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -77,21 +81,26 @@ namespace AppDiv.CRVS.API.Controllers
                         UpdateAdoptionCommand AdoptionCommand = result.data.Content.ToObject<UpdateAdoptionCommand>();
                         await _mediator.Send(AdoptionCommand);
                     }
-                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    else if (result.Response.IsLast && result.Response.Message == "Birth")
                     {
+                        UpdateBirthEventCommand BirthCommand = result.data.Content.ToObject<UpdateBirthEventCommand>();
+                        await _mediator.Send(BirthCommand);
 
                     }
-                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    else if (result.Response.IsLast && result.Response.Message == "Death")
                     {
-
+                        UpdateDeathEventCommand DeathCommand = result.data.Content.ToObject<UpdateDeathEventCommand>();
+                        await _mediator.Send(DeathCommand);
                     }
-                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    else if (result.Response.IsLast && result.Response.Message == "Divorce")
                     {
-
+                        UpdateDivorceEventCommand DivorceCommand = result.data.Content.ToObject<UpdateDivorceEventCommand>();
+                        await _mediator.Send(DivorceCommand);
                     }
-                    else if (result.Response.IsLast && result.Response.Message == "Adoption")
+                    else if (result.Response.IsLast && result.Response.Message == "Amrriage")
                     {
-
+                        UpdateMarriageEventCommand MArriageCommand = result.data.Content.ToObject<UpdateMarriageEventCommand>();
+                        await _mediator.Send(MArriageCommand);
                     }
                     else
                     {
