@@ -50,8 +50,11 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
             if (createPaymentCommandResponse.Success)
             {
                 var CertificateTransfer = CustomMapper.Mapper.Map<CertificateSerialTransfer>(request.CertificateTransfer);
+                Guid? recieverAddress = _userRepository.GetAll()
+                                                        .Where(u => u.Id == CertificateTransfer.RecieverId)
+                                                        .FirstOrDefault()?.AddressId;
                 CertificateTransfer.Status = false;
-                await _CertificateTransferRepository.InsertAsync(CertificateTransfer, cancellationToken);
+                await _CertificateTransferRepository.InsertWithRangeAsync(CertificateTransfer, cancellationToken);
                 var result = await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
                 // await _CertificateTransferRepository.InsertWithRangeAsync(_logger, CertificateTransfer, cancellationToken);
 

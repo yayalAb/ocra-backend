@@ -16,6 +16,44 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             _dbContext = dbContext;
         }
+        public async Task InsertWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken)
+        {
+            var executionStrategy = this.Database.CreateExecutionStrategy();
+            await executionStrategy.ExecuteAsync(async () =>
+            {
+                using (var transaction = this.Database.BeginTransaction())
+                {
+                    try
+                    {
+                        Address? recieverAddress = _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
+                                                        .Where(u => u.Id == transfer.RecieverId)
+                                                        .FirstOrDefault()?.Address;
+                        if (transfer.SenderId == null)
+                        {
+                            var recieverRange = new CertificateSerialRange
+                            {
+                                From = transfer.From,
+                                To = transfer.To,
+                                AddressId = recieverAddress.Id
+                            };
+                            transfer.Status = true;
+                            _dbContext.CertificateSerialRanges.Add(recieverRange);
+                        }
+
+
+                        await base.InsertAsync(transfer, cancellationToken);
+                        await base.SaveChangesAsync(cancellationToken);
+                        await transaction.CommitAsync();
+                    }
+                    catch (System.Exception)
+                    {
+                        await transaction.RollbackAsync();
+                        throw;
+                    }
+                }
+            });
+        }
+
 
         public async Task UpdateWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken)
         {
