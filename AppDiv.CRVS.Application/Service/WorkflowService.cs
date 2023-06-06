@@ -9,10 +9,12 @@ namespace AppDiv.CRVS.Application.Service
     {
         private readonly IWorkflowRepository _workflowRepository;
         private readonly IStepRepository _stepRepostory;
-        public WorkflowService(IWorkflowRepository workflowRepository, IStepRepository stepRepostory)
+        private readonly IRequestRepostory _requestRepostory;
+        public WorkflowService(IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
         {
             _workflowRepository = workflowRepository;
             _stepRepostory = stepRepostory;
+            _requestRepostory = requestRepostory;
         }
         public int GetLastWorkflow(string workflowType)
         {
@@ -42,15 +44,52 @@ namespace AppDiv.CRVS.Application.Service
                 return nextStep.step;
             }
         }
-        public Guid GetReceiverGroupId (string workflowType , int step){
+        public Guid GetReceiverGroupId(string workflowType, int step)
+        {
             var groupId = _workflowRepository.GetAll()
             .Where(w => w.workflowName == workflowType)
             .Select(w => w.Steps.Where(s => s.step == step).Select(s => s.UserGroupId).FirstOrDefault()
             ).FirstOrDefault();
-            if(groupId == null ){
+            if (groupId == null)
+            {
                 throw new Exception("user group not found");
             }
             return (Guid)groupId;
         }
+
+        public async Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, CancellationToken cancellationToken)
+        {
+            var request = _requestRepostory.GetAll()
+            .Include(x => x.AuthenticationRequest)
+            .Include(x => x.CorrectionRequest)
+            .Where(x => x.Id == RequestId).FirstOrDefault();
+            Guid ReturnId = (request?.AuthenticationRequest.Id == null) ? request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
+            if (request == null)
+            {
+                throw new Exception("Request Does not Found");
+            }
+            Console.WriteLine("Authentication 34234");
+            if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
+            {
+                var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
+                request.currentStep = nextStep;
+                try
+                {
+                    await _requestRepostory.UpdateAsync(request, x => x.CreatedBy);
+                    await _requestRepostory.SaveChangesAsync(cancellationToken);
+                }
+                catch (Exception exp)
+                {
+                    throw new ApplicationException(exp.Message);
+                }
+            }
+            else
+            {
+                throw new Exception("Next Step  Does not Exist");
+            }
+            return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
+        }
+
+
     }
 }

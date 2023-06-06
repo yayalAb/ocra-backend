@@ -34,60 +34,39 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
     public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, response>
     {
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
+        private readonly IEventRepository _eventRepostory;
         private readonly IWorkflowService _WorkflowService;
-        public ApproveCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
+        public ApproveCorrectionRequestCommandHandler(IEventRepository eventRepostory, ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
             _WorkflowService = WorkflowService;
+            _eventRepostory = eventRepostory;
         }
         public async Task<response> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
-            var correctionRequestData = _CorrectionRequestRepostory.GetAll()
-            .Include(x => x.Request)
-            .Where(x => x.RequestId == request.Id).FirstOrDefault();
-
-            int lastworkFlowStep = _WorkflowService.GetLastWorkflow("authentication");
-
-            if (correctionRequestData == null)
+            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, cancellationToken);
+            string eventtype = "";
+            if (response.Item1)
             {
-                throw new Exception("no steps found");
-            }
-            if (correctionRequestData.Request.currentStep >= 0 && correctionRequestData.Request.currentStep < _WorkflowService.GetLastWorkflow("change"))
-            {
-                var nextStep = _WorkflowService.GetNextStep("authentication", correctionRequestData.Request.currentStep, request.IsApprove);
-                correctionRequestData.Request.currentStep = nextStep;
-            }
-            else
-            {
-                throw new Exception("next step doesnot exist");
-            }
-            try
-            {
-                await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
-                await _CorrectionRequestRepostory.SaveChangesAsync(cancellationToken);
-            }
-            catch (Exception exp)
-            {
-                throw new ApplicationException(exp.Message);
+                var EventType = await _eventRepostory.GetAsync(response.Item2);
+                eventtype = EventType.EventType;
             }
             var modifiedLookup = _CorrectionRequestRepostory.GetAll()
             .Where(x => x.Id == request.Id)
             .Include(x => x.Request).FirstOrDefault();
             var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedLookup);
-
-            var response = new response
+            var response1 = new response
             {
                 data = CorrectionRequestResponse,
                 Response = new BaseResponse
                 {
                     Success = true,
-                    Message = "Adoption",
+                    Message = eventtype,
                     Id = request.Id,
-                    IsLast = correctionRequestData.Request.currentStep == 0
+                    IsLast = response.Item1
                 }
             };
-
-            return response;
+            return response1;
         }
     }
 }

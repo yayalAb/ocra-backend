@@ -39,40 +39,24 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         }
         public async Task<BaseResponse> Handle(AuthenticatCommand request, CancellationToken cancellationToken)
         {
-            var AuthentcationData = _AuthenticationnRequestRepostory.GetAll()
-            .Include(x => x.Request)
-            .Where(x => x.RequestId == request.RequestId).FirstOrDefault();
-            if (AuthentcationData == null)
+            var response = await _WorkflowService.ApproveService(request.RequestId, "authentication", request.IsApprove, cancellationToken);
+            if (response.Item1)
             {
-                throw new Exception("no steps found");
-            }
-            if (AuthentcationData.Request.currentStep >= 0 && AuthentcationData.Request.currentStep < _WorkflowService.GetLastWorkflow("authentication"))
-            {
-                var nextStep = _WorkflowService.GetNextStep("authentication", AuthentcationData.Request.currentStep, request.IsApprove);
-                AuthentcationData.Request.currentStep = nextStep;
-                if (nextStep == _WorkflowService.GetLastWorkflow("authentication"))
+                try
                 {
-                    var certificate = await _CertificateRepository.GetAsync(AuthentcationData.CertificateId);
+                    var certificate = await _CertificateRepository.GetAsync(response.Item2);
                     certificate.AuthenticationStatus = true;
-                    await _AuthenticationnRequestRepostory.UpdateAsync(AuthentcationData, x => x.Id);
+                    await _CertificateRepository.UpdateAsync(certificate, x => x.Id);
+                    await _AuthenticationnRequestRepostory.SaveChangesAsync(cancellationToken);
                 }
-            }
-            else
-            {
-                throw new Exception("next step doesnot exist");
-            }
-
-            try
-            {
-                await _AuthenticationnRequestRepostory.UpdateAsync(AuthentcationData, x => x.Id);
-                await _AuthenticationnRequestRepostory.SaveChangesAsync(cancellationToken);
-            }
-            catch (Exception exp)
-            {
-                throw new ApplicationException(exp.Message);
+                catch (Exception exp)
+                {
+                    throw new ApplicationException(exp.Message);
+                }
             }
             return new BaseResponse
             {
+                Message = "Authenticated Successfully"
             };
         }
     }
