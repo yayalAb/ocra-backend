@@ -29,25 +29,32 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
     {
         private readonly IAuthenticationRepository _AuthenticationRepository;
         private readonly IWorkflowService _WorkflowService;
+        private readonly IWorkflowRepository _WorkflowRepo;
         private readonly IRequestRepostory _RequestRepostory;
+        private readonly IStepRepository _StepRepo;
 
-        public GetAuthentcationRequestListHandler(IRequestRepostory RequestRepostory, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
+        public GetAuthentcationRequestListHandler(IStepRepository StepRepo, IWorkflowRepository WorkflowRepo, IRequestRepostory RequestRepostory, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
         {
             _AuthenticationRepository = AuthenticationRepository;
             _WorkflowService = WorkflowService;
             _RequestRepostory = RequestRepostory;
+            _WorkflowRepo = WorkflowRepo;
+            _StepRepo = StepRepo;
         }
         public async Task<List<AuthenticationRequestListDTO>> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
+            var getAllSteps = _StepRepo.GetAll().Where(g => g.UserGroupId == request.UserId).FirstOrDefault();
             var RequestList = _RequestRepostory.GetAll()
             .Include(x => x.CivilRegOfficer)
             .Include(x => x.AuthenticationRequest)
             .Include(x => x.CorrectionRequest)
+            .Include(x => x.Workflow.Where(s => s.Steps.Any(ss => ss.step == 2 && ss.UserGroupId == request.UserId)))
             .Select(x => new AuthenticationRequestListDTO
             {
                 Id = x.Id,
                 RequestedBy = x.CivilRegOfficer.FirstNameLang + " " + x.CivilRegOfficer.MiddleNameLang + " " + x.CivilRegOfficer.LastNameLang,
                 RequestType = x.RequestType,
+                RequestId = (x.CorrectionRequest.Id == null) ? x.AuthenticationRequest.Id : x.CorrectionRequest.Id,
                 CurrentStep = x.currentStep,
                 RequestDate = x.CreatedAt
 

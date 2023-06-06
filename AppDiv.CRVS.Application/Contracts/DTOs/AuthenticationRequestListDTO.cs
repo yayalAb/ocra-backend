@@ -14,5 +14,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? CertificateType { get; set; }
         public DateTime? RequestDate { get; set; }
         public int? CurrentStep { get; set; }
+        public Guid? RequestId { get; set; }
     }
 }

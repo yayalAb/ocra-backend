@@ -16,31 +16,21 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     {
         IDateAndAddressService _DateAndAddressService;
         private readonly CustomDateConverter _convertor;
-        // private readonly IReturnPerson _person;
         public ReturnAdoptionArchive(IDateAndAddressService DateAndAddressService)
-        // , IReturnPerson person)
         {
             _DateAndAddressService = DateAndAddressService;
             _convertor = new CustomDateConverter();
-            // _person = person;
         }
 
         private AdoptedChild GetChild(PersonalInfo adoptedChild)
         {
             AdoptedChild? child = CustomMapper.Mapper.Map<AdoptedChild>(ReturnPerson.GetPerson(adoptedChild, _DateAndAddressService));
-            // child.ReasonAm = adoption.DivorceEvent.DivorceReason?.Value<string>("am");
-            // child.ReasonOr = adoption.DivorceEvent.DivorceReason?.Value<string>("or");
             return child;
         }
 
         private Officer GetOfficer(PersonalInfo adoptionOfficer)
         {
             Officer? officer = CustomMapper.Mapper.Map<Officer>(ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService));
-            // Person? officer = ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService);
-            // officer.RegistrationMonthOr = new EthiopicDateTime(_convertor.getSplitted(adoption.EventRegDateEt).month, "or").month;
-            // officer.RegistrationMonthAm = new EthiopicDateTime(_convertor.getSplitted(adoption.EventRegDateEt).month, "am").month;
-            // officer.RegistrationDay = _convertor.getSplitted(adoption.EventRegDateEt).day.ToString();
-            // officer.RegistrationYear = _convertor.getSplitted(adoption.EventRegDateEt).year.ToString();
             return officer;
         }
 
@@ -80,21 +70,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 CourtConfirmationYear = _convertor.getSplitted(court?.ConfirmedDateEt).year.ToString(),
 
                 CourtCaseNumber = court.CourtCaseNumber,
-
-
             };
         }
         public AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo)
         {
-            // (string am, string or)? address = (adoption.EventOwener?.BirthAddressId == Guid.Empty
-            //    || adoption.EventOwener?.BirthAddressId == null) ? null :
-            //    _DateAndAddressService.addressFormat(adoption.EventOwener.BirthAddressId);
-            // (string[] am, string[] or) splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
-
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
 
-            // var mon=monthname.
             return new AdoptionArchiveDTO()
             {
                 Child = GetChild(adoption.EventOwener),
@@ -103,11 +85,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Court = GetCourt(adoption.AdoptionEvent.CourtCase),
                 EventInfo = GetEventInfo(adoption),
                 CivilRegistrarOfficer = GetOfficer(adoption.CivilRegOfficer),
-
-                // CertifcateId = adoption.CertificateId,
-                // RegBookNo = adoption.RegBookNo,
-                // BirthCertifcateId = (adoption.AdoptionEvent.BirthCertificateId == null || string.IsNullOrEmpty(adoption.AdoptionEvent.BirthCertificateId)) ? BirthCertNo : adoption.AdoptionEvent.BirthCertificateId,
-
             };
         }
     }

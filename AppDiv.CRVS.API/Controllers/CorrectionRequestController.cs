@@ -15,6 +15,7 @@ using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -125,7 +126,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet("GetForApproval")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<AddCorrectionRequest>> GetApproval([FromQuery] GetCorrectionRequestForApproval query)
+        public async Task<CorrectionApprovalDTO> GetApproval([FromQuery] GetCorrectionRequestForApproval query)
         {
             return await _mediator.Send(query);
         }

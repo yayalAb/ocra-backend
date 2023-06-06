@@ -52,6 +52,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                 {
                     throw new Exception("Certificate With This Id Not Found");
                 }
+                Console.WriteLine("cert typ{0}", certificate.Event.EventType);
                 var certificateTemplateId = _ICertificateTemplateRepository.GetAll()
                 .Where(c => c.CertificateType == certificate.Event.EventType)
                 .FirstOrDefault();

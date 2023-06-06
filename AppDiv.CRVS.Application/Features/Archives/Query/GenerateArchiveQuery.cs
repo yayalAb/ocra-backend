@@ -71,27 +71,14 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         }
         public async Task<object> Handle(GenerateArchiveQuery request, CancellationToken cancellationToken)
         {
+
+
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _eventRepository.GetArchive(request.Id);
-            _ILogger.LogCritical(content?.EventOwener?.Id.ToString());
-            _ILogger.LogCritical(content?.DivorceEvent?.DivorcedWife?.Id.ToString());
-            _ILogger.LogCritical(content?.MarriageEvent?.BrideInfo?.Id.ToString());
             var certificate = _archiveGenerator.GetArchive(request, content, birthCertificateNo?.Event?.CertificateId);
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType + " " + "Archive").FirstOrDefault();
-            // if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
-            // {
-            //     selectedEvent.IsCertified = true;
-            //     _eventRepository.Update(CustomMapper.Mapper.Map<Event>(selectedEvent));
-            //     await _certificateRepository.InsertAsync(certificate, cancellationToken);
-            //     var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
-            // }
             var response = new ArchiveResponseDTO();
-
-            // if (selectedEvent.EventType == "Marriage" || content.marriage != null)
-            // {
-            //     (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage();
-            // }
             response.Content = certificate;
             response.TemplateId = certificateTemplateId?.Id;
             return response;
