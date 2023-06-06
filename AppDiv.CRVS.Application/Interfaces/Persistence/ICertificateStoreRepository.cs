@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Command.Create;
 
 namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface ICertificateTransferRepository : IBaseRepository<CertificateSerialTransfer>
     {
-        Task InsertWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken);
+        Task InsertWithRangeAsync(ILogger<CreateCertificateTransferCommandHandler> logger, CertificateSerialTransfer transfer, CancellationToken cancellationToken);
         // public Task<Guid> Add(CertificateTemplate certificateTemplate);
         // public new IQueryable<CertificateTemplate> GetAllAsync();
     }

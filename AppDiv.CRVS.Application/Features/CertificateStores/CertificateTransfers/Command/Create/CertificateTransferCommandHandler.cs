@@ -7,6 +7,7 @@ using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Command.Create
 {
@@ -16,13 +17,16 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
         private readonly ICertificateTransferRepository _CertificateTransferRepository;
         private readonly ICertificateRangeRepository _certificateRangeRepository;
         private readonly IUserRepository _userRepository;
+        private readonly ILogger<CreateCertificateTransferCommandHandler> _logger;
         public CreateCertificateTransferCommandHandler(ICertificateTransferRepository CertificateTransferRepository,
                                                         ICertificateRangeRepository certificateRangeRepository,
+                                                        ILogger<CreateCertificateTransferCommandHandler> logger,
                                                         IUserRepository userRepository)
         {
             _CertificateTransferRepository = CertificateTransferRepository;
             _certificateRangeRepository = certificateRangeRepository;
             _userRepository = userRepository;
+            _logger = logger;
         }
         public async Task<CreateCertificateTransferCommandResponse> Handle(CreateCertificateTransferCommand request, CancellationToken cancellationToken)
         {
@@ -45,11 +49,11 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
             }
             if (createPaymentCommandResponse.Success)
             {
-
                 var CertificateTransfer = CustomMapper.Mapper.Map<CertificateSerialTransfer>(request.CertificateTransfer);
-
-                await _CertificateTransferRepository.InsertWithRangeAsync(CertificateTransfer, cancellationToken);
+                CertificateTransfer.Status = false;
+                await _CertificateTransferRepository.InsertAsync(CertificateTransfer, cancellationToken);
                 var result = await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
+                // await _CertificateTransferRepository.InsertWithRangeAsync(_logger, CertificateTransfer, cancellationToken);
 
             }
             return createPaymentCommandResponse;

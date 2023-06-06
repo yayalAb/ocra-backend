@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public string? SenderId { get; set; }
         public string RecieverId { get; set; }
-        public bool Status { get; set; }
+        // public bool Status { get; set; }
         public int From { get; set; }
         public int To { get; set; }
     }

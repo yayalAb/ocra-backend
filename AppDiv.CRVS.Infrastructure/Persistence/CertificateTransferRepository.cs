@@ -3,6 +3,8 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Command.Create;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -15,7 +17,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             _dbContext = dbContext;
         }
 
-        public async Task InsertWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken)
+        public async Task InsertWithRangeAsync(ILogger<CreateCertificateTransferCommandHandler> logger, CertificateSerialTransfer transfer, CancellationToken cancellationToken)
         {
             var executionStrategy = this.Database.CreateExecutionStrategy();
             await executionStrategy.ExecuteAsync(async () =>
@@ -24,62 +26,78 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 {
                     try
                     {
-                        // Address? recieverAddress = _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
-                        //                                 .Where(u => u.Id == transfer.RecieverId)
-                        //                                 .FirstOrDefault()?.Address;
-                        // Address? senderAddress = (transfer.SenderId != null)
-                        //                             ? _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
-                        //                                 .Where(u => u.Id == transfer.SenderId)
-                        //                                 .FirstOrDefault()?.Address : null;
+                        Address? recieverAddress = _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
+                                                        .Where(u => u.Id == transfer.RecieverId)
+                                                        .FirstOrDefault()?.Address;
+                        logger.LogCritical("recieverAddress " + recieverAddress.Id);
+                        Address? senderAddress = (transfer.SenderId != null)
+                                                    ? _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
+                                                        .Where(u => u.Id == transfer.SenderId)
+                                                        .FirstOrDefault()?.Address : null;
+                        logger.LogCritical("senderAddress " + senderAddress.Id);
+                        var senderRange = senderAddress?.CertificateSerialRanges?
+                                                        .Where(r => r.From <= transfer.From)
+                                                        .Where(r => r.To >= transfer.To)
+                                                        .FirstOrDefault();
                         // CertificateSerialRange? senderRange = (recieverAddress != null) ? _dbContext.CertificateSerialRanges.Where(r => r.AddressId == senderAddress.Id)
                         //                                 .Where(r => r.From >= transfer.From)
                         //                                 .Where(r => r.To <= transfer.To)
                         //                                 .FirstOrDefault() : null;
-                        // // _dbContext.CertificateSerialRanges.Add(range);
-                        // // CertificateSerialRange? recieverRange = (recieverAddress != null) ? _dbContext.CertificateSerialRanges.Where(r => r.AddressId == recieverAddress.Id)
-                        // // .Where(r => r.From >= transfer.From)
-                        // // .Where(r => r.To <= transfer.To)
-                        // // .FirstOrDefault() : null;
+                        logger.LogCritical("senderRange From " + senderRange?.From);
+                        logger.LogCritical("senderRange To " + senderRange?.To);
+                        // _dbContext.CertificateSerialRanges.Add(range);
+                        // CertificateSerialRange? recieverRange = (recieverAddress != null) ? _dbContext.CertificateSerialRanges.Where(r => r.AddressId == recieverAddress.Id)
+                        // .Where(r => r.From >= transfer.From)
+                        // .Where(r => r.To <= transfer.To)
+                        // .FirstOrDefault() : null;
+                        logger.LogCritical("Before reciever range");
+                        var recieverRange = new CertificateSerialRange
+                        {
+                            From = transfer.From,
+                            To = transfer.To,
+                            AddressId = recieverAddress.Id
+                        };
+                        logger.LogCritical("Before reciever range");
+                        recieverAddress.CertificateSerialRanges.Add(recieverRange);
+                        logger.LogCritical("After reciever range");
+                        // 
+                        // senderAddress.CertificateSerialRanges = new List<CertificateSerialRange>();
+                        if (!string.IsNullOrEmpty(transfer.SenderId))
+                        {
 
-                        // var recieverRange = new CertificateSerialRange
-                        // {
-                        //     From = transfer.From,
-                        //     To = transfer.To,
-                        //     AddressId = recieverAddress.Id
-                        // };
-                        // recieverAddress.CertificateSerialRanges.Add(recieverRange);
-                        // // 
-                        // // senderAddress.CertificateSerialRanges = new List<CertificateSerialRange>();
-                        // if (!string.IsNullOrEmpty(transfer.SenderId))
-                        // {
+                            if (transfer.From > senderRange?.From && transfer.To < senderRange?.To)
+                            {
+                                var senderRange1 = new CertificateSerialRange();
+                                senderRange1.To = transfer.To - 1;
+                                senderRange1.From = senderRange.From;
+                                var senderRange2 = new CertificateSerialRange();
+                                senderRange2.From = transfer.From + 1;
+                                senderRange2.To = senderRange.To;
+                                // senderAddress.CertificateSerialRanges = new List<CertificateSerialRange>();
+                                senderAddress?.CertificateSerialRanges.Add(senderRange1);
+                                senderAddress.CertificateSerialRanges.Add(senderRange2);
+                            }
+                            else if (transfer.From == senderRange.From && transfer.To < senderRange?.To)
+                            {
+                                var senderRange1 = new CertificateSerialRange();
+                                senderRange1.From = transfer.To + 1;
+                                senderRange1.To = senderRange.To;
+                                senderAddress.CertificateSerialRanges.Add(senderRange1);
+                            }
+                            else if (transfer.To == senderRange.To && transfer.From > senderRange?.From)
+                            {
+                                var senderRange1 = new CertificateSerialRange();
+                                senderRange1.To = transfer.To - 1;
+                                senderRange1.From = senderRange.From;
+                                senderAddress.CertificateSerialRanges.Add(senderRange1);
+                            }
+                            senderAddress?.CertificateSerialRanges.Remove(senderRange);
+                        }
+                        else
+                        {
+                            transfer.Status = true;
+                        }
 
-                        //     if (senderRange?.From < transfer.From && senderRange?.To > transfer.To)
-                        //     {
-                        //         var senderRange1 = senderRange;
-                        //         senderRange1.To = transfer.To - 1;
-                        //         var senderRange2 = senderRange;
-                        //         senderRange2.From = transfer.From + 1;
-                        //         // senderAddress.CertificateSerialRanges = new List<CertificateSerialRange>();
-                        //         senderAddress?.CertificateSerialRanges.Add(senderRange1);
-                        //         senderAddress.CertificateSerialRanges.Add(senderRange2);
-                        //     }
-                        //     else if (senderRange.From >= transfer.From)
-                        //     {
-                        //         var senderRange1 = senderRange;
-                        //         senderRange1.From = transfer.To + 1;
-                        //         senderAddress.CertificateSerialRanges.Add(senderRange1);
-                        //     }
-                        //     else if (senderRange.To >= transfer.To)
-                        //     {
-                        //         var senderRange1 = senderRange;
-                        //         senderRange1.To = transfer.To - 1;
-                        //         senderAddress.CertificateSerialRanges.Add(senderRange1);
-                        //     }
-                        // }
-                        // else
-                        // {
-                        //     transfer.Status = true;
-                        // }
                         await base.InsertAsync(transfer, cancellationToken);
                         await base.SaveChangesAsync(cancellationToken);
                     }
