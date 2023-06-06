@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface ICertificateTransferRepository : IBaseRepository<CertificateSerialTransfer>
     {
+        Task InsertWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken);
         Task UpdateWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken);
         // public Task<Guid> Add(CertificateTemplate certificateTemplate);
         // public new IQueryable<CertificateTemplate> GetAllAsync();
