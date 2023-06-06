@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             };
         }
-        public static Person GetPerson(PersonalInfo person, IDateAndAddressService dateAndAddressService)
+        public static Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService)
         {
             // return Fill.Filler<Person, PersonalInfo>(new Person(), person);
             // var convertor = new CustomDateConverter();
