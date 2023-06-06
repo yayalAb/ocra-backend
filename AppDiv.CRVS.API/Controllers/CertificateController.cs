@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Newtonsoft.Json.Linq;
+using AppDiv.CRVS.Application.Features.Certificates.Command.Verify;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -119,6 +120,14 @@ namespace AppDiv.CRVS.API.Controllers
             {
                 return BadRequest(exp.Message);
             }
+        }
+        [HttpPut("Verify/{eventId}")]
+        public async Task<ActionResult> VerifyCertificate(Guid eventId)
+        {
+            var result = await Mediator.Send(new VerifyCertificateCommand { EventId = eventId });
+            return Ok(result);
+
+
         }
 
         [HttpDelete("Delete/{id}")]

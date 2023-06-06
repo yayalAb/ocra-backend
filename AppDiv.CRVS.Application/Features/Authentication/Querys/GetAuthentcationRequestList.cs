@@ -20,12 +20,15 @@ using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.Authentication.Querys
 {
-    public class GetAuthentcationRequestList : IRequest<List<AuthenticationRequestListDTO>>
+    public class GetAuthentcationRequestList : IRequest<object>
     {
         public Guid UserId { get; set; }
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
+
 
     }
-    public class GetAuthentcationRequestListHandler : IRequestHandler<GetAuthentcationRequestList, List<AuthenticationRequestListDTO>>
+    public class GetAuthentcationRequestListHandler : IRequestHandler<GetAuthentcationRequestList, object>
     {
         private readonly IAuthenticationRepository _AuthenticationRepository;
         private readonly IWorkflowService _WorkflowService;
@@ -41,29 +44,34 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             _WorkflowRepo = WorkflowRepo;
             _StepRepo = StepRepo;
         }
-        public async Task<List<AuthenticationRequestListDTO>> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
+        public async Task<object> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
-            var getAllSteps = _StepRepo.GetAll().Where(g => g.UserGroupId == request.UserId).FirstOrDefault();
+            var getAllSteps = _StepRepo.GetAll();//.Where(g => g.UserGroupId == request.UserId);
             var RequestList = _RequestRepostory.GetAll()
             .Include(x => x.CivilRegOfficer)
             .Include(x => x.AuthenticationRequest)
-            .Include(x => x.CorrectionRequest)
-            .Include(x => x.Workflow.Where(s => s.Steps.Any(ss => ss.step == 2 && ss.UserGroupId == request.UserId)))
-            .Select(x => new AuthenticationRequestListDTO
+            .Include(x => x.CorrectionRequest);
+            var joinedList = RequestList.Join(getAllSteps, r => r.currentStep, w => w.step, (r, w) =>
+            new AuthenticationRequestListDTO
             {
-                Id = x.Id,
-                RequestedBy = x.CivilRegOfficer.FirstNameLang + " " + x.CivilRegOfficer.MiddleNameLang + " " + x.CivilRegOfficer.LastNameLang,
-                RequestType = x.RequestType,
-                RequestId = (x.CorrectionRequest.Id == null) ? x.AuthenticationRequest.Id : x.CorrectionRequest.Id,
-                CurrentStep = x.currentStep,
-                RequestDate = x.CreatedAt
-
+                Id = r.Id,
+                ResponsbleGroup = w.UserGroup.GroupName,
+                ResponsbleGroupId = w.UserGroupId,
+                RequestedBy = r.CivilRegOfficer.FirstNameLang + " " + r.CivilRegOfficer.MiddleNameLang + " " + r.CivilRegOfficer.LastNameLang,
+                RequestType = r.RequestType,
+                RequestId = (r.CorrectionRequest.Id == null) ? r.AuthenticationRequest.CertificateId : r.CorrectionRequest.Id,
+                CurrentStep = r.currentStep,
+                RequestDate = r.CreatedAt
             });
+            var List = await PaginatedList<AuthenticationRequestListDTO>
+                             .CreateAsync(
+                                  joinedList
+                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             if (RequestList == null)
             {
                 throw new Exception("Authentication Request not Exist");
             }
-            return RequestList.ToList();
+            return List;
         }
     }
 }

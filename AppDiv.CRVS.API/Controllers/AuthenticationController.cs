@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("AuthenticationRequestList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<AuthenticationRequestListDTO>> AuthenticationRequests()
+        public async Task<object> AuthenticationRequests()
         {
             return await _mediator.Send(new GetAuthentcationRequestList());
         }

@@ -149,6 +149,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IRequestRepostory, RequestRepostory>();
 
             services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<ITransactionService, TransactionService>();
+
 
 
 

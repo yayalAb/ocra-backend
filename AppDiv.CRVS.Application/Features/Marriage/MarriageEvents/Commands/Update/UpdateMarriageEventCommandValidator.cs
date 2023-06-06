@@ -29,28 +29,31 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _addressRepo = addressRepo;
 
+            // RuleFor(e => e.Event.EventSupportingDocuments.Select(sd => sd.Id))
+
+
             var fieldNames =
             new List<string>{
 
                 "Id","MarriageTypeId","ApplicationId","BrideInfo","BrideInfo.Id","Event.Id","Event.EventOwener.Id",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDateEt",
-                    "BrideInfo.NationalId","BrideInfo.SexLookupId",
+                    "BrideInfo.NationalId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
                     "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDateEt",
                     "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDateEt",
-                    "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
+                    "Event.EventOwener.NationalId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                     "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
 
             };
             var lookupFeilds = new List<string>{
-               "MarriageTypeId","BrideInfo.SexLookupId",
+               "MarriageTypeId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId",
                     "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.NationLookupId","Event.EventOwener.SexLookupId",
+                    "BrideInfo.NationLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                     "Event.EventOwener.NationLookupId"

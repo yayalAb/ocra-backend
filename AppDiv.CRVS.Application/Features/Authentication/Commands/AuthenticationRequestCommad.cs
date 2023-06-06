@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 {
                     RequestType = "authentication",
                     CivilRegOfficerId = request.CivilRegOfficer,
-                    currentStep = _WorkflowService.GetLastWorkflow("authentication")
+                    currentStep = 0
                 }
             };
             await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);

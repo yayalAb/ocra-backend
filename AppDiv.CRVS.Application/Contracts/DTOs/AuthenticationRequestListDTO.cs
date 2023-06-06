@@ -15,5 +15,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public DateTime? RequestDate { get; set; }
         public int? CurrentStep { get; set; }
         public Guid? RequestId { get; set; }
+        public string? ResponsbleGroup { get; set; }
+        public Guid? ResponsbleGroupId { get; set; }
     }
 }

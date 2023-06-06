@@ -42,21 +42,20 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public async Task<object> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
             string certId = "";
+            var certificate = _certificateRepository.GetAll()
+            .Include(x => x.Event)
+            .Where(x => x.Id == request.Id).FirstOrDefault();
+            if (certificate == null)
+            {
+                throw new Exception("Certificate With This Id Not Found");
+            }
+            var certificateTemplateId = _ICertificateTemplateRepository.GetAll()
+            .Where(c => c.CertificateType == certificate.Event.EventType)
+            .FirstOrDefault();
+            certId = certificateTemplateId.Id.ToString();
             if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
-                var certificate = _certificateRepository.GetAll()
-                .Include(x => x.Event)
-                .Where(x => x.Id == request.Id).FirstOrDefault()
-                ;
-                if (certificate == null)
-                {
-                    throw new Exception("Certificate With This Id Not Found");
-                }
-                Console.WriteLine("cert typ{0}", certificate.Event.EventType);
-                var certificateTemplateId = _ICertificateTemplateRepository.GetAll()
-                .Where(c => c.CertificateType == certificate.Event.EventType)
-                .FirstOrDefault();
-                certId = certificateTemplateId.Id.ToString();
+
                 var AddHistory = new AddCertificateHistoryRequest
                 {
                     CerteficateId = request.Id,
@@ -81,7 +80,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             }
             var modifiedCertificate = await _certificateRepository.GetAsync(request.Id);
             var CertificateResponse = CustomMapper.Mapper.Map<CertificateDTO>(modifiedCertificate);
-
             return new
             {
                 Content = CertificateResponse.Content,
