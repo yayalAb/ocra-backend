@@ -10,5 +10,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Archive
     public interface IReturnDivorceArchive
     {
         public DivorceArchiveDTO GetDivorceArchive(Event divorce, string? BirthCertNo);
+        public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo);
     }
 }

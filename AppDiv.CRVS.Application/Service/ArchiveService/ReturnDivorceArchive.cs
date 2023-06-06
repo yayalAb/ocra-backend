@@ -16,8 +16,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     {
         IDateAndAddressService _dateAndAddressService;
         private readonly CustomDateConverter convertor;
-        public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService)
+        private readonly ILookupFromId _lookupService;
+        public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService)
         {
+            _lookupService = lookupService;
             _dateAndAddressService = DateAndAddressService;
             convertor = new CustomDateConverter();
         }
@@ -70,11 +72,24 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             return new DivorceArchiveDTO()
             {
-                Husband = ReturnPerson.GetPerson(divorce.EventOwener, _dateAndAddressService),
-                Wife = ReturnPerson.GetPerson(divorce.DivorceEvent.DivorcedWife, _dateAndAddressService),
+                Husband = ReturnPerson.GetPerson(divorce.EventOwener, _dateAndAddressService, _lookupService),
+                Wife = ReturnPerson.GetPerson(divorce.DivorceEvent.DivorcedWife, _dateAndAddressService, _lookupService),
                 EventInfo = GetEventInfo(divorce),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService)),
+                                        (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+
+            };
+        }
+        public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo)
+        {
+
+            return new DivorceArchiveDTO()
+            {
+                Husband = ReturnPerson.GetPerson(divorce.Event.EventOwener, _dateAndAddressService, _lookupService),
+                Wife = ReturnPerson.GetPerson(divorce.DivorcedWife, _dateAndAddressService, _lookupService),
+                EventInfo = GetEventInfo(divorce.Event),
+                CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
+                                        (ReturnPerson.GetPerson(divorce.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
 
             };
         }

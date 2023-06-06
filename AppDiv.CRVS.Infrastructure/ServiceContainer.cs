@@ -137,6 +137,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddHttpClient<ITwilioRestClient, TwilioClient>();
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
             services.AddScoped<IDateAndAddressService, DateAndAddressService>();
+            services.AddScoped<ILookupFromId, LookupFromId>();
             services.AddScoped<ICertificateGenerator, CertificateGenerator>();
             services.AddScoped<IArchiveGenerator, ArchiveGenerator>();
             services.AddScoped<IAddressLookupRepository, AddressLookupRepository>();

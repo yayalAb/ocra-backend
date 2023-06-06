@@ -38,6 +38,44 @@ namespace AppDiv.CRVS.Application.Service
             _returnDivorceArchive = returnDivorceArchive;
             _Ilogger = Ilogger;
         }
+
+        public JObject GetBirthArchivePreview(BirthEvent birth, string BirthCertNo)
+        {
+            return JObject.FromObject(_returnBirthArchive.GetBirthPreviewArchive(birth, BirthCertNo));
+        }
+
+        public JObject GetAdoptionArchivePreview(AdoptionEvent adoption, string? BirthCertNo)
+        {
+            return JObject.FromObject(_returnAdoptionArchive.GetAdoptionPreviewArchive(adoption, BirthCertNo));
+        }
+        public JObject GetMarriageArchivePreview(MarriageEvent marriage, string? BirthCertNo)
+        {
+            return JObject.FromObject(_returnMarriageArchive.GetMarriagePreviewArchive(marriage, BirthCertNo));
+        }
+
+
+        public JObject GetDivorceArchivePreview(DivorceEvent divorce, string? BirthCertNo)
+        {
+            return JObject.FromObject(_returnDivorceArchive.GetDivorcePreviewArchive(divorce, BirthCertNo));
+        }
+
+        public JObject GetDeathArchivePreview(DeathEvent death, string? BirthCertNo)
+        {
+            return JObject.FromObject(_returnDeathArchive.GetDeathPreviewArchive(death, BirthCertNo));
+        }
+        // public JObject GetArchivePreview(JObject? content, string BirhtCertId)
+        // {
+        //     var archive = new object();
+
+        //     return content.EventType switch
+        //     {
+        //         "Birth" => JObject.FromObject(this.GetBirthArchive(content, BirhtCertId)),
+        //         "Death" => JObject.FromObject(this.GetDeathArchive(content, BirhtCertId)),
+        //         "Adoption" => JObject.FromObject(this.GetAdoptionArchive(content, BirhtCertId)),
+        //         "Marriage" => JObject.FromObject(this.GetMarriageArchive(content, BirhtCertId)),
+        //         "Divorce" => JObject.FromObject(this.GetDivorceArchive(content, BirhtCertId))
+        //     };
+        // }
         public JObject GetArchive(GenerateArchiveQuery request, Event? content, string BirhtCertId)
         {
             var archive = new object();

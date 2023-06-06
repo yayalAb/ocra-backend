@@ -15,8 +15,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     public class ReturnDeathArchive : IReturnDeathArchive
     {
         IDateAndAddressService _dateAndAddressService;
-        public ReturnDeathArchive(IDateAndAddressService DateAndAddressService)
+        private readonly ILookupFromId _lookupService;
+        public ReturnDeathArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService)
         {
+            _lookupService = lookupService;
             _dateAndAddressService = DateAndAddressService;
         }
 
@@ -43,7 +45,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         private RegistrarArchive GetRegistrar(Registrar reg)
         {
-            RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg.RegistrarInfo, _dateAndAddressService));
+            RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg.RegistrarInfo, _dateAndAddressService, _lookupService));
             regInfo.RelationShipOr = reg.RelationshipLookup.Value?.Value<string>("or");
             regInfo.RelationShipAm = reg.RelationshipLookup.Value?.Value<string>("am");
             return regInfo;
@@ -70,24 +72,44 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new DeathArchiveDTO()
             {
-                Deceased = ReturnPerson.GetPerson(death.EventOwener, _dateAndAddressService),
+                Deceased = ReturnPerson.GetPerson(death.EventOwener, _dateAndAddressService, _lookupService),
                 EventInfo = GetEventInfo(death),
                 Notification = GetNotification(death.DeathEventNavigation.DeathNotification),
                 Registrar = GetRegistrar(death.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService)),
-                // CertifcateId = death.CertificateId,
-                // RegBookNo = death.RegBookNo,
-                // BirthCertifcateId = death.DeathEventNavigation.BirthCertificateId,
-                // FirstNameAm = death.EventOwener?.FirstName?.Value<string>("am"),
-                // MiddleNameAm = death.EventOwener?.MiddleName?.Value<string>("am"),
-                // LastNameAm = death.EventOwener?.LastName?.Value<string>("am"),
-                // FirstNameOr = death.EventOwener?.FirstName?.Value<string>("or"),
-                // MiddleNameOr = death.EventOwener?.MiddleName?.Value<string>("or"),
-                // LastNameOr = death.EventOwener?.LastName?.Value<string>("or"),
+                                        (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+
+
+            };
+        }
+        public DeathArchiveDTO GetDeathPreviewArchive(DeathEvent death, string? BirthCertNo)
+        {
+            (string am, string or)? address = (death?.Event.EventAddressId == Guid.Empty
+               || death?.Event.EventAddressId == null) ? null :
+               _dateAndAddressService.addressFormat(death.Event.EventAddressId);
+
+            (string am, string or)? resident = (death?.Event.EventOwener.ResidentAddressId == Guid.Empty
+               || death?.Event.EventOwener.ResidentAddressId == null) ? null :
+               _dateAndAddressService.addressFormat(death.Event.EventOwener.ResidentAddressId);
+
+            (string am, string or)? regAddress = (death?.Event.EventRegistrar.RegistrarInfo?.ResidentAddressId == Guid.Empty
+               || death?.Event.EventRegistrar.RegistrarInfo?.ResidentAddressId == null) ? null :
+               _dateAndAddressService.addressFormat(death.Event.EventRegistrar.RegistrarInfo.ResidentAddressId);
 
 
 
+            var convertor = new CustomDateConverter();
+            var CreatedAtEt = convertor.GregorianToEthiopic(death.CreatedAt);
+
+            (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            return new DeathArchiveDTO()
+            {
+                Deceased = ReturnPerson.GetPerson(death.Event.EventOwener, _dateAndAddressService, _lookupService),
+                EventInfo = GetEventInfo(death.Event),
+                Notification = GetNotification(death.DeathNotification),
+                Registrar = GetRegistrar(death.Event.EventRegistrar),
+                CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
+                                        (ReturnPerson.GetPerson(death.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
             };
         }
     }

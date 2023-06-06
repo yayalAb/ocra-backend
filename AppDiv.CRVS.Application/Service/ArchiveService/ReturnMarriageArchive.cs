@@ -15,8 +15,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     public class ReturnMarriageArchive : IReturnMarriageArchive
     {
         IDateAndAddressService _dateAndAddressService;
-        public ReturnMarriageArchive(IDateAndAddressService DateAndAddressService)
+        private readonly ILookupFromId _lookupService;
+        public ReturnMarriageArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService)
         {
+            _lookupService = lookupService;
             _dateAndAddressService = DateAndAddressService;
         }
 
@@ -35,13 +37,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 if (w.WitnessFor.ToLower() == "bride")
                 {
                     var brideWitness = CustomMapper.Mapper.Map<WitnessArchive>
-                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService));
+                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
                     marriageInfo?.BrideWitnesses?.Add(brideWitness);
                 }
                 if (w.WitnessFor.ToLower() == "groom")
                 {
                     var groomWitness = CustomMapper.Mapper.Map<WitnessArchive>
-                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService));
+                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
                     marriageInfo?.GroomWitnesses?.Add(groomWitness);
                 }
             }
@@ -60,11 +62,28 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             // (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new MarriageArchiveDTO()
             {
-                Groom = ReturnPerson.GetPerson(marriage.EventOwener, _dateAndAddressService),
-                Bride = ReturnPerson.GetPerson(marriage.MarriageEvent.BrideInfo, _dateAndAddressService),
+                Groom = ReturnPerson.GetPerson(marriage.EventOwener, _dateAndAddressService, _lookupService),
+                Bride = ReturnPerson.GetPerson(marriage.MarriageEvent.BrideInfo, _dateAndAddressService, _lookupService),
                 EventInfo = GetEventInfo(marriage),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(marriage.CivilRegOfficer, _dateAndAddressService)),
+                                        (ReturnPerson.GetPerson(marriage.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                // CertifcateId = marriage?.CertificateId,
+                // BirthCertificateGroomId = marriage.MarriageEvent.BirthCertificateGroomId,
+                // BirthCertificateBrideId = marriage.MarriageEvent.BirthCertificateBrideId,
+                // RegBookNo = marriage.RegBookNo,
+                // BrideBirthCertifcateId = marriage.BirthCertificateBrideId,
+
+            };
+        }
+        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo)
+        {
+            return new MarriageArchiveDTO()
+            {
+                Groom = ReturnPerson.GetPerson(marriage.Event.EventOwener, _dateAndAddressService, _lookupService),
+                Bride = ReturnPerson.GetPerson(marriage.BrideInfo, _dateAndAddressService, _lookupService),
+                EventInfo = GetEventInfo(marriage.Event),
+                CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
+                                        (ReturnPerson.GetPerson(marriage.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
                 // CertifcateId = marriage?.CertificateId,
                 // BirthCertificateGroomId = marriage.MarriageEvent.BirthCertificateGroomId,
                 // BirthCertificateBrideId = marriage.MarriageEvent.BirthCertificateBrideId,

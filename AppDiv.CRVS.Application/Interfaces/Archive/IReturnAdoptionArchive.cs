@@ -10,5 +10,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Archive
     public interface IReturnAdoptionArchive
     {
         public AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo);
+        public AdoptionArchiveDTO GetAdoptionPreviewArchive(AdoptionEvent adoption, string? BirthCertNo);
     }
 }
