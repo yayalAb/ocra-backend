@@ -9,11 +9,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
 
 namespace AppDiv.CRVS.Application.Features.Customers.Query
 {
     // Customer GetCustomerByIdQuery with Customer response
-    public class GetDeathEventByIdQuery : IRequest<DeathEventDTO>
+    public class GetDeathEventByIdQuery : IRequest<UpdateDeathEventCommand>
     {
         public Guid Id { get; private set; }
 
@@ -24,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
 
     }
 
-    public class GetDeathEventByIdHandler : IRequestHandler<GetDeathEventByIdQuery, DeathEventDTO>
+    public class GetDeathEventByIdHandler : IRequestHandler<GetDeathEventByIdQuery, UpdateDeathEventCommand>
     {
         private readonly IDeathEventRepository _deathEventRepository;
 
@@ -32,11 +33,11 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         {
             _deathEventRepository = deathEventRepository;
         }
-        public async Task<DeathEventDTO> Handle(GetDeathEventByIdQuery request, CancellationToken cancellationToken)
+        public async Task<UpdateDeathEventCommand> Handle(GetDeathEventByIdQuery request, CancellationToken cancellationToken)
         {
 
             var selectedDeathEvent = await _deathEventRepository.GetIncludedAsync(request.Id);
-            return CustomMapper.Mapper.Map<DeathEventDTO>(selectedDeathEvent);
+            return CustomMapper.Mapper.Map<UpdateDeathEventCommand>(selectedDeathEvent);
             // return selectedCustomer;
         }
     }
