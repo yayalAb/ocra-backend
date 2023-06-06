@@ -46,10 +46,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                        .Select(c => new CertificateIndex
                        {
                            Id = c.Id,
+                           EventId = c.Event.Id,
                            EventType = c.Event.EventType,
                            CertificateId = c.Event.CertificateId,
                            CertificateSerialNumber = c.CertificateSerialNumber,
                            ContentStr = c.ContentStr,
+                           AddressAm = c.Event.EventOwener.ResidentAddress == null?null :c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
+                           AddressOr = c.Event.EventOwener.ResidentAddress == null?null :c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
+                           NationalId = c.Event.EventOwener.NationalId,
                            FirstNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"),
                            FirstNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"),
                            MiddleNameOr = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("or"),
@@ -66,6 +70,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Includes(i => i
                         .Fields(
                             f => f.Id,
+                            f => f.EventId,
                             f => f.FirstNameAm,
                             f => f.FirstNameOr,
                             f => f.MiddleNameAm,
@@ -78,6 +83,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             f => f.CertificateId,
                             f => f.EventType,
                             f => f.CertificateSerialNumber
+                            
 
                         )
                     ))
@@ -95,6 +101,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return response.Result.Documents.Select(d => new SearchCertificateResponseDTO
             {
                 Id = d.Id,
+                EventId = d.EventId,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                 ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                 : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
