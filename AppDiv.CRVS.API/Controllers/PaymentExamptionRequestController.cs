@@ -1,17 +1,12 @@
 ﻿using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Customers.Query;
-using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser;
+using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Approve;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Delete;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Update;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Query;
-using AppDiv.CRVS.Domain;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -74,5 +69,20 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
+        [HttpGet("Approve")]
+        public async Task<ActionResult> ApprovePaymentExamptionRequest([FromQuery] PaymentExamptionApproval query)
+        {
+            try
+            {
+                var result = await Mediator.Send(query);
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+
     }
 }
+

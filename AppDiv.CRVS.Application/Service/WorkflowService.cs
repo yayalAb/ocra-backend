@@ -37,9 +37,13 @@ namespace AppDiv.CRVS.Application.Service
             }
             else
             {
+                if (step == 1 || step == 0)
+                {
+                    return 0;
+                }
                 var nextStep = _stepRepostory.GetAll()
                            .Include(x => x.workflow)
-                           .Where(x => x.workflow.workflowName == workflowType && x.step > step)
+                           .Where(x => x.workflow.workflowName == workflowType && x.step < step)
                            .OrderByDescending(x => x.step).FirstOrDefault();
                 return nextStep.step;
             }
@@ -63,14 +67,15 @@ namespace AppDiv.CRVS.Application.Service
             .Include(x => x.AuthenticationRequest)
             .Include(x => x.CorrectionRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
+
             Guid ReturnId = (request?.AuthenticationRequest.Id == null) ? request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
             if (request == null)
             {
                 throw new Exception("Request Does not Found");
             }
-            Console.WriteLine("Authentication 34234");
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
+
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
                 request.currentStep = nextStep;
                 try

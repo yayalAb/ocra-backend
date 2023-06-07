@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual AuthenticationRequest AuthenticationRequest { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
-        public virtual ICollection<Workflow> Workflow { get; set; }
+        public virtual Workflow Workflow { get; set; }
 
     }
 }
