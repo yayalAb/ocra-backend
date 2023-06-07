@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Query
                                     Reason = r.ReasonLang,
                                     ExamptedClientId = r.ExamptedClientId,
                                     ExamptedClientFullName = r.ExamptedClientFullName,
-                                    ExamptedBy = r.ExamptedBy,
+                                    // ExamptedBy = r.ExamptedBy,
                                     NumberOfClient = r.NumberOfClient,
                                     CertificateType = r.CertificateType,
                                     Address = CustomMapper.Mapper.Map<AddressDTO>(r.Address)

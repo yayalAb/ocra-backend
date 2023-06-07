@@ -28,12 +28,13 @@ namespace AppDiv.CRVS.Application.Features.Search
                                              EF.Functions.Like(model.ReasonStr, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.ExamptedClientId, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.ExamptedClientFullName, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.ExamptedBy, $"%{request.SearchString}%")
+                                            // || EF.Functions.Like(model.ExamptedBy, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.CertificateType, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.ReasonStr, $"%{request.SearchString}%")   
-                                            || EF.Functions.Like(model.Address.AddressNameStr, $"%{request.SearchString}%")   
+                                            || EF.Functions.Like(model.ReasonStr, $"%{request.SearchString}%")
+                                            || EF.Functions.Like(model.Address.AddressNameStr, $"%{request.SearchString}%")
 
-                                            ).Select(pe => new {
+                                            ).Select(pe => new
+                                            {
                                                 Id = pe.Id,
                                                 Reason = pe.ReasonLang,
                                                 ExamptedClientId = pe.ExamptedClientId,

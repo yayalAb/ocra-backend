@@ -1,4 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -20,14 +21,20 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Upda
         public LanguageModel Reason { get; set; }
         public string? ExamptedClientId { get; set; }
         public string? ExamptedClientFullName { get; set; }
-        public DateTime ExamptedDate { get; set; }
-        public string ExamptedBy { get; set; }
+        public DateTime ExamptedDate { get; set; } = DateTime.Now;
         public int? NumberOfClient { get; set; }
-
+        public Guid? AddressId { get; set; }
+        public string CertificateType { get; set; }
+        public AddRequest Request { get; set; }
         public UpdatePaymentExamptionRequestCommand()
         {
             this.ExamptedDate = DateTime.Now;
         }
+
+
+
+
+
     }
 
     public class UpdatePaymentExamptionRequestCommandHandler : IRequestHandler<UpdatePaymentExamptionRequestCommand, PaymentExamptionRequestDTO>
@@ -40,7 +47,8 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Upda
         public async Task<PaymentExamptionRequestDTO> Handle(UpdatePaymentExamptionRequestCommand request, CancellationToken cancellationToken)
         {
             var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request);
-
+            PaymentExamptionRequest.ExamptedById = "4d940006-b21f-4841-b8dd-02957c4d7487";
+            PaymentExamptionRequest.Request.RequestType = "payment exemption";
             try
             {
                 await _PaymentExamptionRequestRepository.UpdateAsync(PaymentExamptionRequest, x => x.Id);

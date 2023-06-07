@@ -25,6 +25,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
     {
         public Guid RequestId { get; set; }
         public bool IsApprove { get; set; }
+        public string? Comment { get; set; }
     }
     public class AuthenticatCommandHandler : IRequestHandler<AuthenticatCommand, BaseResponse>
     {
@@ -39,14 +40,11 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         }
         public async Task<BaseResponse> Handle(AuthenticatCommand request, CancellationToken cancellationToken)
         {
-            Console.WriteLine("rejected {0}", request.IsApprove);
-            var response = await _WorkflowService.ApproveService(request.RequestId, "authentication", request.IsApprove, " ", cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.RequestId, "authentication", request.IsApprove, request.Comment, cancellationToken);
             if (response.Item1)
             {
                 try
                 {
-
-
                     var certificate = await _CertificateRepository.GetAsync(response.Item2);
                     certificate.AuthenticationStatus = true;
                     await _CertificateRepository.UpdateAsync(certificate, x => x.Id);
@@ -59,7 +57,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             }
             return new BaseResponse
             {
-                Message = "Authenticated Successfully"
+                Message = request.IsApprove ? "Authenticated Successfully" : "Rejected Successfully"
             };
         }
     }

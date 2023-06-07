@@ -24,6 +24,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Appr
     public class PaymentExamptionApproval : IRequest<BaseResponse>
     {
         public Guid RequestId { get; set; }
+        public string? Remark { get; set; }
         public bool IsApprove { get; set; }
     }
     public class PaymentExamptionApprovalHandler : IRequestHandler<PaymentExamptionApproval, BaseResponse>
@@ -37,12 +38,12 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Appr
         }
         public async Task<BaseResponse> Handle(PaymentExamptionApproval request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.RequestId, "payment exemption", request.IsApprove, "", cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.RequestId, "payment exemption", request.IsApprove, request.Remark, cancellationToken);
             if (response.Item1)
             {
                 try
                 {
-                    var PaymentExamptionRequest = await _PaymentExamptionRepository.GetAsync(request.RequestId);
+                    var PaymentExamptionRequest = await _PaymentExamptionRepository.GetAsync(response.Item2);
                     PaymentExamptionRequest.status = true;
                     await _PaymentExamptionRepository.UpdateAsync(PaymentExamptionRequest, x => x.Id);
                     await _PaymentExamptionRepository.SaveChangesAsync(cancellationToken);
