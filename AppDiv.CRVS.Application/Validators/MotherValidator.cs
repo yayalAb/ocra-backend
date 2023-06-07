@@ -14,13 +14,18 @@ namespace AppDiv.CRVS.Application.Validators
             _repo = repo;
             RuleFor(p => p.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo, "Mother.Id")
                                 .When(p => (!string.IsNullOrEmpty(p.Id.ToString()) && p.Id != Guid.Empty));
-            RuleFor(p => p.FirstName.or).NotEmpty().NotNull();
+            RuleFor(p => p.FirstName.or).NotEmpty().NotNull().Matches("^[a-zA-Z']+${1,50}")
+                .WithMessage("Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
             RuleFor(p => p.FirstName.am).NotEmpty().NotNull();
             RuleFor(p => p.MiddleName.am).NotEmpty().NotNull();
-            RuleFor(p => p.MiddleName.or).NotEmpty().NotNull();
+            RuleFor(p => p.MiddleName.or).NotEmpty().NotNull().Matches("^[a-zA-Z']+${1,50}")
+                .WithMessage("Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
             RuleFor(p => p.LastName.am).NotEmpty().NotNull();
-            RuleFor(p => p.LastName.or).NotEmpty().NotNull();
+            RuleFor(p => p.LastName.or).NotEmpty().NotNull().Matches("^[a-zA-Z']+${1,50}")
+                .WithMessage("Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
             RuleFor(p => p.NationalId).NotGuidEmpty();
+            RuleFor(p => p.BirthDateEt).NotEmpty().NotNull()
+                .IsValidDate("Mother Birth date").IsAbove18("Mother age");
             // RuleFor(p => p.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo.Lookup, "Mother.SexLookupId");
             RuleFor(p => p.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "Mother.NationalityLookupId");
             RuleFor(p => p.ReligionLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "Mother.ReligionLookupId");
