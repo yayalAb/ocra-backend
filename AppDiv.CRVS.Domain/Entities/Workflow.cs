@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string DescriptionStr { get; set; }
         public ICollection<Step> Steps { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
+        public virtual ICollection<Request> Requests { get; set; }
         [NotMapped]
         public JObject Description
         {

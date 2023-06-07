@@ -35,18 +35,21 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         private readonly IWorkflowRepository _WorkflowRepo;
         private readonly IRequestRepostory _RequestRepostory;
         private readonly IStepRepository _StepRepo;
+        private readonly IUserRepository _UserRepo;
 
-        public GetAuthentcationRequestListHandler(IStepRepository StepRepo, IWorkflowRepository WorkflowRepo, IRequestRepostory RequestRepostory, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
+        public GetAuthentcationRequestListHandler(IUserRepository UserRepo, IStepRepository StepRepo, IWorkflowRepository WorkflowRepo, IRequestRepostory RequestRepostory, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
         {
             _AuthenticationRepository = AuthenticationRepository;
             _WorkflowService = WorkflowService;
             _RequestRepostory = RequestRepostory;
             _WorkflowRepo = WorkflowRepo;
             _StepRepo = StepRepo;
+            _UserRepo = UserRepo;
         }
         public async Task<object> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
             var getAllSteps = _StepRepo.GetAll();//.Where(g => g.UserGroupId == request.UserId);
+            // var userGroup = await _UserRepo.GetAsync(request.UserId);
             var RequestList = _RequestRepostory.GetAll()
             .Include(x => x.CivilRegOfficer)
             .Include(x => x.AuthenticationRequest)
