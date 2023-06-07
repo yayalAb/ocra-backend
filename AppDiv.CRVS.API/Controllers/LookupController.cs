@@ -110,9 +110,9 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("key")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<LookupByKeyDTO>> GetByKey([FromQuery] string Key)
+        public async Task<PaginatedList<LookupByKeyDTO>> GetByKey([FromQuery] GetLookupByKeyQuery query)
         {
-            return await _mediator.Send(new GetLookupByKeyQuery { Key = Key });
+            return await _mediator.Send(query);
         }
 
 
