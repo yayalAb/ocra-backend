@@ -56,10 +56,11 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<SupportingDocument> SupportingDocuments { get; set; }
         public DbSet<Witness> Witnesses { get; set; }
         public DbSet<CertificateHistory> CertificateHistorys { get; set; }
-        public DbSet<Transaction> Transactions {get;set;}
+        public DbSet<Transaction> Transactions { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<CertificateSerialRange> CertificateSerialRanges { get; set; }
         public DbSet<CertificateSerialTransfer> CertificateSerialTransfers { get; set; }
+        public DbSet<Request> Request { get; set; }
 
 
 
