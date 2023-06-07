@@ -9,6 +9,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Interfaces.Archive;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -16,10 +17,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     {
         IDateAndAddressService _dateAndAddressService;
         private readonly ILookupFromId _lookupService;
-        public ReturnBirthArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService)
+        private readonly IPersonalInfoRepository _person;
+        public ReturnBirthArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService, IPersonalInfoRepository person)
         {
-            _lookupService = lookupService;
             _dateAndAddressService = DateAndAddressService;
+            _lookupService = lookupService;
+            _person = person;
+            // _convertor = new CustomDateConverter();
         }
 
         private BirthInfo GetEventInfo(Event birth)
@@ -91,8 +95,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                _dateAndAddressService.addressFormat(birth.Event.EventAddressId);
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(birth.Event.CreatedAt);
-
+            birth.Event.BirthEvent = birth;
             (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            if (birth.Event.CivilRegOfficer == null && birth.Event.CivilRegOfficerId != null)
+            {
+                birth.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == birth.Event.CivilRegOfficerId).FirstOrDefault();
+            }
             return new BirthArchiveDTO()
             {
                 Child = CustomMapper.Mapper.Map<Child>

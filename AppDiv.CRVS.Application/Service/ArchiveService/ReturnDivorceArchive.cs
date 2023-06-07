@@ -8,6 +8,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Interfaces.Archive;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
@@ -17,10 +18,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         IDateAndAddressService _dateAndAddressService;
         private readonly CustomDateConverter convertor;
         private readonly ILookupFromId _lookupService;
-        public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService)
+        private readonly IPersonalInfoRepository _person;
+        public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService, IPersonalInfoRepository person)
         {
-            _lookupService = lookupService;
             _dateAndAddressService = DateAndAddressService;
+            _lookupService = lookupService;
+            _person = person;
             convertor = new CustomDateConverter();
         }
 

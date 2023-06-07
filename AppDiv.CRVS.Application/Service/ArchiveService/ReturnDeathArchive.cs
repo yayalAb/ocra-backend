@@ -8,6 +8,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Interfaces.Archive;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
@@ -16,10 +17,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     {
         IDateAndAddressService _dateAndAddressService;
         private readonly ILookupFromId _lookupService;
-        public ReturnDeathArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService)
+        private readonly IPersonalInfoRepository _person;
+        public ReturnDeathArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService, IPersonalInfoRepository person)
         {
-            _lookupService = lookupService;
             _dateAndAddressService = DateAndAddressService;
+            _lookupService = lookupService;
+            _person = person;
         }
 
         private DeathInfo GetEventInfo(Event death)
@@ -95,7 +98,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             (string am, string or)? regAddress = (death?.Event.EventRegistrar.RegistrarInfo?.ResidentAddressId == Guid.Empty
                || death?.Event.EventRegistrar.RegistrarInfo?.ResidentAddressId == null) ? null :
                _dateAndAddressService.addressFormat(death.Event.EventRegistrar.RegistrarInfo.ResidentAddressId);
-
+            death.Event.DeathEventNavigation = death;
 
 
             var convertor = new CustomDateConverter();
