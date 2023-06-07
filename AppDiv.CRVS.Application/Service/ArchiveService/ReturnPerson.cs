@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public static EventInfoArchive GetEventInfo(Event events, IDateAndAddressService dateAndAddressService)
         {
             (string am, string or)? address = (events.EventAddressId == Guid.Empty
-               || events.EventAddress == null) ? null :
+               || events.EventAddressId == null) ? null :
                dateAndAddressService.addressFormat(events.EventAddressId);
 
             (string[] am, string[] or) splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);
@@ -51,7 +51,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             };
         }
-        public static Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService)
+        public static Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService //)
+        , ILookupFromId lookupService)
         {
             // return Fill.Filler<Person, PersonalInfo>(new Person(), person);
             // var convertor = new CustomDateConverter();
@@ -81,7 +82,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 NationalId = person?.NationalId,
 
                 BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt).month, "or")?.month,
-                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt).month, "Am")?.month,
+                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt).month, "am")?.month,
                 BirthDay = convertor.getSplitted(person?.BirthDateEt).day.ToString(),
                 BirthYear = convertor.getSplitted(person?.BirthDateEt).year.ToString(),
 
@@ -91,23 +92,23 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 ResidentAddressAm = residentAddress?.am,
                 ResidentAddressOr = residentAddress?.or,
 
-                NationalityOr = person?.NationalityLookup?.Value?.Value<string>("or"),
-                NationalityAm = person?.NationalityLookup?.Value?.Value<string>("am"),
+                NationalityOr = person?.NationalityLookup?.Value?.Value<string>("or") == null ? lookupService.GetLookupOr(person?.NationalityLookupId) : null,
+                NationalityAm = person?.NationalityLookup?.Value?.Value<string>("am") == null ? lookupService.GetLookupOr(person?.NationalityLookupId) : null,
 
-                MarriageStatusOr = person?.MarraigeStatusLookup?.Value?.Value<string>("or"),
-                MarriageStatusAm = person?.MarraigeStatusLookup?.Value?.Value<string>("am"),
+                MarriageStatusOr = person?.MarraigeStatusLookup?.Value?.Value<string>("or") == null ? lookupService.GetLookupOr(person?.MarriageStatusLookupId) : null,
+                MarriageStatusAm = person?.MarraigeStatusLookup?.Value?.Value<string>("am") == null ? lookupService.GetLookupOr(person?.MarriageStatusLookupId) : null,
 
-                ReligionOr = person?.ReligionLookup?.Value?.Value<string>("or"),
-                ReligionAm = person?.ReligionLookup?.Value?.Value<string>("am"),
+                ReligionOr = person?.ReligionLookup?.Value?.Value<string>("or") == null ? lookupService.GetLookupOr(person?.ReligionLookupId) : null,
+                ReligionAm = person?.ReligionLookup?.Value?.Value<string>("am") == null ? lookupService.GetLookupOr(person?.ReligionLookupId) : null,
 
-                NationOr = person?.NationLookup?.Value?.Value<string>("or"),
-                NationAm = person?.NationLookup?.Value?.Value<string>("am"),
+                NationOr = person?.NationLookup?.Value?.Value<string>("or") == null ? lookupService.GetLookupOr(person?.NationLookupId) : null,
+                NationAm = person?.NationLookup?.Value?.Value<string>("am") == null ? lookupService.GetLookupOr(person?.NationLookupId) : null,
 
-                EducationalStatusOr = person?.EducationalStatusLookup?.Value?.Value<string>("or"),
-                EducationalStatusAm = person?.EducationalStatusLookup?.Value?.Value<string>("am"),
+                EducationalStatusOr = person?.EducationalStatusLookup?.Value?.Value<string>("or") == null ? lookupService.GetLookupOr(person?.EducationalStatusLookupId) : null,
+                EducationalStatusAm = person?.EducationalStatusLookup?.Value?.Value<string>("am") == null ? lookupService.GetLookupOr(person?.EducationalStatusLookupId) : null,
 
-                TypeOfWorkOr = person?.TypeOfWorkLookup?.Value?.Value<string>("or"),
-                TypeOfWorkAm = person?.TypeOfWorkLookup?.Value?.Value<string>("am"),
+                TypeOfWorkOr = person?.TypeOfWorkLookup?.Value?.Value<string>("or") == null ? lookupService.GetLookupOr(person?.TypeOfWorkLookupId) : null,
+                TypeOfWorkAm = person?.TypeOfWorkLookup?.Value?.Value<string>("am") == null ? lookupService.GetLookupOr(person?.TypeOfWorkLookupId) : null,
 
 
             };

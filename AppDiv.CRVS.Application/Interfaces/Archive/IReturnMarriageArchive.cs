@@ -10,5 +10,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Archive
     public interface IReturnMarriageArchive
     {
         public MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo);
+        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo);
     }
 }

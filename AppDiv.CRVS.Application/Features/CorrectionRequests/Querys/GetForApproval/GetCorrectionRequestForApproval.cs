@@ -8,6 +8,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Application.Service.ArchiveService;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -66,11 +67,21 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForAppro
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var certificate = _archiveGenerator.GetArchive(request1, content, birthCertificateNo?.Event?.CertificateId);
 
-
             var response = new CorrectionApprovalDTO();
             response.OldData = certificate;
-            response.NewData = certificate;
+
             response.CurrentStep = CorrectionRequest?.Request.currentStep;
+            var eventContent = _correctionRequestRepository.GetAll().Where(cr => cr.EventId == CorrectionRequest.EventId)
+                                                        .FirstOrDefault()?.Content;
+            response.NewData = selectedEvent.EventType switch
+            {
+                "Birth" => _archiveGenerator.GetBirthArchivePreview(ReturnArchiveFromJObject.GetArchive<BirthEvent>(eventContent), birthCertificateNo?.Event?.CertificateId),
+                "Death" => _archiveGenerator.GetDeathArchivePreview(ReturnArchiveFromJObject.GetArchive<DeathEvent>(eventContent), birthCertificateNo?.Event?.CertificateId),
+                "Adoption" => _archiveGenerator.GetAdoptionArchivePreview(ReturnArchiveFromJObject.GetArchive<AdoptionEvent>(eventContent), birthCertificateNo?.Event?.CertificateId),
+                "Divorce" => _archiveGenerator.GetDivorceArchivePreview(ReturnArchiveFromJObject.GetArchive<DivorceEvent>(eventContent), birthCertificateNo?.Event?.CertificateId),
+                "Marriage" => _archiveGenerator.GetMarriageArchivePreview(ReturnArchiveFromJObject.GetArchive<MarriageEvent>(eventContent), birthCertificateNo?.Event?.CertificateId),
+            };
+
             return response;
         }
     }

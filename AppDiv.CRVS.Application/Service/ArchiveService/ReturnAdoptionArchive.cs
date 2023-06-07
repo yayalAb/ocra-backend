@@ -9,6 +9,8 @@ using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Interfaces.Archive;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -16,32 +18,36 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     {
         IDateAndAddressService _DateAndAddressService;
         private readonly CustomDateConverter _convertor;
-        public ReturnAdoptionArchive(IDateAndAddressService DateAndAddressService)
+        private readonly ILookupFromId _lookupService;
+        private readonly IPersonalInfoRepository _person;
+        public ReturnAdoptionArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService, IPersonalInfoRepository person)
         {
             _DateAndAddressService = DateAndAddressService;
+            _lookupService = lookupService;
+            _person = person;
             _convertor = new CustomDateConverter();
         }
 
         private AdoptedChild GetChild(PersonalInfo adoptedChild)
         {
-            AdoptedChild? child = CustomMapper.Mapper.Map<AdoptedChild>(ReturnPerson.GetPerson(adoptedChild, _DateAndAddressService));
+            AdoptedChild? child = CustomMapper.Mapper.Map<AdoptedChild>(ReturnPerson.GetPerson(adoptedChild, _DateAndAddressService, _lookupService));
             return child;
         }
 
         private Officer GetOfficer(PersonalInfo adoptionOfficer)
         {
-            Officer? officer = CustomMapper.Mapper.Map<Officer>(ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService));
+            Officer? officer = CustomMapper.Mapper.Map<Officer>(ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService, _lookupService));
             return officer;
         }
 
         private Person GetMother(PersonalInfo adoptiveMother)
         {
-            Person? mother = ReturnPerson.GetPerson(adoptiveMother, _DateAndAddressService);
+            Person? mother = ReturnPerson.GetPerson(adoptiveMother, _DateAndAddressService, _lookupService);
             return mother;
         }
         private Person GetFather(PersonalInfo adoptiveFather)
         {
-            Person? father = ReturnPerson.GetPerson(adoptiveFather, _DateAndAddressService);
+            Person? father = ReturnPerson.GetPerson(adoptiveFather, _DateAndAddressService, _lookupService);
             return father;
         }
         private AdoptionInfo GetEventInfo(Event adoption)
@@ -51,6 +57,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             adoptionInfo.ReasonAm = adoption.AdoptionEvent.Reason?.Value<string>("am");
             return adoptionInfo;
         }
+        private AdoptionInfo GetEventInfoPreview(AdoptionEvent adoption)
+        {
+            AdoptionInfo adoptionInfo = CustomMapper.Mapper.Map<AdoptionInfo>(ReturnPerson.GetEventInfo(adoption.Event, _DateAndAddressService));
+            adoptionInfo.ReasonOr = adoption.Reason?.Value<string>("or");
+            adoptionInfo.ReasonAm = adoption.Reason?.Value<string>("am");
+            return adoptionInfo;
+        }
         private CourtArchive GetCourt(CourtCase court)
         {
             (string am, string or)? courtAddress = (court.Court.AddressId == Guid.Empty
@@ -58,8 +71,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                _DateAndAddressService.addressFormat(court.Court.AddressId);
             return new CourtArchive
             {
-                CourtNameOr = court.Court.Name?.Value<string>("or"),
-                CourtNameAm = court.Court.Name?.Value<string>("am"),
+                CourtNameOr = court?.Court?.Name?.Value<string>("or"),
+                CourtNameAm = court?.Court?.Name?.Value<string>("am"),
 
                 CourtAddressOr = courtAddress?.or,
                 CourtAddressAm = courtAddress?.am,
@@ -77,6 +90,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
 
+
             return new AdoptionArchiveDTO()
             {
                 Child = GetChild(adoption.EventOwener),
@@ -86,6 +100,57 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 EventInfo = GetEventInfo(adoption),
                 CivilRegistrarOfficer = GetOfficer(adoption.CivilRegOfficer),
             };
+        }
+        public AdoptionArchiveDTO GetAdoptionPreviewArchive(AdoptionEvent adoption, string? BirthCertNo)
+        {
+            var child = adoption.Event.EventOwener == null ?
+                                    _person.GetAll().Where(p => p.Id == adoption.Event.EventOwenerId)
+                                                    .Include(m => m.NationalityLookup)
+                                                    .Include(m => m.NationLookup)
+                                                    .Include(m => m.ReligionLookup)
+                                                    .Include(m => m.SexLookup)
+                                                    .Include(m => m.BirthAddress)
+                                                    .Include(m => m.ResidentAddress)
+                                                    .FirstOrDefault() : adoption.Event.EventOwener;
+            var mother = adoption.AdoptiveMother == null ?
+                                    _person.GetAll().Where(p => p.Id == adoption.AdoptiveMotherId)
+                                                    .Include(e => e.ResidentAddress)
+                                                    .Include(e => e.BirthAddress)
+                                                    .Include(e => e.MarraigeStatusLookup)
+                                                    .Include(e => e.TypeOfWorkLookup)
+                                                    .Include(e => e.NationalityLookup)
+                                                    .Include(e => e.EducationalStatusLookup)
+                                                    .Include(e => e.NationLookup)
+                                                    .FirstOrDefault() : adoption.AdoptiveMother;
+            var father = adoption.AdoptiveFather == null ?
+                                    _person.GetAll().Where(p => p.Id == adoption.AdoptiveFatherId)
+                                                    .Include(e => e.ResidentAddress)
+                                                    .Include(e => e.BirthAddress)
+                                                    .Include(e => e.MarraigeStatusLookup)
+                                                    .Include(e => e.TypeOfWorkLookup)
+                                                    .Include(e => e.NationalityLookup)
+                                                    .Include(e => e.EducationalStatusLookup)
+                                                    .Include(e => e.NationLookup)
+                                                    .FirstOrDefault() : adoption.AdoptiveFather;
+            var convertor = new CustomDateConverter();
+            var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
+            var adoptionArchive = new AdoptionArchiveDTO();
+            adoption.Event.AdoptionEvent = adoption;
+            // return new AdoptionArchiveDTO()
+            // {
+            adoptionArchive.Child = child == null ? null : GetChild(child);
+            adoptionArchive.Mother = mother == null ? null : GetMother(mother);
+            adoptionArchive.Father = father == null ? null : GetFather(father);
+            adoptionArchive.Court = GetCourt(adoption.CourtCase);
+            adoptionArchive.EventInfo = GetEventInfo(adoption.Event);
+            if (adoption.Event.CivilRegOfficer == null && adoption.Event.CivilRegOfficerId != null)
+            {
+                adoption.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == adoption.Event.CivilRegOfficerId).FirstOrDefault();
+            }
+            adoptionArchive.CivilRegistrarOfficer = adoption.Event.CivilRegOfficer == null ? null : GetOfficer(adoption.Event.CivilRegOfficer);
+
+            // };
+            return adoptionArchive;
         }
     }
 }

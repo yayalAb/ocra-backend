@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool IsExampted { get; set; } = false;
         public bool IsPaid { get; set; } = false;
         public bool IsCertified { get; set; } = false;
+        public bool IsVerified { get; set; } = false;
         public virtual Address EventAddress { get; set; }
 
         public virtual PersonalInfo EventOwener { get; set; }

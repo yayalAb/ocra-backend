@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Domain.Entities;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -62,6 +63,26 @@ namespace AppDiv.CRVS.Application.Service
             return address;
         }
 
+    }
+
+    public class LookupFromId : ILookupFromId
+    {
+        private readonly ILookupRepository _lookupRepository;
+        public LookupFromId(ILookupRepository lookupRepository)
+        {
+            _lookupRepository = lookupRepository;
+        }
+
+        public string? GetLookupOr(Guid? id)
+        {
+            var lookup = _lookupRepository.GetAll().Where(l => l.Id == id).FirstOrDefault();
+            return lookup?.Value?.Value<string>("or");
+        }
+        public string? GetLookupAm(Guid? id)
+        {
+            var lookup = _lookupRepository.GetAll().Where(l => l.Id == id).FirstOrDefault();
+            return lookup?.Value?.Value<string>("am");
+        }
     }
 }
 

@@ -1,12 +1,13 @@
 
 
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 
 namespace AppDiv.CRVS.Infrastructure.Service
 {
-    public class TransactionService 
+    public class TransactionService : ITransactionService
     {
         private readonly CRVSDbContext _context;
 

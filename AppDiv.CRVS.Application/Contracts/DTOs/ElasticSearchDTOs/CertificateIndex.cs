@@ -4,6 +4,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
     public class CertificateIndex
     {
         public Guid Id { get; set; }
+        public Guid EventId { get; set; }
         public string? EventType {get; set; }
         public string? CertificateId {get; set; }
         public string? CertificateSerialNumber {get; set; }

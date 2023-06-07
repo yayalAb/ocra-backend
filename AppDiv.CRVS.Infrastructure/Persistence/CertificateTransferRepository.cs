@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 {
                     try
                     {
-                        Address? recieverAddress = _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
+                        Address? recieverAddress = _dbContext.Users.Include(i => i.Address)
                                                         .Where(u => u.Id == transfer.RecieverId)
                                                         .FirstOrDefault()?.Address;
                         if (transfer.SenderId == null)
@@ -39,7 +39,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             transfer.Status = true;
                             _dbContext.CertificateSerialRanges.Add(recieverRange);
                         }
-
 
                         await base.InsertAsync(transfer, cancellationToken);
                         await base.SaveChangesAsync(cancellationToken);
