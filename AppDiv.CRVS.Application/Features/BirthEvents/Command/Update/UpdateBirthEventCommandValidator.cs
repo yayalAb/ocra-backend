@@ -24,20 +24,21 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
     public class UpdateBirthEventCommandValidator : AbstractValidator<UpdateBirthEventCommand>
     {
-        public UpdateBirthEventCommandValidator(IEventRepository eventRepo, BirthEvent birth)
+        public UpdateBirthEventCommandValidator(IEventRepository eventRepo)
+        // , BirthEvent birth)
         {
-            RuleFor(p => p.Id).Must(id => id == birth.Id).WithMessage("Invalid birth Id");
+            //     RuleFor(p => p.Id).Must(id => id == birth.Id).WithMessage("Invalid birth Id");
             RuleFor(p => CustomMapper.Mapper.Map<AddBirthEventRequest>(p)).SetValidator(new BirthEventValidator(eventRepo));
             RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo))
                     .When(p => p.BirthNotification != null);
 
-            RuleFor(p => p.Event.EventOwener.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
+            //     RuleFor(p => p.Event.EventOwener.Id).Must(id => id == birth.Event.EventOwener.Id).WithMessage("Invalid birth owener Id");
             RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
 
-            RuleFor(p => p.Father.Id).Must(id => id == birth.Father.Id).WithMessage("Invalid father Id");
+            //     RuleFor(p => p.Father.Id).Must(id => id == birth.Father.Id).WithMessage("Invalid father Id");
             RuleFor(p => p.Father).SetValidator(new FatherValidator(eventRepo));
 
-            RuleFor(p => p.Mother.Id).Must(id => id == birth.Mother.Id).WithMessage("Invalid mother Id");
+            //     RuleFor(p => p.Mother.Id).Must(id => id == birth.Mother.Id).WithMessage("Invalid mother Id");
             RuleFor(p => p.Mother).SetValidator(new MotherValidator(eventRepo));
 
             RuleFor(p => p.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator(eventRepo))
