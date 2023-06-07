@@ -8,50 +8,6 @@ using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
-    public static class Fill
-    {
-        public static D Filler<D, S>(D destination, S source)
-        {
-            Type type = destination.GetType();
-            Type dest = source.GetType();
-            PropertyInfo[] properties = type.GetProperties();
-            PropertyInfo[] destProps = dest.GetProperties();
-
-            foreach (PropertyInfo property in properties)
-            {
-                foreach (var d in destProps)
-                {
-                    // d.GetValue(destination).Value<string>("am");
-                    if (property.Name + "Am" == d.Name)
-                    {
-                        var value = new object();
-                        if (property.Name.Contains("Lookup"))
-                            value = (d.GetValue(source) as Lookup)?.Value?.Value<string>("am");
-                        else
-                            value = (d.GetValue(source) as JObject)?.Value<string>("am");
-
-                        property.SetValue(destination, value);
-                    }
-                    if (property.Name + "Or" == d.Name)
-                    {
-                        var value = new object();
-                        if (property.Name.Contains("Lookup"))
-                            value = (d.GetValue(source) as Lookup)?.Value?.Value<string>("or");
-                        else
-                            value = (d.GetValue(source) as JObject)?.Value<string>("or");
-
-                        property.SetValue(destination, value);
-                    }
-                    if (property.Name == d.Name)
-                    {
-                        property.SetValue(destination, d.GetValue(source));
-                    }
-                }
-                // Console.WriteLine(property.Name);
-            }
-            return destination;
-        }
-    }
     public class Person
     {
         public string? FirstNameAm { get; set; }
@@ -94,6 +50,32 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 
         public string? TypeOfWorkOr { get; set; }
         public string? TypeOfWorkAm { get; set; }
+
+        public string? BirthCountryOr { get; set; }
+        public string? BirthCountryAm { get; set; }
+        public string? BirthRegionOr { get; set; }
+        public string? BirthRegionAm { get; set; }
+        public string? BirthZoneOr { get; set; }
+        public string? BirthZoneAm { get; set; }
+        public string? BirthWoredaOr { get; set; }
+        public string? BirthWoredaAm { get; set; }
+        public string? BirthCityKetemaOr { get; set; }
+        public string? BirthCityKetemaAm { get; set; }
+        public string? BirthKebeleOr { get; set; }
+        public string? BirthKebeleAm { get; set; }
+
+        public string? ResidentCountryOr { get; set; }
+        public string? ResidentCountryAm { get; set; }
+        public string? ResidentRegionOr { get; set; }
+        public string? ResidentRegionAm { get; set; }
+        public string? ResidentZoneOr { get; set; }
+        public string? ResidentZoneAm { get; set; }
+        public string? ResidentWoredaOr { get; set; }
+        public string? ResidentWoredaAm { get; set; }
+        public string? ResidentCityKetemaOr { get; set; }
+        public string? ResidentCityKetemaAm { get; set; }
+        public string? ResidentKebeleOr { get; set; }
+        public string? ResidentKebeleAm { get; set; }
 
     }
 }

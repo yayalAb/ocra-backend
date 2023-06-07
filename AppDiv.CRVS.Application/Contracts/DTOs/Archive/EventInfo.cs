@@ -8,7 +8,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
     public class EventInfoArchive
     {
         public string? CertificateId { get; set; }
-        public string? RegBookNumber { get; set; }
+        public string? RegistrationBookNumber { get; set; }
+        public string? RegistrationOfficeId { get; set; }
 
         public string? EventMonthOr { get; set; }
         public string? EventMonthAm { get; set; }

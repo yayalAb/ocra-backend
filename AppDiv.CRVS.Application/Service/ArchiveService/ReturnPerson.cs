@@ -18,12 +18,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                || events.EventAddressId == null) ? null :
                dateAndAddressService.addressFormat(events.EventAddressId);
 
-            (string[] am, string[] or) splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);
             // var convertor = new CustomDateConverter();
             return new EventInfoArchive
             {
                 CertificateId = events?.CertificateId,
-                RegBookNumber = events?.RegBookNo,
+                RegistrationBookNumber = events?.RegBookNo,
+                RegistrationOfficeId = events?.CertificateId.Substring(0, events.CertificateId.Length - 8),
 
                 EventMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "or")?.month,
                 EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "Am")?.month,
@@ -35,18 +36,18 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 RegistrationDay = convertor.getSplitted(events?.EventRegDateEt).day.ToString(),
                 RegistrationYear = convertor.getSplitted(events?.EventRegDateEt).year.ToString(),
 
-                EventCountryOr = splitedAddress.or?.ElementAtOrDefault(0),
-                EventCountryAm = splitedAddress.am?.ElementAtOrDefault(0),
-                EventRegionOr = splitedAddress.or?.ElementAtOrDefault(1),
-                EventRegionAm = splitedAddress.am?.ElementAtOrDefault(1),
-                EventZoneOr = splitedAddress.or?.ElementAtOrDefault(2),
-                EventZoneAm = splitedAddress.am?.ElementAtOrDefault(2),
-                EventWoredaOr = splitedAddress.or?.ElementAtOrDefault(3),
-                EventWoredaAm = splitedAddress.am?.ElementAtOrDefault(3),
-                EventCityKetemaOr = splitedAddress.or?.ElementAtOrDefault(4),
-                EventCityKetemaAm = splitedAddress.am?.ElementAtOrDefault(4),
-                EventKebeleOr = splitedAddress.or?.ElementAtOrDefault(5),
-                EventKebeleAm = splitedAddress.am?.ElementAtOrDefault(5),
+                EventCountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
+                EventCountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
+                EventRegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
+                EventRegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
+                EventZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
+                EventZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
+                EventWoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
+                EventWoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
+                EventCityKetemaOr = splitedAddress?.or?.ElementAtOrDefault(4),
+                EventCityKetemaAm = splitedAddress?.am?.ElementAtOrDefault(4),
+                EventKebeleOr = splitedAddress?.or?.ElementAtOrDefault(5),
+                EventKebeleAm = splitedAddress?.am?.ElementAtOrDefault(5),
 
 
             };
@@ -61,10 +62,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             (string am, string or)? birthAddress = (person?.BirthAddressId == Guid.Empty
                || person?.BirthAddress == null) ? null :
                dateAndAddressService.addressFormat(person.BirthAddressId);
+            (string[]? am, string[]? or)? birthSplitedAddress = dateAndAddressService.SplitedAddress(birthAddress?.am, birthAddress?.or);
 
             (string am, string or)? residentAddress = (person?.ResidentAddressId == Guid.Empty
                || person?.ResidentAddress == null) ? null :
                dateAndAddressService.addressFormat(person.ResidentAddressId);
+            (string[]? am, string[]? or)? residentSplitedAddress = dateAndAddressService.SplitedAddress(residentAddress?.am, residentAddress?.or);
 
             return new Person
             {
@@ -86,11 +89,39 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 BirthDay = convertor.getSplitted(person?.BirthDateEt).day.ToString(),
                 BirthYear = convertor.getSplitted(person?.BirthDateEt).year.ToString(),
 
+
+
                 BirthAddressAm = birthAddress?.am,
                 BirthAddressOr = birthAddress?.or,
 
+                BirthCountryOr = birthSplitedAddress?.or?.ElementAtOrDefault(0),
+                BirthCountryAm = birthSplitedAddress?.am?.ElementAtOrDefault(0),
+                BirthRegionOr = birthSplitedAddress?.or?.ElementAtOrDefault(1),
+                BirthRegionAm = birthSplitedAddress?.am?.ElementAtOrDefault(1),
+                BirthZoneOr = birthSplitedAddress?.or?.ElementAtOrDefault(2),
+                BirthZoneAm = birthSplitedAddress?.am?.ElementAtOrDefault(2),
+                BirthWoredaOr = birthSplitedAddress?.or?.ElementAtOrDefault(3),
+                BirthWoredaAm = birthSplitedAddress?.am?.ElementAtOrDefault(3),
+                BirthCityKetemaOr = birthSplitedAddress?.or?.ElementAtOrDefault(4),
+                BirthCityKetemaAm = birthSplitedAddress?.am?.ElementAtOrDefault(4),
+                BirthKebeleOr = birthSplitedAddress?.or?.ElementAtOrDefault(5),
+                BirthKebeleAm = birthSplitedAddress?.am?.ElementAtOrDefault(5),
+
                 ResidentAddressAm = residentAddress?.am,
                 ResidentAddressOr = residentAddress?.or,
+
+                ResidentCountryOr = residentSplitedAddress?.or?.ElementAtOrDefault(0),
+                ResidentCountryAm = residentSplitedAddress?.am?.ElementAtOrDefault(0),
+                ResidentRegionOr = residentSplitedAddress?.or?.ElementAtOrDefault(1),
+                ResidentRegionAm = residentSplitedAddress?.am?.ElementAtOrDefault(1),
+                ResidentZoneOr = residentSplitedAddress?.or?.ElementAtOrDefault(2),
+                ResidentZoneAm = residentSplitedAddress?.am?.ElementAtOrDefault(2),
+                ResidentWoredaOr = residentSplitedAddress?.or?.ElementAtOrDefault(3),
+                ResidentWoredaAm = residentSplitedAddress?.am?.ElementAtOrDefault(3),
+                ResidentCityKetemaOr = residentSplitedAddress?.or?.ElementAtOrDefault(4),
+                ResidentCityKetemaAm = residentSplitedAddress?.am?.ElementAtOrDefault(4),
+                ResidentKebeleOr = residentSplitedAddress?.or?.ElementAtOrDefault(5),
+                ResidentKebeleAm = residentSplitedAddress?.am?.ElementAtOrDefault(5),
 
                 NationalityOr = person?.NationalityLookup?.Value?.Value<string>("or") == null ? lookupService.GetLookupOr(person?.NationalityLookupId) : null,
                 NationalityAm = person?.NationalityLookup?.Value?.Value<string>("am") == null ? lookupService.GetLookupOr(person?.NationalityLookupId) : null,
