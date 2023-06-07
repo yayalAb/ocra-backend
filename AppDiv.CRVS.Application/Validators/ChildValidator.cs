@@ -16,7 +16,8 @@ namespace AppDiv.CRVS.Application.Validators
             _repo = repo;
             RuleFor(p => p.Id.ToString()).NotGuidEmpty().ForeignKeyWithPerson(_repo, "EventOwener.Id")
                 .When(p => !string.IsNullOrEmpty(p.Id.ToString()) && p.Id != Guid.Empty);
-            RuleFor(p => p.FirstName.or).NotEmpty().NotNull();
+            RuleFor(p => p.FirstName.or).NotEmpty().NotNull().Matches("^[a-zA-Z']+${1,50}")
+                .WithMessage("Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
             RuleFor(p => p.FirstName.am).NotEmpty().NotNull();
             // RuleFor(p => p.MiddleName.or).Must(f => f == father.FirstName.or).WithMessage("The child's father name and his father first name does not match.").NotEmpty().NotNull();
             // RuleFor(p => p.MiddleName.am).Must(f => f == father.FirstName.am).WithMessage("The child's father's name and his father's first name do not match.").NotEmpty().NotNull();
