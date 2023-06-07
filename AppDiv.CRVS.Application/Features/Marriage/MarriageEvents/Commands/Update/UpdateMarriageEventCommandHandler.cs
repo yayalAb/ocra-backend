@@ -8,6 +8,7 @@ using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationExcep
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Domain.Enums;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 {
@@ -22,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         private readonly IDivorceEventRepository _divorceEventRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepository;
+        private readonly ISupportingDocumentRepository _supportingDocumentRepository;
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepository;
 
         public UpdateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
@@ -32,6 +34,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                                  IDivorceEventRepository divorceEventRepository,
                                                  IEventPaymentRequestService paymentRequestService,
                                                  IAddressLookupRepository addressRepository,
+                                                 ISupportingDocumentRepository supportingDocumentRepository,
                                                  IPaymentExamptionRequestRepository paymentExamptionRequestRepository
                                                  )
         {
@@ -43,6 +46,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             _divorceEventRepository = divorceEventRepository;
             _paymentRequestService = paymentRequestService;
             _addressRepository = addressRepository;
+            _supportingDocumentRepository = supportingDocumentRepository;
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
         }
 
@@ -75,15 +79,21 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                         if (updateMarriageEventCommandResponse.Success)
                         {
 
+                            var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                            request.Event.EventSupportingDocuments = null;
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             marriageEvent.Event.EventType = "Marriage";
-                           await _marriageEventRepository.EFUpdateAsync(marriageEvent);
+                            await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                             // await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, true, cancellationToken);
-                            await _marriageEventRepository.SaveChangesAsync(cancellationToken);
 
-                            var eventSupportingDocuments = marriageEvent.Event.EventSupportingDocuments;
-                            var examptionSupportingDocuments = marriageEvent.Event?.PaymentExamption?.SupportingDocuments;
-                            _eventDocumentService.saveSupportingDocuments(eventSupportingDocuments, examptionSupportingDocuments, "Marriage");
+                            #region create new supporting docs
+                            var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption.Id, cancellationToken);
+                            #endregion create new supporting docs
+                            await _marriageEventRepository.SaveChangesAsync(cancellationToken);
+                            var separatedDocs = _marriageEventRepository.extractSupportingDocs(marriageEvent, docs.supportingDocs);
+                            _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>?)docs.examptionDocs, "Marriage");
                             updateMarriageEventCommandResponse.Message = "Marriage Event Updated Successfully";
                             await transaction.CommitAsync();
                         }

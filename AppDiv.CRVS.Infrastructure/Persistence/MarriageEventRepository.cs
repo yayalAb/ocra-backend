@@ -2,6 +2,7 @@
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -32,6 +33,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 throw new NotFoundException($"eventOwner with the provided id is not found");
             }
+            marriageEvent.BrideInfo.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                        .Select(l => l.Id).FirstOrDefault();
+            marriageEvent.Event.EventOwener.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+                                                .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                .Select(l => l.Id).FirstOrDefault();
             //find and update existingOwner personalInfo
             var keyValuePair1 = new Dictionary<string, object>{
                     {"SexLookupId" ,marriageEvent.Event.EventOwener.SexLookupId},
@@ -172,6 +183,40 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
 
+        }
+        public (Dictionary<string,string>userPhotos, IEnumerable<SupportingDocument>otherDocs) extractSupportingDocs(MarriageEvent marriageEvent, IEnumerable<SupportingDocument> supportingDocs)
+        {
+            Dictionary<string, string> userPhotos = new Dictionary<string, string>();
+            supportingDocs.Where(d => d.Type.ToLower() == "webcam").ToList().ForEach(doc =>
+            {
+
+                if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower())
+                {
+                    userPhotos.Add(marriageEvent.BrideInfo.Id.ToString(), doc.base64String);
+                    supportingDocs.ToList().Remove(doc);
+                }
+                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower())
+                {
+                    userPhotos.Add(marriageEvent.Event.EventOwener.Id.ToString(), doc.base64String);
+                    supportingDocs.ToList().Remove(doc);
+                }
+            });
+            for (int i = 0; i < marriageEvent.Witnesses.Count; i++)
+            {
+
+                var witnessDoc = supportingDocs
+                            .Where(doc => doc.Type.ToLower() == "webcam"
+                            && doc.Label.ToLower() == $"{Enum.GetName<DocumentLabel>(DocumentLabel.Witness)?.ToLower()}{i}")
+                            .FirstOrDefault();
+
+                if (witnessDoc != null)
+                {
+                    var key = marriageEvent.Witnesses.ToList()[i].WitnessPersonalInfo.Id.ToString();
+                    userPhotos.Add(key, witnessDoc.base64String);
+                    supportingDocs.ToList().Remove(witnessDoc);
+                }
+            }
+            return (userPhotos:userPhotos, otherDocs: supportingDocs);
         }
         private async Task updatePersonalInfo(Dictionary<string, object> keyValuePair, Guid id, string feildName)
         {
