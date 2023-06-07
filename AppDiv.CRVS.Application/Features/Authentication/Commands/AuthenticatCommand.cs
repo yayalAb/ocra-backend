@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         public async Task<BaseResponse> Handle(AuthenticatCommand request, CancellationToken cancellationToken)
         {
             Console.WriteLine("rejected {0}", request.IsApprove);
-            var response = await _WorkflowService.ApproveService(request.RequestId, "authentication", request.IsApprove, cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.RequestId, "authentication", request.IsApprove, " ", cancellationToken);
             if (response.Item1)
             {
                 try

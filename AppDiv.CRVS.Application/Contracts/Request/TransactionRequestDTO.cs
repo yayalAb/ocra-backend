@@ -9,8 +9,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public bool ApprovalStatus { get; set; }
         public Guid WorkflowId { get; set; }
         public Guid RequestId { get; set; }
-        public Guid CivilRegOfficerId { get; set; }
-        public string Remark { get;}
+        public string CivilRegOfficerId { get; set; }
+        public string? Remark { get; set; }
 
     }
 }
