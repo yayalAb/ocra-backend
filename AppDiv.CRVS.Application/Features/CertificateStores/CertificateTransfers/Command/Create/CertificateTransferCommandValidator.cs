@@ -18,21 +18,14 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
         {
 
             _repo = repo;
-            // _mediator = mediator;
-            // RuleFor(p => p.CertificateTransfer.PaymentTypeLookupId)
-            //     .Must(x => x != Guid.Empty).WithMessage("Payment Type must not be empty.");
-            // // .NotEmpty().WithMessage("{PropertyName} is required.")
-            // // .NotNull().
-            // // .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
-            // RuleFor(p => p.CertificateTransfer.EventLookupId)
-            //     .Must(x => x != Guid.Empty).WithMessage("Event must not be empty.");
-            // RuleFor(pr => pr.CertificateTransfer.Amount)
-            //     .NotEmpty().WithMessage("{PropertyName} is required.")
-            //     .NotNull();
+            RuleFor(p => p.CertificateTransfer.RecieverId).NotNull().NotEmpty();
+            RuleFor(p => p.CertificateTransfer.SenderId).NotNull().NotEmpty()
+                            .When(p => string.IsNullOrEmpty(p.CertificateTransfer.ReceivedFrom));
+            RuleFor(p => p.CertificateTransfer.From).NotNull().NotEmpty()
+                            .Must(p => false).WithMessage("'From' must be less than 'To'")
+                            .When(p => p.CertificateTransfer.To < p.CertificateTransfer.From);
+            RuleFor(p => p.CertificateTransfer.To).NotNull().NotEmpty();
 
-            // RuleFor(e => e)
-            //   .MustAsync(phoneNumberUnique)
-            //   .WithMessage("A Customer phoneNumber already exists.");
         }
 
         //private async Task<bool> phoneNumberUnique(CreateCustomerCommand request, CancellationToken token)

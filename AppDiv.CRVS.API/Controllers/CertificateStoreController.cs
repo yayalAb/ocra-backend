@@ -29,20 +29,27 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(await Mediator.Send(command));
         }
 
-        [HttpGet("Recives")]
+        [HttpGet("Recived")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<PaginatedList<CertificateTransferDTO>> Get([FromQuery] GetAllCertificateTransferQuery query)
         {
             // query.UserName = User.Identity.Name;
             return await Mediator.Send(query);
         }
-
-        [HttpGet("{id}")]
+        [HttpGet("Transferred")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<CertificateTransferDTO> Get(Guid id)
+        public async Task<PaginatedList<CertificateTransferDTO>> GetTransfers([FromQuery] GetCertificateTransferByUserQuery query)
         {
-            return await Mediator.Send(new GetCertificateTransferByIdQuery(id));
+            // query.UserName = User.Identity.Name;
+            return await Mediator.Send(query);
         }
+
+        // [HttpGet("{id}")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // public async Task<CertificateTransferDTO> Get(Guid id)
+        // {
+        //     return await Mediator.Send(new GetCertificateTransferByUserQuery);
+        // }
 
 
         [HttpPut("Accept/{id}")]

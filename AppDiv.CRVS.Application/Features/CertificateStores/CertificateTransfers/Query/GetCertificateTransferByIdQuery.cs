@@ -1,5 +1,7 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
@@ -12,35 +14,39 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Query
 {
-    // Customer GetCustomerByIdQuery with Customer response
-    public class GetCertificateTransferByIdQuery : IRequest<CertificateTransferDTO>
+    // Customer GetCustomerByUserQuery with Customer response
+    public class GetCertificateTransferByUserQuery : IRequest<PaginatedList<CertificateTransferDTO>>
     {
-        public Guid Id { get; private set; }
-
-        public GetCertificateTransferByIdQuery(Guid Id)
-        {
-            this.Id = Id;
-        }
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetCertificateTransferByIdHandler : IRequestHandler<GetCertificateTransferByIdQuery, CertificateTransferDTO>
+    public class GetCertificateTransferByUserHandler : IRequestHandler<GetCertificateTransferByUserQuery, PaginatedList<CertificateTransferDTO>>
     {
         private readonly ICertificateTransferRepository _certificateStoreRepository;
+        private readonly IUserRepository _userRepository;
 
-        public GetCertificateTransferByIdHandler(ICertificateTransferRepository certificateStoreRepository)
+        public GetCertificateTransferByUserHandler(ICertificateTransferRepository certificateStoreRepository, IUserRepository userRepository)
         {
             _certificateStoreRepository = certificateStoreRepository;
+            _userRepository = userRepository;
         }
-        public async Task<CertificateTransferDTO> Handle(GetCertificateTransferByIdQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<CertificateTransferDTO>> Handle(GetCertificateTransferByUserQuery request, CancellationToken cancellationToken)
         {
-            var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
-                                                {
-                                                    { "PaymentTypeLookup", NavigationPropertyType.REFERENCE },
-                                                    { "EventLookup", NavigationPropertyType.REFERENCE }
-                                                };
-            var selectedCertificateTransfer = await _certificateStoreRepository.GetWithAsync(request.Id, explicitLoadedProperties);
-            return CustomMapper.Mapper.Map<CertificateTransferDTO>(selectedCertificateTransfer);
+            var transfers = _certificateStoreRepository.GetAll().Where(t => t.SenderId == "");
+            return await PaginatedList<CertificateTransferDTO>
+                            .CreateAsync(
+                                _certificateStoreRepository.GetAll()
+                                    // .Where(c => c.RecieverId == user)
+                                    .Select(sn => new CertificateTransferDTO
+                                    {
+                                        Id = sn.Id,
+                                        From = sn.From,
+                                        To = sn.To,
+                                        Status = sn.Status,
+                                        RecieverName = _userRepository.GetAll().Where(u => u.Id == sn.RecieverId).FirstOrDefault().UserName,
+                                    }).ToList()
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
             // return selectedCustomer;
         }
     }

@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class AddCertificateTransferRequest
     {
         public string? SenderId { get; set; }
+        public string? ReceivedFrom { get; set; }
         public string RecieverId { get; set; }
         // public bool Status { get; set; }
         public int From { get; set; }
