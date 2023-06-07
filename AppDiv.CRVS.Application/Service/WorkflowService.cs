@@ -14,14 +14,16 @@ namespace AppDiv.CRVS.Application.Service
         private readonly ITransactionService _TransactionService;
         private readonly IUserResolverService _UserResolverService;
         private readonly INotificationService _NotificationService;
+        private readonly ICertificateRepository _CertificateRepository;
 
-        public WorkflowService(INotificationService NotificationService, IUserResolverService UserResolverService, ITransactionService TransactionService, IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
+        public WorkflowService(ICertificateRepository CertificateRepository, INotificationService NotificationService, IUserResolverService UserResolverService, ITransactionService TransactionService, IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
         {
             _workflowRepository = workflowRepository;
             _stepRepostory = stepRepostory;
             _requestRepostory = requestRepostory;
             _TransactionService = TransactionService;
             _UserResolverService = UserResolverService;
+            _CertificateRepository = CertificateRepository;
         }
         public int GetLastWorkflow(string workflowType)
         {
@@ -75,7 +77,7 @@ namespace AppDiv.CRVS.Application.Service
             .Include(x => x.CorrectionRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
 
-            Guid ReturnId = (request?.AuthenticationRequest.Id == null) ? request.CorrectionRequest.EventId : request.AuthenticationRequest.Certificate.EventId;
+            Guid ReturnId = (request?.AuthenticationRequest.Id == null) ? request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
             if (request == null)
             {
                 throw new Exception("Request Does not Found");
@@ -113,8 +115,15 @@ namespace AppDiv.CRVS.Application.Service
                 throw new Exception("Next Step  Does not Exist");
             }
             return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
+
         }
 
 
+
+        public Guid GetEventId(Guid Id)
+        {
+            var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
+            return eventId.EventId;
+        }
     }
 }

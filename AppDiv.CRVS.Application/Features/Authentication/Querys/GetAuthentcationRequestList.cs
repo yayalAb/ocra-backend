@@ -34,45 +34,48 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         private readonly IWorkflowService _WorkflowService;
         private readonly IWorkflowRepository _WorkflowRepo;
         private readonly IRequestRepostory _RequestRepostory;
-        private readonly IStepRepository _StepRepo;
         private readonly IUserRepository _UserRepo;
+        private readonly IUserResolverService _ResolverService;
 
-        public GetAuthentcationRequestListHandler(IUserRepository UserRepo, IStepRepository StepRepo, IWorkflowRepository WorkflowRepo, IRequestRepostory RequestRepostory, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
+
+        public GetAuthentcationRequestListHandler(IUserRepository UserRepo, IUserResolverService ResolverService, IWorkflowRepository WorkflowRepo, IRequestRepostory RequestRepostory, IWorkflowService WorkflowService)
         {
-            _AuthenticationRepository = AuthenticationRepository;
             _WorkflowService = WorkflowService;
             _RequestRepostory = RequestRepostory;
             _WorkflowRepo = WorkflowRepo;
-            _StepRepo = StepRepo;
             _UserRepo = UserRepo;
+            _ResolverService = ResolverService;
         }
         public async Task<object> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
-            var getAllSteps = _StepRepo.GetAll();//.Where(g => g.UserGroupId == request.UserId);
-            // var userGroup = await _UserRepo.GetAsync(request.UserId);
+            var userGroup = _UserRepo.GetAll()
+            .Include(g => g.UserGroups)
+            .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
+
+            var gropId = userGroup.UserGroups.FirstOrDefault();
             var RequestList = _RequestRepostory.GetAll()
             .Include(x => x.CivilRegOfficer)
-            .Include(x => x.AuthenticationRequest)
-            .Include(x => x.CorrectionRequest);
-            var joinedList = RequestList.Join(getAllSteps, r => r.currentStep, w => w.step, (r, w) =>
-            new AuthenticationRequestListDTO
+            .Include(x => x.AuthenticationRequest).
+             Include(c => c.AuthenticationRequest.Certificate)
+            .Include(x => x.CorrectionRequest)
+            .Include(w => w.Workflow).ThenInclude(ss => ss.Steps);
+            var testVar = RequestList.Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
+            .Select(w => new AuthenticationRequestListDTO
             {
-                Id = r.Id,
-                ResponsbleGroup = w.UserGroup.GroupName,
-                ResponsbleGroupId = w.UserGroupId,
-                RequestedBy = r.CivilRegOfficer.FirstNameLang + " " + r.CivilRegOfficer.MiddleNameLang + " " + r.CivilRegOfficer.LastNameLang,
-                RequestType = r.RequestType,
-                RequestId = (r.CorrectionRequest.Id == null) ? r.AuthenticationRequest.CertificateId : r.CorrectionRequest.Id,
-                CurrentStep = r.currentStep,
-                RequestDate = r.CreatedAt
+                Id = w.Id,
+                ResponsbleGroupId = w.Workflow.Steps.Where(g => g.step == w.currentStep).Select(x => x.UserGroupId).FirstOrDefault(),
+                RequestType = w.RequestType,
+                RequestId = (w.CorrectionRequest.Id == null) ? _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
+                CurrentStep = w.currentStep,
+                RequestDate = w.CreatedAt
             });
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
-                                  joinedList
+                                  testVar
                                  , request.PageCount ?? 1, request.PageSize ?? 10);
             if (RequestList == null)
             {
-                throw new Exception("Authentication Request not Exist");
+                throw new Exception(" Request does not Exist");
             }
             return List;
         }

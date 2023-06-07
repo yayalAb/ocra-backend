@@ -10,5 +10,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public int GetLastWorkflow(string workflowType);
         public int GetNextStep(string workflowType, int step, bool isApprove);
         public Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, string? Remark, CancellationToken cancellationToken);
+
+        public Guid GetEventId(Guid Id);
     }
 }

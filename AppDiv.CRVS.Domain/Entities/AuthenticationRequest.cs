@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public Guid CertificateId { get; set; }
         public Guid RequestId { get; set; }
-        public Certificate Certificate { get; set; }
+        public virtual Certificate Certificate { get; set; }
         public virtual Request Request { get; set; }
     }
 }
