@@ -64,7 +64,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                         {
                             try
                             {
-                                request.DeathEvent.DuringDeath = request.DeathEvent.DuringDeath == "" ? "Null" : request.DeathEvent.DuringDeath;
+                                // request.DeathEvent.DuringDeath = request.DeathEvent.DuringDeath == "" ? "Null" : request.DeathEvent.DuringDeath;
                                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
 
 
