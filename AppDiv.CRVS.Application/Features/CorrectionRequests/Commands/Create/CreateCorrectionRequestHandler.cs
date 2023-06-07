@@ -19,6 +19,20 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 
         public async Task<CreateCorrectionRequestResponse> Handle(CreateCorrectionRequest request, CancellationToken cancellationToken)
         {
+            // var NewTranscation = new TransactionRequestDTO
+            // {
+            //     CurrentStep = request.currentStep,
+            //     ApprovalStatus = IsApprove,
+            //     WorkflowId = RequestId,
+            //     RequestId = RequestId,
+            //     CivilRegOfficerId = _UserResolverService.GetUserId().ToString(),
+            //     Remark = Remark
+            // };
+            // await _TransactionService.CreateTransaction(NewTranscation);
+            // await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
+            //                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
+            //                   _UserResolverService.GetUserId().ToString());
+
             var CreateAddressCommadResponse = new CreateCorrectionRequestResponse();
             request.CorrectionRequest.Request.RequestType = "change";
             request.CorrectionRequest.Request.currentStep = 0;

@@ -59,7 +59,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              Include(c => c.AuthenticationRequest.Certificate)
             .Include(x => x.CorrectionRequest)
             .Include(w => w.Workflow).ThenInclude(ss => ss.Steps);
-            var testVar = RequestList.Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
+            var testVar = RequestList.Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep && g.UserGroupId == gropId.Id).Any())
             .Select(w => new AuthenticationRequestListDTO
             {
                 Id = w.Id,

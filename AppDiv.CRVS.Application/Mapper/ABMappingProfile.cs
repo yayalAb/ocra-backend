@@ -247,6 +247,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<EventInfoArchive, DeathInfo>().ReverseMap();
             CreateMap<EventInfoArchive, MarriageInfo>().ReverseMap();
             CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
+            CreateMap<Transaction, TransactionRequestDTO>().ReverseMap();
 
 
             // CreateMap<WitnessArchive, Witness>().ReverseMap();
