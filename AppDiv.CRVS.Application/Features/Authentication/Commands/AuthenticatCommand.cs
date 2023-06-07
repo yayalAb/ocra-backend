@@ -45,6 +45,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             {
                 try
                 {
+
+
                     var certificate = await _CertificateRepository.GetAsync(response.Item2);
                     certificate.AuthenticationStatus = true;
                     await _CertificateRepository.UpdateAsync(certificate, x => x.Id);

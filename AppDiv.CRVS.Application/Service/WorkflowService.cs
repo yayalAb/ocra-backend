@@ -76,8 +76,7 @@ namespace AppDiv.CRVS.Application.Service
             .Include(x => x.AuthenticationRequest).ThenInclude(a => a.Certificate)
             .Include(x => x.CorrectionRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
-
-            Guid ReturnId = (request?.AuthenticationRequest.Id == null) ? request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
+            Guid ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ? request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
             if (request == null)
             {
                 throw new Exception("Request Does not Found");
@@ -93,13 +92,13 @@ namespace AppDiv.CRVS.Application.Service
                     ApprovalStatus = IsApprove,
                     WorkflowId = RequestId,
                     RequestId = RequestId,
-                    CivilRegOfficerId = _UserResolverService.GetUserId().ToString(),
+                    CivilRegOfficerId = "4d940006-b21f-4841-b8dd-02957c4d7487",
                     Remark = Remark
                 };
                 await _TransactionService.CreateTransaction(NewTranscation);
                 await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
                                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
-                                  _UserResolverService.GetUserId().ToString());
+                                  "4d940006-b21f-4841-b8dd-02957c4d7487");
                 try
                 {
                     await _requestRepostory.UpdateAsync(request, x => x.CreatedBy);
