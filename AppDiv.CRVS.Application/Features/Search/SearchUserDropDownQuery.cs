@@ -27,7 +27,8 @@ namespace AppDiv.CRVS.Application.Features.Search
             return await _userRepository.GetAll()
                                             .Include(model => model.Address)
                                             .Where(model =>
-                                                   EF.Functions.Like(model.Address.AddressNameStr, $"%{request.SearchString}%")
+                                                   EF.Functions.Like(model.Id, $"%{request.SearchString}%")
+                                                 || EF.Functions.Like(model.Address.AddressNameStr, $"%{request.SearchString}%")
                                                  || EF.Functions.Like(model.UserName, $"%{request.SearchString}%")
                                                   || EF.Functions.Like(model.Email, $"%{request.SearchString}%")
                                                    || EF.Functions.Like(model.PersonalInfo.FirstNameStr, $"%{request.SearchString}%")
