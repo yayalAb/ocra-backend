@@ -35,8 +35,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     try
                     {
                         var updateBirthEventCommandResponse = new UpdateBirthEventCommandResponse();
-                        var birth = await _birthEventRepository.GetWithIncludedAsync(request.Id);
-                        var validator = new UpdateBirthEventCommandValidator(_eventRepository, birth);
+                        // var birth = await _birthEventRepository.GetWithIncludedAsync(request.Id);
+                        var validator = new UpdateBirthEventCommandValidator(_eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
                         //Check and log validation errors
                         if (validationResult.Errors.Count > 0)
