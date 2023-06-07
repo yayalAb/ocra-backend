@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid WorkflowId { get; set; }
         public Guid RequestId { get; set; }
         public string CivilRegOfficerId { get; set; }
-        public string Remark { get;}
+        public string? Remark { get; set; }
         public virtual Workflow Workflow { get; set; }
         public virtual Request Request { get; set; }
         public virtual ApplicationUser CivilRegOfficer { get; set; }

@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
     public class ApproveCorrectionRequestCommand : IRequest<response>
     {
         public Guid Id { get; set; }
+        public string? Description { get; set; }
         public bool IsApprove { get; set; } = false;
     }
     public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, response>
@@ -44,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         }
         public async Task<response> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Description, cancellationToken);
             string eventtype = "";
             if (response.Item1)
             {
