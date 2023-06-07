@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(death.CreatedAt);
 
-            (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new DeathArchiveDTO()
             {
                 Deceased = ReturnPerson.GetPerson(death.EventOwener, _dateAndAddressService, _lookupService),
@@ -104,7 +104,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(death.CreatedAt);
 
-            (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new DeathArchiveDTO()
             {
                 Deceased = ReturnPerson.GetPerson(death.Event.EventOwener, _dateAndAddressService, _lookupService),

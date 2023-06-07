@@ -55,6 +55,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             AdoptionInfo adoptionInfo = CustomMapper.Mapper.Map<AdoptionInfo>(ReturnPerson.GetEventInfo(adoption, _DateAndAddressService));
             adoptionInfo.ReasonOr = adoption.AdoptionEvent.Reason?.Value<string>("or");
             adoptionInfo.ReasonAm = adoption.AdoptionEvent.Reason?.Value<string>("am");
+            adoptionInfo.BirthCertificateId = adoption.AdoptionEvent.BirthCertificateId;
             return adoptionInfo;
         }
         private AdoptionInfo GetEventInfoPreview(AdoptionEvent adoption)

@@ -5,7 +5,7 @@ namespace AppDiv.CRVS.Application.Interfaces
     {
         public (string, string) addressFormat(Guid? id);
 
-        public (string[], string[]) SplitedAddress(string am, string or);
+        public (string[]?, string[]?)? SplitedAddress(string? am, string? or);
         public string[] SplitedAddressByLang(Guid? id);
     }
     public interface ILookupFromId

@@ -38,10 +38,10 @@ namespace AppDiv.CRVS.Application.Service
         }
 
 
-        public (string[], string[]) SplitedAddress(string am, string or)
+        public (string[]?, string[]?)? SplitedAddress(string? am, string? or)
         {
-            string[] addressAm = am.Split("/");
-            string[] addressOr = or.Split("/");
+            string[]? addressAm = am?.Split("/");
+            string[]? addressOr = or?.Split("/");
             return (addressAm, addressOr);
         }
 
@@ -51,12 +51,12 @@ namespace AppDiv.CRVS.Application.Service
             string addessSt = "";
             var Address = _AddresslookupRepository.GetAll()
                                    .Where(a => a.Id == id).FirstOrDefault();
-            addessSt = Address.AddressNameLang;
+            addessSt = Address?.AddressNameLang;
             while (Address?.ParentAddressId != null)
             {
                 Address = _AddresslookupRepository.GetAll()
                                     .Where(a => a.Id == Address.ParentAddressId).FirstOrDefault();
-                addessSt = Address.AddressNameLang + "/" + addessSt;
+                addessSt = Address?.AddressNameLang + "/" + addessSt;
 
             };
             string[] address = addessSt.Split("/");

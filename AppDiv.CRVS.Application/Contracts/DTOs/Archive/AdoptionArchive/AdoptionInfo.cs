@@ -9,5 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive
     {
         public string ReasonOr { get; set; }
         public string ReasonAm { get; set; }
+
+        public string? BirthCertificateId { get; set; }
     }
 }

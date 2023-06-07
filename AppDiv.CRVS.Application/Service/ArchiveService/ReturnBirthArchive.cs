@@ -73,7 +73,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(birth.CreatedAt);
 
-            (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new BirthArchiveDTO()
             {
                 Child = CustomMapper.Mapper.Map<Child>
@@ -96,7 +96,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(birth.Event.CreatedAt);
             birth.Event.BirthEvent = birth;
-            (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             if (birth.Event.CivilRegOfficer == null && birth.Event.CivilRegOfficerId != null)
             {
                 birth.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == birth.Event.CivilRegOfficerId).FirstOrDefault();
