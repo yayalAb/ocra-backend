@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive
         // public string? DivorceDay { get; set; }
         // public string? DivorceYear { get; set; }
 
-        public CourtArchive Court { get; set; }
+        // public CourtArchive Court { get; set; }
 
         public int? NumberOfChildren { get; set; }
     }
