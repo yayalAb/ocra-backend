@@ -9,7 +9,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string workflowName { get; set; }
         public string? ResiponsbleGroup { get; set; }
         public int step { get; set; }
-        public decimal payment { get; set; }
+        public decimal? payment { get; set; }
+        public int? PaymentStep { get; set; }
         public bool status { get; set; }
 
     }
