@@ -32,7 +32,8 @@ namespace AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries
             var marriageApplication = _marriageApplicationRepository.GetAll()
             .Include(model => model.MarriageEvent)
             .Where(model => model.MarriageEvent == null &&
-                          (EF.Functions.Like(model.GroomInfo.FirstNameStr, $"%{request.SearchString}%")
+                          (EF.Functions.Like(model.Id.ToString(), $"%{request.SearchString}%")
+                          ||EF.Functions.Like(model.GroomInfo.FirstNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.GroomInfo.LastNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.GroomInfo.MiddleNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.BrideInfo.FirstNameStr, $"%{request.SearchString}%")

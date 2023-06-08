@@ -48,6 +48,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                            Id = c.Id,
                            EventId = c.Event.Id,
                            EventType = c.Event.EventType,
+                           NestedEventId = c.Event.EventType.ToLower() == "birth"
+                                            ?c.Event.BirthEvent.Id 
+                                            :c.Event.EventType.ToLower() == "death"
+                                            ?c.Event.DeathEventNavigation.Id
+                                            :c.Event.EventType.ToLower() == "marriage"
+                                            ? c.Event.MarriageEvent.Id
+                                            :c.Event.EventType.ToLower() == "adoption"
+                                            ?c.Event.AdoptionEvent.Id
+                                            :c.Event.EventType == "divorce"
+                                            ?c.Event.DivorceEvent.Id:null,
                            CertificateId = c.Event.CertificateId,
                            CertificateSerialNumber = c.CertificateSerialNumber,
                            ContentStr = c.ContentStr,
@@ -71,6 +81,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         .Fields(
                             f => f.Id,
                             f => f.EventId,
+                            f => f.NestedEventId,
                             f => f.FirstNameAm,
                             f => f.FirstNameOr,
                             f => f.MiddleNameAm,
@@ -102,6 +113,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 Id = d.Id,
                 EventId = d.EventId,
+                NestedEventId = d.NestedEventId,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                 ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                 : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,

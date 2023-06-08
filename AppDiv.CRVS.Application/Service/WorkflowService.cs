@@ -75,8 +75,11 @@ namespace AppDiv.CRVS.Application.Service
             var request = _requestRepostory.GetAll()
             .Include(x => x.AuthenticationRequest).ThenInclude(a => a.Certificate)
             .Include(x => x.CorrectionRequest)
+            .Include(x => x.PaymentExamptionRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
-            Guid ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ? request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
+            Guid ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
+            (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
+            request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
             if (request == null)
             {
                 throw new Exception("Request Does not Found");
@@ -86,19 +89,19 @@ namespace AppDiv.CRVS.Application.Service
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
                 request.currentStep = nextStep;
 
-                var NewTranscation = new TransactionRequestDTO
-                {
-                    CurrentStep = request.currentStep,
-                    ApprovalStatus = IsApprove,
-                    WorkflowId = RequestId,
-                    RequestId = RequestId,
-                    CivilRegOfficerId = "4d940006-b21f-4841-b8dd-02957c4d7487",
-                    Remark = Remark
-                };
-                await _TransactionService.CreateTransaction(NewTranscation);
-                await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
-                                   this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
-                                  "4d940006-b21f-4841-b8dd-02957c4d7487");
+                // var NewTranscation = new TransactionRequestDTO
+                // {
+                //     CurrentStep = request.currentStep,
+                //     ApprovalStatus = IsApprove,
+                //     WorkflowId = RequestId,
+                //     RequestId = RequestId,
+                //     CivilRegOfficerId = "4d940006-b21f-4841-b8dd-02957c4d7487",
+                //     Remark = Remark
+                // };
+                // await _TransactionService.CreateTransaction(NewTranscation);
+                // await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
+                //                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
+                //                   "4d940006-b21f-4841-b8dd-02957c4d7487");
                 try
                 {
                     await _requestRepostory.UpdateAsync(request, x => x.CreatedBy);
@@ -116,9 +119,6 @@ namespace AppDiv.CRVS.Application.Service
             return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
 
         }
-
-
-
         public Guid GetEventId(Guid Id)
         {
             var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();

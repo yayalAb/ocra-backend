@@ -48,18 +48,18 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<object> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
-            var userGroup = _UserRepo.GetAll()
-            .Include(g => g.UserGroups)
-            .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
-
-            var gropId = userGroup.UserGroups.FirstOrDefault();
+            // var userGroup = _UserRepo.GetAll()
+            // .Include(g => g.UserGroups)
+            // .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
+            // g => g.step == w.currentStep && g.UserGroupId == gropId.Id
+            // var gropId = userGroup.UserGroups.FirstOrDefault();
             var RequestList = _RequestRepostory.GetAll()
             .Include(x => x.CivilRegOfficer)
             .Include(x => x.AuthenticationRequest).
              Include(c => c.AuthenticationRequest.Certificate)
             .Include(x => x.CorrectionRequest)
             .Include(w => w.Workflow).ThenInclude(ss => ss.Steps);
-            var testVar = RequestList.Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep && g.UserGroupId == gropId.Id).Any())
+            var testVar = RequestList.Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
             .Select(w => new AuthenticationRequestListDTO
             {
                 Id = w.Id,

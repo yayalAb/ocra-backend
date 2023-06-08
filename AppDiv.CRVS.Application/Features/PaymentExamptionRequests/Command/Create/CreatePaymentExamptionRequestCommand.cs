@@ -18,10 +18,10 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
         public string? ExamptedClientId { get; set; }
         public string? ExamptedClientFullName { get; set; }
         public DateTime ExamptedDate { get; set; } = DateTime.Now;
-        public string ExamptedBy { get; set; }
         public int? NumberOfClient { get; set; }
         public Guid? AddressId { get; set; }
         public string CertificateType { get; set; }
+        public AddRequest Request { get; set; }
 
 
     }

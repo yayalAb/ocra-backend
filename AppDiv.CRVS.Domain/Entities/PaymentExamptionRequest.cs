@@ -15,11 +15,14 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? ExamptedClientFullName { get; set; }
         public DateTime? ExamptedDate { get; set; }
         public string? ExamptedDateEt { get; set; }
-        public string ExamptedBy { get; set; }
+        public string? ExamptedById { get; set; }
         public int? NumberOfClient { get; set; }
         public bool? status { get; set; }
         public Guid? AddressId { get; set; }
         public string? CertificateType { get; set; }
+        public Guid? RequestId { get; set; }
+        public virtual Request? Request { get; set; }
+        public virtual ApplicationUser ExamptedBy { get; set; }
         [NotMapped]
         public JObject Reason
         {

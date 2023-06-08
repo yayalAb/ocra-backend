@@ -17,5 +17,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         // public DatabaseFacade Database;
          public DatabaseFacade Database {get;}
         public Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken);
+        public (Dictionary<string,string>userPhotos, IEnumerable<SupportingDocument>otherDocs) extractSupportingDocs(MarriageEvent marriageEvent, IEnumerable<SupportingDocument> supportingDocs);
     }
 }
