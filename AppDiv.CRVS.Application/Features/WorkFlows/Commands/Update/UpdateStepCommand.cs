@@ -19,7 +19,6 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
 
         public Guid Id { get; set; }
         public int step { get; set; }
-        public decimal Payment { get; set; }
         public bool Status { get; set; }
         public JObject Description { get; set; }
 
@@ -42,7 +41,6 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
             {
                 Id = request.Id,
                 step = request.step,
-                Payment = request.Payment,
                 Status = request.Status,
                 Description = request.Description,
                 workflowId = request.workflowId,

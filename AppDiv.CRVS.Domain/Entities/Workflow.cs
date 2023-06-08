@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public string workflowName { get; set; }
         public string DescriptionStr { get; set; }
+        public decimal? Payment { get; set; } = 0;
+        public int? PaymentStep { get; set; } = 0;
         public ICollection<Step> Steps { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
         public virtual ICollection<Request> Requests { get; set; }
@@ -27,13 +29,5 @@ namespace AppDiv.CRVS.Domain.Entities
                 DescriptionStr = value.ToString();
             }
         }
-
-        //  [NotMapped]
-        // public string? ValueLang {
-        //     get{
-        //         return Value.Value<string>(lang) ;
-        //     }
-        // }
-
     }
 }
