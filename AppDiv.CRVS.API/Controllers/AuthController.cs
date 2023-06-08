@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Features.Auth.Login;
 using AppDiv.CRVS.Application.Features.Auth.ForgotPassword;
 using AppDiv.CRVS.Application.Features.Auth.ResetPassword;
 using AppDiv.CRVS.Application.Features.Auth.ChangePassword;
+using AppDiv.CRVS.Application.Features.Auth.UnlockUser;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -43,6 +44,21 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("changePassword")]
         // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordCommand command)
+        {
+            var res = await Mediator.Send(command);
+            if (res.Success)
+            {
+
+                return Ok(res);
+            }
+            else
+            {
+                return BadRequest(res);
+            }
+        }
+        [HttpPost("unlockUser")]
+        // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
+        public async Task<IActionResult> UnlockUser([FromBody] UnlockUserCommand command)
         {
             var res = await Mediator.Send(command);
             if (res.Success)
