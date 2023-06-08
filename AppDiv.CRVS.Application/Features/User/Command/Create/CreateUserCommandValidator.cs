@@ -19,6 +19,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
             .NotEmpty()
             .MustAsync(BeUniqueUsername).WithMessage("userName already exists ")
             .Matches("^[a-zA-Z0-9-._@+]+$").WithMessage("invalid user name:\n user name cannot have spaces or special characters except -._@+");
+            RuleFor(u => u.Email)
+            .NotEmpty()
+            .NotNull()
+            .EmailAddress().WithMessage("invalid email address");
         }
 
         private async Task<bool> BeUniqueUsername(string username, CancellationToken cancellationToken)

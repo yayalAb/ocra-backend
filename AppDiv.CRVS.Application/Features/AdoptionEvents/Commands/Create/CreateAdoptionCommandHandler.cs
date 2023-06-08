@@ -153,7 +153,15 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 }
                                 await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                                 await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
-                                _eventDocumentService.saveSupportingDocuments(adoptionEvent?.Event?.EventSupportingDocuments, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
+                                var personIds = new PersonIdObj
+                                                    {
+                                                      MotherId = adoptionEvent.AdoptiveMother.Id,
+                                                      FatherId = adoptionEvent.AdoptiveFather.Id,
+                                                      ChildId = adoptionEvent.Event.EventOwener.Id
+                                                    };
+                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
+                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                                 if (!adoptionEvent.Event.IsExampted)
                                 {
                                     //--create payment request and send sms notification to the users

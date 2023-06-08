@@ -56,6 +56,15 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
         {
             try
             {
+                //supporting docs cant be updated only new (one without id) are created
+                var supportingDocs = request.Adoption.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                var examptionsupportingDocs = request.Adoption.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                request.Adoption.Event.EventSupportingDocuments = null;
+                if (request.Adoption.Event.PaymentExamption != null)
+                {
+                    request.Adoption.Event.PaymentExamption.SupportingDocuments = null;
+                }
+                //////
                 request.Adoption.Event.EventType = "Adoption";
                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
@@ -96,6 +105,16 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 }
                 _adoptionEventRepository.EFUpdate(adoptionEvent);
                 await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption.Id, cancellationToken);
+                var personIds = new PersonIdObj
+                {
+                    MotherId = adoptionEvent.AdoptiveMother.Id,
+                    FatherId = adoptionEvent.AdoptiveFather.Id,
+                    ChildId = adoptionEvent.Event.EventOwener.Id
+                };
+                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+
                 _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
                 UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
             }

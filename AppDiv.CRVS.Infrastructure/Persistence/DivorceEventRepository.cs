@@ -41,7 +41,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"EducationalStatusLookupId",DivorceEvent.Event.EventOwener.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId",DivorceEvent.Event.EventOwener.TypeOfWorkLookupId},
                     {"MarriageStatusLookupId",DivorceEvent.Event.EventOwener.MarriageStatusLookupId},
-                    {"ResidentAddressId",DivorceEvent.Event.EventOwener.ResidentAddressId}
+                    {"ResidentAddressId",DivorceEvent.Event.EventOwener.ResidentAddressId},
+                    {"BirthAddressId", DivorceEvent.Event.EventOwener.BirthAddressId},
+                    {"BirthDateEt", DivorceEvent.Event.EventOwener.BirthDateEt},
+                    {"FirstName", DivorceEvent.Event.EventOwener.FirstName},
+                    {"MiddleName", DivorceEvent.Event.EventOwener.MiddleName},
+                    {"LastName", DivorceEvent.Event.EventOwener.LastName},
+                    {"NationalityLookupId", DivorceEvent.Event.EventOwener.NationalityLookupId},
+                    {"NationLookupId", DivorceEvent.Event.EventOwener.NationLookupId},
+                    {"PhoneNumber", DivorceEvent.Event.EventOwener.PhoneNumber}
             };
             DivorceEvent.Event.EventOwener = HelperService.UpdateObjectFeilds<PersonalInfo>(existingOwner, eventOwnerFeilds);
              var existingWife =  dbContext.PersonalInfos.Find(DivorceEvent.DivorcedWife.Id);
@@ -62,6 +70,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"TypeOfWorkLookupId",DivorceEvent.DivorcedWife.TypeOfWorkLookupId},
                     {"MarriageStatusLookupId",DivorceEvent.DivorcedWife.MarriageStatusLookupId},
                     {"ResidentAddressId",DivorceEvent.DivorcedWife.ResidentAddressId},
+                    {"BirthAddressId", DivorceEvent.DivorcedWife.BirthAddressId},
+                    {"BirthDateEt", DivorceEvent.DivorcedWife.BirthDateEt},
+                    {"FirstName", DivorceEvent.DivorcedWife.FirstName},
+                    {"MiddleName", DivorceEvent.DivorcedWife.MiddleName},
+                    {"LastName", DivorceEvent.DivorcedWife.LastName},
+                    {"NationalityLookupId", DivorceEvent.DivorcedWife.NationalityLookupId},
+                    {"NationLookupId", DivorceEvent.DivorcedWife.NationLookupId},
+                    {"PhoneNumber", DivorceEvent.DivorcedWife.PhoneNumber}
             };
             DivorceEvent.DivorcedWife = HelperService.UpdateObjectFeilds<PersonalInfo>(existingWife, divorcedWifeFeilds);
             dbContext.DivorceEvents.Update(DivorceEvent);

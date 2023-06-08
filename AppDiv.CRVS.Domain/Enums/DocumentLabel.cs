@@ -8,7 +8,10 @@ namespace AppDiv.CRVS.Domain.Enums
         Mother,
         Father,
         Wife,
-        Husband
+        Husband,
+        Registrar,
+        Deceased,
+        Child
     }
     
 }
