@@ -6,7 +6,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive.BirthArchive;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
-    public class BirthArchiveDTO
+    public class BirthArchiveDTO : BaseArchiveDTO
     {
         public Child? Child { get; set; }
         public Person? Mother { get; set; }

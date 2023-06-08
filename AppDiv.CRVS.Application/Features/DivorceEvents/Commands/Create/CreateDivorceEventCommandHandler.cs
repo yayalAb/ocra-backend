@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 {
@@ -72,7 +73,14 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             divorceEvent.Event.EventType = "Divorce";
                             await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, cancellationToken);
                             await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
-                            _eventDocumentService.saveSupportingDocuments(divorceEvent.Event.EventSupportingDocuments, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
+                            var personIds = new PersonIdObj
+                            {
+                                WifeId = divorceEvent.DivorcedWife.Id,
+                                HusbandId = divorceEvent.Event.EventOwener.Id,
+                            };
+                            var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, divorceEvent.Event.EventSupportingDocuments);
+                            _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
                             // create payment request for the event if it is not exempted
                             if (!divorceEvent.Event.IsExampted)
                             {

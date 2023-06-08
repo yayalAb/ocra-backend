@@ -242,6 +242,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
             CreateMap<Person, Officer>().ReverseMap();
+            CreateMap<Person, DeceasedPerson>().ReverseMap();
             CreateMap<Person, RegistrarArchive>().ReverseMap();
             CreateMap<Person, AdoptedChild>().ReverseMap();
             CreateMap<Person, Child>().ReverseMap();

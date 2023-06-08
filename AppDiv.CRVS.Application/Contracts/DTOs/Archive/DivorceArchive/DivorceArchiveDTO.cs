@@ -6,7 +6,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
-    public class DivorceArchiveDTO
+    public class DivorceArchiveDTO : BaseArchiveDTO
     {
         public Person? Wife { get; set; }
         public Person? Husband { get; set; }

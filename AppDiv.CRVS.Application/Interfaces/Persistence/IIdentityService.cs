@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         IQueryable<ApplicationUser> AllUsersDetail();
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<Result> DeleteUser(string userId);
+        public Task<Result> UnlockUserAsync(string userName);
         // string GetUserGroupId(string userId);
     }
 }

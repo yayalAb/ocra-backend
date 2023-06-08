@@ -15,27 +15,36 @@ namespace AppDiv.CRVS.Application.Service
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<IdentityService> _logger;
+        private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IConfiguration _configuration;
         // private readonly TokenGeneratorService _tokenGeneratorService;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, ILogger<IdentityService> logger)
+        public IdentityService(UserManager<ApplicationUser> userManager, ILogger<IdentityService> logger, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _logger = logger;
+            _signInManager = signInManager;
             // _tokenGeneratorService = tokenGeneratorService;
         }
         public async Task<(Result result, IList<string>? roles, string? userId)> AuthenticateUser(string userName, string password)
         {
             var user = await _userManager.FindByNameAsync(userName);
-
+            var authResult = await _signInManager.PasswordSignInAsync(user, password, true, true);
+            if (authResult.IsLockedOut)
+            {
+                return (Result.Failure(new string[] { "AccountLocked!:\n you have excedded the maximum limit of login attempts please contact the Administrator" }), null, null);
+            }
 
             if (user != null && await _userManager.CheckPasswordAsync(user, password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
+
+
                 return (Result.Success(), userRoles, user.Id);
 
 
             }
+
             string[] errors = new string[] { "Invalid login" };
 
             return (Result.Failure(errors), null, null);
@@ -48,6 +57,20 @@ namespace AppDiv.CRVS.Application.Service
 
 
             return user.UserName;
+        }
+        public async Task<Result> UnlockUserAsync(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return Result.Failure(new string[] { "could not find user with the given username" });
+            }
+            var response = await _userManager.SetLockoutEndDateAsync(user, DateTime.Now);
+            if (response.Succeeded)
+            {
+                return Result.Success();
+            }
+            return Result.Failure((IEnumerable<string>)response.Errors);
         }
         // public string GetUserGroupId(string userId){
         //     return  _userManager.Users.First(u => u.Id == userId).UserGroupId;
@@ -267,7 +290,7 @@ namespace AppDiv.CRVS.Application.Service
         }
         public IQueryable<ApplicationUser> AllUsersDetail()
         {
-            return  _userManager.Users
+            return _userManager.Users
             .Include(u => u.PersonalInfo)
             .Include(p => p.PersonalInfo.BirthAddress)
             .Include(p => p.PersonalInfo.ResidentAddress)

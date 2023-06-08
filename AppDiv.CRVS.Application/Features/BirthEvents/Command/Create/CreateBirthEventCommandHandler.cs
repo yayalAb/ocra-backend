@@ -7,6 +7,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
@@ -72,10 +73,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
-                                var supportingDocuments = birthEvent.Event?.EventSupportingDocuments;
+                                // var supportingDocuments = birthEvent.Event?.EventSupportingDocuments;
                                 var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
-
-                                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
+                                var personIds = new PersonIdObj
+                                {
+                                    MotherId = birthEvent.Mother.Id,
+                                    FatherId = birthEvent.Father.Id,
+                                    ChildId = birthEvent.Event.EventOwener.Id,
+                                    RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                                };
+                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
+                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Birth");
                                 if (!birthEvent.Event.IsExampted)
                                 {
                                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", cancellationToken);

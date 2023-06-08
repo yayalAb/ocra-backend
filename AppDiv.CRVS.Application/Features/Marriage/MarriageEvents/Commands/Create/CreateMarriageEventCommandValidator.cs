@@ -166,9 +166,16 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
                 RuleFor(e => e.Event.EventRegDateEt)
-                .MustAsync(async (model, eventRegDateEt, CancellationToken) => await Be30DaysAfterMarriageApplicationDateAsync(eventRegDateEt, model))
-                .WithMessage("there should be atleast 30 day gap between marriage application date and marriage registered date");
+                .MustAsync(async (model, eventRegDateEt, CancellationToken) => await Be15DaysAfterMarriageApplicationDateAsync(eventRegDateEt, model))
+                .WithMessage("there should be atleast 15 day gap between marriage application date and marriage registered date");
             });
+            When(e => !isReligionMarriage(e.MarriageTypeId), () =>
+          {
+              RuleFor(e => e.BrideInfo.MarriageStatusLookupId)
+              .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+              RuleFor(e => e.Event.EventOwener.MarriageStatusLookupId)
+             .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+          });
             When(e => !e.Event.IsExampted, () =>
             {
                 RuleFor(e => e.Event.PaymentExamption)
@@ -224,13 +231,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         }
 
 
-        private async Task<bool> Be30DaysAfterMarriageApplicationDateAsync(string marriageRegDateEt, CreateMarriageEventCommand marriageEvent)
+        private async Task<bool> Be15DaysAfterMarriageApplicationDateAsync(string marriageRegDateEt, CreateMarriageEventCommand marriageEvent)
         {
             var application = await _marriageApplicationRepo.GetAsync(marriageEvent.ApplicationId!);
             var converted = new CustomDateConverter(marriageRegDateEt).gorgorianDate;
 
 
-            return (converted - application.ApplicationDate).Days >= 30;
+            return (converted - application.ApplicationDate).Days >= 15;
         }
 
         private bool BeFoundInMarriageApplicationTable(Guid? applicationId)
@@ -245,7 +252,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             {
                 return false;
             }
-            return marriageType.ValueStr.ToLower().Contains(Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower());
+            return marriageType.ValueStr.ToLower()
+                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Civil].ToString()!.ToLower()
+                    );
             // return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
             //  || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
             //  || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();
@@ -304,7 +313,28 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return DateTime.Now.Year - converted.Year >= 18;
         }
 
+        public bool isReligionMarriage(Guid marriageTypeId)
+        {
+            var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
+            if (marriageType == null)
+            {
+                return false;
+            }
+            return marriageType.ValueStr.ToLower()
+                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Religion].ToString()!.ToLower()
+                    );
 
+        }
+        public bool BeUnmarried(Guid marriageStatusId)
+        {
+            var marriageStatus = _lookupRepo.GetLookupById(marriageStatusId);
+            if (marriageStatus == null)
+            {
+                return false;
+            }
+            return !(marriageStatus.ValueStr.ToLower()
+                    .Contains(EnumDictionary.marriageStatusDict[MarriageStatus.married].ToString()!.ToLower()));
+        }
 
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {

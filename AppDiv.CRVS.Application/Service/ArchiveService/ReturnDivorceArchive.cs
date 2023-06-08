@@ -19,10 +19,15 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private readonly CustomDateConverter convertor;
         private readonly ILookupFromId _lookupService;
         private readonly IPersonalInfoRepository _person;
-        public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService, IPersonalInfoRepository person)
+        private readonly ISupportingDocumentRepository _supportingDocument;
+        public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService,
+                                    ILookupFromId lookupService,
+                                    IPersonalInfoRepository person,
+                                    ISupportingDocumentRepository supportingDocument)
         {
             _dateAndAddressService = DateAndAddressService;
             _lookupService = lookupService;
+            _supportingDocument = supportingDocument;
             _person = person;
             convertor = new CustomDateConverter();
         }
@@ -76,7 +81,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public DivorceArchiveDTO GetDivorceArchive(Event divorce, string? BirthCertNo)
         {
 
-            return new DivorceArchiveDTO()
+            var divorceInfo = new DivorceArchiveDTO()
             {
                 Husband = ReturnPerson.GetPerson(divorce.EventOwener, _dateAndAddressService, _lookupService),
                 Wife = ReturnPerson.GetPerson(divorce.DivorceEvent.DivorcedWife, _dateAndAddressService, _lookupService),
@@ -84,8 +89,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Court = GetCourt(divorce?.DivorceEvent?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == divorce.Id).Select(s => s.Id).ToList(),
             };
+            divorceInfo.PaymentExamptionSupportingDocuments = divorce?.PaymentExamption?.Id == null ? null
+                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == divorce.PaymentExamption.Id).Select(s => s.Id).ToList();
+            return divorceInfo;
+
         }
         public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo)
         {
@@ -98,6 +107,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Court = GetCourt(divorce?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(divorce.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                EventSupportingDocuments = divorce?.Event?.EventSupportingDocuments?.Select(s => s.Id).ToList(),
+                PaymentExamptionSupportingDocuments = divorce?.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
 
             };
         }

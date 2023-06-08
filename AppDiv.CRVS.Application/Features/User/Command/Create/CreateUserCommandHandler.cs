@@ -55,6 +55,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 foreach (var error in validationResult.Errors)
                     CreateUserCommadResponse.ValidationErrors.Add(error.ErrorMessage);
                 CreateUserCommadResponse.Message = CreateUserCommadResponse.ValidationErrors[0];
+                CreateUserCommadResponse.Status = 400;
             }
             if (CreateUserCommadResponse.Success)
             {
@@ -64,6 +65,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
               
                 var user =  CustomMapper.Mapper.Map<ApplicationUser>(request);
                 user.PhoneNumber = user.PersonalInfo.ContactInfo.Phone;
+                user.PersonalInfo.PhoneNumber = user.PhoneNumber;
                 user.UserGroups = listGroup;
 
                 var response = await _identityService.createUser(user);

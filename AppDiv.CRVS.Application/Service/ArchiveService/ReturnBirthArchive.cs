@@ -18,10 +18,15 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         IDateAndAddressService _dateAndAddressService;
         private readonly ILookupFromId _lookupService;
         private readonly IPersonalInfoRepository _person;
-        public ReturnBirthArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService, IPersonalInfoRepository person)
+        private readonly ISupportingDocumentRepository _supportingDocument;
+        public ReturnBirthArchive(IDateAndAddressService DateAndAddressService,
+                                ILookupFromId lookupService,
+                                IPersonalInfoRepository person,
+                                ISupportingDocumentRepository supportingDocument)
         {
             _dateAndAddressService = DateAndAddressService;
             _lookupService = lookupService;
+            _supportingDocument = supportingDocument;
             _person = person;
             // _convertor = new CustomDateConverter();
         }
@@ -71,10 +76,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                || birth?.EventAddressId == null) ? null :
                _dateAndAddressService.addressFormat(birth.EventAddressId);
             var convertor = new CustomDateConverter();
-            var CreatedAtEt = convertor.GregorianToEthiopic(birth.CreatedAt);
+            // var CreatedAtEt = convertor.GregorianToEthiopic(birth.CreatedAt);
 
             (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
-            return new BirthArchiveDTO()
+            var birthInfo = new BirthArchiveDTO()
             {
                 Child = CustomMapper.Mapper.Map<Child>
                                             (ReturnPerson.GetPerson(birth.EventOwener, _dateAndAddressService, _lookupService)),
@@ -85,18 +90,19 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(birth.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(birth.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == birth.Id).Select(s => s.Id).ToList(),
+
+
             };
+            birthInfo.PaymentExamptionSupportingDocuments = birth?.PaymentExamption?.Id == null ? null
+                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == birth.PaymentExamption.Id).Select(s => s.Id).ToList();
+            return birthInfo;
+
         }
 
         public BirthArchiveDTO GetBirthPreviewArchive(BirthEvent birth, string? BirthCertNo)
         {
-            (string am, string or)? address = (birth.Event.EventAddressId == Guid.Empty
-               || birth.Event?.EventAddressId == null) ? null :
-               _dateAndAddressService.addressFormat(birth.Event.EventAddressId);
-            var convertor = new CustomDateConverter();
-            var CreatedAtEt = convertor.GregorianToEthiopic(birth.Event.CreatedAt);
             birth.Event.BirthEvent = birth;
-            (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             if (birth.Event.CivilRegOfficer == null && birth.Event.CivilRegOfficerId != null)
             {
                 birth.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == birth.Event.CivilRegOfficerId).FirstOrDefault();
@@ -112,6 +118,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(birth.Event.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(birth.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                EventSupportingDocuments = birth.Event.EventSupportingDocuments.Select(s => s.Id).ToList(),
+                PaymentExamptionSupportingDocuments = birth.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
             };
         }
     }

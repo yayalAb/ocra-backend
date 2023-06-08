@@ -145,7 +145,7 @@ namespace AppDiv.CRVS.Domain.Enums
             {
                 MarriageType.Civil , new lookupModel{
                     en = Enum.GetName<MarriageType>(MarriageType.Civil),
-                    or = "",
+                    or = "seera siivilii",
                     am = "",
                     statisticCode = "",
                     code = ""
@@ -154,7 +154,7 @@ namespace AppDiv.CRVS.Domain.Enums
             {
                 MarriageType.Cultural , new lookupModel{
                     en = Enum.GetName<MarriageType>(MarriageType.Cultural),
-                    or = "",
+                    or = "aadaa",
                     am = "",
                     statisticCode = "",
                     code = ""
@@ -163,7 +163,7 @@ namespace AppDiv.CRVS.Domain.Enums
             {
                 MarriageType.Religion , new lookupModel{
                     en = Enum.GetName<MarriageType>(MarriageType.Religion),
-                    or = "",
+                    or = "amantaa",
                     am = "",
                     statisticCode = "",
                     code = ""

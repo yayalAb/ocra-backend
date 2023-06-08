@@ -6,7 +6,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
-    public class AdoptionArchiveDTO
+    public class AdoptionArchiveDTO : BaseArchiveDTO
     {
         public AdoptedChild? Child { get; set; }
         public Person? Father { get; set; }
@@ -14,6 +14,5 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public CourtArchive? Court { get; set; }
         public AdoptionInfo? EventInfo { get; set; }
         public Officer? CivilRegistrarOfficer { get; set; }
-
     }
 }

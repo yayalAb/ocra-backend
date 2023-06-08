@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -51,10 +52,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             await base.InsertAsync(entity, cancellationToken);
         }
 
+
         public void EFUpdate(AdoptionEvent adoptionEvent)
         {
             _dbContext.AdoptionEvents.Update(adoptionEvent);
         }
+
 
 
     }

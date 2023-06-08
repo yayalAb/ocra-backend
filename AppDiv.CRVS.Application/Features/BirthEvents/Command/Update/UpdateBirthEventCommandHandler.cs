@@ -52,16 +52,36 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                         {
                             try
                             {
+                                //supporting docs cant be updated only new (one without id) are created
+                                var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                                var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                                request.Event.EventSupportingDocuments = null;
+                                if (request.Event.PaymentExamption != null)
+                                {
+                                    request.Event.PaymentExamption.SupportingDocuments = null;
+                                }
+                                //////
+
                                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
                                 birthEvent.Event.EventType = "Birth";
 
                                 _birthEventRepository.UpdateAll(birthEvent);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
-                                var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
+                                // var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
                                 var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var personIds = new PersonIdObj
+                                {
+                                    MotherId = birthEvent.Mother.Id,
+                                    FatherId = birthEvent.Father.Id,
+                                    ChildId = birthEvent.Event.EventOwener.Id,
+                                    RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                                };
+                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
 
-                                _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Birth");
                             }
                             catch (System.Exception)
                             {

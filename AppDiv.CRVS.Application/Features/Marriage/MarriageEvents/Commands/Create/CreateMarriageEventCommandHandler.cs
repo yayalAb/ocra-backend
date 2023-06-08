@@ -7,6 +7,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 {
@@ -90,7 +91,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                             //TODO: //
-                            var separatedDocs = _marriageEventRepository.extractSupportingDocs(marriageEvent, marriageEvent.Event.EventSupportingDocuments);
+                            var personIds = new PersonIdObj
+                            {
+                                WifeId = marriageEvent.BrideInfo.Id,
+                                HusbandId = marriageEvent.Event.EventOwener.Id,
+                                WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
+                            };
+                            var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             // create payment request for the event if it is not exempted

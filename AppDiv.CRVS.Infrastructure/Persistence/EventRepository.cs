@@ -189,7 +189,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                 .Include(m => m.EventOwener.NationLookup)
                                 .Include(m => m.EventOwener.ReligionLookup)
                                 .Include(m => m.EventOwener.SexLookup)
-
+                                .Include(m => m.PaymentExamption)
                                 .Include(d => d.CivilRegOfficer);
             // var n =
             // return e.ElementAt(0);
