@@ -6,9 +6,9 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DeathArchive;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
-    public class DeathArchiveDTO
+    public class DeathArchiveDTO : BaseArchiveDTO
     {
-        public Person? Deceased { get; set; }
+        public DeceasedPerson? Deceased { get; set; }
         public DeathInfo? EventInfo { get; set; }
         public DeathNotificationArchive? Notification { get; set; }
         public RegistrarArchive? Registrar { get; set; }

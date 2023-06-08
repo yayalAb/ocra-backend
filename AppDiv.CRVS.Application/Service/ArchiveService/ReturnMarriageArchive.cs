@@ -9,6 +9,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Interfaces.Archive;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -16,9 +17,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     {
         IDateAndAddressService _dateAndAddressService;
         private readonly ILookupFromId _lookupService;
-        public ReturnMarriageArchive(IDateAndAddressService DateAndAddressService, ILookupFromId lookupService)
+        private readonly ISupportingDocumentRepository _supportingDocument;
+        public ReturnMarriageArchive(IDateAndAddressService DateAndAddressService,
+                                    ILookupFromId lookupService,
+                                    ISupportingDocumentRepository supportingDocument)
         {
             _lookupService = lookupService;
+            _supportingDocument = supportingDocument;
             _dateAndAddressService = DateAndAddressService;
         }
 
@@ -29,8 +34,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             marriageInfo.BrideBirthCertificateId = marriage.MarriageEvent.BirthCertificateBrideId;
             marriageInfo.GroomBirthCertificateId = marriage.MarriageEvent.BirthCertificateGroomId;
 
-            marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType.Value?.Value<string>("or");
-            marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType.Value?.Value<string>("am");
+            marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(marriage.MarriageEvent.MarriageTypeId);
+            marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(marriage.MarriageEvent.MarriageTypeId);
 
             foreach (var w in marriage.MarriageEvent.Witnesses)
             {
@@ -52,31 +57,24 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         public MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo)
         {
-            // (string am, string or)? address = (marriage?.EventAddressId == Guid.Empty
-            //    || marriage?.EventAddressId == null) ? null :
-            //    _dateAndAddressService.addressFormat(marriage.EventAddressId);
-
-            // var convertor = new CustomDateConverter();
-            // var CreatedAtEt = convertor.GregorianToEthiopic(marriage.CreatedAt);
-
-            // (string[] am, string[] or) splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
-            return new MarriageArchiveDTO()
+            var marriageInfo = new MarriageArchiveDTO()
             {
                 Groom = ReturnPerson.GetPerson(marriage.EventOwener, _dateAndAddressService, _lookupService),
                 Bride = ReturnPerson.GetPerson(marriage.MarriageEvent.BrideInfo, _dateAndAddressService, _lookupService),
                 EventInfo = GetEventInfo(marriage),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(marriage.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                // CertifcateId = marriage?.CertificateId,
-                // BirthCertificateGroomId = marriage.MarriageEvent.BirthCertificateGroomId,
-                // BirthCertificateBrideId = marriage.MarriageEvent.BirthCertificateBrideId,
-                // RegBookNo = marriage.RegBookNo,
-                // BrideBirthCertifcateId = marriage.BirthCertificateBrideId,
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == marriage.Id).Select(s => s.Id).ToList(),
 
             };
+            marriageInfo.PaymentExamptionSupportingDocuments = marriage?.PaymentExamption?.Id == null ? null
+                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == marriage.PaymentExamption.Id).Select(s => s.Id).ToList();
+            return marriageInfo;
+
         }
         public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo)
         {
+            marriage.Event.MarriageEvent = marriage;
             return new MarriageArchiveDTO()
             {
                 Groom = ReturnPerson.GetPerson(marriage.Event.EventOwener, _dateAndAddressService, _lookupService),
@@ -84,11 +82,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 EventInfo = GetEventInfo(marriage.Event),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(marriage.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                // CertifcateId = marriage?.CertificateId,
-                // BirthCertificateGroomId = marriage.MarriageEvent.BirthCertificateGroomId,
-                // BirthCertificateBrideId = marriage.MarriageEvent.BirthCertificateBrideId,
-                // RegBookNo = marriage.RegBookNo,
-                // BrideBirthCertifcateId = marriage.BirthCertificateBrideId,
+                EventSupportingDocuments = marriage.Event.EventSupportingDocuments.Select(s => s.Id).ToList(),
+                PaymentExamptionSupportingDocuments = marriage?.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
 
             };
         }

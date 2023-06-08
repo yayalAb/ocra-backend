@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public DeathArchiveDTO GetDeathArchive(Event death, string? BirthCertNo)
         {
 
-            return new DeathArchiveDTO()
+            var deathInfo = new DeathArchiveDTO()
             {
                 Deceased = GetDeceased(death.EventOwener),
                 EventInfo = GetEventInfo(death),
@@ -80,10 +80,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(death?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == death.Id).Select(s => s.Id).ToList(),
-                PaymentExamptionSupportingDocuments = _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == death.PaymentExamption.Id).Select(s => s.Id).ToList(),
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == death.Id).Select(s => s.Id).ToList()
 
             };
+            deathInfo.PaymentExamptionSupportingDocuments = death?.PaymentExamption?.Id == null ? null
+                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == death.PaymentExamption.Id).Select(s => s.Id).ToList();
+            return deathInfo;
         }
         public DeathArchiveDTO GetDeathPreviewArchive(DeathEvent death, string? BirthCertNo)
         {
@@ -96,8 +98,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(death?.Event?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(death.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = death.Event.EventSupportingDocuments.Select(s => s.Id).ToList(),
-                PaymentExamptionSupportingDocuments = death.Event.PaymentExamption.SupportingDocuments.Select(s => s.Id).ToList(),
+                EventSupportingDocuments = death.Event?.EventSupportingDocuments?.Select(s => s.Id).ToList(),
+                PaymentExamptionSupportingDocuments = death?.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
             };
         }
     }
