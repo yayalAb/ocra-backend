@@ -155,7 +155,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"ReligionLookupId" ,entity.Event.EventOwener.ReligionLookupId},
                     {"EducationalStatusLookupId" ,entity.Event.EventOwener.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId" ,entity.Event.EventOwener.TypeOfWorkLookupId},
-                    {"MarriageStatusLookupId" ,entity.Event.EventOwener.MarriageStatusLookupId},
+                    // {"MarriageStatusLookupId" ,entity.Event.EventOwener.MarriageStatusLookupId},
                     {"ResidentAddressId" ,entity.Event.EventOwener.ResidentAddressId},
                     {"NationalId", entity.Event.EventOwener.NationalId},
                     {"PhoneNumber", entity.Event.EventOwener.PhoneNumber}
@@ -174,7 +174,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"ReligionLookupId", entity.BrideInfo.ReligionLookupId},
                     {"EducationalStatusLookupId", entity.BrideInfo.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId", entity.BrideInfo.TypeOfWorkLookupId},
-                    {"MarriageStatusLookupId", entity.BrideInfo.MarriageStatusLookupId},
+                    // {"MarriageStatusLookupId", entity.BrideInfo.MarriageStatusLookupId},
                     {"ResidentAddressId", entity.BrideInfo.ResidentAddressId},
                     {"PhoneNumber", entity.BrideInfo.PhoneNumber}
 
