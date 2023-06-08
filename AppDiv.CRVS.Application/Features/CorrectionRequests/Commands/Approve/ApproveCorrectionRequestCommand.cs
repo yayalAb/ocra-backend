@@ -45,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         }
         public async Task<response> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Description, cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Description, false, cancellationToken);
             string eventtype = "";
             if (response.Item1)
             {
