@@ -9,7 +9,6 @@ namespace AppDiv.CRVS.Domain.Entities
     public class Step : BaseAuditableEntity
     {
         public int step { get; set; }
-        public decimal Payment { get; set; }
         public bool Status { get; set; }
         public string DescriptionStr { get; set; }
 

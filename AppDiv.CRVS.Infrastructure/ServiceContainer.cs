@@ -24,6 +24,8 @@ namespace AppDiv.CRVS.Infrastructure
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, ConfigurationManager configuration)
         {
             #region  db configuration
+
+
             // services.AddDbContext<CRVSDbContext>(
             //     options => options.UseSqlServer(
             //         configuration.GetConnectionString("CRVSConnectionString"),
@@ -38,6 +40,7 @@ namespace AppDiv.CRVS.Infrastructure
                         Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.29-mysql"),
                         mySqlOptions => mySqlOptions.EnableRetryOnFailure());
                 });
+
             #endregion db configuration
 
             // #region  elasticSearch    
@@ -150,6 +153,8 @@ namespace AppDiv.CRVS.Infrastructure
 
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ITransactionService, TransactionService>();
+            services.AddScoped<IUpdateEventPaymetnService, UpdateEventPaymetnService>();
+
 
 
 
