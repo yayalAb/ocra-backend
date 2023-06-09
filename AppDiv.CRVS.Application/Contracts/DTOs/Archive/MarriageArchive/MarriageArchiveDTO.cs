@@ -13,5 +13,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public MarriageInfo? EventInfo { get; set; }
         public Officer? CivilRegistrarOfficer { get; set; }
 
+        public ICollection<WitnessArchive?>? BrideWitnesses { get; set; } = new List<WitnessArchive?>();
+        public ICollection<WitnessArchive?>? GroomWitnesses { get; set; } = new List<WitnessArchive?>();
+
     }
 }

@@ -10,6 +10,7 @@ namespace AppDiv.CRVS.Application.Interfaces
     }
     public interface ILookupFromId
     {
+        bool CheckMatchLookup(Guid id, string key, string like);
         public string? GetLookupOr(Guid? id);
         public string? GetLookupAm(Guid? id);
 

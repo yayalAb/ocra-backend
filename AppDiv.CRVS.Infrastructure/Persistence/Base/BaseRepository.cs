@@ -102,6 +102,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await _dbContext.Set<T>().FindAsync(id);
         }
+        public virtual T GetSingle(object id)
+        {
+            return _dbContext.Set<T>().Find(id);
+        }
 
         public virtual async Task<T> GetWithAsync(object id, Dictionary<String, NavigationPropertyType> explicitLoadedProperties)
         {
