@@ -48,6 +48,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 UserName = u.UserName,
                 AddressId = u.AddressId,
                 Email = u.Email,
+                Status = !u.LockoutEnabled || u.LockoutEnd==null || u.LockoutEnd <= DateTime.Now,
                 UserGroups = u.UserGroups.Select(u => u.Id).ToList(),
                 PersonalInfo = CustomMapper.Mapper.Map<AddPersonalInfoRequest>(u.PersonalInfo)
             }).FirstOrDefaultAsync();
