@@ -17,12 +17,15 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
     {
         IDateAndAddressService _dateAndAddressService;
         private readonly ILookupFromId _lookupService;
+        private readonly IPersonalInfoRepository _person;
         private readonly ISupportingDocumentRepository _supportingDocument;
         public ReturnMarriageArchive(IDateAndAddressService DateAndAddressService,
                                     ILookupFromId lookupService,
+                                    IPersonalInfoRepository person,
                                     ISupportingDocumentRepository supportingDocument)
         {
             _lookupService = lookupService;
+            _person = person;
             _supportingDocument = supportingDocument;
             _dateAndAddressService = DateAndAddressService;
         }
@@ -64,7 +67,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 EventInfo = GetEventInfo(marriage),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(marriage.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == marriage.Id).Select(s => s.Id).ToList(),
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == marriage.Id)
+                                                .Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
 
             };
             marriageInfo.PaymentExamptionSupportingDocuments = marriage?.PaymentExamption?.Id == null ? null
@@ -75,6 +79,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo)
         {
             marriage.Event.MarriageEvent = marriage;
+            if (marriage.Event.CivilRegOfficer == null && marriage.Event.CivilRegOfficerId != null)
+            {
+                marriage.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == marriage.Event.CivilRegOfficerId).FirstOrDefault();
+            }
             return new MarriageArchiveDTO()
             {
                 Groom = ReturnPerson.GetPerson(marriage.Event.EventOwener, _dateAndAddressService, _lookupService),

@@ -89,7 +89,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Court = GetCourt(divorce?.DivorceEvent?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == divorce.Id).Select(s => s.Id).ToList(),
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == divorce.Id)
+                                                .Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
             };
             divorceInfo.PaymentExamptionSupportingDocuments = divorce?.PaymentExamption?.Id == null ? null
                 : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == divorce.PaymentExamption.Id).Select(s => s.Id).ToList();
@@ -99,6 +100,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo)
         {
             divorce.Event.DivorceEvent = divorce;
+            if (divorce.Event.CivilRegOfficer == null && divorce.Event.CivilRegOfficerId != null)
+            {
+                divorce.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == divorce.Event.CivilRegOfficerId).FirstOrDefault();
+            }
             return new DivorceArchiveDTO()
             {
                 Husband = ReturnPerson.GetPerson(divorce.Event.EventOwener, _dateAndAddressService, _lookupService),

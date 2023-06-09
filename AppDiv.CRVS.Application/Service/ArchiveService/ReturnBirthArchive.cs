@@ -90,7 +90,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(birth.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(birth.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == birth.Id).Select(s => s.Id).ToList(),
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == birth.Id).Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
 
 
             };
@@ -121,6 +121,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 EventSupportingDocuments = birth.Event.EventSupportingDocuments.Select(s => s.Id).ToList(),
                 PaymentExamptionSupportingDocuments = birth.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
             };
+
         }
     }
 }
