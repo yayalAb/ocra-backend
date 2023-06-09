@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Verify;
+using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -45,6 +46,13 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<PaginatedList<CertificateDTO>> Get([FromQuery] GetAllCertificateQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+        [HttpGet("CheckSerialNumber")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<BaseResponse> Check([FromQuery] CheckSerialNoValidation query)
         {
             return await Mediator.Send(query);
         }
