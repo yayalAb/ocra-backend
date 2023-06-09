@@ -23,14 +23,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public virtual async Task<BirthEvent?> GetWithIncludedAsync(Guid id)
         {
             return await _dbContext.BirthEvents
-                            .Include(d => d.FacilityLookup)
-                            .Include(d => d.FacilityTypeLookup)
-                            .Include(d => d.BirthNotification)
-                            .Include(d => d.Father)
-                            .Include(d => d.Mother)
-                            .Include(d => d.Event).ThenInclude(d => d.PaymentExamption)
-                            .Include(d => d.Event).ThenInclude(e => e.EventOwener)
-                            .Include(d => d.Event).ThenInclude(e => e.EventRegistrar).ThenInclude(r => r.RegistrarInfo)
+                            // .Include(b => b.FacilityLookup)
+                            // .Include(b => b.FacilityTypeLookup)
+                            .Include(b => b.BirthNotification)
+                            .Include(b => b.Father)
+                            .Include(b => b.Mother)
+                            .Include(b => b.Event).ThenInclude(e => e.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
+                            .Include(b => b.Event).ThenInclude(e => e.EventSupportingDocuments.Where(s => s.Type.ToLower() != "webcam"))
+                            .Include(b => b.Event).ThenInclude(e => e.EventOwener)
+                            .Include(b => b.Event).ThenInclude(e => e.EventRegistrar).ThenInclude(r => r.RegistrarInfo)
                             .FirstOrDefaultAsync(d => d.Id == id);
         }
 

@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
                 .ThenInclude(b => b.ContactInfo)
                 .Include(m => m.Event)
                 .Include(m => m.Event.EventOwener).ThenInclude(e => e.ContactInfo)
-                .Include(m => m.Event.EventSupportingDocuments)
+                .Include(m => m.Event.EventSupportingDocuments.Where(s => s.Type.ToLower() != "webcam"))
                 .Include(m=> m.Event.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
                 .ProjectTo<UpdateDivorceEventCommand>(_mapper.ConfigurationProvider)
                 .FirstOrDefaultAsync();
