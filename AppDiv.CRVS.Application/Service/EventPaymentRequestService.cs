@@ -24,7 +24,7 @@ namespace AppDiv.CRVS.Application.Service
             _paymentRequestRepository = paymentRequestRepository;
             _lookupRepository = lookupRepository;
         }
-        public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, string paymentType, CancellationToken cancellationToken)
+        public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, string paymentType, Guid? RequestId, CancellationToken cancellationToken)
         {
             var nationalityLookup = _lookupRepository.GetAll().Where(x => x.Id == Event.EventOwener.NationalityLookupId).FirstOrDefault();
             if (nationalityLookup == null)
@@ -52,18 +52,11 @@ namespace AppDiv.CRVS.Application.Service
                 paymentCode = HelperService.GenerateRandomCode();
             }
             while (_paymentRequestRepository.GetAll().Any(x => x.PaymentCode == paymentCode));
-            var newRequest = new AddRequest
-            {
-                RequestType = paymentType,
-                CivilRegOfficerId = new Guid("08db642b-8c3c-4d7b-8943-14a01aa0c19c"),
-                currentStep = 0
-            };
-
             var paymentRequest = new PaymentRequest
             {
                 EventId = Event?.Id,
                 Amount = paymentRate.Amount,
-                Request = CustomMapper.Mapper.Map<Request>(newRequest),
+                RequestId = RequestId,
                 status = false,
                 PaymentCode = paymentCode,
                 PaymentRateId = paymentRate.Id,

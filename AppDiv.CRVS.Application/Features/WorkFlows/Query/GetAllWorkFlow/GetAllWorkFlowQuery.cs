@@ -42,7 +42,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
                                     workflowName = wf.workflow.workflowName,
                                     step = wf.step,
                                     ResiponsbleGroup = wf.UserGroup.GroupName != null ? wf.UserGroup.GroupName : "",
-                                    payment = wf.workflow.Payment,
+                                    HasPayment = wf.workflow.HasPayment,
                                     status = wf.Status,
                                     PaymentStep = wf.workflow.PaymentStep
                                 }).ToList()

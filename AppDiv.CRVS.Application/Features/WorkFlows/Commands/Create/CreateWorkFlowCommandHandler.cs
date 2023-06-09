@@ -41,23 +41,18 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
             }
             if (CreateWorkFlowCommandResponse.Success)
             {
-                //can use this instead of automapper
-
                 List<Guid> UserGroups = new List<Guid>();
-
-                // UserGroups=request.workflow.Steps.
                 var workflow = new Workflow
                 {
                     Id = Guid.NewGuid(),
                     workflowName = request.workflow.workflowName,
                     Description = request.workflow.Description,
+                    HasPayment = request.workflow.HasPayment,
+                    PaymentStep = request.workflow.PaymentStep,
                     Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.workflow.Steps)
                 };
                 await _workflowRepository.InsertAsync(workflow, cancellationToken);
                 var result = await _workflowRepository.SaveChangesAsync(cancellationToken);
-
-                //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
-                // CreateWorkFlowCommandResponse.Customer = customerResponse;          
             }
             return CreateWorkFlowCommandResponse;
         }

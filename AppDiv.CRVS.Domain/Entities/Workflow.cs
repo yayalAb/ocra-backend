@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public string workflowName { get; set; }
         public string DescriptionStr { get; set; }
-        public decimal? Payment { get; set; } = 0;
+        public bool HasPayment { get; set; } = false;
         public int? PaymentStep { get; set; } = 0;
         public ICollection<Step> Steps { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }

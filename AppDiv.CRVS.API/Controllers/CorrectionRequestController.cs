@@ -69,7 +69,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpPut("Approve")]
-        public async Task<ActionResult> Approve([FromQuery] ApproveCorrectionRequestCommand command)
+        public async Task<ActionResult> Approve([FromBody] ApproveCorrectionRequestCommand command)
         {
             try
             {
@@ -78,9 +78,16 @@ namespace AppDiv.CRVS.API.Controllers
                 {
                     if (result.Response.IsLast && result.Response.Message == "Adoption")
                     {
-                        Console.WriteLine("Updaet Adoption updated controller");
                         UpdateAdoptionCommand AdoptionCommand = result.data.Content.ToObject<UpdateAdoptionCommand>();
-                        await _mediator.Send(AdoptionCommand);
+                        var adoption = await _mediator.Send(AdoptionCommand);
+                        if (adoption.Success)
+                        {
+                            return Ok(adoption);
+                        }
+                        else
+                        {
+                            return BadRequest(adoption);
+                        }
                     }
                     else if (result.Response.IsLast && result.Response.Message == "Birth")
                     {
@@ -98,7 +105,7 @@ namespace AppDiv.CRVS.API.Controllers
                         UpdateDivorceEventCommand DivorceCommand = result.data.Content.ToObject<UpdateDivorceEventCommand>();
                         await _mediator.Send(DivorceCommand);
                     }
-                    else if (result.Response.IsLast && result.Response.Message == "Amrriage")
+                    else if (result.Response.IsLast && result.Response.Message == "Marriage")
                     {
                         UpdateMarriageEventCommand MArriageCommand = result.data.Content.ToObject<UpdateMarriageEventCommand>();
                         await _mediator.Send(MArriageCommand);
@@ -111,13 +118,12 @@ namespace AppDiv.CRVS.API.Controllers
                 }
                 if (result.Response.Success)
                 {
-                    return Ok(result);
+                    return Ok(result.Response);
                 }
                 else
                 {
                     return BadRequest(result.Response.Message);
                 }
-
             }
             catch (Exception exp)
             {

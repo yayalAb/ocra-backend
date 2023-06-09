@@ -91,6 +91,7 @@ namespace AppDiv.CRVS.Application.Service
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
+                Console.WriteLine("Payment Request Sent {0} paymentAdded {1}  workfole {2} step{3} ", this.WorkflowHasPayment(workflowType, nextStep), paymentAdded, workflowType, nextStep);
                 if (this.WorkflowHasPayment(workflowType, nextStep) && !paymentAdded)
                 {
                     this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
@@ -100,10 +101,11 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
+                        Console.WriteLine("Payment Request Sent sdfdsf 5 ");
                         request.currentStep = nextStep;
-                        await _requestRepostory.UpdateAsync(request, x => x.CreatedBy);
-                        await _requestRepostory.SaveChangesAsync(cancellationToken);
-
+                        _requestRepostory.Update(request);
+                        // _requestRepostory.SaveChanges();
+                        Console.WriteLine("Payment Request Sent sdfdsf 8 ");
                         // var NewTranscation = new TransactionRequestDTO
                         // {
                         //     CurrentStep = request.currentStep,
@@ -140,7 +142,7 @@ namespace AppDiv.CRVS.Application.Service
         public bool WorkflowHasPayment(string workflow, int Step)
         {
             var selectedWorkflow = _workflowRepository.GetAll().Where(wf => wf.workflowName == workflow).FirstOrDefault();
-            if (selectedWorkflow?.Payment > 0 && selectedWorkflow?.PaymentStep == Step)
+            if (selectedWorkflow.HasPayment && selectedWorkflow.PaymentStep == Step)
             {
 
                 return true;
@@ -163,13 +165,13 @@ namespace AppDiv.CRVS.Application.Service
             {
                 try
                 {
-                    Guid EventId = (request?.CorrectionRequest?.Id == null) ? this.GetEventId(request.AuthenticationRequest.CertificateId) : request.CorrectionRequest.Id;
+                    Guid? EventId = (request?.CorrectionRequest?.Id == null) ? this.GetEventId(request.AuthenticationRequest.CertificateId) : request.CorrectionRequest.EventId;
                     var selectedEvent = _EventRepository.GetAll()
                     .Include(x => x.EventOwener)
                     .Where(x => x.Id == EventId).FirstOrDefault();
                     Console.WriteLine("event type : {0}", selectedEvent.EventType);
                     // var selectedEvent = await _EventRepository.GetAsync(new Guid("08db6584-b469-424d-8191-78f91ac71981"));
-                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, cancellationToken);
+                    (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, cancellationToken);
 
                 }
                 catch (Exception ex)

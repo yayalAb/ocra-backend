@@ -48,7 +48,6 @@ namespace AppDiv.CRVS.Application.Features.Payments.Command.Create
                 await _paymentRepository.InsertAsync(payment, cancellationToken);
                 _UpdateEventPaymetnService.UpdatePaymetnStatus(request.PaymentRequestId, cancellationToken);
                 await _paymentRepository.SaveChangesAsync(cancellationToken);
-
                 createPaymentCommandResponse.Message = "payment created successfully";
 
             }

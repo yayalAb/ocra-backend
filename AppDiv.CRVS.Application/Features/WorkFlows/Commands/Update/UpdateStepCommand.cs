@@ -20,8 +20,9 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
         public Guid Id { get; set; }
         public int step { get; set; }
         public bool Status { get; set; }
+        public bool HasPayment { get; set; } = false;
+        public int? PaymentStep { get; set; } = 0;
         public JObject Description { get; set; }
-
         public Guid workflowId { get; set; }
         public virtual Guid? UserGroupId { get; set; }
 

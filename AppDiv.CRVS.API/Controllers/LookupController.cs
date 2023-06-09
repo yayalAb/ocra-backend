@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKeyForDropDown;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -132,5 +133,12 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(new GetListOfLookupQuery { list = command });
         }
 
+        [HttpGet("LookupforDropdown")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<ActionResult<object>> LookupDropdown([FromQuery] GetLookupByKeyForDropDownQuery query)
+        {
+            return await _mediator.Send(query);
+        }
     }
 }

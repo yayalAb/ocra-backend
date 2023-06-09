@@ -59,14 +59,17 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              Include(c => c.AuthenticationRequest.Certificate)
             .Include(x => x.CorrectionRequest)
             .Include(x => x.PaymentExamptionRequest)
+            .Include(x => x.PaymentRequest)
             .Include(w => w.Workflow).ThenInclude(ss => ss.Steps);
-            var testVar = RequestList//.Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
+            var testVar = RequestList.Where(wf => wf.Workflow.workflowName == wf.RequestType && wf.RequestType != "Payment")
+            // Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
             .Select(w => new AuthenticationRequestListDTO
             {
                 Id = w.Id,
                 ResponsbleGroupId = w.Workflow.Steps.Where(g => g.step == w.currentStep).Select(x => x.UserGroupId).FirstOrDefault(),
                 RequestType = w.RequestType,
-                RequestId = (w.CorrectionRequest.Id == null) ? (w.AuthenticationRequest.CertificateId == null) ? w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
+                RequestId = (w.CorrectionRequest.Id == null) ? (w.AuthenticationRequest.CertificateId == null) ?
+                 w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
                 CurrentStep = w.currentStep,
                 RequestDate = w.CreatedAt
             });

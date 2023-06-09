@@ -87,7 +87,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Birth");
                                 if (!birthEvent.Event.IsExampted)
                                 {
-                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", cancellationToken);
+                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, cancellationToken);
                                     string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
                                     List<string> msgRecepients = new List<string>();
                                     if (birthEvent.Mother?.PhoneNumber != null)
