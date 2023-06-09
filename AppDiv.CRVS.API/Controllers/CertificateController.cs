@@ -68,6 +68,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(query);
         }
 
+        [HttpGet("DraftList")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> Get([FromQuery] EventDraftListQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
 
 
         [HttpGet("{id}")]
