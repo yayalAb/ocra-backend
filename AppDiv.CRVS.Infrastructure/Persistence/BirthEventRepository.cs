@@ -61,6 +61,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             try
             {
                 entity.Event.EventType = "Birth";
+                entity.Event.EventOwener.BirthDateEt = entity.Event.EventDateEt;
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
                 entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
