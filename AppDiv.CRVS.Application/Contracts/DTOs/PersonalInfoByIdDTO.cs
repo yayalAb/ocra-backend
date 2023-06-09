@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class PersonalInfoByIdDTO
     {
         public Guid Id { get; set; }
+        public string? BirhtCertificateId {get; set; }
         public JObject FirstName { get; set; }
         public JObject? MiddleName { get; set; }
         public JObject? LastName { get; set; }

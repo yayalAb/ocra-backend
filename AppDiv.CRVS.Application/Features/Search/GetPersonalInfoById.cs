@@ -25,10 +25,16 @@ namespace AppDiv.CRVS.Application.Features.Search
         }
         public async Task<object> Handle(GetPersonalInfoById request, CancellationToken cancellationToken)
         {
-            var SelectedPerson = _PersonaInfoRepository.GetAll().Where(model => model.Id == request.Id)
+            var SelectedPerson = _PersonaInfoRepository.GetAllQueryable()
+            .Include(p => p.Events.Where(e => e.EventType.ToLower() == "birth"))
+            .ThenInclude(e => e.BirthEvent)
+            .Where(model => model.Id == request.Id)
             .Select(an => new PersonalInfoByIdDTO
             {
                 Id = an.Id,
+                BirhtCertificateId = an.Events.Where(e => e.EventType.ToLower() == "birth").FirstOrDefault() == null
+                                        ? null
+                                        : an.Events.Where(e => e.EventType.ToLower() == "birth").FirstOrDefault()!.CertificateId,
                 FirstName = an.FirstName,
                 MiddleName = an.MiddleName,
                 LastName = an.LastName,

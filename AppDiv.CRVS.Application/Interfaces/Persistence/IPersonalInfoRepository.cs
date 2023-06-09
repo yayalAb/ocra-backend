@@ -22,6 +22,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public PersonalInfo GetById(Guid id);
         public bool CheckPerson(Guid id);
         public bool Exists(Guid id);
+         public IQueryable<PersonalInfo> GetAllQueryable();
 
     }
 }
