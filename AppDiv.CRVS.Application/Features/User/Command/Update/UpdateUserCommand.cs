@@ -69,7 +69,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 FirstName = request.PersonalInfo.FirstName,
                 MiddleName = request.PersonalInfo.MiddleName,
                 LastName = request.PersonalInfo.LastName,
-                BirthDate = request.PersonalInfo.BirthDate,
+                BirthDateEt = request.PersonalInfo.BirthDateEt,
                 NationalId = request.PersonalInfo.NationalId,
                 NationalityLookupId = request.PersonalInfo.NationalityLookupId,
                 SexLookupId = request.PersonalInfo.SexLookupId,
@@ -95,6 +95,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 Id = request.Id,
                 UserName = request.UserName,
                 Email = request.Email,
+                
                 AddressId = request.AddressId,
                 UserGroups = listGroup,
                 PersonalInfo = person
