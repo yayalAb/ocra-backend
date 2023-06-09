@@ -102,7 +102,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Court = GetCourt(adoption.AdoptionEvent.CourtCase),
                 EventInfo = GetEventInfo(adoption),
                 CivilRegistrarOfficer = GetOfficer(adoption.CivilRegOfficer),
-                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == adoption.Id).Select(s => s.Id).ToList(),
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == adoption.Id)
+                                                .Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
             };
             adoptionInfo.PaymentExamptionSupportingDocuments = adoption?.PaymentExamption?.Id == null ? null
                     : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == adoption.PaymentExamption.Id).Select(s => s.Id).ToList();
@@ -141,7 +142,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                                                     .Include(e => e.NationLookup)
                                                     .FirstOrDefault() : adoption.AdoptiveFather;
             var convertor = new CustomDateConverter();
-            var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
+            // var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
             var adoptionArchive = new AdoptionArchiveDTO();
             adoption.Event.AdoptionEvent = adoption;
             // return new AdoptionArchiveDTO()
