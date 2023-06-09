@@ -30,6 +30,22 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             _dateAndAddressService = DateAndAddressService;
         }
 
+        private ICollection<WitnessArchive> GetWittnesses(ICollection<Witness> witnesses, string witnessFor)
+        {
+            var witnessInfo = new List<WitnessArchive?>();
+            foreach (var w in witnesses)
+            {
+
+                if (_lookupService.CheckMatchLookup(w.WitnessForLookupId, "witness-for", witnessFor))
+                {
+                    var brideWitness = CustomMapper.Mapper.Map<WitnessArchive>
+                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
+                    witnessInfo.Add(brideWitness);
+                }
+            }
+            return witnessInfo;
+        }
+
         private MarriageInfo GetEventInfo(Event marriage)
         {
             MarriageInfo marriageInfo = CustomMapper.Mapper.Map<MarriageInfo>(ReturnPerson.GetEventInfo(marriage, _dateAndAddressService));
@@ -40,21 +56,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(marriage.MarriageEvent.MarriageTypeId);
             marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(marriage.MarriageEvent.MarriageTypeId);
 
-            foreach (var w in marriage.MarriageEvent.Witnesses)
-            {
-                if (w.WitnessFor.ToLower() == "bride")
-                {
-                    var brideWitness = CustomMapper.Mapper.Map<WitnessArchive>
-                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
-                    marriageInfo?.BrideWitnesses?.Add(brideWitness);
-                }
-                if (w.WitnessFor.ToLower() == "groom")
-                {
-                    var groomWitness = CustomMapper.Mapper.Map<WitnessArchive>
-                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
-                    marriageInfo?.GroomWitnesses?.Add(groomWitness);
-                }
-            }
+
             return marriageInfo;
         }
 
@@ -69,6 +71,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                                         (ReturnPerson.GetPerson(marriage.CivilRegOfficer, _dateAndAddressService, _lookupService)),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == marriage.Id)
                                                 .Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
+                BrideWitnesses = GetWittnesses(marriage.MarriageEvent.Witnesses, "Bride"),
+                GroomWitnesses = GetWittnesses(marriage.MarriageEvent.Witnesses, "Groom"),
 
             };
             marriageInfo.PaymentExamptionSupportingDocuments = marriage?.PaymentExamption?.Id == null ? null
@@ -81,8 +85,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             marriage.Event.MarriageEvent = marriage;
             if (marriage.Event.CivilRegOfficer == null && marriage.Event.CivilRegOfficerId != null)
             {
-                marriage.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == marriage.Event.CivilRegOfficerId).FirstOrDefault();
+                marriage.Event.CivilRegOfficer = _person.GetSingle(marriage.Event.CivilRegOfficerId);
             }
+
             return new MarriageArchiveDTO()
             {
                 Groom = ReturnPerson.GetPerson(marriage.Event.EventOwener, _dateAndAddressService, _lookupService),
@@ -92,8 +97,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                                         (ReturnPerson.GetPerson(marriage.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
                 EventSupportingDocuments = marriage.Event.EventSupportingDocuments.Select(s => s.Id).ToList(),
                 PaymentExamptionSupportingDocuments = marriage?.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
+                BrideWitnesses = GetWittnesses(marriage.Witnesses, "bride"),
+                GroomWitnesses = GetWittnesses(marriage.Witnesses, "groom"),
 
             };
+
         }
     }
 }

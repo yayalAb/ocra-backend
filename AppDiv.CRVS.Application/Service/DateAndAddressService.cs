@@ -72,15 +72,20 @@ namespace AppDiv.CRVS.Application.Service
         {
             _lookupRepository = lookupRepository;
         }
-
+        public bool CheckMatchLookup(Guid id, string key, string like)
+        {
+            return _lookupRepository.GetAll().Any(l => l.Id == id
+                                                && EF.Functions.Like(l.ValueStr.ToLower(), $"%{like}%")
+                                                && l.Key.ToLower() == key);
+        }
         public string? GetLookupOr(Guid? id)
         {
-            var lookup = _lookupRepository.GetAll().Where(l => l.Id == id).FirstOrDefault();
+            var lookup = _lookupRepository.GetSingle(id);
             return lookup?.Value?.Value<string>("or");
         }
         public string? GetLookupAm(Guid? id)
         {
-            var lookup = _lookupRepository.GetAll().Where(l => l.Id == id).FirstOrDefault();
+            var lookup = _lookupRepository.GetSingle(id);
             return lookup?.Value?.Value<string>("am");
         }
     }
