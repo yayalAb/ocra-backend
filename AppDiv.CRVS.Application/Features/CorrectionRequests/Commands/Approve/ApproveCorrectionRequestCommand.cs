@@ -9,12 +9,8 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json.Linq;
+using MediatR;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces;
 
@@ -29,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
     public class ApproveCorrectionRequestCommand : IRequest<response>
     {
         public Guid Id { get; set; }
-        public string? Description { get; set; }
+        public string? Comment { get; set; }
         public bool IsApprove { get; set; } = false;
     }
     public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, response>
@@ -37,6 +33,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
         private readonly IEventRepository _eventRepostory;
         private readonly IWorkflowService _WorkflowService;
+
+
         public ApproveCorrectionRequestCommandHandler(IEventRepository eventRepostory, ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
@@ -45,7 +43,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         }
         public async Task<response> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Description, false, cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Comment, false, cancellationToken);
             string eventtype = "";
             if (response.Item1)
             {
@@ -53,10 +51,10 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                 eventtype = EventType.EventType;
                 Console.WriteLine("Approved Suceefully");
             }
-            var modifiedLookup = _CorrectionRequestRepostory.GetAll()
-            .Where(x => x.Id == request.Id)
+            var modifiedEvent = _CorrectionRequestRepostory.GetAll()
+            .Where(x => x.RequestId == request.Id)
             .Include(x => x.Request).FirstOrDefault();
-            var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedLookup);
+            var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
             var response1 = new response
             {
                 data = CorrectionRequestResponse,

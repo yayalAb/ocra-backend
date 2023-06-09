@@ -83,7 +83,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Death");
                                 if (!deathEvent.Event.IsExampted)
                                 {
-                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", cancellationToken);
+                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, cancellationToken);
                                     string message = $"Dear Customer,\nThis is to inform you that your request for Death certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
                                     if (deathEvent.Event.EventRegistrar?.RegistrarInfo.PhoneNumber != null)
                                     {

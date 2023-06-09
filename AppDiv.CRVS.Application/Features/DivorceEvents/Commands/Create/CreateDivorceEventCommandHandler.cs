@@ -84,7 +84,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             // create payment request for the event if it is not exempted
                             if (!divorceEvent.Event.IsExampted)
                             {
-                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", cancellationToken);
+                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", null, cancellationToken);
                                 string message = $"Dear Customer,\nThis is to inform you that your request for Divorce certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office.\n OCRA";
                                 List<string> msgRecepients = new List<string>();
                                 if (divorceEvent.DivorcedWife?.PhoneNumber != null)

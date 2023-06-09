@@ -66,7 +66,6 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForAppro
             var selectedEvent = await _eventRepository.GetByIdAsync(CorrectionRequest.EventId);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var certificate = _archiveGenerator.GetArchive(request1, content, birthCertificateNo?.Event?.CertificateId);
-
             var response = new CorrectionApprovalDTO();
             response.OldData = certificate;
 
