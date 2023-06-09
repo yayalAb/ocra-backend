@@ -45,13 +45,20 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                                 .Select(l => l.Id).FirstOrDefault();
             //find and update existingOwner personalInfo
             var keyValuePair1 = new Dictionary<string, object>{
-                    {"SexLookupId" ,marriageEvent.Event.EventOwener.SexLookupId},
                     {"ReligionLookupId" ,marriageEvent.Event.EventOwener.ReligionLookupId},
                     {"EducationalStatusLookupId" ,marriageEvent.Event.EventOwener.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId" ,marriageEvent.Event.EventOwener.TypeOfWorkLookupId},
                     {"MarriageStatusLookupId" ,marriageEvent.Event.EventOwener.MarriageStatusLookupId},
                     {"ResidentAddressId" ,marriageEvent.Event.EventOwener.ResidentAddressId},
-                    {"NationalId", marriageEvent.Event.EventOwener.NationalId}
+                    {"NationalId", marriageEvent.Event.EventOwener.NationalId},
+                    {"BirthAddressId", marriageEvent.Event.EventOwener.BirthAddressId},
+                    {"BirthDateEt", marriageEvent.Event.EventOwener.BirthDateEt},
+                    {"FirstName", marriageEvent.Event.EventOwener.FirstName},
+                    {"MiddleName", marriageEvent.Event.EventOwener.MiddleName},
+                    {"LastName", marriageEvent.Event.EventOwener.LastName},
+                    {"NationalityLookupId", marriageEvent.Event.EventOwener.NationalityLookupId},
+                    {"NationLookupId", marriageEvent.Event.EventOwener.NationLookupId},
+                    {"PhoneNumber", marriageEvent.Event.EventOwener.PhoneNumber}
                 };
             marriageEvent.Event.EventOwener = HelperService.UpdateObjectFeilds<PersonalInfo>(existingOwner, keyValuePair1);
 
@@ -62,12 +69,19 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
             var keyValuePair2 = new Dictionary<string, object>{
                     {"NationalId",marriageEvent.BrideInfo.NationalId},
-                    {"SexLookupId",marriageEvent.BrideInfo.SexLookupId},
                     {"ReligionLookupId", marriageEvent.BrideInfo.ReligionLookupId},
                     {"EducationalStatusLookupId", marriageEvent.BrideInfo.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId", marriageEvent.BrideInfo.TypeOfWorkLookupId},
                     {"MarriageStatusLookupId", marriageEvent.BrideInfo.MarriageStatusLookupId},
-                    {"ResidentAddressId", marriageEvent.BrideInfo.ResidentAddressId}
+                    {"ResidentAddressId", marriageEvent.BrideInfo.ResidentAddressId},
+                    {"BirthAddressId", marriageEvent.BrideInfo.BirthAddressId},
+                    {"BirthDateEt", marriageEvent.BrideInfo.BirthDateEt},
+                    {"FirstName", marriageEvent.BrideInfo.FirstName},
+                    {"MiddleName", marriageEvent.BrideInfo.MiddleName},
+                    {"LastName", marriageEvent.BrideInfo.LastName},
+                    {"NationalityLookupId", marriageEvent.BrideInfo.NationalityLookupId},
+                    {"NationLookupId", marriageEvent.BrideInfo.NationLookupId},
+                    {"PhoneNumber", marriageEvent.BrideInfo.PhoneNumber}
                 };
             marriageEvent.BrideInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(existingBrideInfo, keyValuePair2);
 
@@ -90,7 +104,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 var keyValuePair3 = new Dictionary<string, object>{
                         {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
                         {"NationalId",witness.WitnessPersonalInfo.NationalId},
-                        {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId}
+                        {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId},
+                        {"FirstName", witness.WitnessPersonalInfo.FirstName},
+                        {"MiddleName", witness.WitnessPersonalInfo.MiddleName},
+                        {"LastName", witness.WitnessPersonalInfo.LastName},
+                        {"PhoneNumber", witness.WitnessPersonalInfo.PhoneNumber}
+
                     };
                 witness.WitnessPersonalInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(witness.WitnessPersonalInfo, keyValuePair3);
             });
@@ -136,9 +155,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"ReligionLookupId" ,entity.Event.EventOwener.ReligionLookupId},
                     {"EducationalStatusLookupId" ,entity.Event.EventOwener.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId" ,entity.Event.EventOwener.TypeOfWorkLookupId},
-                    {"MarriageStatusLookupId" ,entity.Event.EventOwener.MarriageStatusLookupId},
+                    // {"MarriageStatusLookupId" ,entity.Event.EventOwener.MarriageStatusLookupId},
                     {"ResidentAddressId" ,entity.Event.EventOwener.ResidentAddressId},
-                    {"NationalId", entity.Event.EventOwener.NationalId}
+                    {"NationalId", entity.Event.EventOwener.NationalId},
+                    {"PhoneNumber", entity.Event.EventOwener.PhoneNumber}
+
                 };
                 await updatePersonalInfo(keyValuePair, entity.Event.EventOwenerId, "Event Owner");
                 entity.Event.EventOwenerId = entity.Event.EventOwener.Id;
@@ -153,8 +174,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"ReligionLookupId", entity.BrideInfo.ReligionLookupId},
                     {"EducationalStatusLookupId", entity.BrideInfo.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId", entity.BrideInfo.TypeOfWorkLookupId},
-                    {"MarriageStatusLookupId", entity.BrideInfo.MarriageStatusLookupId},
-                    {"ResidentAddressId", entity.BrideInfo.ResidentAddressId}
+                    // {"MarriageStatusLookupId", entity.BrideInfo.MarriageStatusLookupId},
+                    {"ResidentAddressId", entity.BrideInfo.ResidentAddressId},
+                    {"PhoneNumber", entity.BrideInfo.PhoneNumber}
+
                 };
                 await updatePersonalInfo(keyValuePair, entity.BrideInfo.Id, "BrideInfo");
                 entity.BrideInfoId = entity.BrideInfo.Id;
@@ -169,7 +192,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     var keyValuePair = new Dictionary<string, object>{
                         {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
                         {"NationalId",witness.WitnessPersonalInfo.NationalId},
-                        {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId}
+                        {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId},
+                        {"PhoneNumber", witness.WitnessPersonalInfo.PhoneNumber}
+
+
                     };
                     await updatePersonalInfo(keyValuePair, witness.WitnessPersonalInfo.Id, "witness");
                     witness.WitnessPersonalInfoId = witness.WitnessPersonalInfo.Id;
@@ -184,40 +210,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
         }
-        public (Dictionary<string,string>userPhotos, IEnumerable<SupportingDocument>otherDocs) extractSupportingDocs(MarriageEvent marriageEvent, IEnumerable<SupportingDocument> supportingDocs)
-        {
-            Dictionary<string, string> userPhotos = new Dictionary<string, string>();
-            supportingDocs.Where(d => d.Type.ToLower() == "webcam").ToList().ForEach(doc =>
-            {
-
-                if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower())
-                {
-                    userPhotos.Add(marriageEvent.BrideInfo.Id.ToString(), doc.base64String);
-                    supportingDocs.ToList().Remove(doc);
-                }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower())
-                {
-                    userPhotos.Add(marriageEvent.Event.EventOwener.Id.ToString(), doc.base64String);
-                    supportingDocs.ToList().Remove(doc);
-                }
-            });
-            for (int i = 0; i < marriageEvent.Witnesses.Count; i++)
-            {
-
-                var witnessDoc = supportingDocs
-                            .Where(doc => doc.Type.ToLower() == "webcam"
-                            && doc.Label.ToLower() == $"{Enum.GetName<DocumentLabel>(DocumentLabel.Witness)?.ToLower()}{i}")
-                            .FirstOrDefault();
-
-                if (witnessDoc != null)
-                {
-                    var key = marriageEvent.Witnesses.ToList()[i].WitnessPersonalInfo.Id.ToString();
-                    userPhotos.Add(key, witnessDoc.base64String);
-                    supportingDocs.ToList().Remove(witnessDoc);
-                }
-            }
-            return (userPhotos:userPhotos, otherDocs: supportingDocs);
-        }
+   
         private async Task updatePersonalInfo(Dictionary<string, object> keyValuePair, Guid id, string feildName)
         {
             var existing = await dbContext.PersonalInfos.FindAsync(id);

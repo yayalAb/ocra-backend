@@ -16,10 +16,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual CorrectionRequest CorrectionRequest { get; set; }
         public virtual AuthenticationRequest AuthenticationRequest { get; set; }
         public virtual PaymentExamptionRequest PaymentExamptionRequest { get; set; }
+        public virtual PaymentRequest PaymentRequest { get; set; }
         public virtual ICollection<Transaction> Transactions { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
-
-
         public virtual Workflow Workflow { get; set; }
 
     }

@@ -49,6 +49,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive.MarriageArchive;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive;
 using AppDiv.CRVS.Application.Features.Payments.Command.Create;
 using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
+using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -191,6 +192,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AdoptionEvent, AddAdoptionRequest>().ReverseMap();
             CreateMap<AdoptionEvent, CreateAdoptionCommand>().ReverseMap();
             CreateMap<Event, AdoptionEventDTO>().ReverseMap();
+            CreateMap<AdoptionEvent, UpdateAdoptionCommand>().ReverseMap();
+
 
 
             CreateMap<CourtCase, AddCourtCaseRequest>().ReverseMap();

@@ -19,6 +19,9 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
 
         public Guid id { get; set; }
         public string workflowName { get; set; }
+
+        public decimal Payment { get; set; } = 0;
+        public int? PaymentStep { get; set; } = 0;
         public JObject Description { get; set; }
         public ICollection<StepDTO> Steps { get; set; }
 
@@ -39,6 +42,8 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update
             {
                 Id = request.id,
                 workflowName = request.workflowName,
+                Payment = request.Payment,
+                PaymentStep = request.PaymentStep,
                 Description = request.Description,
                 Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.Steps)
             };

@@ -40,6 +40,17 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             }
             if (updateDeathEventCommandResponse.Success)
             {
+                //supporting docs cant be updated only new (one without id) are created
+                var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                request.Event.EventSupportingDocuments = null;
+                if (request.Event.PaymentExamption != null)
+                {
+                    request.Event.PaymentExamption.SupportingDocuments = null;
+                }
+                //////
+
+
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                 deathEvent.Event.EventType = "Death";
                 _deathEventRepository.Update(deathEvent);
@@ -47,7 +58,15 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 
                 var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
                 var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
+                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
 
+                var personIds = new PersonIdObj
+                {
+                    DeceasedId = deathEvent.Event.EventOwener.Id,
+                    RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                };
+                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                 _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "DeathEvents");
             }
 

@@ -22,7 +22,12 @@ namespace AppDiv.CRVS.API.Controllers
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateUser(CreateUserCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            var res = await Mediator.Send(command);
+            if (!res.Success)
+            {
+                return BadRequest(res);
+            }
+            return Ok(res);
         }
 
 

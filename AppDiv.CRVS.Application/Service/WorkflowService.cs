@@ -2,6 +2,7 @@
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Service
@@ -15,8 +16,10 @@ namespace AppDiv.CRVS.Application.Service
         private readonly IUserResolverService _UserResolverService;
         private readonly INotificationService _NotificationService;
         private readonly ICertificateRepository _CertificateRepository;
+        private readonly IEventPaymentRequestService _paymentRequestService;
 
-        public WorkflowService(ICertificateRepository CertificateRepository, INotificationService NotificationService, IUserResolverService UserResolverService, ITransactionService TransactionService, IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
+        private readonly IEventRepository _EventRepository;
+        public WorkflowService(IEventRepository EventRepository, IEventPaymentRequestService paymentRequestService, ICertificateRepository CertificateRepository, INotificationService NotificationService, IUserResolverService UserResolverService, ITransactionService TransactionService, IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
         {
             _workflowRepository = workflowRepository;
             _stepRepostory = stepRepostory;
@@ -24,6 +27,8 @@ namespace AppDiv.CRVS.Application.Service
             _TransactionService = TransactionService;
             _UserResolverService = UserResolverService;
             _CertificateRepository = CertificateRepository;
+            _paymentRequestService = paymentRequestService;
+            _EventRepository = EventRepository;
         }
         public int GetLastWorkflow(string workflowType)
         {
@@ -69,8 +74,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             return (Guid)groupId;
         }
-
-        public async Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, string? Remark, CancellationToken cancellationToken)
+        public async Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, string? Remark, bool paymentAdded, CancellationToken cancellationToken)
         {
             var request = _requestRepostory.GetAll()
             .Include(x => x.AuthenticationRequest).ThenInclude(a => a.Certificate)
@@ -87,29 +91,37 @@ namespace AppDiv.CRVS.Application.Service
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
-                request.currentStep = nextStep;
-
-                // var NewTranscation = new TransactionRequestDTO
-                // {
-                //     CurrentStep = request.currentStep,
-                //     ApprovalStatus = IsApprove,
-                //     WorkflowId = RequestId,
-                //     RequestId = RequestId,
-                //     CivilRegOfficerId = "4d940006-b21f-4841-b8dd-02957c4d7487",
-                //     Remark = Remark
-                // };
-                // await _TransactionService.CreateTransaction(NewTranscation);
-                // await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
-                //                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
-                //                   "4d940006-b21f-4841-b8dd-02957c4d7487");
-                try
+                if (this.WorkflowHasPayment(workflowType, nextStep) && !paymentAdded)
                 {
-                    await _requestRepostory.UpdateAsync(request, x => x.CreatedBy);
-                    await _requestRepostory.SaveChangesAsync(cancellationToken);
+                    this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
+                    // throw new Exception("Payment Request Sent Successfully");
                 }
-                catch (Exception exp)
+                else
                 {
-                    throw new ApplicationException(exp.Message);
+                    try
+                    {
+                        request.currentStep = nextStep;
+                        await _requestRepostory.UpdateAsync(request, x => x.CreatedBy);
+                        await _requestRepostory.SaveChangesAsync(cancellationToken);
+
+                        // var NewTranscation = new TransactionRequestDTO
+                        // {
+                        //     CurrentStep = request.currentStep,
+                        //     ApprovalStatus = IsApprove,
+                        //     WorkflowId = RequestId,
+                        //     RequestId = RequestId,
+                        //     CivilRegOfficerId = "4d940006-b21f-4841-b8dd-02957c4d7487",
+                        //     Remark = Remark
+                        // };
+                        // await _TransactionService.CreateTransaction(NewTranscation);
+                        // await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
+                        //                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
+                        //                   "4d940006-b21f-4841-b8dd-02957c4d7487");
+                    }
+                    catch (Exception exp)
+                    {
+                        throw new ApplicationException(exp.Message);
+                    }
                 }
             }
             else
@@ -123,6 +135,50 @@ namespace AppDiv.CRVS.Application.Service
         {
             var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
             return eventId.EventId;
+        }
+
+        public bool WorkflowHasPayment(string workflow, int Step)
+        {
+            var selectedWorkflow = _workflowRepository.GetAll().Where(wf => wf.workflowName == workflow).FirstOrDefault();
+            if (selectedWorkflow?.Payment > 0 && selectedWorkflow?.PaymentStep == Step)
+            {
+
+                return true;
+            }
+            return false;
+        }
+
+
+        public async void CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
+        {
+            var request = _requestRepostory
+            .GetAll()
+            .Include(x => x.AuthenticationRequest)
+            .Include(X => X.CorrectionRequest).Where(x => x.Id == RequestId).FirstOrDefault();
+            if (request == null)
+            {
+                throw new Exception("Request Does not Found");
+            }
+            if (request.RequestType == "authentication" || request.RequestType == "change")
+            {
+                try
+                {
+                    Guid EventId = (request?.CorrectionRequest?.Id == null) ? this.GetEventId(request.AuthenticationRequest.CertificateId) : request.CorrectionRequest.Id;
+                    var selectedEvent = _EventRepository.GetAll()
+                    .Include(x => x.EventOwener)
+                    .Where(x => x.Id == EventId).FirstOrDefault();
+                    Console.WriteLine("event type : {0}", selectedEvent.EventType);
+                    // var selectedEvent = await _EventRepository.GetAsync(new Guid("08db6584-b469-424d-8191-78f91ac71981"));
+                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, cancellationToken);
+
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("an Error occured on Creating Payment Request" + ex.Message);
+                }
+
+            }
+
         }
     }
 }

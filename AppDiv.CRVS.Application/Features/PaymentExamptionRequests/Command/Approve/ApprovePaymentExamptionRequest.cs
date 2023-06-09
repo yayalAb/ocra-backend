@@ -38,7 +38,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Appr
         }
         public async Task<BaseResponse> Handle(PaymentExamptionApproval request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.RequestId, "payment exemption", request.IsApprove, request.Remark, cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.RequestId, "payment exemption", request.IsApprove, request.Remark, false, cancellationToken);
             if (response.Item1)
             {
                 try

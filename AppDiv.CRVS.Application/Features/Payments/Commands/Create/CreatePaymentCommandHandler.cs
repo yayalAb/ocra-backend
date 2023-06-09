@@ -6,6 +6,7 @@ using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.Payments.Command.Create
 {
@@ -13,9 +14,14 @@ namespace AppDiv.CRVS.Application.Features.Payments.Command.Create
     public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand, CreatePaymentCommandResponse>
     {
         private readonly IPaymentRepository _paymentRepository;
-        public CreatePaymentCommandHandler(IPaymentRepository paymentRepository)
+        private readonly IPaymentRequestRepository _PaymentRequestRepository;
+        private readonly IUpdateEventPaymetnService _UpdateEventPaymetnService;
+
+        public CreatePaymentCommandHandler(IUpdateEventPaymetnService UpdateEventPaymetnService, IPaymentRepository paymentRepository, IPaymentRequestRepository PaymentRequestRepository)
         {
             _paymentRepository = paymentRepository;
+            _PaymentRequestRepository = PaymentRequestRepository;
+            _UpdateEventPaymetnService = UpdateEventPaymetnService;
         }
         public async Task<CreatePaymentCommandResponse> Handle(CreatePaymentCommand request, CancellationToken cancellationToken)
         {
@@ -38,13 +44,11 @@ namespace AppDiv.CRVS.Application.Features.Payments.Command.Create
             }
             if (createPaymentCommandResponse.Success)
             {
-
                 var payment = CustomMapper.Mapper.Map<Payment>(request);
-
                 await _paymentRepository.InsertAsync(payment, cancellationToken);
-                await _paymentRepository.UpdateEventPaymentStatus(payment.PaymentRequestId);
+                _UpdateEventPaymetnService.UpdatePaymetnStatus(request.PaymentRequestId, cancellationToken);
                 await _paymentRepository.SaveChangesAsync(cancellationToken);
-                
+
                 createPaymentCommandResponse.Message = "payment created successfully";
 
             }

@@ -7,6 +7,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 {
@@ -90,13 +91,19 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                             //TODO: //
-                            var separatedDocs = _marriageEventRepository.extractSupportingDocs(marriageEvent, marriageEvent.Event.EventSupportingDocuments);
+                            var personIds = new PersonIdObj
+                            {
+                                WifeId = marriageEvent.BrideInfo.Id,
+                                HusbandId = marriageEvent.Event.EventOwener.Id,
+                                WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
+                            };
+                            var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             // create payment request for the event if it is not exempted
                             if (!marriageEvent.Event.IsExampted)
                             {
-                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, cancellationToken);
+                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, "CertificateGeneration", cancellationToken);
                                 string message = $"Dear Customer,\nThis is to inform you that your request for Marriage certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
                                 List<string> msgRecepients = new List<string>();
                                 if (marriageEvent.BrideInfo?.PhoneNumber != null)
