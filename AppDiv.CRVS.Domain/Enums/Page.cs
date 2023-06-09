@@ -59,4 +59,7 @@ public enum Page
     MartialStatusMaleLookup,
     Receive,
     Transfer,
+    Verification,
+    WitnessForLookup,
+    PaymentTypeLookup
 }

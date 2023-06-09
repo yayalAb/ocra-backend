@@ -24,14 +24,14 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
             _eventRepo = eventRepo;
             _courtRepo = courtRepo;
             var fieldNames = new List<string>{"DivorcedWife","DivorcedWife.Id","DateOfMarriageEt", "DivorceReason", "CourtCase","NumberOfChildren","Event",
-            "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId","DivorcedWife.SexLookupId",
+            "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId",
             "DivorcedWife.BirthAddressId","DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
             "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
             "CourtCase","CourtCase.Id","CourtCase.CourtCaseNumber","CourtCase.ConfirmedDateEt",
             "Event.Id","Event.CertificateId", "Event.EventDateEt",
             "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
             "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName",
-            "Event.EventOwener.NationalId","Event.EventOwener.SexLookupId",
+            "Event.EventOwener.NationalId",
             "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
             "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
             "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
@@ -48,10 +48,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                 // add more validation rules for the field here, if needed
             }
             var lookupFeilds = new List<string>{
-                "DivorcedWife.SexLookupId",
+         
                 "DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId",
                 "DivorcedWife.EducationalStatusLookupId","DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId",
-                "DivorcedWife.NationLookupId","Event.EventOwener.SexLookupId",
+                "DivorcedWife.NationLookupId",
                 "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                 "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                 "Event.EventOwener.NationLookupId"
