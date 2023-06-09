@@ -10,15 +10,17 @@ namespace AppDiv.CRVS.Domain.Configuration
     {
         public void Configure(EntityTypeBuilder<Witness> builder)
         {
-            builder.HasOne(m =>m.MarriageEvent)
-            .WithMany(n => n.Witnesses )
+            builder.HasOne(m => m.MarriageEvent)
+            .WithMany(n => n.Witnesses)
             .HasForeignKey(m => m.MarriageEventId);
 
             builder.HasOne(m => m.WitnessPersonalInfo)
             .WithMany(n => n.Witness)
             .HasForeignKey(m => m.WitnessPersonalInfoId);
 
-            
+            builder.HasOne(m => m.WitnessForLookup)
+            .WithMany(n => n.WitnessForNavigation)
+            .HasForeignKey(m => m.WitnessForLookupId);
 
 
         }

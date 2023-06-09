@@ -103,7 +103,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             .NotNull()
             .Must(w => w.Count >= 4).WithMessage("there should be atleast 4 witnesses to register a divorce");
 
-            RuleFor(e => e.Witnesses.Select(w => w.WitnessFor)).NotEmpty().NotNull();
+            RuleFor(e => e.Witnesses.Select(w => w.WitnessForLookupId)).NotEmpty().NotNull().Must(BeFoundInLookupTable);
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.MiddleName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
