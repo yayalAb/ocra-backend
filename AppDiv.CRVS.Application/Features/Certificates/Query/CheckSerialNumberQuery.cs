@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
     public class CheckSerialNoValidation : IRequest<BaseResponse>
     {
         public string CertificateSerialNumber { get; set; }
+        public Guid UserId { get; set; }
     }
 
     public class CheckSerialNoValidationHandler : IRequestHandler<CheckSerialNoValidation, BaseResponse>
@@ -39,14 +40,15 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
             var response = new BaseResponse();
             try
             {
-                var user = _user.GetAll().Where(p => p.UserName == "Admin").FirstOrDefault();
-                bool inRange = _certificateRange.GetAll().Any(r => r.AddressId == user.AddressId
-                                                                && request.CertificateSerialNumber.CompareTo(r.From) >= 0
-                                                                && request.CertificateSerialNumber.CompareTo(r.To) <= 0);
+                var user = _user.GetSingle(request.UserId == Guid.Empty ? "2f20c2f6-b3ab-47a4-a36e-0b4fb9b94006" : request.UserId.ToString());
+                var inRange = _certificateRange.GetAll().FirstOrDefault(r => r.AddressId == user.AddressId
+                                                                && request.CertificateSerialNumber.CompareTo(r.From.ToString()) >= 0
+                                                                && request.CertificateSerialNumber.CompareTo(r.To.ToString()) <= 0);
                 bool isDuplicated = _certificateRepository.GetAll()
                                         .Where(c => c.CertificateSerialNumber == request.CertificateSerialNumber).Any();
-                if (!inRange || isDuplicated)
+                if (inRange == null || isDuplicated)
                 {
+                    response.Status = 400;
                     response.Message = "Serial Number out of range";
                 }
 

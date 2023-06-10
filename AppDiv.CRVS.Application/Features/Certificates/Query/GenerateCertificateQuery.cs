@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Utility.Contracts;
+using AppDiv.CRVS.Application.Common;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -18,6 +19,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
+using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Query
 {
@@ -37,6 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         // public bool AuthenticationStatus { get; set; }
         public string? CertificateSerialNumber { get; set; }
         public bool IsPrint { get; set; } = false;
+        public bool CheckSerialNumber { get; set; } = true;
 
         // public GenerateCertificateQuery(Guid Id, string SerialNumber)
         // {
@@ -56,6 +59,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly ICertificateGenerator _CertificateGenerator;
         private readonly ILogger<GenerateCertificateHandler> _ILogger;
         private readonly IFileService _fileService;
+        private readonly IUserResolverService _userResolverService;
+        // private readonly IMediator _mediator;
         private readonly ISupportingDocumentRepository _supportingDocumentRepository;
 
 
@@ -64,22 +69,31 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                         IBirthEventRepository IBirthEventRepository,
                                         ICertificateTemplateRepository ICertificateTemplateRepository,
                                         ICertificateRepository CertificateRepository,
-                                        IMediator mediato,
+                                        IMediator mediator,
                                         IEventRepository eventRepository,
                                         IFileService fileService,
+                                        IUserResolverService userResolverService,
+                                        // IMediator mediator,
                                         ISupportingDocumentRepository supportingDocumentRepository)
         {
             _certificateRepository = CertificateRepository;
             _eventRepository = eventRepository;
+            _userResolverService = userResolverService;
             _ICertificateTemplateRepository = ICertificateTemplateRepository;
             _IBirthEventRepository = IBirthEventRepository;
             _CertificateGenerator = CertificateGenerator;
             _ILogger = ILogger;
+            _mediator = mediator;
             _fileService = fileService;
             _supportingDocumentRepository = supportingDocumentRepository;
         }
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
+            var errorResponse = new BaseResponse();
+            if (request.CheckSerialNumber)
+            {
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() });
+            }
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _certificateRepository.GetContent(request.Id);
@@ -105,7 +119,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             }
             response.Content = certificate.Content;
             response.TemplateId = certificateTemplateId?.Id;
-            return response;
+            return errorResponse.Status != 200 ? errorResponse : response;
         }
 
     }

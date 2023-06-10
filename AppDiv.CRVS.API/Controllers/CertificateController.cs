@@ -24,9 +24,11 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Generate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> GetCertificate([FromQuery] Guid id, string? serialNo, bool IsPrint = false)
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<object> GetCertificate([FromQuery] Guid id, string? serialNo, bool IsPrint = false, bool checkSerialNumber = true)
         {
-            return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint });
+            return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint, CheckSerialNumber = checkSerialNumber });
         }
 
         [HttpGet("Archive")]
