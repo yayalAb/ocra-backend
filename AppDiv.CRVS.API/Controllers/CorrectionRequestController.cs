@@ -74,55 +74,13 @@ namespace AppDiv.CRVS.API.Controllers
             try
             {
                 var result = await _mediator.Send(command);
-                if (result.Response.IsLast)
+                if (result.Success)
                 {
-                    if (result.Response.IsLast && result.Response.Message == "Adoption")
-                    {
-                        UpdateAdoptionCommand AdoptionCommand = result.data.Content.ToObject<UpdateAdoptionCommand>();
-                        var adoption = await _mediator.Send(AdoptionCommand);
-                        if (adoption.Success)
-                        {
-                            return Ok(adoption);
-                        }
-                        else
-                        {
-                            return BadRequest(adoption);
-                        }
-                    }
-                    else if (result.Response.IsLast && result.Response.Message == "Birth")
-                    {
-                        UpdateBirthEventCommand BirthCommand = result.data.Content.ToObject<UpdateBirthEventCommand>();
-                        await _mediator.Send(BirthCommand);
-
-                    }
-                    else if (result.Response.IsLast && result.Response.Message == "Death")
-                    {
-                        UpdateDeathEventCommand DeathCommand = result.data.Content.ToObject<UpdateDeathEventCommand>();
-                        await _mediator.Send(DeathCommand);
-                    }
-                    else if (result.Response.IsLast && result.Response.Message == "Divorce")
-                    {
-                        UpdateDivorceEventCommand DivorceCommand = result.data.Content.ToObject<UpdateDivorceEventCommand>();
-                        await _mediator.Send(DivorceCommand);
-                    }
-                    else if (result.Response.IsLast && result.Response.Message == "Marriage")
-                    {
-                        UpdateMarriageEventCommand MArriageCommand = result.data.Content.ToObject<UpdateMarriageEventCommand>();
-                        await _mediator.Send(MArriageCommand);
-                    }
-                    else
-                    {
-
-                    }
-
-                }
-                if (result.Response.Success)
-                {
-                    return Ok(result.Response);
+                    return Ok(result);
                 }
                 else
                 {
-                    return BadRequest(result.Response.Message);
+                    return BadRequest(result.Message);
                 }
             }
             catch (Exception exp)

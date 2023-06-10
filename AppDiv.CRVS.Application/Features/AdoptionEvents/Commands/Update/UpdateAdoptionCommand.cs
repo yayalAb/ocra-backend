@@ -29,6 +29,8 @@ public class UpdateAdoptionCommand : IRequest<UpdateAdoptionCommandResponse>
     public AddAdoptionPersonalInfoRequest AdoptiveFather { get; set; }
     public virtual AddCourtCaseRequest CourtCase { get; set; }
     public virtual AddAdoptionEventRequest Event { get; set; }
+    public bool IsFromCommand { get; set; } = false;
+
 }
 
 
@@ -118,7 +120,11 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
             //     adoptionEvent.Event.EventOwener = selectedperson;
             // }
             _adoptionEventRepository.EFUpdate(adoptionEvent);
-            await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+            if (!request.IsFromCommand)
+            {
+                await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+
+            }
             // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
             UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
         }

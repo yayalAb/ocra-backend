@@ -47,6 +47,13 @@ namespace AppDiv.CRVS.Application.Features.Payments.Command.Create
                 var payment = CustomMapper.Mapper.Map<Payment>(request);
                 await _paymentRepository.InsertAsync(payment, cancellationToken);
                 _UpdateEventPaymetnService.UpdatePaymetnStatus(request.PaymentRequestId, cancellationToken);
+
+
+
+
+
+
+
                 await _paymentRepository.SaveChangesAsync(cancellationToken);
                 createPaymentCommandResponse.Message = "payment created successfully";
 

@@ -1,3 +1,5 @@
+using System;
+using System.Security.Cryptography.X509Certificates;
 
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces;
@@ -17,9 +19,11 @@ namespace AppDiv.CRVS.Application.Service
         private readonly INotificationService _NotificationService;
         private readonly ICertificateRepository _CertificateRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly IPaymentRequestRepository _paymentRequestRepository;
+
 
         private readonly IEventRepository _EventRepository;
-        public WorkflowService(IEventRepository EventRepository, IEventPaymentRequestService paymentRequestService, ICertificateRepository CertificateRepository, INotificationService NotificationService, IUserResolverService UserResolverService, ITransactionService TransactionService, IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
+        public WorkflowService(IEventRepository EventRepository, IPaymentRequestRepository paymentRequestRepository, IEventPaymentRequestService paymentRequestService, ICertificateRepository CertificateRepository, INotificationService NotificationService, IUserResolverService UserResolverService, ITransactionService TransactionService, IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
         {
             _workflowRepository = workflowRepository;
             _stepRepostory = stepRepostory;
@@ -29,6 +33,7 @@ namespace AppDiv.CRVS.Application.Service
             _CertificateRepository = CertificateRepository;
             _paymentRequestService = paymentRequestService;
             _EventRepository = EventRepository;
+            _paymentRequestRepository = paymentRequestRepository;
         }
         public int GetLastWorkflow(string workflowType)
         {
@@ -91,21 +96,17 @@ namespace AppDiv.CRVS.Application.Service
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
-                Console.WriteLine("Payment Request Sent {0} paymentAdded {1}  workfole {2} step{3} ", this.WorkflowHasPayment(workflowType, nextStep), paymentAdded, workflowType, nextStep);
-                if (this.WorkflowHasPayment(workflowType, nextStep) && !paymentAdded)
+                if (this.WorkflowHasPayment(workflowType, nextStep, RequestId) && !paymentAdded)
                 {
                     this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
-                    // throw new Exception("Payment Request Sent Successfully");
                 }
                 else
                 {
                     try
                     {
-                        Console.WriteLine("Payment Request Sent sdfdsf 5 ");
                         request.currentStep = nextStep;
                         _requestRepostory.Update(request);
-                        // _requestRepostory.SaveChanges();
-                        Console.WriteLine("Payment Request Sent sdfdsf 8 ");
+                        _requestRepostory.SaveChanges();
                         // var NewTranscation = new TransactionRequestDTO
                         // {
                         //     CurrentStep = request.currentStep,
@@ -122,13 +123,13 @@ namespace AppDiv.CRVS.Application.Service
                     }
                     catch (Exception exp)
                     {
-                        throw new ApplicationException(exp.Message);
+                        throw new Exception(exp.Message);
                     }
                 }
             }
             else
             {
-                throw new Exception("Next Step  Does not Exist");
+                return (false, ReturnId);
             }
             return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
 
@@ -139,15 +140,29 @@ namespace AppDiv.CRVS.Application.Service
             return eventId.EventId;
         }
 
-        public bool WorkflowHasPayment(string workflow, int Step)
+        public bool WorkflowHasPayment(string workflow, int Step, Guid RequestId)
         {
-            var selectedWorkflow = _workflowRepository.GetAll().Where(wf => wf.workflowName == workflow).FirstOrDefault();
-            if (selectedWorkflow.HasPayment && selectedWorkflow.PaymentStep == Step)
+            var selectedWorkflow = _workflowRepository.GetAll()
+            .Where(wf => wf.workflowName == workflow).FirstOrDefault();
+            if ((selectedWorkflow.HasPayment && selectedWorkflow.PaymentStep == Step))
             {
-
+                // var payment = _paymentRequestRepository.GetAll()
+                //         .Include(x => x.Payment)
+                //         .Where(x => x.RequestId == RequestId && x.Payment.PaymentRequestId == RequestId);
+                // if (payment == null)
+                // {
                 return true;
+                // }
+                // return false;
             }
             return false;
+            // var requestHaspayment = _requestRepostory.GetAll()
+            // .Include(x => x.Workflow)
+            // .Include(x => x.PaymentRequest)
+            // .ThenInclude(x => x.Payment)
+            // .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
+            // && (re.PaymentRequest.Payment != null)
+            // ).FirstOrDefault();
         }
 
 
@@ -169,8 +184,6 @@ namespace AppDiv.CRVS.Application.Service
                     var selectedEvent = _EventRepository.GetAll()
                     .Include(x => x.EventOwener)
                     .Where(x => x.Id == EventId).FirstOrDefault();
-                    Console.WriteLine("event type : {0}", selectedEvent.EventType);
-                    // var selectedEvent = await _EventRepository.GetAsync(new Guid("08db6584-b469-424d-8191-78f91ac71981"));
                     (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, cancellationToken);
 
                 }
