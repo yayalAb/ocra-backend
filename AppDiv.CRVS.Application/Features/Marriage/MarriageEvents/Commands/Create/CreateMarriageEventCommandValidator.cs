@@ -112,7 +112,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .NotEmpty()
                     .NotNull()
                     .Must(BeFoundInLookupTable).WithMessage("witness sexLookup with the provided id is not found"));
-
+            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.Id))
+                    .Must(NotHaveDuplicateWitness)
+                    .WithMessage("duplicate witness personal info data: one person can only be registered as a witness once for a single marriage event");
             //only resident address is required
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
@@ -196,8 +198,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         }
 
-
-
+        private bool NotHaveDuplicateWitness(IEnumerable<Guid?> personalIfoIds)
+        {
+            var withoutNulls = personalIfoIds.Where(id => id != null && id !=Guid.Empty);
+           return withoutNulls.Count() == withoutNulls.Distinct().Count();
+        }
         private bool BeFoundInExamptionRequestTable(AddPaymentExamptionRequest paymentExamption)
         {
             return paymentExamption == null || _paymentExamptionRequestRepo.exists(paymentExamption!.ExamptionRequestId);

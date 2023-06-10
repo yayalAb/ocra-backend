@@ -75,6 +75,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             foreach (var error in validationResult.Errors)
                                 updateMarriageEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
                             updateMarriageEventCommandResponse.Message = updateMarriageEventCommandResponse.ValidationErrors[0];
+                            updateMarriageEventCommandResponse.Status = 400;
                         }
                         if (updateMarriageEventCommandResponse.Success)
                         {

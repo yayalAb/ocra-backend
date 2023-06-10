@@ -96,12 +96,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             marriageEvent.Witnesses.ToList().ForEach(witness =>
             {
-                witness.WitnessPersonalInfo = existingWitnesses.Where(w => w.Id == witness.WitnessPersonalInfo.Id).FirstOrDefault();
-                if (witness.WitnessPersonalInfo == null)
+                if (witness.WitnessPersonalInfo.Id != Guid.Empty && witness.WitnessPersonalInfo.Id != null)
                 {
-                    throw new NotFoundException("witnessinfo with id {} not found");
-                }
-                var keyValuePair3 = new Dictionary<string, object>{
+                    witness.WitnessPersonalInfo = existingWitnesses.Where(w => w.Id == witness.WitnessPersonalInfo.Id).FirstOrDefault();
+                    if (witness.WitnessPersonalInfo == null)
+                    {
+                        throw new NotFoundException($"witnessinfo with id {witness.WitnessPersonalInfo?.Id} not found");
+                    }
+                    var keyValuePair3 = new Dictionary<string, object>{
                         {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
                         {"NationalId",witness.WitnessPersonalInfo.NationalId},
                         {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId},
@@ -111,8 +113,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         {"PhoneNumber", witness.WitnessPersonalInfo.PhoneNumber}
 
                     };
-                witness.WitnessPersonalInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(witness.WitnessPersonalInfo, keyValuePair3);
+                    witness.WitnessPersonalInfo = HelperService.UpdateObjectFeilds<PersonalInfo>(witness.WitnessPersonalInfo, keyValuePair3);
+                }
             });
+
 
             dbContext.MarriageEvents.Update(marriageEvent);
         }
@@ -187,6 +191,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             entity.Witnesses?.ToList().ForEach(async witness =>
             {
+                
                 if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
                 {
                     var keyValuePair = new Dictionary<string, object>{
@@ -210,7 +215,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
         }
-   
+
         private async Task updatePersonalInfo(Dictionary<string, object> keyValuePair, Guid id, string feildName)
         {
             var existing = await dbContext.PersonalInfos.FindAsync(id);
