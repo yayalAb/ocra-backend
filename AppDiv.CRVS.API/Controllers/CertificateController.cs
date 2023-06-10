@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Verify;
+using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -23,9 +24,11 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Generate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> GetCertificate([FromQuery] Guid id, string? serialNo, bool IsPrint = false)
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
+        // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<object> GetCertificate([FromQuery] Guid id, string? serialNo, bool IsPrint = false, bool checkSerialNumber = true)
         {
-            return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint });
+            return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint, CheckSerialNumber = checkSerialNumber });
         }
 
         [HttpGet("Archive")]
@@ -45,6 +48,13 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<PaginatedList<CertificateDTO>> Get([FromQuery] GetAllCertificateQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+        [HttpGet("CheckSerialNumber")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<BaseResponse> Check([FromQuery] CheckSerialNoValidation query)
         {
             return await Mediator.Send(query);
         }

@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.MarriageArchive
         public string? MarriageTypeOr { get; set; }
         public string? MarriageTypeAm { get; set; }
 
-        public ICollection<WitnessArchive?>? BrideWitnesses { get; set; } = new List<WitnessArchive?>();
-        public ICollection<WitnessArchive?>? GroomWitnesses { get; set; } = new List<WitnessArchive?>();
+        // public ICollection<WitnessArchive?>? BrideWitnesses { get; set; } = new List<WitnessArchive?>();
+        // public ICollection<WitnessArchive?>? GroomWitnesses { get; set; } = new List<WitnessArchive?>();
     }
 }

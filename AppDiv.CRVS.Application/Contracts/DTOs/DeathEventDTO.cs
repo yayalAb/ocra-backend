@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? BirthCertificateId { get; set; }
         public Guid FacilityTypeLookupId { get; set; }
         public Guid FacilityLookupId { get; set; }
+        public Guid DeathPlaceId { get; set; }
         public Guid DuringDeathLookupId { get; set; }
         public string PlaceOfFuneral { get; set; }
         public DeathNotificationDTO? DeathNotification { get; set; }

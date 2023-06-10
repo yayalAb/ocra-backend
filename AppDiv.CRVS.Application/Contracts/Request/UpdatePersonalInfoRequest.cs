@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public JObject? FirstName { get; set; }
         public JObject? MiddleName { get; set; }
         public JObject? LastName { get; set; }
-        public DateTime BirthDate { get; set; }
+        // public DateTime? BirthDate { get; set; }
         public string BirthDateEt { get; set; }
         public string? NationalId { get; set; }
         public Guid SexLookupId { get; set; }

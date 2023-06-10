@@ -22,6 +22,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence.Base
         Task<IEnumerable<T>> GetAllWithAsync(Expression<Func<T, bool>> predicate = null, params string[] eagerLoadedProperties);
         Task<IEnumerable<T>> GetAllWithAsync(params string[] eagerLoadedProperties);
         Task<T> GetAsync(object id);
+        T GetSingle(object id);
         Task<T> GetAsync(object[] id);
         T GetAtIndex(int i);
         T GetAtIndexWith(int i, params string[] eagerLoadedProperties);

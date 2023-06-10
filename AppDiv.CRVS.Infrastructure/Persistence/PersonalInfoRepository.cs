@@ -23,6 +23,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await base.GetAsync(id);
         }
+        public IQueryable<PersonalInfo> GetAllQueryable(){
+            return dbContext.PersonalInfos;
+        }
 
         public override async Task InsertAsync(PersonalInfo person, CancellationToken cancellationToken)
         {

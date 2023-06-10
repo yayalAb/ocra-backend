@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Validators
             _repo = repo;
             RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId");
             // RuleFor(p => p.DeathNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.CauseOfDeath).NotEmpty().NotNull();
+            RuleFor(p => p.CauseOfDeathArray).NotEmpty().NotNull();
             RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId");
             RuleFor(p => p.DeathNotificationSerialNumber).NotEmpty().NotNull();
         }

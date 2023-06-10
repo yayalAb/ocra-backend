@@ -58,9 +58,11 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<BirthNotification> DeliveryTypeNavigation { get; set; }
         public virtual ICollection<BirthNotification> SkilledProfNavigation { get; set; }
         public virtual ICollection<Registrar> RelationshipNavigation { get; set; }
+        public virtual ICollection<Witness> WitnessForNavigation {get; set; }
 
         public virtual ICollection<DeathEvent> DeathFacilityTypeNavigation { get; set; }
         public virtual ICollection<DeathEvent> DeathFacilityNavigation { get; set; }
+        public virtual ICollection<DeathEvent> DeathPlaceOfDeathNavigation { get; set; }
         public virtual ICollection<DeathEvent> DuringDeathNavigation { get; set; }
         public virtual ICollection<DeathNotification> CauseOfDeathInfoTypeNavigation { get; set; }
         public virtual ICollection<MarriageEvent> MarriageTypeNavigation { get; set; }
