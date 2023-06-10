@@ -53,7 +53,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
             var supportingDocuments = GetSupportingDocuments(request.CorrectionRequest.Content, "eventSupportingDocuments");
             var examptionDocuments = GetSupportingDocuments(request.CorrectionRequest.Content, "paymentExamption");
-            _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
+            _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
             return CreateAddressCommadResponse;
         }
         private ICollection<SupportingDocument> GetSupportingDocuments(JObject content, string type)

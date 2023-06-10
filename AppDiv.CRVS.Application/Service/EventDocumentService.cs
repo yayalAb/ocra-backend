@@ -44,6 +44,26 @@ namespace AppDiv.CRVS.Application.Service
             return true;
         }
 
+        public bool SaveCorrectionRequestSupportingDocuments(ICollection<SupportingDocument> eventDocs, ICollection<SupportingDocument>? examptionDocs, string eventType)
+        {
+
+            var supportingDocFolder = Path.Combine("Resources", "CorrectionRequest", "SupportingDocuments", eventType);
+            var examptiondocFolder = Path.Combine("Resources", "CorrectionRequest", "ExamptionDocuments", eventType);
+            var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
+            var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
+
+
+            eventDocs?.ToList().ForEach(doc =>
+            {
+                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
+            });
+            examptionDocs?.ToList().ForEach(doc =>
+            {
+                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
+            });
+            return true;
+        }
+
         public async Task<(IEnumerable<SupportingDocument> supportingDocs, IEnumerable<SupportingDocument> examptionDocs)> createSupportingDocumentsAsync(IEnumerable<AddSupportingDocumentRequest> supportingDocs, IEnumerable<AddSupportingDocumentRequest> examptionDocs, Guid EventId, Guid? examptionId, CancellationToken cancellationToken)
         {
             IEnumerable<SupportingDocument> mappedDocs = new List<SupportingDocument>();

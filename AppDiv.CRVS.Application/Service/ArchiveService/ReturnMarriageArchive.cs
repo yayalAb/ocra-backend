@@ -56,21 +56,21 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(marriage.MarriageEvent.MarriageTypeId);
             marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(marriage.MarriageEvent.MarriageTypeId);
 
-            foreach (var w in marriage.MarriageEvent.Witnesses)
-            {
-                if (w.WitnessForLookup.ValueStr.ToLower().Contains( "bride"))
-                {
-                    var brideWitness = CustomMapper.Mapper.Map<WitnessArchive>
-                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
-                    marriageInfo?.BrideWitnesses?.Add(brideWitness);
-                }
-                if (w.WitnessForLookup.ValueStr.ToLower().Contains( "groom"))
-                {
-                    var groomWitness = CustomMapper.Mapper.Map<WitnessArchive>
-                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
-                    marriageInfo?.GroomWitnesses?.Add(groomWitness);
-                }
-            }
+            // foreach (var w in marriage.MarriageEvent.Witnesses)
+            // {
+            //     if (w.WitnessForLookup.ValueStr.ToLower().Contains( "bride"))
+            //     {
+            //         var brideWitness = CustomMapper.Mapper.Map<WitnessArchive>
+            //                                     (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
+            //         marriageInfo?.BrideWitnesses?.Add(brideWitness);
+            //     }
+            //     if (w.WitnessForLookup.ValueStr.ToLower().Contains( "groom"))
+            //     {
+            //         var groomWitness = CustomMapper.Mapper.Map<WitnessArchive>
+            //                                     (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
+            //         marriageInfo?.GroomWitnesses?.Add(groomWitness);
+            //     }
+            // }
             return marriageInfo;
         }
 
