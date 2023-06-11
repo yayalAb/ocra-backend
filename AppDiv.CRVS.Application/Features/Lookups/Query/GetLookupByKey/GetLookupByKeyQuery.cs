@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -32,15 +33,38 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
         }
         public async Task<PaginatedList<LookupByKeyDTO>> Handle(GetLookupByKeyQuery request, CancellationToken cancellationToken)
         {
-            return await PaginatedList<LookupByKeyDTO>
-                            .CreateAsync(
-                                 _lookupRepository.GetAll().Where(x => x.Key == request.Key)
+            var lookups = new List<LookupByKeyDTO>();
+            if (request.Key.ToLower() == "facility-type")
+            {
+                var result = from a in _lookupRepository.GetAll().Where(x => x.Key == "facility")
+                             from b in _lookupRepository.GetAll().Where(x => x.Key != "facility")
+                             where EF.Functions.Like(a.ValueStr, "%\"en\": \"" + b.Key + "\"%")
+                             || EF.Functions.Like(a.ValueStr, "%\"am\": \"" + b.Key + "\"%")
+                             || EF.Functions.Like(a.ValueStr, "%\"or\": \"" + b.Key + "\"%")
+                             select new { A = a, B = b };
+                lookups = result
+                   .Select(lo => new LookupByKeyDTO
+                   {
+                       id = lo.B.Id,
+                       Key = lo.A.ValueLang,
+                       Value = lo.B.ValueLang,
+                   }).ToList();
+
+
+            }
+            else
+            {
+                lookups = _lookupRepository.GetAll().Where(x => x.Key == request.Key)
                                 .Select(lo => new LookupByKeyDTO
                                 {
                                     id = lo.Id,
                                     Key = lo.Key,
                                     Value = lo.ValueLang
-                                }).ToList()
+                                }).ToList();
+            }
+            return await PaginatedList<LookupByKeyDTO>
+                            .CreateAsync(
+                                 lookups
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
