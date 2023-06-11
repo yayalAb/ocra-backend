@@ -12,6 +12,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 {
@@ -26,6 +28,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public string? CertificateSerialNumber { get; set; } = "";
         public Guid CivilRegOfficerId { get; set; }
         public JObject? Reason { get; set; }
+        public bool CheckSerialNumber { get; set; } = true;
     }
 
     public class ReprintCertificateCommandHandler : IRequestHandler<ReprintCertificateCommand, object>
@@ -33,14 +36,31 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         private readonly ICertificateRepository _certificateRepository;
         private readonly ICertificateHistoryRepository _CertificateHistoryRepository;
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
-        public ReprintCertificateCommandHandler(ICertificateTemplateRepository ICertificateTemplateRepository, ICertificateRepository certificateRepository, ICertificateHistoryRepository CertificateHistoryRepository)
+        private readonly IMediator _mediator;
+        private readonly IUserResolverService _userResolverService;
+        public ReprintCertificateCommandHandler(ICertificateTemplateRepository ICertificateTemplateRepository,
+                                                ICertificateRepository certificateRepository,
+                                                ICertificateHistoryRepository CertificateHistoryRepository,
+                                                IMediator mediator,
+                                                IUserResolverService userResolverService)
         {
             _certificateRepository = certificateRepository;
             _CertificateHistoryRepository = CertificateHistoryRepository;
             _ICertificateTemplateRepository = ICertificateTemplateRepository;
+            _userResolverService = userResolverService;
+            _mediator = mediator;
         }
         public async Task<object> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
+            var errorResponse = new BaseResponse();
+            if (request.CheckSerialNumber)
+            {
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() });
+            }
+            if (errorResponse.Status != 200)
+            {
+                return errorResponse;
+            }
             string certId = "";
             var certificate = _certificateRepository.GetAll()
             .Include(x => x.Event)
