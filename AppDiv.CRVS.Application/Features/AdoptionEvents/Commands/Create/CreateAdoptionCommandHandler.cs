@@ -93,6 +93,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                                                             || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                                                             || EF.Functions.Like(l.ValueStr, "%Female%"))
                                                                         .Select(l => l.Id).FirstOrDefault();
+                                request.Adoption.Event.EventDateEt = request.Adoption.CourtCase.ConfirmedDateEt;
 
                                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
                                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)

@@ -34,6 +34,7 @@ namespace AppDiv.CRVS.Application.Service
             _paymentRequestService = paymentRequestService;
             _EventRepository = EventRepository;
             _paymentRequestRepository = paymentRequestRepository;
+
         }
         public int GetLastWorkflow(string workflowType)
         {
@@ -98,7 +99,8 @@ namespace AppDiv.CRVS.Application.Service
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
                 if (this.WorkflowHasPayment(workflowType, nextStep, RequestId) && !paymentAdded)
                 {
-                    this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
+                    string res = await this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
+                    return (false, Guid.Empty);
                 }
                 else
                 {
@@ -142,41 +144,35 @@ namespace AppDiv.CRVS.Application.Service
 
         public bool WorkflowHasPayment(string workflow, int Step, Guid RequestId)
         {
-            var selectedWorkflow = _workflowRepository.GetAll()
-            .Where(wf => wf.workflowName == workflow).FirstOrDefault();
-            if ((selectedWorkflow.HasPayment && selectedWorkflow.PaymentStep == Step))
+            var requestHaspayment = _requestRepostory.GetAll()
+            .Include(x => x.Workflow)
+            .ThenInclude(x => x.Steps)
+            .Include(x => x.PaymentRequest)
+            .ThenInclude(x => x.Payment)
+            .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
+            ).FirstOrDefault();
+            if (requestHaspayment != null)
             {
-                // var payment = _paymentRequestRepository.GetAll()
-                //         .Include(x => x.Payment)
-                //         .Where(x => x.RequestId == RequestId && x.Payment.PaymentRequestId == RequestId);
-                // if (payment == null)
-                // {
                 return true;
-                // }
-                // return false;
             }
             return false;
-            // var requestHaspayment = _requestRepostory.GetAll()
-            // .Include(x => x.Workflow)
-            // .Include(x => x.PaymentRequest)
-            // .ThenInclude(x => x.Payment)
-            // .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
-            // && (re.PaymentRequest.Payment != null)
-            // ).FirstOrDefault();
+
         }
 
 
-        public async void CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
+        public async Task<string> CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
         {
-            var request = _requestRepostory
-            .GetAll()
+            var request = _requestRepostory.GetAll()
             .Include(x => x.AuthenticationRequest)
-            .Include(X => X.CorrectionRequest).Where(x => x.Id == RequestId).FirstOrDefault();
+            .Include(X => X.CorrectionRequest)
+            .Include(x => x.PaymentRequest).ThenInclude(p => p.Payment)
+            .Where(x => x.Id == RequestId).FirstOrDefault();
             if (request == null)
             {
-                throw new Exception("Request Does not Found");
+                return "Request Does not Found";
             }
-            if (request.RequestType == "authentication" || request.RequestType == "change")
+            // if(request.PaymentRequest.Id==null||request.PaymentRequest.Id==Guid.Empty)
+            if ((request.RequestType == "authentication" || request.RequestType == "change"))
             {
                 try
                 {
@@ -185,7 +181,10 @@ namespace AppDiv.CRVS.Application.Service
                     .Include(x => x.EventOwener)
                     .Where(x => x.Id == EventId).FirstOrDefault();
                     (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, cancellationToken);
-
+                    if (response.amount == 0)
+                    {
+                        return "payment Rate Not Found";
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -193,6 +192,7 @@ namespace AppDiv.CRVS.Application.Service
                 }
 
             }
+            return "Request Type Does not Found";
 
         }
     }

@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public DateTime EventDate { get; set; }
         public DateTime EventRegDate { get; set; }
 
-        public string EventDateEt { get; set; }
+        public string? EventDateEt { get; set; }
         public string EventRegDateEt { get; set; }
 
         public Guid EventAddressId { get; set; }
@@ -39,7 +39,9 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public virtual MarriageEvent MarriageEvent { get; set; }
         public virtual ICollection<SupportingDocument> EventSupportingDocuments { get; set; }
-        public virtual ICollection<CorrectionRequest> CorrectionRequests {get; set; 
+        public virtual ICollection<CorrectionRequest> CorrectionRequests
+        {
+            get; set;
         }
         [NotMapped]
         public string? _EventDateEt
@@ -57,7 +59,8 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get { return _EventRegDateEt; }
             set
-            {   EventRegDateEt = value;
+            {
+                EventRegDateEt = value;
                 EventRegDate = new CustomDateConverter(EventRegDateEt).gorgorianDate;
             }
         }

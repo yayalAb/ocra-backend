@@ -32,11 +32,6 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Upda
         {
             this.ExamptedDate = DateTime.Now;
         }
-
-
-
-
-
     }
 
     public class UpdatePaymentExamptionRequestCommandHandler : IRequestHandler<UpdatePaymentExamptionRequestCommand, PaymentExamptionRequestDTO>

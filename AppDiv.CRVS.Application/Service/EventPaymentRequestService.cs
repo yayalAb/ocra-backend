@@ -44,7 +44,15 @@ namespace AppDiv.CRVS.Application.Service
                 .FirstOrDefault();
             if (paymentRate == null)
             {
-                throw new NotFoundException("payment rate not found");
+                if (RequestId == null || RequestId == Guid.Empty)
+                {
+
+                    throw new Exception("payment rate not found");
+                }
+                else
+                {
+                    return (0, "payment rate not found");
+                }
             }
             string paymentCode = "";
             do
