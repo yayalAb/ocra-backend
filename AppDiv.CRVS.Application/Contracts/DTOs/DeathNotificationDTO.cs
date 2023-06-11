@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class DeathNotificationDTO
     {
+        public Guid Id { get; set; }
         public JArray CauseOfDeathArray { get; set; }
         public Guid CauseOfDeathInfoTypeLookupId { get; set; }
         public string DeathNotificationSerialNumber { get; set; }
