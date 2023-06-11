@@ -81,7 +81,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                                                         || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                                         || EF.Functions.Like(l.ValueStr, "%Female%"))
                                                     .Select(l => l.Id).FirstOrDefault();
-
+            request.Event.EventDateEt = request.CourtCase.ConfirmedDateEt;
             var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
             // if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
             // {

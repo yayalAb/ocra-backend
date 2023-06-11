@@ -29,10 +29,12 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
     {
         private readonly IAuthenticationRepository _AuthenticationRepository;
         private readonly IWorkflowService _WorkflowService;
-        public AuthenticationRequestCommadHandler(IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
+        private readonly IWorkflowRepository _WorkflowRepository;
+        public AuthenticationRequestCommadHandler(IWorkflowRepository WorkflowRepository, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
         {
             _AuthenticationRepository = AuthenticationRepository;
             _WorkflowService = WorkflowService;
+            _WorkflowRepository = WorkflowRepository;
         }
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
@@ -49,7 +51,12 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             // await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
             //                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
             //                   _UserResolverService.GetUserId().ToString());
-
+            Guid WorkflowId = _WorkflowRepository.GetAll()
+            .Where(wf => wf.workflowName == "authentication").Select(x => x.Id).FirstOrDefault();
+            if (WorkflowId == null || WorkflowId == Guid.Empty)
+            {
+                throw new Exception("authentication Work Flow Does not exist Pleace Create Workflow First");
+            }
             var AuthenticationRequest = new AuthenticationRequest
             {
                 CertificateId = request.CertificateId,
@@ -57,7 +64,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 {
                     RequestType = "authentication",
                     CivilRegOfficerId = request.CivilRegOfficer,
-                    currentStep = 0
+                    currentStep = 0,
+                    WorkflowId = WorkflowId
                 }
             };
             await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);
