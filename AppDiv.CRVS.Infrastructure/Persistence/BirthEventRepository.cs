@@ -90,7 +90,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     entity.Event.EventOwener = null;
                 }
                 if (entity.Event.InformantType == "Police Officer" || entity.Event.InformantType == "Legal Guardian" ||
-                    !string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()) && entity.Event.EventRegistrar?.RegistrarInfo?.Id != Guid.Empty)
+                  !string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()) && entity.Event.EventRegistrar?.RegistrarInfo?.Id != Guid.Empty)
                 {
                     PersonalInfo selectedperson = this.UpdatePerson(entity.Event.EventRegistrar?.RegistrarInfo);
 
@@ -131,58 +131,59 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
-                if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
-                {
-                    PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
-                    selectedperson.NationalId = entity.Event?.EventOwener?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Event?.EventOwener?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Event?.EventOwener?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Event?.EventOwener?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Event?.EventOwener?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Event?.EventOwener?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Event?.EventOwener?.NationLookupId;
+                // if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
+                // {
+                //     PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
+                //     selectedperson.NationalId = entity.Event?.EventOwener?.NationalId;
+                //     selectedperson.NationalityLookupId = entity.Event?.EventOwener?.NationalityLookupId;
+                //     selectedperson.ReligionLookupId = entity.Event?.EventOwener?.ReligionLookupId;
+                //     selectedperson.EducationalStatusLookupId = entity.Event?.EventOwener?.EducationalStatusLookupId;
+                //     selectedperson.TypeOfWorkLookupId = entity.Event?.EventOwener?.TypeOfWorkLookupId;
+                //     selectedperson.MarriageStatusLookupId = entity.Event?.EventOwener?.MarriageStatusLookupId;
+                //     selectedperson.NationLookupId = entity.Event?.EventOwener?.NationLookupId;
 
-                    entity.Event.EventOwener = selectedperson;
-                }
-                if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()) && entity.Event.EventRegistrar?.RegistrarInfo?.Id != Guid.Empty)
-                {
-                    PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventRegistrar.RegistrarInfo.Id);
-                    selectedperson.NationalId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationLookupId;
+                //     entity.Event.EventOwener = selectedperson;
+                // }
+                // if (!string.IsNullOrEmpty(entity.Event.EventRegistrar?.RegistrarInfo.Id.ToString()) && entity.Event.EventRegistrar?.RegistrarInfo?.Id != Guid.Empty)
+                // {
+                //     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventRegistrar.RegistrarInfo.Id);
+                //     selectedperson.NationalId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalId;
+                //     selectedperson.NationalityLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationalityLookupId;
+                //     selectedperson.ReligionLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.ReligionLookupId;
+                //     selectedperson.EducationalStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.EducationalStatusLookupId;
+                //     selectedperson.TypeOfWorkLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.TypeOfWorkLookupId;
+                //     selectedperson.MarriageStatusLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.MarriageStatusLookupId;
+                //     selectedperson.NationLookupId = entity.Event?.EventRegistrar.RegistrarInfo?.NationLookupId;
 
-                    entity.Event.EventRegistrar.RegistrarInfo = selectedperson;
-                }
-                if (!string.IsNullOrEmpty(entity.Father?.Id.ToString()) && entity.Father?.Id != Guid.Empty)
-                {
-                    PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Father.Id);
-                    selectedperson.NationalId = entity.Father?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Father?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Father?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Father?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Father?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Father?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Father?.NationLookupId;
+                //     entity.Event.EventRegistrar.RegistrarInfo = selectedperson;
+                // }
+                // if (!string.IsNullOrEmpty(entity.Father?.Id.ToString()) && entity.Father?.Id != Guid.Empty)
+                // {
+                //     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Father.Id);
+                //     selectedperson.NationalId = entity.Father?.NationalId;
+                //     selectedperson.NationalityLookupId = entity.Father?.NationalityLookupId;
+                //     selectedperson.ReligionLookupId = entity.Father?.ReligionLookupId;
+                //     selectedperson.EducationalStatusLookupId = entity.Father?.EducationalStatusLookupId;
+                //     selectedperson.TypeOfWorkLookupId = entity.Father?.TypeOfWorkLookupId;
+                //     selectedperson.MarriageStatusLookupId = entity.Father?.MarriageStatusLookupId;
+                //     selectedperson.NationLookupId = entity.Father?.NationLookupId;
 
-                    entity.Father = selectedperson;
-                }
-                if (!string.IsNullOrEmpty(entity.Mother?.Id.ToString()) && entity.Mother?.Id != Guid.Empty)
-                {
-                    PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Mother.Id);
-                    selectedperson.NationalId = entity.Mother?.NationalId;
-                    selectedperson.NationalityLookupId = entity.Mother?.NationalityLookupId;
-                    selectedperson.ReligionLookupId = entity.Mother?.ReligionLookupId;
-                    selectedperson.EducationalStatusLookupId = entity.Mother?.EducationalStatusLookupId;
-                    selectedperson.TypeOfWorkLookupId = entity.Mother?.TypeOfWorkLookupId;
-                    selectedperson.MarriageStatusLookupId = entity.Mother?.MarriageStatusLookupId;
-                    selectedperson.NationLookupId = entity.Mother?.NationLookupId;
+                //     entity.Father = selectedperson;
+                // }
+                // if (!string.IsNullOrEmpty(entity.Mother?.Id.ToString()) && entity.Mother?.Id != Guid.Empty)
+                // {
+                //     PersonalInfo selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Mother.Id);
+                //     selectedperson.NationalId = entity.Mother?.NationalId;
+                //     selectedperson.NationalityLookupId = entity.Mother?.NationalityLookupId;
+                //     selectedperson.ReligionLookupId = entity.Mother?.ReligionLookupId;
+                //     selectedperson.EducationalStatusLookupId = entity.Mother?.EducationalStatusLookupId;
+                //     selectedperson.TypeOfWorkLookupId = entity.Mother?.TypeOfWorkLookupId;
+                //     selectedperson.MarriageStatusLookupId = entity.Mother?.MarriageStatusLookupId;
+                //     selectedperson.NationLookupId = entity.Mother?.NationLookupId;
 
-                    entity.Mother = selectedperson;
-                }
+                //     entity.Mother = selectedperson;
+                // }
+                // _dbContext.BirthEvents.Update(entity);
 
 
                 base.Update(entity);

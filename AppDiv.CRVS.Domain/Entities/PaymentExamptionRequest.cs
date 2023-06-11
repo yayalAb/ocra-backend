@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? ExamptedDateEt { get; set; }
         public string? ExamptedById { get; set; }
         public int? NumberOfClient { get; set; }
-        public bool? status { get; set; }
+        public bool status { get; set; }=false;
         public Guid? AddressId { get; set; }
         public string? CertificateType { get; set; }
         public Guid? RequestId { get; set; }

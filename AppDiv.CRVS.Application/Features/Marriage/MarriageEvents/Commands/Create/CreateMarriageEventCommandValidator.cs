@@ -173,10 +173,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             });
             When(e => !isReligionMarriage(e.MarriageTypeId), () =>
           {
-              RuleFor(e => e.BrideInfo.MarriageStatusLookupId)
+              RuleFor(e => e.BrideInfo.Id)
               .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
-              RuleFor(e => e.Event.EventOwener.MarriageStatusLookupId)
-             .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+              RuleFor(e => e.Event.EventOwener.Id)
+              .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+              //   RuleFor(e => e.BrideInfo.MarriageStatusLookupId)
+              //   .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+              //   RuleFor(e => e.Event.EventOwener.MarriageStatusLookupId)
+              //  .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
           });
             When(e => !e.Event.IsExampted, () =>
             {
@@ -198,10 +202,19 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         }
 
+        private bool BeUnmarried(Guid? personalInfoId)
+        {
+            var isMarried = _marriageEventRepo.GetAll()
+                            .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId)&&!m.IsDivorced)
+                            .Any();
+            return personalInfoId == null || isMarried;
+
+        }
+
         private bool NotHaveDuplicateWitness(IEnumerable<Guid?> personalIfoIds)
         {
-            var withoutNulls = personalIfoIds.Where(id => id != null && id !=Guid.Empty);
-           return withoutNulls.Count() == withoutNulls.Distinct().Count();
+            var withoutNulls = personalIfoIds.Where(id => id != null && id != Guid.Empty);
+            return withoutNulls.Count() == withoutNulls.Distinct().Count();
         }
         private bool BeFoundInExamptionRequestTable(AddPaymentExamptionRequest paymentExamption)
         {
@@ -330,16 +343,16 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     );
 
         }
-        public bool BeUnmarried(Guid marriageStatusId)
-        {
-            var marriageStatus = _lookupRepo.GetLookupById(marriageStatusId);
-            if (marriageStatus == null)
-            {
-                return false;
-            }
-            return !(marriageStatus.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageStatusDict[MarriageStatus.married].ToString()!.ToLower()));
-        }
+        // public bool BeUnmarried(Guid marriageStatusId)
+        // {
+        //     var marriageStatus = _lookupRepo.GetLookupById(marriageStatusId);
+        //     if (marriageStatus == null)
+        //     {
+        //         return false;
+        //     }
+        //     return !(marriageStatus.ValueStr.ToLower()
+        //             .Contains(EnumDictionary.marriageStatusDict[MarriageStatus.married].ToString()!.ToLower()));
+        // }
 
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {

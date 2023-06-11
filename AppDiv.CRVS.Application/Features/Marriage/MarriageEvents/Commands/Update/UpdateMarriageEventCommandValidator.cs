@@ -170,9 +170,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             });
             When(e => !isReligionMarriage(e.MarriageTypeId), () =>
             {
-                RuleFor(e => e.BrideInfo.MarriageStatusLookupId)
+                RuleFor(e => e.BrideInfo.Id)
                 .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
-                RuleFor(e => e.Event.EventOwener.MarriageStatusLookupId)
+                RuleFor(e => e.Event.EventOwener.Id)
                .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
             });
             When(e => e.Event.IsExampted, () =>
@@ -187,6 +187,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     .NotEmpty().WithMessage("paymentExamptionRequestId cannot be empty")
                     .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
             });
+
+        }
+
+         private bool BeUnmarried(Guid? personalInfoId)
+        {
+            var isMarried = _marriageEventRepo.GetAll()
+                            .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId)&&!m.IsDivorced)
+                            .Any();
+            return personalInfoId == null || isMarried;
 
         }
 
@@ -267,16 +276,16 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     );
 
         }
-        public bool BeUnmarried(Guid marriageStatusId)
-        {
-            var marriageStatus = _lookupRepo.GetLookupById(marriageStatusId);
-            if (marriageStatus == null)
-            {
-                return false;
-            }
-            return !(marriageStatus.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageStatusDict[MarriageStatus.married].ToString()!.ToLower()));
-        }
+        // public bool BeUnmarried(Guid marriageStatusId)
+        // {
+        //     var marriageStatus = _lookupRepo.GetLookupById(marriageStatusId);
+        //     if (marriageStatus == null)
+        //     {
+        //         return false;
+        //     }
+        //     return !(marriageStatus.ValueStr.ToLower()
+        //             .Contains(EnumDictionary.marriageStatusDict[MarriageStatus.married].ToString()!.ToLower()));
+        // }
 
         private async Task<bool> haveDevorceCertificateAttachementAsync(ICollection<AddSupportingDocumentRequest>? supportingDocs, Guid? perosnalInfoId, string type)
         {

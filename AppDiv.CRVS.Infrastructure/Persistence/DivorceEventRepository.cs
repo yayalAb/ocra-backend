@@ -21,9 +21,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return dbContext.DivorceEvents.AsQueryable();
         }
+        // 08db641e-a7a6-44cc-868e-4b3a02249d49--bride
+        // 08db641e-a801-4cb6-8778-eaf20f9cdf41 groom
         public void EFUpdate(DivorceEvent DivorceEvent)
         {
-            var existingOwner =  dbContext.PersonalInfos.Find(DivorceEvent.Event.EventOwener.Id);
+            var existingOwner = dbContext.PersonalInfos.Find(DivorceEvent.Event.EventOwener.Id);
             if (existingOwner == null)
             {
                 throw new NotFoundException($"divorce event with the provided id is not found");
@@ -52,7 +54,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"PhoneNumber", DivorceEvent.Event.EventOwener.PhoneNumber}
             };
             DivorceEvent.Event.EventOwener = HelperService.UpdateObjectFeilds<PersonalInfo>(existingOwner, eventOwnerFeilds);
-             var existingWife =  dbContext.PersonalInfos.Find(DivorceEvent.DivorcedWife.Id);
+            var existingWife = dbContext.PersonalInfos.Find(DivorceEvent.DivorcedWife.Id);
             if (existingWife == null)
             {
                 throw new NotFoundException($"divorce event owner info with the provided id is not found");
@@ -62,7 +64,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                             || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                             || EF.Functions.Like(l.ValueStr, "%Female%"))
                                         .Select(l => l.Id).FirstOrDefault();
-             var divorcedWifeFeilds = new Dictionary<string, object>{
+            var divorcedWifeFeilds = new Dictionary<string, object>{
                     {"NationalId",DivorceEvent.DivorcedWife.NationalId},
                     {"SexLookupId",female},
                     {"ReligionLookupId",DivorceEvent.DivorcedWife.ReligionLookupId},
@@ -98,6 +100,17 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                                         || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                                         || EF.Functions.Like(l.ValueStr, "%Female%"))
                                                     .Select(l => l.Id).FirstOrDefault();
+            if (entity.DivorcedWife.Id != null && entity.DivorcedWife.Id != Guid.Empty && entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
+            {
+                var divorcedMarraige = await dbContext.MarriageEvents
+                     .Where(m => m.BrideInfoId == entity.DivorcedWife.Id && m.Event.EventOwenerId == entity.Event.EventOwenerId)
+                     .FirstOrDefaultAsync();
+                if (divorcedMarraige != null)
+                {
+                    divorcedMarraige.IsDivorced = true;
+                }
+            }
+
             if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
                 var keyValuePair = new Dictionary<string, object>{
@@ -129,10 +142,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 entity.DivorcedWifeId = entity.DivorcedWife.Id;
                 entity.DivorcedWife = null;
             }
-           
-                await base.InsertAsync(entity, cancellationToken);
 
-            
+            await base.InsertAsync(entity, cancellationToken);
+
+
 
 
 
