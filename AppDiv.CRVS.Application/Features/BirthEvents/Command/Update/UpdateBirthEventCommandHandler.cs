@@ -53,19 +53,19 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             try
                             {
                                 //supporting docs cant be updated only new (one without id) are created
-                                var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
-                                var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                                var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
+                                var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
                                 request.Event.EventSupportingDocuments = null;
                                 if (request.Event.PaymentExamption != null)
                                 {
                                     request.Event.PaymentExamption.SupportingDocuments = null;
                                 }
                                 //////
-
                                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
                                 birthEvent.Event.EventType = "Birth";
 
                                 _birthEventRepository.UpdateAll(birthEvent);
+
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
                                 // var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
@@ -82,6 +82,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
 
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Birth");
+                                await transaction.CommitAsync();
                             }
                             catch (System.Exception)
                             {

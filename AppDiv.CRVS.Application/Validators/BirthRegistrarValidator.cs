@@ -16,14 +16,17 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.RegistrarInfo.Id.ToString()).ForeignKeyWithPerson(_repo, "EventRegistrar.RegistrarInfo.Id")
                             .When(p => (!string.IsNullOrEmpty(p.RegistrarInfo.Id.ToString()) && p.RegistrarInfo.Id != Guid.Empty));
             RuleFor(p => p.RelationshipLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "Registrar.RelationshipLookupId");
-            RuleFor(p => p.RegistrarInfo.FirstName.or).NotEmpty().NotNull().Matches("^[a-zA-Z']+${1,50}")
-                .WithMessage("First Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
+            RuleFor(p => p.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
+            // .Matches("^[a-zA-Z']+${1,50}")
+            //     .WithMessage("First Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
             RuleFor(p => p.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
-            RuleFor(p => p.RegistrarInfo.MiddleName.or).NotEmpty().NotNull().Matches("^[a-zA-Z']+${1,50}")
-                .WithMessage("Middle Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
+            RuleFor(p => p.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
+            // .Matches("^[a-zA-Z']+${1,50}")
+            //     .WithMessage("Middle Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
             RuleFor(p => p.RegistrarInfo.MiddleName.am).NotEmpty().NotNull();
-            RuleFor(p => p.RegistrarInfo.LastName.or).NotEmpty().NotNull().Matches("^[a-zA-Z']+${1,50}")
-                .WithMessage("Last Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
+            RuleFor(p => p.RegistrarInfo.LastName.or).NotEmpty().NotNull();
+            // .Matches("^[a-zA-Z']+${1,50}")
+            //     .WithMessage("Last Name should only contain alphabets and apostrophes, and be between 1 and 50 characters long.");
             RuleFor(p => p.RegistrarInfo.LastName.am).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "Registrar.SexLookupId");
             RuleFor(p => p.RegistrarInfo.NationalId.ToString()).NotNull().NotEmpty();
