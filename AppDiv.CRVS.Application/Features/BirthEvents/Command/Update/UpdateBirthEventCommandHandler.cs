@@ -65,8 +65,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 birthEvent.Event.EventType = "Birth";
 
                                 _birthEventRepository.UpdateAll(birthEvent);
+                                if (!request.IsFromCommand)
+                                {
+                                    var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
 
-                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                }
 
                                 // var supportingDocuments = birthEvent.Event.EventSupportingDocuments;
                                 var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;

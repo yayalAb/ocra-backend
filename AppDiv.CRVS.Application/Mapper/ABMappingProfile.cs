@@ -132,8 +132,10 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<DeathEvent, DeathEventDTO>().ReverseMap();
             CreateMap<DeathEvent, AddDeathEventRequest>().ReverseMap();
             CreateMap<DeathEvent, CreateDeathEventCommand>().ReverseMap();
-            CreateMap<DeathEvent, UpdateDeathEventCommand>().ReverseMap();
-            CreateMap<BirthEvent, UpdateBirthEventCommand>().ReverseMap();
+            CreateMap<DeathEvent, UpdateDeathEventCommand>()
+            .ForMember(x => x.IsFromCommand, opt => opt.Ignore()).ReverseMap();
+            CreateMap<BirthEvent, UpdateBirthEventCommand>()
+            .ForMember(x => x.IsFromCommand, opt => opt.Ignore()).ReverseMap();
             CreateMap<UpdateBirthEventCommand, AddBirthEventRequest>().ReverseMap();
             CreateMap<UpdateDeathEventCommand, AddDeathEventRequest>().ReverseMap();
 

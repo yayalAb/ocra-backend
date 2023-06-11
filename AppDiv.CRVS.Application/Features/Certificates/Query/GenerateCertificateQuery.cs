@@ -90,9 +90,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
             var errorResponse = new BaseResponse();
+            var response = new CertificateResponseDTO();
             if (request.CheckSerialNumber)
             {
                 errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() });
+            }
+            if (errorResponse.Status != 200)
+            {
+                return errorResponse;
             }
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
@@ -106,8 +111,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
             }
-            var response = new CertificateResponseDTO();
-
             if (selectedEvent.EventType == "Marriage" || content.marriage != null)
             {
                 (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage();
@@ -119,7 +122,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             }
             response.Content = certificate.Content;
             response.TemplateId = certificateTemplateId?.Id;
-            return errorResponse.Status != 200 ? errorResponse : response;
+            return response;
         }
 
     }

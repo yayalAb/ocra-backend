@@ -48,8 +48,6 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
             await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
             var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
-
-
             var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
             var supportingDocuments = GetSupportingDocuments(request.CorrectionRequest.Content, "eventSupportingDocuments");
             var examptionDocuments = GetSupportingDocuments(request.CorrectionRequest.Content, "paymentExamption");
@@ -76,23 +74,5 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             }
             return supportingDocuments;
         }
-
-        // private PersonIdObj PersonIds(string eventType)
-        // {
-        //     eventType switch  
-        //     {  
-        //         "Birth" => new PersonIdObj 
-        //         {
-        //             MotherId = birthEvent.Mother.Id,
-        //             FatherId = birthEvent.Father.Id,
-        //             ChildId = birthEvent.Event.EventOwener.Id,
-        //             RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
-        //         },
-        //         "Death" => 
-        //         "Adoption" => 
-        //         "Divorce" => 
-        //         "Marriage" => 
-        //     }
-        // }
     }
 }

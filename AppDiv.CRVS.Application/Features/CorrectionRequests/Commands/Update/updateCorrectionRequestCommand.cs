@@ -1,17 +1,10 @@
-using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
-using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
 {
@@ -31,7 +24,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
         }
         public async Task<AddCorrectionRequest> Handle(updateCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
-            var correctionRequestData = await _CorrectionRequestRepostory.GetAsync(request.Id);
+            var correctionRequestData = _CorrectionRequestRepostory.GetAll()
+            .Include(x => x.Request).Where(x => x.Id == request.Id).FirstOrDefault();
             if (correctionRequestData.Request.currentStep != 0)
             {
                 throw new Exception("you can not edit this request it is Approved");
@@ -47,11 +41,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             {
                 throw new ApplicationException(exp.Message);
             }
-            var modifiedLookup = _CorrectionRequestRepostory.GetAll()
+            var modifiedCorrectionRequest = _CorrectionRequestRepostory.GetAll()
             .Where(x => x.Id == request.Id)
             .Include(x => x.Request).FirstOrDefault();
-            var LookupResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedLookup);
-            return LookupResponse;
+            var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedCorrectionRequest);
+            return CorrectionRequestResponse;
         }
     }
 }
