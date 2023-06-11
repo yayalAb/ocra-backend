@@ -22,6 +22,8 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Upda
         public string? ExamptedClientId { get; set; }
         public string? ExamptedClientFullName { get; set; }
         public DateTime ExamptedDate { get; set; } = DateTime.Now;
+        public string? ExamptedById { get; set; }
+        public string ExamptedDateEt { get; set; }
         public int? NumberOfClient { get; set; }
         public Guid? AddressId { get; set; }
         public string CertificateType { get; set; }
@@ -47,7 +49,6 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Upda
         public async Task<PaymentExamptionRequestDTO> Handle(UpdatePaymentExamptionRequestCommand request, CancellationToken cancellationToken)
         {
             var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request);
-            PaymentExamptionRequest.ExamptedById = "4d940006-b21f-4841-b8dd-02957c4d7487";
             PaymentExamptionRequest.Request.RequestType = "payment exemption";
             try
             {

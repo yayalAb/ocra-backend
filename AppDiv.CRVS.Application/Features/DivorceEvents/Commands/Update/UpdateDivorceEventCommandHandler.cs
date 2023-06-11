@@ -79,7 +79,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             divorceEvent.Event.EventType = "Divorce";
                             //   await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent,true,cancellationToken);
                             _DivorceEventRepository.EFUpdate(divorceEvent);
-                            await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
+                            if (!request.IsFromCommand)
+                            {
+                                await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
+
+                            }
 
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var personIds = new PersonIdObj

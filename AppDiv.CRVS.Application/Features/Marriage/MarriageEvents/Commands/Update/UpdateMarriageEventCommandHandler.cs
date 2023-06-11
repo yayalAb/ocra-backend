@@ -94,8 +94,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             #region create new supporting docs
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption.Id, cancellationToken);
                             #endregion create new supporting docs
-                            await _marriageEventRepository.SaveChangesAsync(cancellationToken);
-                            var personIds = new PersonIdObj{
+                            if (!request.IsFromCommand)
+                            {
+                                await _marriageEventRepository.SaveChangesAsync(cancellationToken);
+
+                            }
+                            var personIds = new PersonIdObj
+                            {
                                 WifeId = marriageEvent.BrideInfo.Id,
                                 HusbandId = marriageEvent.Event.EventOwener.Id,
                                 WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()

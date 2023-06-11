@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
         public virtual AddCourtCaseRequest CourtCase { get; set; }
         public int NumberOfChildren { get; set; }
         public AddEventForDivorceRequest Event { get; set; }
+        public bool IsFromCommand { get; set; } = false;
 
     }
 }

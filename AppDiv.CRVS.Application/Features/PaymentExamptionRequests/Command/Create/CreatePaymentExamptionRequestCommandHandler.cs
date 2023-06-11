@@ -41,7 +41,6 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
 
                 var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request);
 
-                PaymentExamptionRequest.ExamptedById = "4d940006-b21f-4841-b8dd-02957c4d7487";
                 PaymentExamptionRequest.Request.RequestType = "payment exemption";
                 await _paymentExamptionRequestRepository.InsertAsync(PaymentExamptionRequest, cancellationToken);
                 var result = await _paymentExamptionRequestRepository.SaveChangesAsync(cancellationToken);

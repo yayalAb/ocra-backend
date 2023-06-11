@@ -54,7 +54,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                 deathEvent.Event.EventType = "Death";
                 _deathEventRepository.Update(deathEvent);
-                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                if (!request.IsFromCommand)
+                {
+                    var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+
+                }
 
                 var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
                 var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
