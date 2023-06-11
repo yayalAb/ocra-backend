@@ -24,7 +24,9 @@ namespace AppDiv.CRVS.Application.Features.Search
         }
         public async Task<object> Handle(GetPaymentExamptionRequestQuery request, CancellationToken cancellationToken)
         {
-            var SelectedInfo = await _paymentExamptionRequestRepository.GetAllQueryable().Where(model =>
+            var SelectedInfo = await _paymentExamptionRequestRepository.GetAllQueryable()
+                                        .Where(model => model.status)
+                                        .Where(model =>
                                             EF.Functions.Like(model.Id.ToString(), $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.ReasonStr, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.ExamptedClientId, $"%{request.SearchString}%")
@@ -32,8 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Search
                                             // || EF.Functions.Like(model.ExamptedBy, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.CertificateType, $"%{request.SearchString}%")
                                             || EF.Functions.Like(model.ReasonStr, $"%{request.SearchString}%")
-                                            || EF.Functions.Like(model.Address.AddressNameStr, $"%{request.SearchString}%")
-
+                                            || EF.Functions.Like(model.Address.AddressNameStr, $"%{request.SearchString}%") 
                                             ).Select(pe => new
                                             {
                                                 Id = pe.Id,
