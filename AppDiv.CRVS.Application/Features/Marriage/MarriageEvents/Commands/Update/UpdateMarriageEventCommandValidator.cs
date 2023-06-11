@@ -103,7 +103,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             .NotNull()
             .Must(w => w.Count >= 4).WithMessage("there should be atleast 4 witnesses to register a divorce");
 
-            RuleFor(e => e.Witnesses.Select(w => w.WitnessForLookupId)).NotEmpty().NotNull().Must(BeFoundInLookupTable);
+            RuleFor(e => e.Witnesses.Select(w => w.WitnessForLookupId)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.MiddleName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
@@ -112,6 +112,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     .NotEmpty()
                     .NotNull()
                     .Must(BeFoundInLookupTable).WithMessage("witness sexLookup with the provided id is not found"));
+            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.Id))
+                    .Must(NotHaveDuplicateWitness)
+                    .WithMessage("duplicate witness personal info data: one person can only be registered as a witness once for a single marriage event");
 
             //only resident address is required
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
@@ -187,6 +190,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         }
 
+        private bool NotHaveDuplicateWitness(IEnumerable<Guid?> personalIfoIds)
+        {
+            var withoutNulls = personalIfoIds.Where(id => id != null && id != Guid.Empty);
+            return withoutNulls.Count() == withoutNulls.Distinct().Count();
+        }
         private bool BeFoundInExamptionRequestTable(Guid guid)
         {
             return _paymentExamptionRequestRepo.exists(guid);

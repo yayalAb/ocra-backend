@@ -51,22 +51,26 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
             var supportingDocuments = GetSupportingDocuments(request.CorrectionRequest.Content, "eventSupportingDocuments");
             var examptionDocuments = GetSupportingDocuments(request.CorrectionRequest.Content, "paymentExamption");
-            _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, "Birth");
+            _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
+            // request.CorrectionRequest.Content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments")
             return CreateAddressCommadResponse;
         }
         private ICollection<SupportingDocument> GetSupportingDocuments(JObject content, string type)
         {
-            content = content?.Value<JObject>("event");
+            // content = content?.Value<JObject>("event");
             var contentList = type switch
             {
-                "eventSupportingDocuments" => content?.Value<JArray>("eventSupportingDocuments"),
-                "paymentExamption" => content?.Value<JArray>("paymentExamption")?.Value<JArray>("supportingDocuments")
+                "eventSupportingDocuments" => content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments"),
+                "paymentExamption" => content?.Value<JObject>("event")?.Value<JArray>("paymentExamption")?.Value<JArray>("supportingDocuments")
             };
             var supportingDocuments = new List<SupportingDocument>();
-            foreach (JToken sup in contentList)
+            if (contentList != null)
             {
-                SupportingDocument file = sup.ToObject<SupportingDocument>();
-                supportingDocuments.Add(file);
+                foreach (JToken sup in contentList)
+                {
+                    SupportingDocument file = sup?.ToObject<SupportingDocument>();
+                    supportingDocuments.Add(file);
+                }
             }
             return supportingDocuments;
         }

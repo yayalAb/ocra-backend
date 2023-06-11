@@ -47,8 +47,8 @@ namespace AppDiv.CRVS.Application.Service
         public bool SaveCorrectionRequestSupportingDocuments(ICollection<SupportingDocument> eventDocs, ICollection<SupportingDocument>? examptionDocs, string eventType)
         {
 
-            var supportingDocFolder = Path.Combine("Resources", "CorrectionRequest", "SupportingDocuments", eventType);
-            var examptiondocFolder = Path.Combine("Resources", "CorrectionRequest", "ExamptionDocuments", eventType);
+            var supportingDocFolder = Path.Combine("Resources", "CorrectionRequestSupportingDocuments", eventType);
+            var examptiondocFolder = Path.Combine("Resources", "CorrectionRequestExamptionDocuments", eventType);
             var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
             var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
 
