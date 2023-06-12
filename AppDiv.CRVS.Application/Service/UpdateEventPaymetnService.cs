@@ -45,6 +45,9 @@ namespace AppDiv.CRVS.Application.Service
             var requst = _PaymentRequestRepository
               .GetAll()
               .Include(x => x.Request)
+              .Include(x => x.PaymentRate)
+              .ThenInclude(x => x.PaymentTypeLookup)
+              .Include(x => x.PaymentRate.EventLookup)
               .Where(x => x.Id == paymentRequestId).FirstOrDefault();
             try
             {
@@ -55,7 +58,7 @@ namespace AppDiv.CRVS.Application.Service
             {
                 throw new Exception(ex.Message);
             }
-            if (requst?.Request?.RequestType == "change" || requst?.Request?.RequestType == "authentication")
+            if (requst?.PaymentRate.PaymentTypeLookup.Value.Value<string>("en").ToLower() == "change" || requst?.PaymentRate.PaymentTypeLookup.Value.Value<string>("en").ToLower() == "authentication")
             {
                 var response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", true, cancellationToken);
                 if (response.Item1)
@@ -116,7 +119,7 @@ namespace AppDiv.CRVS.Application.Service
                     // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
             }
-            else if (requst?.Request?.RequestType == "CertificateGeneration")
+            else if (requst?.PaymentRate.PaymentTypeLookup.Value.Value<string>("en").ToLower() == "certificategeneration")
             {
                 await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
             }
