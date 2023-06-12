@@ -11,6 +11,8 @@ using AppDiv.CRVS.Application.Interfaces.Archive;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using Newtonsoft.Json.Linq;
+using AutoMapper.QueryableExtensions;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -82,10 +84,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                                         (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService, _lookupService)),
                 EventSupportingDocuments = _supportingDocument.GetAll()
                                                 .Where(s => s.EventId == death.Id).Where(s => s.Type.ToLower() != "webcam")
-                                                .Select(s => s.Id).ToList()
+                                                .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList()
             };
             deathInfo.PaymentExamptionSupportingDocuments = death?.PaymentExamption?.Id == null ? null
-                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == death.PaymentExamption.Id).Select(s => s.Id).ToList();
+                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == death.PaymentExamption.Id)
+                        .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();
             return deathInfo;
         }
         public DeathArchiveDTO GetDeathPreviewArchive(DeathEvent death, string? BirthCertNo)
@@ -103,8 +106,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(death?.Event?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(death.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = death.Event?.EventSupportingDocuments?.Select(s => s.Id).ToList(),
-                PaymentExamptionSupportingDocuments = death?.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
+                EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(death.Event?.EventSupportingDocuments),
+                PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(death?.Event?.PaymentExamption?.SupportingDocuments),
             };
 
         }

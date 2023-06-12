@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 {
@@ -76,11 +77,20 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             var supportingDocuments = new List<SupportingDocument>();
             if (contentList != null)
             {
+                var baseList = JsonConvert.DeserializeObject<List<SupportingDocument>>(contentList.ToString());
                 foreach (JToken sup in contentList)
                 {
                     SupportingDocument file = sup?.ToObject<SupportingDocument>();
                     supportingDocuments.Add(file);
+                    // sup?.Value<string>("base64String").Remove();
+                    // contentList.Value<string>("base64String")(contentList.IndexOf(sup)).base64String = null;
+
                 }
+                // if (type == "eventSupportingDocuments")
+                // {
+                //     content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments") =
+                // }
+
             }
             return supportingDocuments;
         }

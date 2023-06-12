@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
 {
     public class BaseArchiveDTO
     {
-        public ICollection<Guid>? EventSupportingDocuments { get; set; }
-        public ICollection<Guid>? PaymentExamptionSupportingDocuments { get; set; }
+        public IList<SupportingDocumentDTO>? EventSupportingDocuments { get; set; }
+        public IList<SupportingDocumentDTO>? PaymentExamptionSupportingDocuments { get; set; }
     }
 }

@@ -18,7 +18,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         {
             // Validate the death event properties.
             RuleFor(p => p.DeathEvent).SetValidator(new DeathEventValidator(eventRepo));
-            RuleFor(p => p.DeathEvent.DeathNotification).SetValidator(new DeathNotificationValidator(eventRepo))
+                        RuleFor(p => p.DeathEvent.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(eventRepo, "Event.CertificateId");
+                        RuleFor(p => p.DeathEvent.DeathNotification).SetValidator(new DeathNotificationValidator(eventRepo))
                     .When(p => p.DeathEvent.DeathNotification != null);
             RuleFor(p => p.DeathEvent.Event.EventOwener).SetValidator(new DeadValidator(eventRepo));
             RuleFor(p => p.DeathEvent.Event.EventRegistrar).SetValidator(new DeathRegistrarValidator(eventRepo))

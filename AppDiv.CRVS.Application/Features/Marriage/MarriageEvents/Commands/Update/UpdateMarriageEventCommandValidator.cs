@@ -170,10 +170,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             });
             When(e => !isReligionMarriage(e.MarriageTypeId), () =>
             {
-                RuleFor(e => e.BrideInfo.Id)
-                .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
-                RuleFor(e => e.Event.EventOwener.Id)
-               .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+                // RuleFor(e => e.BrideInfo.Id)
+                // .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+                //     RuleFor(e => e.Event.EventOwener.Id)
+                //    .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
             });
             When(e => e.Event.IsExampted, () =>
             {
