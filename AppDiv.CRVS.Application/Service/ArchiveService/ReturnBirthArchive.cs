@@ -10,6 +10,8 @@ using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Interfaces.Archive;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AutoMapper.QueryableExtensions;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -90,12 +92,15 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(birth.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(birth.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == birth.Id).Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
+                EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == birth.Id)
+                                                    .Where(s => s.Type.ToLower() != "webcam")
+                                                    .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
 
 
             };
             birthInfo.PaymentExamptionSupportingDocuments = birth?.PaymentExamption?.Id == null ? null
-                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == birth.PaymentExamption.Id).Select(s => s.Id).ToList();
+                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == birth.PaymentExamption.Id)
+                                        .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();
             return birthInfo;
 
         }
@@ -118,8 +123,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Registrar = GetRegistrar(birth.Event.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(birth.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = birth.Event.EventSupportingDocuments.Select(s => s.Id).ToList(),
-                PaymentExamptionSupportingDocuments = birth.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
+                EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(birth.Event.EventSupportingDocuments),
+                PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(birth.Event?.PaymentExamption?.SupportingDocuments),
             };
 
         }

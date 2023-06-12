@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             RuleFor(p => p.BirthEvent.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Father).SetValidator(new FatherValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Mother).SetValidator(new MotherValidator(eventRepo));
+            RuleFor(p => p.BirthEvent.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(eventRepo, "Event.CertificateId");
             // RuleFor(p => p.BirthEvent.Event.EventOwener.BirthDateEt).NotValidChildDate()
             // .When(p => (dateConverter.EthiopicToGregorian(p.BirthEvent.Father.BirthDateEt).Year <= dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year)
             // || (dateConverter.EthiopicToGregorian(p.BirthEvent.Mother.BirthDateEt).Year <= dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year));

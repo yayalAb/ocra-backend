@@ -11,6 +11,8 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive.AdoptionArchive;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
+using AutoMapper.QueryableExtensions;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -103,10 +105,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 EventInfo = GetEventInfo(adoption),
                 CivilRegistrarOfficer = GetOfficer(adoption.CivilRegOfficer),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == adoption.Id)
-                                                .Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
+                                                .Where(s => s.Type.ToLower() != "webcam").ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
             };
             adoptionInfo.PaymentExamptionSupportingDocuments = adoption?.PaymentExamption?.Id == null ? null
-                    : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == adoption.PaymentExamption.Id).Select(s => s.Id).ToList();
+                    : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == adoption.PaymentExamption.Id)
+                                    .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();
             return adoptionInfo;
 
         }
@@ -152,8 +155,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             adoptionArchive.Father = father == null ? null : GetFather(father);
             adoptionArchive.Court = GetCourt(adoption.CourtCase);
             adoptionArchive.EventInfo = GetEventInfo(adoption.Event);
-            adoptionArchive.EventSupportingDocuments = adoption.Event?.EventSupportingDocuments?.Select(s => s.Id).ToList();
-            adoptionArchive.PaymentExamptionSupportingDocuments = adoption?.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList();
+            adoptionArchive.EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(adoption.Event?.EventSupportingDocuments);
+            adoptionArchive.PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(adoption?.Event?.PaymentExamption?.SupportingDocuments);
             if (adoption.Event.CivilRegOfficer == null && adoption.Event.CivilRegOfficerId != null)
             {
                 adoption.Event.CivilRegOfficer = _person.GetAll().Where(p => p.Id == adoption.Event.CivilRegOfficerId).FirstOrDefault();

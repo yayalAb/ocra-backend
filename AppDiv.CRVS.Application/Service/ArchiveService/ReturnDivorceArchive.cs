@@ -10,6 +10,8 @@ using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Interfaces.Archive;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
+using AutoMapper.QueryableExtensions;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -90,10 +92,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService)),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == divorce.Id)
-                                                .Where(s => s.Type.ToLower() != "webcam").Select(s => s.Id).ToList(),
+                                                .Where(s => s.Type.ToLower() != "webcam")
+                                                .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
             };
             divorceInfo.PaymentExamptionSupportingDocuments = divorce?.PaymentExamption?.Id == null ? null
-                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == divorce.PaymentExamption.Id).Select(s => s.Id).ToList();
+                : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == divorce.PaymentExamption.Id)
+                            .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();
             return divorceInfo;
 
         }
@@ -112,8 +116,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Court = GetCourt(divorce?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(divorce.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
-                EventSupportingDocuments = divorce?.Event?.EventSupportingDocuments?.Select(s => s.Id).ToList(),
-                PaymentExamptionSupportingDocuments = divorce?.Event?.PaymentExamption?.SupportingDocuments?.Select(s => s.Id).ToList(),
+                EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(divorce?.Event?.EventSupportingDocuments),
+                PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(divorce?.Event?.PaymentExamption?.SupportingDocuments),
 
             };
         }
