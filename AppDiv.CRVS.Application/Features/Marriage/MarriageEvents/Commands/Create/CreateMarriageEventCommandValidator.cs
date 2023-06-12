@@ -103,7 +103,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             .NotNull()
             .Must(w => w.Count >= 4).WithMessage("there should be atleast 4 witnesses to register a divorce");
 
-            RuleFor(e => e.Witnesses.Select(w => w.WitnessForLookupId)).NotEmpty().NotNull().Must(BeFoundInLookupTable);
+            RuleFor(e => e.Witnesses.Select(w => w.WitnessForLookupId)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.MiddleName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
@@ -155,10 +155,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                .NotEmpty()
                .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
            });
-            // When(e => !isCivilMarriage(e.MarriageTypeId), () => {
-            //     RuleFor(e => e.ApplicationId)
-            //     .Must(id => id ==null).WithMessage("MarriageApplicationId must be null if marriage type is not civil marriage");
-            // });
+            When(e => !isCivilMarriage(e.MarriageTypeId), () => {
+                RuleFor(e => e.ApplicationId)
+                .Must(id => id ==null).WithMessage("MarriageApplicationId must be null if marriage type is not civil marriage");
+            });
             When(e => isCivilMarriage(e.MarriageTypeId), () =>
             {
                 RuleFor(e => e.ApplicationId)
@@ -207,7 +207,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             var isMarried = _marriageEventRepo.GetAll()
                             .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId)&&!m.IsDivorced)
                             .Any();
-            return personalInfoId == null || isMarried;
+            return personalInfoId == null || !isMarried;
 
         }
 
@@ -216,7 +216,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             var withoutNulls = personalIfoIds.Where(id => id != null && id != Guid.Empty);
             return withoutNulls.Count() == withoutNulls.Distinct().Count();
         }
-        private bool BeFoundInExamptionRequestTable(AddPaymentExamptionRequest paymentExamption)
+        private bool BeFoundInExamptionRequestTable(AddPaymentExamptionRequest? paymentExamption)
         {
             return paymentExamption == null || _paymentExamptionRequestRepo.exists(paymentExamption!.ExamptionRequestId);
         }
