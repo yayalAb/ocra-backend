@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public static EventInfoArchive GetEventInfo(Event events, IDateAndAddressService dateAndAddressService)
         {
             (string am, string or)? address = (events.EventAddressId == Guid.Empty
-               || events.EventAddressId == null) ? null :
+               || events?.EventAddressId == null) ? null :
                dateAndAddressService.addressFormat(events.EventAddressId);
 
             (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);
@@ -58,7 +58,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             // return Fill.Filler<Person, PersonalInfo>(new Person(), person);
             // var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
-
             (string am, string or)? birthAddress = (person?.BirthAddressId == Guid.Empty
                || person?.BirthAddress == null) ? null :
                dateAndAddressService.addressFormat(person.BirthAddressId);
