@@ -55,6 +55,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             request.CorrectionRequest.Request.currentStep = 0;
             var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
             CorrectionRequest.Request.WorkflowId = WorkflowId;
+            CorrectionRequest.Request.NextStep = _WorkflowService.GetNextStep("change", 0, true);
             await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
             var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
             var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);

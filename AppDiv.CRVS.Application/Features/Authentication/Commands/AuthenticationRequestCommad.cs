@@ -65,6 +65,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                     RequestType = "authentication",
                     CivilRegOfficerId = request.CivilRegOfficer,
                     currentStep = 0,
+                    NextStep = _WorkflowService.GetNextStep("authentication", 0, true),
                     WorkflowId = WorkflowId
                 }
             };

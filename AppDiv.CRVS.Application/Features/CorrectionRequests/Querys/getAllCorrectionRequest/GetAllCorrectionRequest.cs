@@ -15,12 +15,12 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorrectionRequest
 {
     // Customer GetAllCorrectionRequest with  response
-    public class GetAllCorrectionRequest : IRequest<List<AddCorrectionRequest>>
+    public class GetAllCorrectionRequest : IRequest<List<CorrectionRequestListDTO>>
     {
         public Guid CivilRegOfficerId { get; set; }
     }
 
-    public class GetAllCorrectionRequestHandler : IRequestHandler<GetAllCorrectionRequest, List<AddCorrectionRequest>>
+    public class GetAllCorrectionRequestHandler : IRequestHandler<GetAllCorrectionRequest, List<CorrectionRequestListDTO>>
     {
 
         private readonly ICorrectionRequestRepostory _correctionRequestRepository;
@@ -29,12 +29,22 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
         {
             _correctionRequestRepository = correctionRequestRepository;
         }
-        public async Task<List<AddCorrectionRequest>> Handle(GetAllCorrectionRequest request, CancellationToken cancellationToken)
+        public async Task<List<CorrectionRequestListDTO>> Handle(GetAllCorrectionRequest request, CancellationToken cancellationToken)
         {
             var CorrectionRequest = _correctionRequestRepository.GetAll()
             .Include(x => x.Request)
-            .Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId);
-            return CustomMapper.Mapper.Map<List<AddCorrectionRequest>>(CorrectionRequest);
+            .ThenInclude(x => x.CivilRegOfficer)
+            .Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId).Select(x => new CorrectionRequestListDTO
+            {
+                Id = x.Id,
+                Requestedby = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,
+                RequestType = x.Request.RequestType,
+                RequestDate = x.CreatedAt,
+                CurrentStatus = x.Request.currentStep,
+                CanEdit = x.Request.currentStep == 0,
+            });
+            return CustomMapper.Mapper.Map<List<CorrectionRequestListDTO>>(CorrectionRequest);
         }
     }
 }
+

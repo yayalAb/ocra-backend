@@ -6,6 +6,7 @@ using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Create
 {
@@ -13,9 +14,11 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
     public class CreatePaymentExamptionRequestCommandHandler : IRequestHandler<CreatePaymentExamptionRequestCommand, CreatePaymentExamptionRequestCommandResponse>
     {
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepository;
-        public CreatePaymentExamptionRequestCommandHandler(IPaymentExamptionRequestRepository paymentExamptionRequestRepository)
+        private readonly IWorkflowService _WorkflowService;
+        public CreatePaymentExamptionRequestCommandHandler(IWorkflowService WorkflowService, IPaymentExamptionRequestRepository paymentExamptionRequestRepository)
         {
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
+            _WorkflowService = WorkflowService;
         }
         public async Task<CreatePaymentExamptionRequestCommandResponse> Handle(CreatePaymentExamptionRequestCommand request, CancellationToken cancellationToken)
         {
@@ -42,6 +45,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
                 var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request);
 
                 PaymentExamptionRequest.Request.RequestType = "payment exemption";
+                PaymentExamptionRequest.Request.NextStep = _WorkflowService.GetNextStep("payment exemption", 0, true);
                 await _paymentExamptionRequestRepository.InsertAsync(PaymentExamptionRequest, cancellationToken);
                 var result = await _paymentExamptionRequestRepository.SaveChangesAsync(cancellationToken);
 
