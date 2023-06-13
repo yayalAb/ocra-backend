@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Domain.Enums
     public enum NotificationType
     {
        authentication,
-       correction,
+       change,
        certificateStore,
        message,
        paymentExemption
