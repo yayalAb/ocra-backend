@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
@@ -38,11 +39,11 @@ namespace AppDiv.CRVS.Application.Service
         }
         public int GetLastWorkflow(string workflowType)
         {
-            var lastStep = _stepRepostory.GetAll()
-            .Include(x => x.workflow)
+            var lastStep = _stepRepostory.GetAll();
+            var ll = lastStep.Include(x => x.workflow)
             .Where(x => x.workflow.workflowName == workflowType)
             .OrderByDescending(x => x.step).FirstOrDefault();
-            return lastStep.step;
+            return ll.step;
         }
         public int GetNextStep(string workflowType, int step, bool isApprove)
         {
@@ -141,10 +142,13 @@ namespace AppDiv.CRVS.Application.Service
             return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
 
         }
-        public Guid? GetEventId(Guid? Id)
+        public Guid? GetEventId(Guid Id)
         {
             var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
-            return eventId?.EventId;
+            if(eventId == null){
+                throw new NotFoundException("event not found");
+            }
+            return eventId.EventId;
         }
 
         public bool WorkflowHasPayment(string workflow, int Step, Guid RequestId)

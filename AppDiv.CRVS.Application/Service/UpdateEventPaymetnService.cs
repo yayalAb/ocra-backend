@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
-        async void IUpdateEventPaymetnService.UpdatePaymetnStatus(Guid paymentRequestId, CancellationToken cancellationToken)
+        async Task IUpdateEventPaymetnService.UpdatePaymetnStatus(Guid paymentRequestId, CancellationToken cancellationToken)
         {
 
             var requst = _PaymentRequestRepository
