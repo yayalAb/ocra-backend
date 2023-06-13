@@ -161,10 +161,7 @@ namespace AppDiv.CRVS.Application.Service
                 return true;
             }
             return false;
-
         }
-
-
         public async Task<string> CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
         {
             var request = _requestRepostory.GetAll()
