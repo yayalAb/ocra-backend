@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Service
@@ -15,23 +16,40 @@ namespace AppDiv.CRVS.Application.Service
         private readonly IWorkflowRepository _workflowRepository;
         private readonly IStepRepository _stepRepostory;
         private readonly IRequestRepostory _requestRepostory;
+        // private readonly IWorkflowService _workflowService;
+        private readonly IUserRepository _userRepository;
         private readonly ITransactionService _TransactionService;
         private readonly IUserResolverService _UserResolverService;
         private readonly INotificationService _NotificationService;
         private readonly ICertificateRepository _CertificateRepository;
+        private readonly INotificationService notificationService;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
 
 
         private readonly IEventRepository _EventRepository;
-        public WorkflowService(IEventRepository EventRepository, IPaymentRequestRepository paymentRequestRepository, IEventPaymentRequestService paymentRequestService, ICertificateRepository CertificateRepository, INotificationService NotificationService, IUserResolverService UserResolverService, ITransactionService TransactionService, IWorkflowRepository workflowRepository, IRequestRepostory requestRepostory, IStepRepository stepRepostory)
+        public WorkflowService(IEventRepository EventRepository,
+                               IPaymentRequestRepository paymentRequestRepository,
+                               IEventPaymentRequestService paymentRequestService,
+                               ICertificateRepository CertificateRepository,
+                               INotificationService NotificationService,
+                               IUserResolverService UserResolverService,
+                               ITransactionService TransactionService,
+                               IWorkflowRepository workflowRepository,
+                               IRequestRepostory requestRepostory,
+                            //    IWorkflowService workflowService ,
+                               IUserRepository userRepository,
+                               IStepRepository stepRepostory)
         {
             _workflowRepository = workflowRepository;
             _stepRepostory = stepRepostory;
             _requestRepostory = requestRepostory;
+            // _workflowService = workflowService;
+            _userRepository = userRepository;
             _TransactionService = TransactionService;
             _UserResolverService = UserResolverService;
             _CertificateRepository = CertificateRepository;
+            notificationService = NotificationService;
             _paymentRequestService = paymentRequestService;
             _EventRepository = EventRepository;
             _paymentRequestRepository = paymentRequestRepository;
@@ -115,19 +133,28 @@ namespace AppDiv.CRVS.Application.Service
                         request.NextStep = this.GetNextStep(workflowType, nextStep, true);
                         _requestRepostory.Update(request);
                         _requestRepostory.SaveChanges();
-                        // var NewTranscation = new TransactionRequestDTO
-                        // {
-                        //     CurrentStep = request.currentStep,
-                        //     ApprovalStatus = IsApprove,
-                        //     WorkflowId = RequestId,
-                        //     RequestId = RequestId,
-                        //     CivilRegOfficerId = "4d940006-b21f-4841-b8dd-02957c4d7487",
-                        //     Remark = Remark
-                        // };
-                        // await _TransactionService.CreateTransaction(NewTranscation);
-                        // await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
-                        //                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
-                        //                   "4d940006-b21f-4841-b8dd-02957c4d7487");
+                        string? userId = _userRepository.GetAll()
+                                            .Where(u => u.PersonalInfoId == request.CivilRegOfficerId)
+                                            .Select(u => u.Id).FirstOrDefault();
+                        if (userId == null)
+                        {
+                            throw new NotFoundException("user not found");
+                        }
+                        var NewTranscation = new TransactionRequestDTO
+                        {
+                            CurrentStep = 0,
+                            ApprovalStatus = true,
+                            WorkflowId = request.WorkflowId,
+                            RequestId = request.Id,
+                            CivilRegOfficerId = userId,
+                            Remark = Remark
+                        };
+
+                        await _TransactionService.CreateTransaction(NewTranscation);
+                        await notificationService.CreateNotification(request.Id, workflowType,Remark,
+                                           this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
+                                         userId);
+
                     }
                     catch (Exception exp)
                     {
@@ -145,7 +172,8 @@ namespace AppDiv.CRVS.Application.Service
         public Guid? GetEventId(Guid Id)
         {
             var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
-            if(eventId == null){
+            if (eventId == null)
+            {
                 throw new NotFoundException("event not found");
             }
             return eventId.EventId;
