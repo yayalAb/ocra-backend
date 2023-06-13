@@ -144,7 +144,6 @@ namespace AppDiv.CRVS.Application.Service
         public Guid? GetEventId(Guid? Id)
         {
             var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
-            Console.WriteLine("event exist {0}", eventId?.EventId);
             return eventId?.EventId;
         }
 
