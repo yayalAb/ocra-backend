@@ -26,12 +26,13 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 NotificationObjId = notificationObjId,
                 MessageStr = message,
                 RequestId = requestId,
-                GroupId = groupId,
+                GroupId = groupId,    
                 SenderId = senderId
             };
             await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
             //TODO:send notification for users with the groupid
+            // jdsj
 
         }
         public async Task updateSeenStatus(Guid notificationId)
@@ -57,9 +58,9 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     .Where(n => groupIds.Contains(n.GroupId) && !n.Seen)
                     .Select(n =>new NotificationResponseDTO{
                         Type = n.Type,
-                        EventId = n.Type == Enum.GetName<NotificationType>(NotificationType.correction)
+                        EventId = n.Type.ToLower() == Enum.GetName<NotificationType>(NotificationType.change)
                                             ? n.Request.CorrectionRequest.EventId
-                                  :n.Type == Enum.GetName<NotificationType>(NotificationType.correction)
+                                  :n.Type.ToLower() == Enum.GetName<NotificationType>(NotificationType.change)
                                   ?n.Request.AuthenticationRequest.Certificate.EventId
                                   :null,
                         MessageStr = n.MessageStr,
@@ -70,7 +71,8 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang+" "+
                                          n.Sender.PersonalInfo.MiddleNameLang+" "+
                                          n.Sender.PersonalInfo.LastNameLang,
-                        SenderUserName = n.Sender.UserName
+                        SenderUserName = n.Sender.UserName,
+                        SenderId = n.SenderId
 
 
                     })

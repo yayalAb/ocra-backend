@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Features.Search
     public class GetPersonalInfoQuery : IRequest<object>
     {
         public string SearchString { get; set; }
-        public string? gender { get; set; }
+        public string? gender { get; set; }= string.Empty;
         public int age { get; set; }
 
 
