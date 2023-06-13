@@ -50,11 +50,9 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 EventDate = x.Event.EventDateEt,
                 EventAddress = x.Event.EventAddress.AddressNameLang
             }).FirstOrDefault();
-
-
             if (selectedEvent == null)
             {
-                throw new Exception("Certificate with given Id not Found");
+                throw new Exception("Certificate with given Id not Found or Certificate Event Not Found");
             }
             var events = _EventRepository.GetAll()
             .Include(x => x.CivilRegOfficer)
@@ -70,64 +68,78 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 certificate = da.EventCertificates,
                 correction = da.CorrectionRequests
             }).FirstOrDefault();
-
+            if (events == null)
+            {
+                throw new Exception("The  Certificate Event Is not Exist");
+            }
 
             var listofHistory = _CertificateHistoryRepository.GetAll()
             .Include(x => x.CivilRegOfficer.ApplicationUser.UserGroups)
+            .Include(x => x.CivilRegOfficer.ApplicationUser.Address)
             .Where(x => x.CerteficateId == request.Id)
             .Select(h => new EventHistory
             {
                 Action = "Reprinted",
                 Date = h.CreatedAt.ToString(),
                 By = h.CivilRegOfficer.FirstNameLang + " " + h.CivilRegOfficer.MiddleNameLang + " " + h.CivilRegOfficer.LastNameLang,
-                Type = "admin",
+                Type = h.CivilRegOfficer.ApplicationUser.UserGroups.Select(x => x.GroupName).FirstOrDefault(),
                 Address = h.CivilRegOfficer.ApplicationUser.Address.AddressNameLang
             });
-            selectedEvent.Historys = listofHistory.ToList();
-
-            var history = new EventHistory
+            if (listofHistory != null)
             {
-                Action = "Registered",
-                Date = events.Registered.EventDateEt,
-                By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
-                Type = "admin",
-                Address = events.Registered.EventAddress.AddressNameLang
-            };
-            if (history == null)
-            {
-                throw new Exception("An Error occered on history generatin");
+                selectedEvent.Historys = listofHistory.ToList();
             }
-            selectedEvent.Historys.Add(history);
-            var history1 = new EventHistory
+            if (events?.Registered != null)
             {
-                Action = "Payed",
-                Date = events.payment.CreatedAt.ToString(),
-                By = "",
-                Type = "admin",
-                Address = ""
-            };
-            if (history == null)
-            {
-                throw new Exception("An Error occered on history generatin");
+                var history = new EventHistory
+                {
+                    Action = "Registered",
+                    Date = events.Registered.EventDateEt,
+                    By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
+                    Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
+                    Address = events?.certificate?.FirstOrDefault().Event?.EventAddress?.AddressNameLang,
+                };
+                if (history == null)
+                {
+                    throw new Exception("An Error occered on history generatin");
+                }
+                selectedEvent.Historys.Add(history);
             }
-            selectedEvent.Historys.Add(history1);
+            if (events?.payment != null)
+            {
+                var history = new EventHistory
+                {
+                    Action = "paid",
+                    Date = events?.payment?.CreatedAt.ToString(),
+                    By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
+                    Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
+                    Address = events?.certificate?.FirstOrDefault().Event?.EventAddress?.AddressNameLang,
 
-            var history2 = new EventHistory
-            {
-                Action = "certificate",
-                Date = "",
-                By = "",
-                Type = "admin",
-                Address = ""
-            };
-            if (history == null)
-            {
-                throw new Exception("An Error occered on history generatin");
+                };
+                if (history == null)
+                {
+                    throw new Exception("An Error occered on history generatin");
+                }
+                selectedEvent.Historys.Add(history);
             }
-            selectedEvent.Historys.Add(history2);
 
+            if (events?.certificate != null)
+            {
+                var history = new EventHistory
+                {
+                    Action = "certificate",
+                    Date = events?.certificate?.FirstOrDefault().CreatedAt.ToString(),
+                    By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
+                    Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
+                    Address = events?.certificate?.FirstOrDefault().Event?.EventAddress?.AddressNameLang,
 
-
+                };
+                if (history == null)
+                {
+                    throw new Exception("An Error occered on history generatin");
+                }
+                selectedEvent.Historys.Add(history);
+            }
 
             return CustomMapper.Mapper.Map<EventHistoryDto>(selectedEvent);
         }

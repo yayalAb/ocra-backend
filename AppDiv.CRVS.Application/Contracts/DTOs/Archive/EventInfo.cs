@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? RegistrationBookNumber { get; set; }
         public string? RegistrationOfficeId { get; set; }
 
+        public string? EventType { get; set; }
+
         public string? EventMonthOr { get; set; }
         public string? EventMonthAm { get; set; }
         public string? EventDay { get; set; }

@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 CertificateId = events?.CertificateId,
                 RegistrationBookNumber = events?.RegBookNo,
                 RegistrationOfficeId = events?.CertificateId.Substring(0, events.CertificateId.Length - 8),
-
+                EventType = events?.EventType,
                 EventMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "or")?.month,
                 EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "Am")?.month,
                 EventDay = convertor.getSplitted(events?.EventDateEt).day.ToString(),

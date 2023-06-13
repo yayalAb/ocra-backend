@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
           .Where(wf => wf.workflowName == "payment exemption").Select(x => x.Id).FirstOrDefault();
             if (WorkflowId == null || WorkflowId == Guid.Empty)
             {
-                throw new Exception("authentication Work Flow Does not exist Pleace Create Workflow First");
+                throw new Exception("payment Exemption Work Flow Does not exist Pleace Create Workflow First");
             }
 
             //Check and log validation errors
