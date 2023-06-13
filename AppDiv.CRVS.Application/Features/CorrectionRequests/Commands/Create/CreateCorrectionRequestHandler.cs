@@ -80,7 +80,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         request.CorrectionRequest.Request.currentStep = 0;
                         var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
                         CorrectionRequest.Request.WorkflowId = WorkflowId;
-            CorrectionRequest.Request.NextStep = _WorkflowService.GetNextStep("change", 0, true);
+                        CorrectionRequest.Request.NextStep = _WorkflowService.GetNextStep("change", 0, true);
                         var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
                         var supportingDocuments = GetSupportingDocuments(CorrectionRequest.Content, "eventSupportingDocuments", out JObject newContent);
                         var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
