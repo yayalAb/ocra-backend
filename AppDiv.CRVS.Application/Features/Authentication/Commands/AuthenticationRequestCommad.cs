@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.Authentication.Commands
 {
@@ -24,52 +25,72 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
     {
         public Guid CertificateId { get; set; }
         public Guid CivilRegOfficer { get; set; }
+
+        public string? Remark { get; set; }
     }
     public class AuthenticationRequestCommadHandler : IRequestHandler<AuthenticationRequestCommad, BaseResponse>
     {
         private readonly IAuthenticationRepository _AuthenticationRepository;
         private readonly IWorkflowService _WorkflowService;
+        private readonly ITransactionService _transactionService;
+        private readonly INotificationService _notificationService;
+        private readonly IUserRepository _userRepository;
         private readonly IWorkflowRepository _WorkflowRepository;
-        public AuthenticationRequestCommadHandler(IWorkflowRepository WorkflowRepository, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService)
+        public AuthenticationRequestCommadHandler(IWorkflowRepository WorkflowRepository, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService, ITransactionService transactionService, INotificationService notificationService, IUserRepository userRepository)
         {
             _AuthenticationRepository = AuthenticationRepository;
             _WorkflowService = WorkflowService;
+            _transactionService = transactionService;
+            _notificationService = notificationService;
+            _userRepository = userRepository;
             _WorkflowRepository = WorkflowRepository;
         }
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
-            // var NewTranscation = new TransactionRequestDTO
-            // {
-            //     CurrentStep = request.currentStep,
-            //     ApprovalStatus = IsApprove,
-            //     WorkflowId = RequestId,
-            //     RequestId = RequestId,
-            //     CivilRegOfficerId = _UserResolverService.GetUserId().ToString(),
-            //     Remark = Remark
-            // };
-            // await _TransactionService.CreateTransaction(NewTranscation);
-            // await _NotificationService.CreateNotification(ReturnId, workflowType, workflowType,
-            //                    this.GetReceiverGroupId(workflowType, request.currentStep), RequestId,
-            //                   _UserResolverService.GetUserId().ToString());
+
             Guid WorkflowId = _WorkflowRepository.GetAll()
             .Where(wf => wf.workflowName == "authentication").Select(x => x.Id).FirstOrDefault();
             if (WorkflowId == null || WorkflowId == Guid.Empty)
             {
                 throw new Exception("authentication Work Flow Does not exist Pleace Create Workflow First");
             }
+            var next =  _WorkflowService.GetNextStep("authentication", 0, true);
             var AuthenticationRequest = new AuthenticationRequest
             {
                 CertificateId = request.CertificateId,
-                Request = new Request
+                Request =  new Request
                 {
                     RequestType = "authentication",
                     CivilRegOfficerId = request.CivilRegOfficer,
                     currentStep = 0,
+                    NextStep =next,
                     WorkflowId = WorkflowId
                 }
             };
             await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);
             await _AuthenticationRepository.SaveChangesAsync(cancellationToken);
+            string? userId = _userRepository.GetAll()
+                                .Where(u => u.PersonalInfoId == request.CivilRegOfficer)
+                                .Select(u => u.Id).FirstOrDefault();
+            if (userId == null)
+            {
+                throw new NotFoundException("user not found");
+            }
+            var NewTranscation = new TransactionRequestDTO
+            {
+                CurrentStep = 0,
+                ApprovalStatus = true,
+                WorkflowId = WorkflowId,
+                RequestId = AuthenticationRequest.RequestId,
+                CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
+                Remark = request.Remark
+            };
+
+            await _transactionService.CreateTransaction(NewTranscation);
+            await _notificationService.CreateNotification(request.CertificateId, "Authentication", request.Remark,
+                               _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
+                             userId);
+
             return new BaseResponse
             {
                 Message = "authentication request Sent"

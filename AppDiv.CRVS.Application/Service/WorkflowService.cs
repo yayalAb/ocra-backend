@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography.X509Certificates;
 
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
@@ -38,16 +39,20 @@ namespace AppDiv.CRVS.Application.Service
         }
         public int GetLastWorkflow(string workflowType)
         {
-            var lastStep = _stepRepostory.GetAll()
-            .Include(x => x.workflow)
+            var lastStep = _stepRepostory.GetAll();
+            var ll = lastStep.Include(x => x.workflow)
             .Where(x => x.workflow.workflowName == workflowType)
             .OrderByDescending(x => x.step).FirstOrDefault();
-            return lastStep.step;
+            return ll.step;
         }
         public int GetNextStep(string workflowType, int step, bool isApprove)
         {
             if (isApprove)
             {
+                if (step == this.GetLastWorkflow(workflowType))
+                {
+                    return step;
+                }
                 var nextStep = _stepRepostory.GetAll()
                             .Include(x => x.workflow)
                             .Where(x => x.workflow.workflowName == workflowType && x.step > step)
@@ -107,6 +112,7 @@ namespace AppDiv.CRVS.Application.Service
                     try
                     {
                         request.currentStep = nextStep;
+                        request.NextStep = this.GetNextStep(workflowType, nextStep, true);
                         _requestRepostory.Update(request);
                         _requestRepostory.SaveChanges();
                         // var NewTranscation = new TransactionRequestDTO
@@ -136,9 +142,12 @@ namespace AppDiv.CRVS.Application.Service
             return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
 
         }
-        public Guid GetEventId(Guid Id)
+        public Guid? GetEventId(Guid Id)
         {
             var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
+            if(eventId == null){
+                throw new NotFoundException("event not found");
+            }
             return eventId.EventId;
         }
 
@@ -151,15 +160,12 @@ namespace AppDiv.CRVS.Application.Service
             .ThenInclude(x => x.Payment)
             .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
             ).FirstOrDefault();
-            if (requestHaspayment != null)
+            if (requestHaspayment != null && (requestHaspayment?.PaymentRequest?.Payment?.Id == null || requestHaspayment?.PaymentRequest?.Payment?.Id == Guid.Empty))
             {
                 return true;
             }
             return false;
-
         }
-
-
         public async Task<string> CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
         {
             var request = _requestRepostory.GetAll()
@@ -171,8 +177,8 @@ namespace AppDiv.CRVS.Application.Service
             {
                 return "Request Does not Found";
             }
-            // if(request.PaymentRequest.Id==null||request.PaymentRequest.Id==Guid.Empty)
-            if ((request.RequestType == "authentication" || request.RequestType == "change"))
+
+            if ((request.RequestType == "authentication" || request.RequestType == "change") && (request?.PaymentRequest?.Id == null || request?.PaymentRequest?.Id == Guid.Empty))
             {
                 try
                 {
@@ -183,17 +189,20 @@ namespace AppDiv.CRVS.Application.Service
                     (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, cancellationToken);
                     if (response.amount == 0)
                     {
-                        return "payment Rate Not Found";
+                        throw new Exception("Payment Rate not Found");
                     }
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("an Error occured on Creating Payment Request" + ex.Message);
+                    throw new Exception("Payment Rate Not found Please Add Payment Rate");
                 }
 
             }
-            return "Request Type Does not Found";
-
+            else
+            {
+                return "Request Type Does not Found";
+            }
+            return "Payment Request Setnt Sucessfully";
         }
     }
 }

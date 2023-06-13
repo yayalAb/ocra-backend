@@ -170,10 +170,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             });
             When(e => !isReligionMarriage(e.MarriageTypeId), () =>
             {
-                // RuleFor(e => e.BrideInfo.Id)
-                // .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
-                //     RuleFor(e => e.Event.EventOwener.Id)
-                //    .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+                RuleFor(e => e.BrideInfo.Id)
+                .Must(( e , brideId)=>BeUnmarried(brideId , e.Id)).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+                RuleFor(e => e.Event.EventOwener.Id)
+               .Must(( e , groomId)=>BeUnmarried(groomId , e.Id)).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
             });
             When(e => e.Event.IsExampted, () =>
             {
@@ -190,12 +190,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         }
 
-         private bool BeUnmarried(Guid? personalInfoId)
+         private bool BeUnmarried(Guid? personalInfoId , Guid marriageId)
         {
-            var isMarried = _marriageEventRepo.GetAll()
+            var registeredMarriage = _marriageEventRepo.GetAll()
                             .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId)&&!m.IsDivorced)
-                            .Any();
-            return personalInfoId == null || isMarried;
+                            .ToList() ;
+
+            return personalInfoId == null 
+                    || registeredMarriage.Count==0
+                    ||(registeredMarriage.Count ==1 && registeredMarriage.FirstOrDefault()?.Id ==marriageId);
 
         }
 

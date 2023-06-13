@@ -1,7 +1,6 @@
 
 using AppDiv.CRVS.Domain.Base;
 
-
 namespace AppDiv.CRVS.Domain.Entities
 {
     public class AuthenticationRequest : BaseAuditableEntity

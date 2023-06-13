@@ -48,34 +48,51 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<object> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
-            // var userGroup = _UserRepo.GetAll()
-            // .Include(g => g.UserGroups)
-            // .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
-            // g => g.step == w.currentStep && g.UserGroupId == gropId.Id
-            // var gropId = userGroup.UserGroups.FirstOrDefault();
-            var RequestList = _RequestRepostory.GetAll()
-            .Include(x => x.CivilRegOfficer)
-            .Include(x => x.AuthenticationRequest).
-             Include(c => c.AuthenticationRequest.Certificate)
-            .Include(x => x.CorrectionRequest)
-            .Include(x => x.PaymentExamptionRequest)
-            .Include(x => x.PaymentRequest)
-            .Include(w => w.Workflow).ThenInclude(ss => ss.Steps);
-            var testVar = RequestList.Where(wf => wf.Workflow.workflowName == wf.RequestType && wf.RequestType != "Payment")
-            // Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
-            .Select(w => new AuthenticationRequestListDTO
+            if (request.UserId == null || request.UserId == Guid.Empty)
             {
-                Id = w.Id,
-                ResponsbleGroupId = w.Workflow.Steps.Where(g => g.step == w.currentStep).Select(x => x.UserGroupId).FirstOrDefault(),
-                RequestType = w.RequestType,
-                RequestId = (w.CorrectionRequest.Id == null) ? (w.AuthenticationRequest.CertificateId == null) ?
-                 w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
-                CurrentStep = w.currentStep,
-                RequestDate = w.CreatedAt
-            });
+                throw new Exception("Please provide User Id");
+            }
+            var userGroup = _UserRepo.GetAll()
+            .Include(g => g.UserGroups)
+            .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
+            if (userGroup == null)
+            {
+                throw new Exception("user does not found");
+            }
+            var RequestList = _RequestRepostory.GetAll()
+                 .Include(x => x.CivilRegOfficer)
+                 .Include(x => x.AuthenticationRequest)
+                 .ThenInclude(x => x.Certificate)
+                 .Include(x => x.CorrectionRequest)
+                 .Include(x => x.PaymentExamptionRequest)
+                 .Include(x => x.PaymentRequest)
+                 .Include(w => w.Workflow)
+                 .ThenInclude(ss => ss.Steps)
+                 .ThenInclude(g => g.UserGroup)
+              .Where(wf => wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
+             .Select(w => new AuthenticationRequestListDTO
+             {
+                 Id = w.Id,
+                 ResponsbleGroupId = w.Workflow.Steps.Where(g => g.step == w.NextStep).Select(x => x.UserGroupId).FirstOrDefault(),
+                 ResponsbleGroup = w.Workflow.Steps.Where(g => g.step == w.NextStep).Select(x => x.UserGroup.GroupName).FirstOrDefault(),
+                 OfficerId = w.CivilRegOfficerId,
+                 RequestedBy = w.CivilRegOfficer.FirstNameLang + " " + w.CivilRegOfficer.MiddleNameLang + " " + w.CivilRegOfficer.LastNameLang,
+                 RequestType = w.RequestType,
+                 RequestId = (w.CorrectionRequest.Id == null) ? (w.AuthenticationRequest.CertificateId == null) ?
+                     w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
+                 CurrentStep = w.currentStep,
+                 NextStep = w.NextStep,
+                 RequestDate = w.CreatedAt,
+                 CanEdit = ((w.currentStep == 0) && (w.CivilRegOfficerId == userGroup.PersonalInfoId)),
+                 CanApprove = userGroup.UserGroups.Select(x => x.Id)
+                 .FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep)
+                 .Select(x => x.UserGroupId).FirstOrDefault()
+             }).Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault()
+             || rg.OfficerId == userGroup.PersonalInfoId);
+
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
-                                  testVar
+                                  RequestList
                                  , request.PageCount ?? 1, request.PageSize ?? 10);
             if (RequestList == null)
             {
@@ -85,3 +102,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
     }
 }
+
+
+//  .Where(wf => wf.CivilRegOfficerId == userGroup.PersonalInfoId)
+// Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
+//  wf.CivilRegOfficerId == userGroup.PersonalInfoId ||
+//   wf.Workflow.Steps.Any(s => s.UserGroupId == new Guid(userGroup.Id))
+//  _WorkflowService.GetNextStep(w.RequestType, w.currentStep, true)

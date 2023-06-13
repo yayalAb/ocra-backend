@@ -8,6 +8,10 @@ using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Domain.Repositories;
+using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Application.Service.ArchiveService;
 
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
@@ -19,17 +23,27 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IEventRepository _eventRepository;
         private readonly IWorkflowRepository _WorkflowRepository;
+        private readonly ITransactionService _transactionService;
+        private readonly IUserRepository _userRepository;
+        private readonly INotificationService _notificationService;
+
         public CreateCorrectionRequestHandler(ICorrectionRequestRepostory CorrectionRepository,
-                                                IWorkflowService WorkflowService,
-                                                IEventDocumentService eventDocumentService,
-                                                IEventRepository eventRepository,
-                                                IWorkflowRepository WorkflowRepository)
+                                              IWorkflowService WorkflowService,
+                                              IEventDocumentService eventDocumentService,
+                                              IEventRepository eventRepository,
+                                              IWorkflowRepository WorkflowRepository,
+                                              ITransactionService transactionService,
+                                              IUserRepository userRepository,
+                                              INotificationService notificationService)
         {
             _eventDocumentService = eventDocumentService;
             _eventRepository = eventRepository;
             _CorrectionRepository = CorrectionRepository;
             _WorkflowService = WorkflowService;
             _WorkflowRepository = WorkflowRepository;
+            _transactionService = transactionService;
+            _userRepository = userRepository;
+            _notificationService = notificationService;
         }
 
         public async Task<CreateCorrectionRequestResponse> Handle(CreateCorrectionRequest request, CancellationToken cancellationToken)
@@ -66,6 +80,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         request.CorrectionRequest.Request.currentStep = 0;
                         var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
                         CorrectionRequest.Request.WorkflowId = WorkflowId;
+            CorrectionRequest.Request.NextStep = _WorkflowService.GetNextStep("change", 0, true);
                         var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
                         var supportingDocuments = GetSupportingDocuments(CorrectionRequest.Content, "eventSupportingDocuments", out JObject newContent);
                         var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
@@ -75,6 +90,27 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
                         var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
                         await transaction.CommitAsync();
+            string? userId = _userRepository.GetAll()
+                                .Where(u => u.PersonalInfoId == CorrectionRequest.Request.CivilRegOfficerId)
+                                .Select(u => u.Id).FirstOrDefault();
+            if (userId == null)
+            {
+                throw new NotFoundException("user not found");
+            }
+            var NewTranscation = new TransactionRequestDTO
+            {
+                CurrentStep = 0,
+                ApprovalStatus = true,
+                WorkflowId = WorkflowId,
+                RequestId = CorrectionRequest.RequestId,
+                CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
+                Remark = "Correction Request"
+            };
+
+            await _transactionService.CreateTransaction(NewTranscation);
+            await _notificationService.CreateNotification(request.CorrectionRequest.EventId, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
+                               _WorkflowService.GetReceiverGroupId(Enum.GetName<NotificationType>(NotificationType.change)!, (int)CorrectionRequest.Request.NextStep), CorrectionRequest.RequestId,
+                             userId);
                         return CreateAddressCommadResponse;
                     }
                     catch (Exception)

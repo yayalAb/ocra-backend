@@ -28,21 +28,21 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         }
         public Task<PaginatedList<PaidCertificateDTO>> Handle(EventDraftListQuery request, CancellationToken cancellationToken)
         {
-            var correctionRequestList = _correctionRequestRepo.GetAll().Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId);
-            List<Event> CorrectionRequestList = new List<Event>();
-            var eventList = correctionRequestList.Select(x => x.Content);//.FirstOrDefault();
-            foreach (JObject evn in eventList)
-            {
-                Event EventList = evn.Value<JObject>("event").ToObject<Event>();
-                CorrectionRequestList.Add(EventList);
-            }
+            // var correctionRequestList = _correctionRequestRepo.GetAll().Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId);
+            // List<Event> CorrectionRequestList = new List<Event>();
+            // var eventList = correctionRequestList.Select(x => x.Content);//.FirstOrDefault();
+            // foreach (JObject evn in eventList)
+            // {
+            //     Event EventList = evn.Value<JObject>("event").ToObject<Event>();
+            //     CorrectionRequestList.Add(EventList);
+            // }
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(e => e.EventOwener)
                               .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId && !e.IsCertified);
 
             return PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
-                               CorrectionRequestList
+                               eventByCivilReg
                               .Select(e => new PaidCertificateDTO
                               {
                                   EventId = e.Id,

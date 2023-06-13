@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         .Field(f => f.BirthDate)
                         .LessThanOrEquals(DateTime.Now.AddYears(-query.age)
                         )) : null,
-                        query.gender != null ?
+                        query.gender != "null" && query.gender !=null && query.gender != string.Empty?
                         mu => mu.Wildcard(w => w
                     .Field(f => f.GenderStr).Value($"*{query.gender}*")
                     ) : null

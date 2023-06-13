@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface IUpdateEventPaymetnService
     {
-        public void UpdatePaymetnStatus(Guid paymentRequestId, CancellationToken cancellationToken);
+        public Task UpdatePaymetnStatus(Guid paymentRequestId, CancellationToken cancellationToken);
 
     }
 }

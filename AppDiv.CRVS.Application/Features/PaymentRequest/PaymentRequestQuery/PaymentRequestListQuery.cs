@@ -35,6 +35,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
             var paymentRequestList = _PaymentRequestRepository.GetAll()
             .Include(x => x.Request)
             .Include(x => x.Request.CivilRegOfficer)
+            .Where(x => x.status == false)
             .Select(x => new PaymentRequestListDTO
             {
                 Id = x.Id,

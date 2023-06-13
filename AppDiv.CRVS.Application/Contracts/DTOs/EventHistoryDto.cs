@@ -8,12 +8,12 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 
     public class EventHistoryDto
     {
-        public string EventOwner { get; set; }
+        public string? EventOwner { get; set; }
         public string? Status { get; set; }
-        public string Event { get; set; }
+        public string? Event { get; set; }
         public string? Informant { get; set; }
-        public string CerificateId { get; set; }
-        public Guid EventId { get; set; }
+        public string? CerificateId { get; set; }
+        public Guid? EventId { get; set; }
         public string? EventDate { get; set; }
         public string? EventAddress { get; set; }
         public List<EventHistory>? Historys { get; set; }

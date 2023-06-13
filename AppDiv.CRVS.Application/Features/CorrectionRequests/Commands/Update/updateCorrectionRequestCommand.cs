@@ -30,8 +30,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             {
                 throw new Exception("you can not edit this request it is Approved");
             }
-            correctionRequestData.Description = request.Content;
-            correctionRequestData.Content = request.Description;
+            correctionRequestData.Description = request.Description;
+            correctionRequestData.Content = request.Content;
             try
             {
                 await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);

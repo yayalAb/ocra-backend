@@ -1,5 +1,6 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -37,14 +38,17 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Upda
     public class UpdatePaymentExamptionRequestCommandHandler : IRequestHandler<UpdatePaymentExamptionRequestCommand, PaymentExamptionRequestDTO>
     {
         private readonly IPaymentExamptionRequestRepository _PaymentExamptionRequestRepository;
-        public UpdatePaymentExamptionRequestCommandHandler(IPaymentExamptionRequestRepository PaymentExamptionRequestRepository)
+        private readonly IWorkflowService _WorkflowService;
+        public UpdatePaymentExamptionRequestCommandHandler(IWorkflowService WorkflowService, IPaymentExamptionRequestRepository PaymentExamptionRequestRepository)
         {
             _PaymentExamptionRequestRepository = PaymentExamptionRequestRepository;
+            _WorkflowService = WorkflowService;
         }
         public async Task<PaymentExamptionRequestDTO> Handle(UpdatePaymentExamptionRequestCommand request, CancellationToken cancellationToken)
         {
             var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request);
             PaymentExamptionRequest.Request.RequestType = "payment exemption";
+            PaymentExamptionRequest.Request.NextStep = _WorkflowService.GetNextStep("payment exemption", PaymentExamptionRequest.Request.currentStep, true);
             try
             {
                 await _PaymentExamptionRequestRepository.UpdateAsync(PaymentExamptionRequest, x => x.Id);

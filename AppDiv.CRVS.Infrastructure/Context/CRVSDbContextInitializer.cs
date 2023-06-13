@@ -31,7 +31,7 @@ namespace AppDiv.CRVS.Infrastructure
             try
             {
 
-                await _context.Database.MigrateAsync();
+                // await _context.Database.MigrateAsync();
             }
             catch (Exception ex)
             {
