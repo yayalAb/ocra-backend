@@ -19,6 +19,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? ResponsbleGroup { get; set; }
         public Guid? ResponsbleGroupId { get; set; }
         public bool? CanEdit { get; set; }
+        public bool? CanApprove { get; set; }
 
     }
 }

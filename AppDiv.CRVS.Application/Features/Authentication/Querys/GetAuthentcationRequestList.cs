@@ -79,7 +79,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
                  RequestDate = w.CreatedAt,
-                 CanEdit = w.currentStep == 0
+                 CanEdit = ((w.currentStep == 0) && (w.CivilRegOfficerId == userGroup.PersonalInfoId)),
+                 CanApprove = userGroup.UserGroups.Select(x => x.Id).FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep).Select(x => x.UserGroupId).FirstOrDefault()
              }).Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault()
              || rg.OfficerId == userGroup.PersonalInfoId);
 
