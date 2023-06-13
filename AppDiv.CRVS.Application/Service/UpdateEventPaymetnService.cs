@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
-        async void IUpdateEventPaymetnService.UpdatePaymetnStatus(Guid paymentRequestId, CancellationToken cancellationToken)
+        async Task IUpdateEventPaymetnService.UpdatePaymetnStatus(Guid paymentRequestId, CancellationToken cancellationToken)
         {
 
             var requst = _PaymentRequestRepository
@@ -49,6 +49,10 @@ namespace AppDiv.CRVS.Application.Service
               .ThenInclude(x => x.PaymentTypeLookup)
               .Include(x => x.PaymentRate.EventLookup)
               .Where(x => x.Id == paymentRequestId).FirstOrDefault();
+            if (requst == null)
+            {
+                throw new Exception("Payment Request does't found");
+            }
             try
             {
                 requst.status = true;
@@ -58,23 +62,26 @@ namespace AppDiv.CRVS.Application.Service
             {
                 throw new Exception(ex.Message);
             }
-            if (requst?.PaymentRate.PaymentTypeLookup.Value.Value<string>("en").ToLower() == "change" || requst?.PaymentRate.PaymentTypeLookup.Value.Value<string>("en").ToLower() == "authentication")
+
+            if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change" || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")
             {
+                if (requst.Request == null)
+                {
+                    throw new Exception("Request Does't Found");
+                }
+
                 var response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", true, cancellationToken);
                 if (response.Item1)
                 {
-                    Console.WriteLine("payment request Id  last step");
-
-                    if (requst?.Request?.RequestType == "authentication")
+                    if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")
                     {
-                        Console.WriteLine("payment request Id  Authentntication");
                         var AuthRequ = _AuthenticationRequestRepostory.GetAll()
                         .Where(x => x.RequestId == requst.Request.Id).FirstOrDefault();
                         var certificate = _CertificateRepository.GetAll().Where(x => x.Id == AuthRequ.CertificateId).FirstOrDefault();
                         certificate.AuthenticationStatus = true;
                         _CertificateRepository.Update(certificate);
                     }
-                    else if (requst?.Request?.RequestType == "change")
+                    else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change")
                     {
                         var modifiedEvent = _CorrectionRequestRepostory.GetAll()
                                         .Include(x => x.Event)
@@ -119,8 +126,9 @@ namespace AppDiv.CRVS.Application.Service
                     // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
             }
-            else if (requst?.PaymentRate.PaymentTypeLookup.Value.Value<string>("en").ToLower() == "certificategeneration")
+            else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "certificategeneration")
             {
+
                 await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
             }
             else
