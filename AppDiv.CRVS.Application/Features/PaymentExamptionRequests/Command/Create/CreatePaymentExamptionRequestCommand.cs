@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
         public string? ExamptedClientFullName { get; set; }
         public DateTime ExamptedDate { get; set; } = DateTime.Now;
         public string? ExamptedById { get; set; }
-        public string ExamptedDateEt { get; set; }
+        public string? ExamptedDateEt { get; set; }
         public int? NumberOfClient { get; set; }
         public Guid? AddressId { get; set; }
         public string CertificateType { get; set; }

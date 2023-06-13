@@ -15,10 +15,12 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
     {
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepository;
         private readonly IWorkflowService _WorkflowService;
-        public CreatePaymentExamptionRequestCommandHandler(IWorkflowService WorkflowService, IPaymentExamptionRequestRepository paymentExamptionRequestRepository)
+        private readonly IWorkflowRepository _WorkflowRepository;
+        public CreatePaymentExamptionRequestCommandHandler(IWorkflowRepository WorkflowRepository, IWorkflowService WorkflowService, IPaymentExamptionRequestRepository paymentExamptionRequestRepository)
         {
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
             _WorkflowService = WorkflowService;
+            _WorkflowRepository = WorkflowRepository;
         }
         public async Task<CreatePaymentExamptionRequestCommandResponse> Handle(CreatePaymentExamptionRequestCommand request, CancellationToken cancellationToken)
         {
@@ -29,6 +31,13 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
 
             var validator = new CreatePaymentExamptionRequestCommandValidator(_paymentExamptionRequestRepository);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+            Guid WorkflowId = _WorkflowRepository.GetAll()
+          .Where(wf => wf.workflowName == "payment exemption").Select(x => x.Id).FirstOrDefault();
+            if (WorkflowId == null || WorkflowId == Guid.Empty)
+            {
+                throw new Exception("authentication Work Flow Does not exist Pleace Create Workflow First");
+            }
 
             //Check and log validation errors
             if (validationResult.Errors.Count > 0)
@@ -45,6 +54,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
                 var PaymentExamptionRequest = CustomMapper.Mapper.Map<PaymentExamptionRequest>(request);
 
                 PaymentExamptionRequest.Request.RequestType = "payment exemption";
+                PaymentExamptionRequest.Request.WorkflowId = WorkflowId;
                 PaymentExamptionRequest.Request.NextStep = _WorkflowService.GetNextStep("payment exemption", 0, true);
                 await _paymentExamptionRequestRepository.InsertAsync(PaymentExamptionRequest, cancellationToken);
                 var result = await _paymentExamptionRequestRepository.SaveChangesAsync(cancellationToken);

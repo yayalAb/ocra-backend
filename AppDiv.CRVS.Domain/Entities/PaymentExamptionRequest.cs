@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? ExamptedDateEt { get; set; }
         public string? ExamptedById { get; set; }
         public int? NumberOfClient { get; set; }
-        public bool status { get; set; }=false;
+        public bool status { get; set; } = false;
         public Guid? AddressId { get; set; }
         public string? CertificateType { get; set; }
         public Guid? RequestId { get; set; }
@@ -47,16 +47,16 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<PaymentExamption> ExamptionRequestNavigation { get; set; }
         public virtual Address Address { get; set; }
 
-        [NotMapped]
-        public string? _ExamptedDateEt
-        {
-            get { return ExamptedDateEt; }
-            set
-            {
-                ExamptedDateEt = value;
-                ExamptedDate = new CustomDateConverter(ExamptedDateEt).gorgorianDate;
-            }
-        }
+        // [NotMapped]
+        // public string? _ExamptedDateEt
+        // {
+        //     get { return ExamptedDateEt; }
+        //     set
+        //     {
+        //         ExamptedDateEt = value;
+        //         ExamptedDate = new CustomDateConverter(_ExamptedDateEt).gorgorianDate;
+        //     }
+        // }
 
 
     }
