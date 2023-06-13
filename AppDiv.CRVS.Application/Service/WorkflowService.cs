@@ -141,10 +141,11 @@ namespace AppDiv.CRVS.Application.Service
             return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
 
         }
-        public Guid GetEventId(Guid Id)
+        public Guid? GetEventId(Guid? Id)
         {
             var eventId = _CertificateRepository.GetAll().Where(x => x.Id == Id).FirstOrDefault();
-            return eventId.EventId;
+            Console.WriteLine("event exist {0}", eventId?.EventId);
+            return eventId?.EventId;
         }
 
         public bool WorkflowHasPayment(string workflow, int Step, Guid RequestId)

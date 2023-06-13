@@ -55,10 +55,14 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             var userGroup = _UserRepo.GetAll()
             .Include(g => g.UserGroups)
             .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
+            if (userGroup == null)
+            {
+                throw new Exception("user does not found");
+            }
             var RequestList = _RequestRepostory.GetAll()
                  .Include(x => x.CivilRegOfficer)
-                 .Include(x => x.AuthenticationRequest).
-                 Include(c => c.AuthenticationRequest.Certificate)
+                 .Include(x => x.AuthenticationRequest)
+                 .ThenInclude(x => x.Certificate)
                  .Include(x => x.CorrectionRequest)
                  .Include(x => x.PaymentExamptionRequest)
                  .Include(x => x.PaymentRequest)
@@ -75,12 +79,14 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  RequestedBy = w.CivilRegOfficer.FirstNameLang + " " + w.CivilRegOfficer.MiddleNameLang + " " + w.CivilRegOfficer.LastNameLang,
                  RequestType = w.RequestType,
                  RequestId = (w.CorrectionRequest.Id == null) ? (w.AuthenticationRequest.CertificateId == null) ?
-                 w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
+                     w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
                  RequestDate = w.CreatedAt,
                  CanEdit = ((w.currentStep == 0) && (w.CivilRegOfficerId == userGroup.PersonalInfoId)),
-                 CanApprove = userGroup.UserGroups.Select(x => x.Id).FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep).Select(x => x.UserGroupId).FirstOrDefault()
+                 CanApprove = userGroup.UserGroups.Select(x => x.Id)
+                 .FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep)
+                 .Select(x => x.UserGroupId).FirstOrDefault()
              }).Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault()
              || rg.OfficerId == userGroup.PersonalInfoId);
 
