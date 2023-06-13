@@ -82,7 +82,11 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                                                         || EF.Functions.Like(l.ValueStr, "%Female%"))
                                                     .Select(l => l.Id).FirstOrDefault();
             request.Event.EventDateEt = request.CourtCase.ConfirmedDateEt;
+
+            var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
+            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
             var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
+            adoptionEvent.Event.EventType = "Adoption";
             // if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
             // {
             //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
@@ -119,11 +123,39 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
             //     selectedperson.NationLookupId = adoptionEvent.Event?.EventOwener?.NationLookupId;
             //     adoptionEvent.Event.EventOwener = selectedperson;
             // }
-            _adoptionEventRepository.EFUpdate(adoptionEvent);
+            // _adoptionEventRepository.EFUpdate(adoptionEvent);
+            // if (!request.IsFromCommand)
+            // {
+            //     await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+
+            // }
+            var personIds = new PersonIdObj
+            {
+                MotherId = adoptionEvent.AdoptiveMother.Id,
+                FatherId = adoptionEvent.AdoptiveFather.Id,
+                ChildId = adoptionEvent.Event.EventOwener.Id
+            };
             if (!request.IsFromCommand)
             {
-                await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+                adoptionEvent.Event.EventSupportingDocuments = null;
+                if (adoptionEvent.Event.PaymentExamption != null)
+                {
+                    adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
+                }
+                _adoptionEventRepository.EFUpdate(adoptionEvent);
+                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
+                var result = await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
 
+            }
+            else
+            {
+                _adoptionEventRepository.EFUpdate(adoptionEvent);
+                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
+                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
+                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
             }
             // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
             UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };

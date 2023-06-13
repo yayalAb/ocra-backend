@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public static EventInfoArchive GetEventInfo(Event events, IDateAndAddressService dateAndAddressService)
         {
             (string am, string or)? address = (events.EventAddressId == Guid.Empty
-               || events.EventAddressId == null) ? null :
+               || events?.EventAddressId == null) ? null :
                dateAndAddressService.addressFormat(events.EventAddressId);
 
             (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);

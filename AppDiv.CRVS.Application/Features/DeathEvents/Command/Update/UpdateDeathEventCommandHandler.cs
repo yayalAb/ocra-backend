@@ -51,31 +51,49 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             //supporting docs cant be updated only new (one without id) are created
                             var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
                             var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
-                            request.Event.EventSupportingDocuments = null;
-                            if (request.Event.PaymentExamption != null)
-                            {
-                                request.Event.PaymentExamption.SupportingDocuments = null;
-                            }
 
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                             deathEvent.Event.EventType = "Death";
-                            _deathEventRepository.Update(deathEvent);
-                            if (!request.IsFromCommand)
-                            {
-                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
-                            }
-                            var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
-                            var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
-                            var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
+                            // _deathEventRepository.Update(deathEvent);
+
+                            // if (!request.IsFromCommand)
+                            // {
+                            //     var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                            // }
+                            // var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
+                            // var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
+                            // var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
 
                             var personIds = new PersonIdObj
                             {
                                 DeceasedId = deathEvent.Event.EventOwener.Id,
                                 RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };
-                            var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                            _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                            _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "DeathEvents");
+                            if (!request.IsFromCommand)
+                            {
+                                deathEvent.Event.EventSupportingDocuments = null;
+                                if (deathEvent.Event.PaymentExamption != null)
+                                {
+                                    deathEvent.Event.PaymentExamption.SupportingDocuments = null;
+                                }
+                                _deathEventRepository.Update(deathEvent);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+
+                            }
+                            else
+                            {
+                                _deathEventRepository.Update(deathEvent);
+                                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
+                                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
+                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                            }
+                            // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                            // _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                            // _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Death");
                             await transaction.CommitAsync();
                             updateDeathEventCommandResponse.Success = true;
                             updateDeathEventCommandResponse.Status = 200;

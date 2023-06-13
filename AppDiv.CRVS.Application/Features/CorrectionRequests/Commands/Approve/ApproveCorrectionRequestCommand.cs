@@ -67,21 +67,25 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                 else if (modifiedEvent.Event.EventType == "Birth")
                 {
                     UpdateBirthEventCommand BirthCommand = CorrectionRequestResponse.Content.ToObject<UpdateBirthEventCommand>();
+                    BirthCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(BirthCommand);
                 }
                 else if (modifiedEvent.Event.EventType == "Death")
                 {
                     UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
+                    DeathCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(DeathCommand);
                 }
                 else if (modifiedEvent.Event.EventType == "Divorce")
                 {
                     UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
+                    DivorceCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(DivorceCommand);
                 }
                 else if (modifiedEvent.Event.EventType == "Marriage")
                 {
                     UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
+                    MarriageCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(MarriageCommand);
                 }
                 await _eventRepostory.SaveChangesAsync(cancellationToken);
