@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<List<CorrectionRequestListDTO>> Get([FromQuery] GetAllCorrectionRequest query)
+        public async Task<PaginatedList<CorrectionRequestListDTO>> Get([FromQuery] GetAllCorrectionRequest query)
         {
             return await _mediator.Send(query);
         }

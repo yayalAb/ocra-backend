@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
@@ -15,12 +16,14 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorrectionRequest
 {
     // Customer GetAllCorrectionRequest with  response
-    public class GetAllCorrectionRequest : IRequest<List<CorrectionRequestListDTO>>
+    public class GetAllCorrectionRequest : IRequest<PaginatedList<CorrectionRequestListDTO>>
     {
         public Guid CivilRegOfficerId { get; set; }
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllCorrectionRequestHandler : IRequestHandler<GetAllCorrectionRequest, List<CorrectionRequestListDTO>>
+    public class GetAllCorrectionRequestHandler : IRequestHandler<GetAllCorrectionRequest, PaginatedList<CorrectionRequestListDTO>>
     {
 
         private readonly ICorrectionRequestRepostory _correctionRequestRepository;
@@ -29,21 +32,30 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
         {
             _correctionRequestRepository = correctionRequestRepository;
         }
-        public async Task<List<CorrectionRequestListDTO>> Handle(GetAllCorrectionRequest request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<CorrectionRequestListDTO>> Handle(GetAllCorrectionRequest request, CancellationToken cancellationToken)
         {
             var CorrectionRequest = _correctionRequestRepository.GetAll()
             .Include(x => x.Request)
+            .Include(x => x.Event)
             .ThenInclude(x => x.CivilRegOfficer)
             .Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId).Select(x => new CorrectionRequestListDTO
             {
                 Id = x.Id,
                 Requestedby = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,
                 RequestType = x.Request.RequestType,
+                EventType = x.Event.EventType,
                 RequestDate = x.CreatedAt,
                 CurrentStatus = x.Request.currentStep,
                 CanEdit = x.Request.currentStep == 0,
             });
-            return CustomMapper.Mapper.Map<List<CorrectionRequestListDTO>>(CorrectionRequest);
+            return await PaginatedList<CorrectionRequestListDTO>
+                           .CreateAsync(
+                                CorrectionRequest
+                               .ToList()
+                               , request.PageCount ?? 1, request.PageSize ?? 10);
+
+
+            // CustomMapper.Mapper.Map<PaginatedList<CorrectionRequestListDTO>>(CorrectionRequest);
         }
     }
 }

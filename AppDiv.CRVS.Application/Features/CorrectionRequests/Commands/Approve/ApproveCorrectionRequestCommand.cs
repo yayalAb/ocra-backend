@@ -88,7 +88,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                     MarriageCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(MarriageCommand);
                 }
-                await _eventRepostory.SaveChangesAsync(cancellationToken);
+                // await _eventRepostory.SaveChangesAsync(cancellationToken);
             }
             var Response = new BaseResponse
             {

@@ -61,5 +61,7 @@ public enum Page
     Transfer,
     Verification,
     WitnessForLookup,
-    PaymentTypeLookup
+    PaymentTypeLookup,
+    UnApproved,
+    CorrectionRequest
 }

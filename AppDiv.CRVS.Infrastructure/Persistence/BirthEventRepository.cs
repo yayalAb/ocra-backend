@@ -125,7 +125,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
         }
 
-        public void UpdateAll(BirthEvent entity)
+        public async Task UpdateAll(BirthEvent entity)
         {
             try
             {

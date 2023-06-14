@@ -9,6 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public string? Requestedby { get; set; }
+        public string? EventType { get; set; }
         public string? RequestType { get; set; }
         public DateTime? RequestDate { get; set; }
         public int? CurrentStatus { get; set; }

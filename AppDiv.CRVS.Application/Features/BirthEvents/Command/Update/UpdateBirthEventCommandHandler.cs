@@ -81,8 +81,9 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                     {
                                         birthEvent.Event.PaymentExamption.SupportingDocuments = null;
                                     }
-                                    _birthEventRepository.UpdateAll(birthEvent);
+                                    await _birthEventRepository.UpdateAll(birthEvent);
                                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+
                                     var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                     _eventDocumentService.savePhotos(separatedDocs.userPhotos);
@@ -91,7 +92,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 }
                                 else
                                 {
-                                    _birthEventRepository.UpdateAll(birthEvent);
+                                    await _birthEventRepository.UpdateAll(birthEvent);
                                     var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
                                     _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
                                     _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
