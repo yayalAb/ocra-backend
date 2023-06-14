@@ -13,16 +13,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Application.Common;
 
 namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
 {
     // Customer PaymentRequestListQuery with  response
-    public class PaymentRequestListQuery : IRequest<List<PaymentRequestListDTO>>
+    public class PaymentRequestListQuery : IRequest<PaginatedList<PaymentRequestListDTO>>
     {
-
+        public int? PageCount { set; get; } = 1!;
+        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetListOfLookupQueryHandler : IRequestHandler<PaymentRequestListQuery, List<PaymentRequestListDTO>>
+    public class GetListOfLookupQueryHandler : IRequestHandler<PaymentRequestListQuery, PaginatedList<PaymentRequestListDTO>>
     {
         private readonly IPaymentRequestRepository _PaymentRequestRepository;
 
@@ -30,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
         {
             _PaymentRequestRepository = PaymentRequestRepository;
         }
-        public async Task<List<PaymentRequestListDTO>> Handle(PaymentRequestListQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<PaymentRequestListDTO>> Handle(PaymentRequestListQuery request, CancellationToken cancellationToken)
         {
             var paymentRequestList = _PaymentRequestRepository.GetAll()
             .Include(x => x.Request)
@@ -44,7 +46,12 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
                 RequestedBy = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,
                 RequestedDate = x.CreatedAt,
             });
-            return paymentRequestList.ToList();
+            return
+            await PaginatedList<PaymentRequestListDTO>
+                           .CreateAsync(
+                                paymentRequestList
+                               .ToList()
+                               , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

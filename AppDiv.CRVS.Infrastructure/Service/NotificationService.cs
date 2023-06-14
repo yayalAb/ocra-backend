@@ -31,10 +31,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
             };
             await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
-            //TODO:send notification for users with the groupid
-            // jdsj
+           
 
         }
+ 
         public async Task updateSeenStatus(Guid notificationId)
         {
             var notification = await _context.Notifications.FindAsync(notificationId);
@@ -57,6 +57,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     .Include(n => n.Request.AuthenticationRequest)
                     .Where(n => groupIds.Contains(n.GroupId) && !n.Seen)
                     .Select(n =>new NotificationResponseDTO{
+                        Id = n.Id,
                         Type = n.Type,
                         EventId = n.Type.ToLower() == Enum.GetName<NotificationType>(NotificationType.change)
                                             ? n.Request.CorrectionRequest.EventId

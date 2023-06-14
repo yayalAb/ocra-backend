@@ -24,6 +24,10 @@ namespace AppDiv.CRVS.Domain.Configurations
                .WithMany(n => n.Requests)
                .HasForeignKey(n => n.WorkflowId)
                .IsRequired(false);
+            builder.HasOne(m => m.Notification)
+                .WithOne(n => n.Request)
+                .HasForeignKey<Notification>(n => n.RequestId)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
 

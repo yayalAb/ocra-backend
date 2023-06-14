@@ -101,6 +101,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                     }
                                     _birthEventRepository.Update(birthEvent);
                                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+
                                     var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                     _eventDocumentService.savePhotos(separatedDocs.userPhotos);

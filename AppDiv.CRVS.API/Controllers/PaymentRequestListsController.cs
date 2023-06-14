@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.API.Controllers
     public class PaymentRequestListsController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<List<PaymentRequestListDTO>>> GetAll()
+        public async Task<ActionResult<PaginatedList<PaymentRequestListDTO>>> GetAll()
         {
 
             return Ok(await Mediator.Send(new PaymentRequestListQuery()));
