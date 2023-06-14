@@ -90,7 +90,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
                 };
 
                 await _transactionService.CreateTransaction(NewTranscation);
-                await _notificationService.CreateNotification(PaymentExamptionRequest.Id,PaymentExamptionRequest.Request.RequestType, "payment Exemption Request",
+                await _notificationService.CreateNotification(PaymentExamptionRequest.Request.Id,PaymentExamptionRequest.Request.RequestType, "payment Exemption Request",
                                    _WorkflowService.GetReceiverGroupId("payment exemption", (int)PaymentExamptionRequest.Request.NextStep), PaymentExamptionRequest.Request.Id,
                                  userId);
 

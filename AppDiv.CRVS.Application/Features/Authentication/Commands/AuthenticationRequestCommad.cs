@@ -87,7 +87,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             };
 
             await _transactionService.CreateTransaction(NewTranscation);
-            await _notificationService.CreateNotification(request.CertificateId, "Authentication", request.Remark,
+            await _notificationService.CreateNotification(AuthenticationRequest.Request.Id, "Authentication", request.Remark,
                                _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
                              userId);
 

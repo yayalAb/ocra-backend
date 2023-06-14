@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
  public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
         {
-            // _elasticClient.Indices.Delete("certificate");
+            _elasticClient.Indices.Delete("certificate");
 
             if (!_elasticClient.Indices.Exists("certificate").Exists)
             {
@@ -191,5 +191,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
             return (null, null, null, null, null);
         }
+
+        public override Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            
+            return base.SaveChangesAsync(cancellationToken);
+        }
     }
+
 }
