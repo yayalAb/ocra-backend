@@ -15,18 +15,20 @@ namespace AppDiv.CRVS.Infrastructure.Service
         {
             _context = context;
         }
-       public async Task<Guid> CreateTransaction(TransactionRequestDTO transactionObj){
-        var transaction = CustomMapper.Mapper.Map<Transaction>(transactionObj);
-        await _context.Transactions.AddAsync(transaction);
-        await _context.SaveChangesAsync();
-        return transaction.Id;
-       }
-    //     public async Task<List<Transaction>> GetTransactions(TransactionRequestDTO transactionObj){
-    //     var transaction = CustomMapper.Mapper.Map<Transaction>(transactionObj);
-    //     await _context.Transactions.AddAsync(transaction);
-    //     await _context.SaveChangesAsync();
-    //     return transaction.Id;
-    //    }
+        public async Task<Guid> CreateTransaction(TransactionRequestDTO transactionObj)
+        {
+            
+            var transaction = CustomMapper.Mapper.Map<Transaction>(transactionObj);
+            await _context.Transactions.AddAsync(transaction);
+            await _context.SaveChangesAsync();
+            return transaction.Id;
+        }
+        //     public async Task<List<Transaction>> GetTransactions(TransactionRequestDTO transactionObj){
+        //     var transaction = CustomMapper.Mapper.Map<Transaction>(transactionObj);
+        //     await _context.Transactions.AddAsync(transaction);
+        //     await _context.SaveChangesAsync();
+        //     return transaction.Id;
+        //    }
 
     }
 }
