@@ -33,18 +33,21 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 
                         var updateDeathEventCommandResponse = new UpdateDeathEventCommandResponse();
 
-                        var validator = new UpdateDeathEventCommandValidator(_eventRepository);
-                        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-                        //Check and log validation errors
-                        if (validationResult.Errors.Count > 0)
+                        if (!request.IsFromCommand)
                         {
-                            updateDeathEventCommandResponse.Success = false;
-                            updateDeathEventCommandResponse.Status = 400;
-                            updateDeathEventCommandResponse.ValidationErrors = new List<string>();
-                            foreach (var error in validationResult.Errors)
-                                updateDeathEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                            updateDeathEventCommandResponse.Message = updateDeathEventCommandResponse.ValidationErrors[0];
+                            var validator = new UpdateDeathEventCommandValidator(_eventRepository);
+                            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+                            //Check and log validation errors
+                            if (validationResult.Errors.Count > 0)
+                            {
+                                updateDeathEventCommandResponse.Success = false;
+                                updateDeathEventCommandResponse.Status = 400;
+                                updateDeathEventCommandResponse.ValidationErrors = new List<string>();
+                                foreach (var error in validationResult.Errors)
+                                    updateDeathEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
+                                updateDeathEventCommandResponse.Message = updateDeathEventCommandResponse.ValidationErrors[0];
+                            }
                         }
                         if (updateDeathEventCommandResponse.Success)
                         {
@@ -81,15 +84,16 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
 
                             }
                             else
                             {
                                 _deathEventRepository.Update(deathEvent);
+                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
-                                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
-                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Death");
+                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
                             }
                             // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);

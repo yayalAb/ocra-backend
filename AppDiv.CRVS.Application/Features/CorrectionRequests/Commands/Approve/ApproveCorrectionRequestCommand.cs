@@ -33,17 +33,17 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
     public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, BaseResponse>
     {
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
-        private readonly IEventRepository _eventRepostory;
+        // private readonly IEventRepository _eventRepostory;
         private readonly IWorkflowService _WorkflowService;
 
         private readonly IMediator _mediator;
 
 
-        public ApproveCorrectionRequestCommandHandler(IMediator mediator, IEventRepository eventRepostory, ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
+        public ApproveCorrectionRequestCommandHandler(IMediator mediator, ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
             _WorkflowService = WorkflowService;
-            _eventRepostory = eventRepostory;
+            // _eventRepostory = eventRepostory;
             _mediator = mediator;
         }
         public async Task<BaseResponse> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
@@ -55,6 +55,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
 
                 var modifiedEvent = _CorrectionRequestRepostory.GetAll()
                 .Include(x => x.Event)
+                .AsNoTracking()
                 .Where(x => x.RequestId == request.Id)
                 .Include(x => x.Request).FirstOrDefault();
                 var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
@@ -63,6 +64,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                     UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
                     AdoptionCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(AdoptionCommand);
+                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
                 else if (modifiedEvent.Event.EventType == "Birth")
                 {
@@ -81,14 +83,16 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                     UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
                     DivorceCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(DivorceCommand);
+                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
                 else if (modifiedEvent.Event.EventType == "Marriage")
                 {
                     UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
                     MarriageCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(MarriageCommand);
+                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
-                await _eventRepostory.SaveChangesAsync(cancellationToken);
+                // await _eventRepostory.SaveChangesAsync(cancellationToken);
             }
             var Response = new BaseResponse
             {
