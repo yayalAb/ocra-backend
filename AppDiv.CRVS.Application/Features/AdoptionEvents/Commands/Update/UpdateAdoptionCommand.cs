@@ -56,118 +56,118 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
         var UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse();
 
         var validator = new CreateAdoptionCommandValidetor(_adoptionEventRepository);
-        // var validationResult = await validator.ValidateAsync(request, cancellationToken);
-        // if (validationResult.Errors.Count > 0)
-        // {
-        //     UpdateAdoptionCommandResponse.Success = false;
-        //     UpdateAdoptionCommandResponse.ValidationErrors = new List<string>();
-        //     foreach (var error in validationResult.Errors)
-        //         UpdateAdoptionCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-        //     UpdateAdoptionCommandResponse.Message = UpdateAdoptionCommandResponse.ValidationErrors[0];
-        // }
-        // else if (UpdateAdoptionCommandResponse.Success)
-        // {
-        try
+        var validationResult = await validator.ValidateAsync(request, cancellationToken);
+        if (validationResult.Errors.Count > 0)
         {
-            request.Event.EventType = "Adoption";
-            request.AdoptiveFather.SexLookupId = _LookupsRepo.GetAll().Where(l => l.Key == "sex")
-                                                .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
-                                                    || EF.Functions.Like(l.ValueStr, "%Dhiira%")
-                                                    || EF.Functions.Like(l.ValueStr, "%Male%"))
-                                                .Select(l => l.Id).FirstOrDefault();
-
-            request.AdoptiveMother.SexLookupId = _LookupsRepo.GetAll().Where(l => l.Key == "sex")
-                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
-                                                        || EF.Functions.Like(l.ValueStr, "%Dubara%")
-                                                        || EF.Functions.Like(l.ValueStr, "%Female%"))
-                                                    .Select(l => l.Id).FirstOrDefault();
-            request.Event.EventDateEt = request.CourtCase.ConfirmedDateEt;
-
-            var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
-            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
-            var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
-            adoptionEvent.Event.EventType = "Adoption";
-            // if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
-            // {
-            //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
-            //     selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
-            //     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
-            //     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
-            //     selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveFather?.EducationalStatusLookupId;
-            //     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveFather?.TypeOfWorkLookupId;
-            //     selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveFather?.MarriageStatusLookupId;
-            //     selectedperson.NationLookupId = adoptionEvent.AdoptiveFather?.NationLookupId;
-            //     adoptionEvent.AdoptiveFather = selectedperson;
-            // }
-            // if (adoptionEvent.AdoptiveMother?.Id != null && adoptionEvent.AdoptiveMother?.Id != Guid.Empty)
-            // {
-            //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
-            //     selectedperson.NationalId = adoptionEvent.AdoptiveMother?.NationalId;
-            //     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveMother?.NationalityLookupId;
-            //     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveMother?.ReligionLookupId;
-            //     selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveMother?.EducationalStatusLookupId;
-            //     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveMother?.TypeOfWorkLookupId;
-            //     selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveMother?.MarriageStatusLookupId;
-            //     selectedperson.NationLookupId = adoptionEvent.AdoptiveMother?.NationLookupId;
-            //     adoptionEvent.AdoptiveMother = selectedperson;
-            // }
-            // if (adoptionEvent.Event.EventOwener?.Id != null && adoptionEvent.Event.EventOwener?.Id != Guid.Empty)
-            // {
-            //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.Event.EventOwener.Id);
-            //     selectedperson.NationalId = adoptionEvent.Event?.EventOwener?.NationalId;
-            //     selectedperson.NationalityLookupId = adoptionEvent.Event?.EventOwener?.NationalityLookupId;
-            //     selectedperson.ReligionLookupId = adoptionEvent.Event?.EventOwener?.ReligionLookupId;
-            //     selectedperson.EducationalStatusLookupId = adoptionEvent.Event?.EventOwener?.EducationalStatusLookupId;
-            //     selectedperson.TypeOfWorkLookupId = adoptionEvent.Event?.EventOwener?.TypeOfWorkLookupId;
-            //     selectedperson.MarriageStatusLookupId = adoptionEvent.Event?.EventOwener?.MarriageStatusLookupId;
-            //     selectedperson.NationLookupId = adoptionEvent.Event?.EventOwener?.NationLookupId;
-            //     adoptionEvent.Event.EventOwener = selectedperson;
-            // }
-            // _adoptionEventRepository.EFUpdate(adoptionEvent);
-            // if (!request.IsFromCommand)
-            // {
-            //     await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
-
-            // }
-            var personIds = new PersonIdObj
-            {
-                MotherId = adoptionEvent.AdoptiveMother.Id,
-                FatherId = adoptionEvent.AdoptiveFather.Id,
-                ChildId = adoptionEvent.Event.EventOwener.Id
-            };
-            if (!request.IsFromCommand)
-            {
-                adoptionEvent.Event.EventSupportingDocuments = null;
-                if (adoptionEvent.Event.PaymentExamption != null)
-                {
-                    adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
-                }
-                _adoptionEventRepository.EFUpdate(adoptionEvent);
-                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
-                var result = await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
-                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
-
-            }
-            else
-            {
-                _adoptionEventRepository.EFUpdate(adoptionEvent);
-                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
-                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
-                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
-            }
-            // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
-            UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
+            UpdateAdoptionCommandResponse.Success = false;
+            UpdateAdoptionCommandResponse.ValidationErrors = new List<string>();
+            foreach (var error in validationResult.Errors)
+                UpdateAdoptionCommandResponse.ValidationErrors.Add(error.ErrorMessage);
+            UpdateAdoptionCommandResponse.Message = UpdateAdoptionCommandResponse.ValidationErrors[0];
         }
-        catch (Exception ex)
+        else if (UpdateAdoptionCommandResponse.Success)
         {
-            UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse
+            try
             {
-                Success = false,
-                Message = ex.Message
-            };
-            // }
+                request.Event.EventType = "Adoption";
+                request.AdoptiveFather.SexLookupId = _LookupsRepo.GetAll().Where(l => l.Key == "sex")
+                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                        || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                        || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                    .Select(l => l.Id).FirstOrDefault();
+
+                request.AdoptiveMother.SexLookupId = _LookupsRepo.GetAll().Where(l => l.Key == "sex")
+                                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                                        .Select(l => l.Id).FirstOrDefault();
+                request.Event.EventDateEt = request.CourtCase.ConfirmedDateEt;
+
+                var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
+                adoptionEvent.Event.EventType = "Adoption";
+                // if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
+                // {
+                //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
+                //     selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
+                //     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
+                //     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
+                //     selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveFather?.EducationalStatusLookupId;
+                //     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveFather?.TypeOfWorkLookupId;
+                //     selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveFather?.MarriageStatusLookupId;
+                //     selectedperson.NationLookupId = adoptionEvent.AdoptiveFather?.NationLookupId;
+                //     adoptionEvent.AdoptiveFather = selectedperson;
+                // }
+                // if (adoptionEvent.AdoptiveMother?.Id != null && adoptionEvent.AdoptiveMother?.Id != Guid.Empty)
+                // {
+                //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
+                //     selectedperson.NationalId = adoptionEvent.AdoptiveMother?.NationalId;
+                //     selectedperson.NationalityLookupId = adoptionEvent.AdoptiveMother?.NationalityLookupId;
+                //     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveMother?.ReligionLookupId;
+                //     selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveMother?.EducationalStatusLookupId;
+                //     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveMother?.TypeOfWorkLookupId;
+                //     selectedperson.MarriageStatusLookupId = adoptionEvent.AdoptiveMother?.MarriageStatusLookupId;
+                //     selectedperson.NationLookupId = adoptionEvent.AdoptiveMother?.NationLookupId;
+                //     adoptionEvent.AdoptiveMother = selectedperson;
+                // }
+                // if (adoptionEvent.Event.EventOwener?.Id != null && adoptionEvent.Event.EventOwener?.Id != Guid.Empty)
+                // {
+                //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.Event.EventOwener.Id);
+                //     selectedperson.NationalId = adoptionEvent.Event?.EventOwener?.NationalId;
+                //     selectedperson.NationalityLookupId = adoptionEvent.Event?.EventOwener?.NationalityLookupId;
+                //     selectedperson.ReligionLookupId = adoptionEvent.Event?.EventOwener?.ReligionLookupId;
+                //     selectedperson.EducationalStatusLookupId = adoptionEvent.Event?.EventOwener?.EducationalStatusLookupId;
+                //     selectedperson.TypeOfWorkLookupId = adoptionEvent.Event?.EventOwener?.TypeOfWorkLookupId;
+                //     selectedperson.MarriageStatusLookupId = adoptionEvent.Event?.EventOwener?.MarriageStatusLookupId;
+                //     selectedperson.NationLookupId = adoptionEvent.Event?.EventOwener?.NationLookupId;
+                //     adoptionEvent.Event.EventOwener = selectedperson;
+                // }
+                // _adoptionEventRepository.EFUpdate(adoptionEvent);
+                // if (!request.IsFromCommand)
+                // {
+                //     await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+
+                // }
+                var personIds = new PersonIdObj
+                {
+                    MotherId = adoptionEvent.AdoptiveMother.Id,
+                    FatherId = adoptionEvent.AdoptiveFather.Id,
+                    ChildId = adoptionEvent.Event.EventOwener.Id
+                };
+                if (!request.IsFromCommand)
+                {
+                    adoptionEvent.Event.EventSupportingDocuments = null;
+                    if (adoptionEvent.Event.PaymentExamption != null)
+                    {
+                        adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
+                    }
+                    _adoptionEventRepository.EFUpdate(adoptionEvent);
+                    var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
+                    var result = await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+                    var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                    _eventDocumentService.savePhotos(separatedDocs.userPhotos);
+                    _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+
+                }
+                else
+                {
+                    _adoptionEventRepository.EFUpdate(adoptionEvent);
+                    var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
+                    _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
+                    _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                }
+                // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
+                UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
+            }
+            catch (Exception ex)
+            {
+                UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse
+                {
+                    Success = false,
+                    Message = ex.Message
+                };
+            }
         }
         return UpdateAdoptionCommandResponse;
     }
