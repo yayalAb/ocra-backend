@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKeyForDropDown;
+using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByParentId;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -114,6 +115,13 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<PaginatedList<LookupByKeyDTO>> GetByKey([FromQuery] GetLookupByKeyQuery query)
         {
             return await _mediator.Send(query);
+        }
+        [HttpGet]
+        [Route("ByParentId/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<LookupByKeyDTO>> GetByKey(Guid id)
+        {
+            return await _mediator.Send(new GetLookupByParentIdQuery { Id = id });
         }
 
 

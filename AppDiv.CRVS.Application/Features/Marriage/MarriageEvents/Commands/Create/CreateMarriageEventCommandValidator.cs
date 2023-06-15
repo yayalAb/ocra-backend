@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             var fieldNames =
             new List<string>{
 
-                "MarriageTypeId","ApplicationId","BrideInfo",
+                "MarriageTypeId","BrideInfo",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName",
                     "BrideInfo.BirthDateEt",
                     "BrideInfo.NationalId",
@@ -58,23 +58,20 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
                     "Event.EventOwener.NationLookupId"
             };
-            foreach (var lookupFeild in lookupFeilds)
-            {
-                var rule = RuleFor(GetNestedProperty<CreateMarriageEventCommand>(lookupFeild))
-                    .Cascade(CascadeMode.StopOnFirstFailure)
-                    .Must(BeFoundInLookupTable)
-                    .WithMessage("{PropertyName} with the provided id is not found");
-
-
-            }
             foreach (var fieldName in fieldNames)
             {
                 var rule = RuleFor(GetNestedProperty<CreateMarriageEventCommand>(fieldName))
-                    .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .WithMessage("{PropertyName} must not be null.")
                     .NotEmpty()
                     .WithMessage("{PropertyName} must not be empty.");
+
+            }
+            foreach (var lookupFeild in lookupFeilds)
+            {
+                var rule = RuleFor(GetNestedProperty<CreateMarriageEventCommand>(lookupFeild))
+                    .Must(BeFoundInLookupTable)
+                    .WithMessage("{PropertyName} with the provided id is not found");
 
 
             }
@@ -85,14 +82,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             foreach (var addressFeild in addressFeilds)
             {
                 var rule = RuleFor(GetNestedProperty<CreateMarriageEventCommand>(addressFeild))
-                    .Cascade(CascadeMode.StopOnFirstFailure)
                     .MustAsync(BeFoundInAddressTable)
                     .WithMessage("{PropertyName} with the provided id is not found");
 
 
             }
             RuleFor(e => e.Event.CivilRegOfficerId)
-                .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotNull().WithMessage("civilRegOfficerId cannot be null")
                 .NotEmpty().WithMessage("civilRegOfficerId cannot be empty")
                 .Must(BeFoundInPersonalInfoTable).WithMessage("civilRegistrar officer with the provided id is not found");
@@ -126,7 +121,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
                 RuleFor(e => e.Event.EventSupportingDocuments)
-                .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotNull()
                 .NotEmpty()
                 .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.BrideInfo.Id, "wife")).WithMessage("divorce paper document should be attached if bride is a divorcee");
@@ -134,7 +128,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             When(e => isDivorcee(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
                 RuleFor(e => e.Event.EventSupportingDocuments)
-                .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotNull()
                 .NotEmpty()
                 .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.Event.EventOwener.Id, "husband")).WithMessage("divorce paper document should be attached if eventOwner(Groom) is a divorcee");
@@ -142,7 +135,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             When(e => isWidowed(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
                 RuleFor(e => e.Event.EventSupportingDocuments)
-                .Cascade(CascadeMode.StopOnFirstFailure)
                 .NotNull()
                 .NotEmpty()
                 .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
@@ -150,14 +142,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
            {
                RuleFor(e => e.Event.EventSupportingDocuments)
-               .Cascade(CascadeMode.StopOnFirstFailure)
                .NotNull()
                .NotEmpty()
                .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
            });
-            When(e => !isCivilMarriage(e.MarriageTypeId), () => {
+            When(e => !isCivilMarriage(e.MarriageTypeId), () =>
+            {
                 RuleFor(e => e.ApplicationId)
-                .Must(id => id ==null).WithMessage("MarriageApplicationId must be null if marriage type is not civil marriage");
+                .Must(id => id == null).WithMessage("MarriageApplicationId must be null if marriage type is not civil marriage");
             });
             When(e => isCivilMarriage(e.MarriageTypeId), () =>
             {
@@ -177,10 +169,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
               .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
               RuleFor(e => e.Event.EventOwener.Id)
               .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
-              //   RuleFor(e => e.BrideInfo.MarriageStatusLookupId)
-              //   .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
-              //   RuleFor(e => e.Event.EventOwener.MarriageStatusLookupId)
-              //  .Must(BeUnmarried).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
           });
             When(e => !e.Event.IsExampted, () =>
             {
@@ -202,10 +190,26 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         }
 
+        private bool notEmptyGuid(object arg)
+        {
+            try
+            {
+
+                Guid.TryParse(arg.ToString(), out Guid converted);
+                return converted != Guid.Empty;
+            }
+            catch (System.Exception)
+            {
+
+                return false;
+            }
+
+        }
+
         private bool BeUnmarried(Guid? personalInfoId)
         {
             var isMarried = _marriageEventRepo.GetAll()
-                            .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId)&&!m.IsDivorced)
+                            .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId) && !m.IsDivorced)
                             .Any();
             return personalInfoId == null || !isMarried;
 
@@ -223,7 +227,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)
         {
-            return !(_marriageEventRepo.GetAllQueryableAsync().Where(m => m.ApplicationId == marriageApplicationId).Any());
+            return marriageApplicationId == null || !(_marriageEventRepo.GetAllQueryableAsync().Where(m => m.ApplicationId == marriageApplicationId).Any());
         }
 
         private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
@@ -255,24 +259,23 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             var converted = new CustomDateConverter(marriageRegDateEt).gorgorianDate;
 
 
-            return (converted - application.ApplicationDate).Days >= 15;
+            return application == null
+            || (converted - application?.ApplicationDate)?.Days >= 15;
         }
 
         private bool BeFoundInMarriageApplicationTable(Guid? applicationId)
         {
-            return applicationId != null && _marriageApplicationRepo.exists((Guid)applicationId);
+            return applicationId == null || _marriageApplicationRepo.exists((Guid)applicationId);
         }
 
         private bool isCivilMarriage(Guid marriageTypeId)
         {
             var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
-            if (marriageType == null)
-            {
-                return false;
-            }
-            return marriageType.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Civil].ToString()!.ToLower()
-                    );
+            return marriageType == null ||
+             marriageType.ValueStr.ToLower()
+                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Civil].or!.ToLower())
+                    || marriageType.ValueStr.ToLower()
+                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Civil].am!.ToLower());
             // return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
             //  || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
             //  || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();
@@ -343,16 +346,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     );
 
         }
-        // public bool BeUnmarried(Guid marriageStatusId)
-        // {
-        //     var marriageStatus = _lookupRepo.GetLookupById(marriageStatusId);
-        //     if (marriageStatus == null)
-        //     {
-        //         return false;
-        //     }
-        //     return !(marriageStatus.ValueStr.ToLower()
-        //             .Contains(EnumDictionary.marriageStatusDict[MarriageStatus.married].ToString()!.ToLower()));
-        // }
 
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {
@@ -374,8 +367,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             body = Expression.Convert(body, typeof(object));
             return Expression.Lambda<Func<T, object>>(body, param);
         }
-
-
 
 
     }

@@ -179,7 +179,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddSupportingDocumentRequest, SupportingDocument>();
             CreateMap<AddPaymentExamptionDTO, PaymentExamption>();
             CreateMap<BirthEvent, AddBirthEventRequest>().ReverseMap();
-            CreateMap<BirthEvent, BirthEventDTO>().ReverseMap();
+            CreateMap<BirthEvent, BirthEventDTO>()
+            .ReverseMap();
 
             CreateMap<BirthNotification, AddBirthNotificationRequest>().ReverseMap();
             CreateMap<BirthNotification, BirthNotificationDTO>().ReverseMap();
