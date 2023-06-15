@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? EventDateEt { get; set; }
         public string EventRegDateEt { get; set; }
 
-        public Guid EventAddressId { get; set; }
+        public Guid? EventAddressId { get; set; }
         public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
