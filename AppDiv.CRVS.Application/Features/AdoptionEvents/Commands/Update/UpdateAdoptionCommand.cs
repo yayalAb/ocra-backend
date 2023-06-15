@@ -184,7 +184,8 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
                 var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
-                adoptionEvent.Event.EventType = "Adoption";
+                adoptionEvent.Event.EventAddressId = adoptionEvent.CourtCase.Court.AddressId;
+
                 // if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
                 // {
                 //     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
@@ -253,7 +254,10 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     _adoptionEventRepository.EFUpdate(adoptionEvent);
                     var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
                     _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
-                    _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                    if (!adoptionEvent.Event.IsExampted)
+                    {
+                        _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Birth");
+                    }
                 }
                 // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
                 UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
