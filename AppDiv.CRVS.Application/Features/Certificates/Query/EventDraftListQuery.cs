@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                eventByCivilReg
                               .Select(e => new PaidCertificateDTO
                               {
-                                  EventId = e.BirthEvent == null ? e.DeathEventNavigation.Id == null ? e.AdoptionEvent == null ?
+                                  EventId = e.BirthEvent == null ? e.DeathEventNavigation == null ? e.AdoptionEvent == null ?
                                   e.MarriageEvent == null ? e.DivorceEvent == null ? Guid.Empty : e.DivorceEvent.Id : e.MarriageEvent.Id :
                                   e.AdoptionEvent.Id : e.DeathEventNavigation.Id : e.BirthEvent.Id,
                                   CertificateId = e.CertificateId,
