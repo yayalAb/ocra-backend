@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Service
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<IdentityService> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IConfiguration _configuration;
+        // private readonly IConfiguration _configuration;
         // private readonly TokenGeneratorService _tokenGeneratorService;
 
         public IdentityService(UserManager<ApplicationUser> userManager, ILogger<IdentityService> logger, SignInManager<ApplicationUser> signInManager)
@@ -29,21 +29,25 @@ namespace AppDiv.CRVS.Application.Service
         public async Task<(Result result, IList<string>? roles, string? userId)> AuthenticateUser(string userName, string password)
         {
             var user = await _userManager.FindByNameAsync(userName);
-            var authResult = await _signInManager.PasswordSignInAsync(user, password, true, true);
-            if (authResult.IsLockedOut)
+            if (user != null)
             {
-                return (Result.Failure(new string[] { "AccountLocked!:\n you have excedded the maximum limit of login attempts please contact the Administrator" }), null, null);
+                var authResult = await _signInManager.PasswordSignInAsync(user, password, true, true);
+                if (authResult.IsLockedOut)
+                {
+                    return (Result.Failure(new string[] { "AccountLocked!:\n you have excedded the maximum limit of login attempts please contact the Administrator" }), null, null);
+                }
+
+                if (await _userManager.CheckPasswordAsync(user, password))
+                {
+                    var userRoles = await _userManager.GetRolesAsync(user);
+
+
+                    return (Result.Success(), userRoles, user.Id);
+
+
+                }
             }
 
-            if (user != null && await _userManager.CheckPasswordAsync(user, password))
-            {
-                var userRoles = await _userManager.GetRolesAsync(user);
-
-
-                return (Result.Success(), userRoles, user.Id);
-
-
-            }
 
             string[] errors = new string[] { "Invalid login" };
 
