@@ -108,14 +108,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                 HusbandId = marriageEvent.Event.EventOwener.Id,
                                 WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
                             };
+                            marriageEvent.Event.EventSupportingDocuments = null;
+                            if (marriageEvent.Event.PaymentExamption != null)
+                            {
+                                marriageEvent.Event.PaymentExamption.SupportingDocuments = null;
+                            }
+                            await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                             if (!request.IsFromCommand)
                             {
-                                marriageEvent.Event.EventSupportingDocuments = null;
-                                if (marriageEvent.Event.PaymentExamption != null)
-                                {
-                                    marriageEvent.Event.PaymentExamption.SupportingDocuments = null;
-                                }
-                                await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                                 var result = await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
@@ -125,12 +125,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             }
                             else
                             {
-                                await _marriageEventRepository.EFUpdateAsync(marriageEvent);
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _marriageEventRepository.SaveChangesAsync(cancellationToken);
-                                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
+                                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Marriage");
-                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
+                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Marriage");
                             }
                             // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);

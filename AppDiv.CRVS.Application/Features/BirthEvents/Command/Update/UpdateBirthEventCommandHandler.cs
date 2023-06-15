@@ -75,11 +75,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 birthEvent.Event.EventSupportingDocuments = null;
                                 if (birthEvent.Event.PaymentExamption != null)
                                 {
-                                        birthEvent.Event.PaymentExamption.SupportingDocuments = null;
-                                    }
+                                    birthEvent.Event.PaymentExamption.SupportingDocuments = null;
+                                }
+                                _birthEventRepository.UpdateAll(birthEvent);
                                 if (!request.IsFromCommand)
                                 {
-                                    _birthEventRepository.UpdateAll(birthEvent);
                                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                     var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
@@ -90,12 +90,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 else
                                 {
                                     // _birthEventRepository.Update(birthEvent);
-                                    _birthEventRepository.UpdateAll(birthEvent);
+                                    // _birthEventRepository.UpdateAll(birthEvent);
                                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                     var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                    var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
+                                    var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                     _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
-                                    _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                                    _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
                                 }
                                 // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 await transaction.CommitAsync();

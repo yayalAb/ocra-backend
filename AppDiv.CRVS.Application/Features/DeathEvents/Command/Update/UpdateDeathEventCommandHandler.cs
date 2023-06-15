@@ -71,14 +71,14 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                                 DeceasedId = deathEvent.Event.EventOwener.Id,
                                 RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };
-                                deathEvent.Event.EventSupportingDocuments = null;
-                                if (deathEvent.Event.PaymentExamption != null)
-                                {
-                                    deathEvent.Event.PaymentExamption.SupportingDocuments = null;
-                                }
+                            deathEvent.Event.EventSupportingDocuments = null;
+                            if (deathEvent.Event.PaymentExamption != null)
+                            {
+                                deathEvent.Event.PaymentExamption.SupportingDocuments = null;
+                            }
+                            _deathEventRepository.Update(deathEvent);
                             if (!request.IsFromCommand)
                             {
-                                _deathEventRepository.Update(deathEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
@@ -88,12 +88,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             }
                             else
                             {
-                                _deathEventRepository.Update(deathEvent);
+                                // _deathEventRepository.Update(deathEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
-                                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
+                                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Death");
-                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
+                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
                             }
                             // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);
