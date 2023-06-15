@@ -24,12 +24,12 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .NotEmpty()
-                    .Must((e, childMiddleName) => BeEqual(childMiddleName, e.AdoptiveFather!.MiddleName)).WithMessage("the Child's MiddleName must be same as the Adoptive Father's MiddleName");
+                    .Must((e, childMiddleName) => BeEqual(childMiddleName, e.AdoptiveFather!.FirstName)).WithMessage("the Child's MiddleName must be same as the Adoptive Father's name");
                 RuleFor(e => e.Event.EventOwener.LastName)
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .NotEmpty()
-                    .Must((e, childLastName) => BeEqual(childLastName, e.AdoptiveFather!.LastName)).WithMessage("the Child's lastname must be same as the Adoptive Father's Lastname");
+                    .Must((e, childLastName) => BeEqual(childLastName, e.AdoptiveFather!.MiddleName)).WithMessage("the Child's lastname must be same as the Adoptive Father's MiddleName");
 
             });
             When(e => e.AdoptiveFather == null && e.AdoptiveMother != null, () =>
@@ -86,12 +86,12 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update
                 .WithMessage("{PropertyName} is required.")
                 .NotEmpty()
                 .WithMessage("{PropertyName} must not be empty.");
-            RuleFor(p => p.Event.PaymentExamption.Id)
-                .Cascade(CascadeMode.StopOnFirstFailure)
-                .NotNull()
-                .WithMessage("{PropertyName} is required.")
-                .NotEmpty()
-                .WithMessage("{PropertyName} must not be empty.");
+            // RuleFor(p => p.Event.PaymentExamption.Id)
+            //     .Cascade(CascadeMode.StopOnFirstFailure)
+            //     .NotNull()
+            //     .WithMessage("{PropertyName} is required.")
+            //     .NotEmpty()
+            //     .WithMessage("{PropertyName} must not be empty.");
         }
         private bool BeEqual(LanguageModel obj1, LanguageModel obj2)
         {

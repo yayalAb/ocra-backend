@@ -192,13 +192,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         private bool BeUnmarried(Guid? personalInfoId, Guid marriageId)
         {
-            var registeredMarriage = _marriageEventRepo.GetAll()
-                            .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId) && !m.IsDivorced)
-                            .ToList();
+            return personalInfoId == null || ! _marriageEventRepo.GetAll()
+                            .Where(m => 
+                            (
+                             m.BrideInfoId == personalInfoId 
+                            || m.Event.EventOwenerId == personalInfoId) && (m.Id != marriageId)&& (!m.IsDivorced))
+                            .Any();
 
-            return personalInfoId == null
-                    || registeredMarriage.Count == 0
-                    || (registeredMarriage.Count == 1 && registeredMarriage.FirstOrDefault()?.Id == marriageId);
 
         }
 
