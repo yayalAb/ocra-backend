@@ -95,7 +95,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                                                         .Select(l => l.Id).FirstOrDefault();
                                 request.Adoption.Event.EventDateEt = request.Adoption.CourtCase.ConfirmedDateEt;
 
+
                                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
+                                adoptionEvent.Event.EventAddressId = request.Adoption.CourtCase.Court.AddressId;
+
                                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);

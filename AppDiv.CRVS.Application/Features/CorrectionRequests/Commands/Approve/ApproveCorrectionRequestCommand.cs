@@ -33,17 +33,17 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
     public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, BaseResponse>
     {
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
-        private readonly IEventRepository _eventRepostory;
+        // private readonly IEventRepository _eventRepostory;
         private readonly IWorkflowService _WorkflowService;
 
         private readonly IMediator _mediator;
 
 
-        public ApproveCorrectionRequestCommandHandler(IMediator mediator, IEventRepository eventRepostory, ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
+        public ApproveCorrectionRequestCommandHandler(IMediator mediator, ICorrectionRequestRepostory CorrectionRequestRepostory, IWorkflowService WorkflowService)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
             _WorkflowService = WorkflowService;
-            _eventRepostory = eventRepostory;
+            // _eventRepostory = eventRepostory;
             _mediator = mediator;
         }
         public async Task<BaseResponse> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
