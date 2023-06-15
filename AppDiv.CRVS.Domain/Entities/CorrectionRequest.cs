@@ -15,11 +15,11 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid RequestId { get; set; }
 
         [NotMapped]
-        public JObject Description
+        public JArray Description
         {
             get
             {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(DescriptionStr) ? "{}" : DescriptionStr);
+                return JsonConvert.DeserializeObject<JArray>(string.IsNullOrEmpty(DescriptionStr) ? "{}" : DescriptionStr);
             }
             set
             {

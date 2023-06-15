@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
     public class updateCorrectionRequestCommand : IRequest<AddCorrectionRequest>
     {
         public Guid Id { get; set; }
-        public JObject? Description { get; set; }
+        public JArray? Description { get; set; }
         public JObject Content { get; set; }
     }
     public class updateCorrectionRequestCommandHandler : IRequestHandler<updateCorrectionRequestCommand, AddCorrectionRequest>

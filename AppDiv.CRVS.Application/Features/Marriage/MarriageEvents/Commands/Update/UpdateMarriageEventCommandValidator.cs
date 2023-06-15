@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             var fieldNames =
             new List<string>{
 
-                "Id","MarriageTypeId","ApplicationId","BrideInfo","BrideInfo.Id","Event.Id","Event.EventOwener.Id",
+                "Id","MarriageTypeId","BrideInfo","BrideInfo.Id","Event.Id","Event.EventOwener.Id",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDateEt",
                     "BrideInfo.NationalId",
                     "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
@@ -171,9 +171,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             When(e => !isReligionMarriage(e.MarriageTypeId), () =>
             {
                 RuleFor(e => e.BrideInfo.Id)
-                .Must(( e , brideId)=>BeUnmarried(brideId , e.Id)).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+                .Must((e, brideId) => BeUnmarried(brideId, e.Id)).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
                 RuleFor(e => e.Event.EventOwener.Id)
-               .Must(( e , groomId)=>BeUnmarried(groomId , e.Id)).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
+               .Must((e, groomId) => BeUnmarried(groomId, e.Id)).WithMessage("Groom cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
             });
             When(e => e.Event.IsExampted, () =>
             {
@@ -190,15 +190,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         }
 
-         private bool BeUnmarried(Guid? personalInfoId , Guid marriageId)
+        private bool BeUnmarried(Guid? personalInfoId, Guid marriageId)
         {
             var registeredMarriage = _marriageEventRepo.GetAll()
-                            .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId)&&!m.IsDivorced)
-                            .ToList() ;
+                            .Where(m => (m.BrideInfoId == personalInfoId || m.Event.EventOwenerId == personalInfoId) && !m.IsDivorced)
+                            .ToList();
 
-            return personalInfoId == null 
-                    || registeredMarriage.Count==0
-                    ||(registeredMarriage.Count ==1 && registeredMarriage.FirstOrDefault()?.Id ==marriageId);
+            return personalInfoId == null
+                    || registeredMarriage.Count == 0
+                    || (registeredMarriage.Count == 1 && registeredMarriage.FirstOrDefault()?.Id == marriageId);
 
         }
 

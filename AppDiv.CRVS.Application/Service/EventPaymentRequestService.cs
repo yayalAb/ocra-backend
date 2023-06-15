@@ -60,6 +60,15 @@ namespace AppDiv.CRVS.Application.Service
                 paymentCode = HelperService.GenerateRandomCode();
             }
             while (_paymentRequestRepository.GetAll().Any(x => x.PaymentCode == paymentCode));
+            string massage = "";
+            if (paymentType.ToLower() == "certificategeneration")
+            {
+                massage = " Certificate Generation";
+            }
+            else
+            {
+                massage = " Certificate " + paymentType;
+            }
             var paymentRequest = new PaymentRequest
             {
                 EventId = Event?.Id,
@@ -69,9 +78,9 @@ namespace AppDiv.CRVS.Application.Service
                 PaymentCode = paymentCode,
                 PaymentRateId = paymentRate.Id,
                 Reason = new JObject{
-                        {"en",$"for {eventType}  certificate {paymentType} payment "},
-                        { "or",$"for {eventType}  certificate {paymentType} payment "},
-                        { "am",$"for {eventType}  certificate {paymentType} payment "}
+                        {"en",$" {eventType} {massage}"},
+                        { "or",$" {eventType} {massage}"},
+                        { "am",$" {eventType} {massage}"}
                       }
             };
             await _paymentRequestRepository.InsertAsync(paymentRequest, cancellationToken);

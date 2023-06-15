@@ -37,13 +37,14 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
             var paymentRequestList = _PaymentRequestRepository.GetAll()
             .Include(x => x.Request)
             .Include(x => x.Request.CivilRegOfficer)
+            .Include(x => x.Event)
             .Where(x => x.status == false)
             .Select(x => new PaymentRequestListDTO
             {
                 Id = x.Id,
-                RequestType = x.Request.RequestType,
+                RequestType = x.Reason.Value<string>("en"),
                 Amount = x.Amount,
-                RequestedBy = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,
+                RequestedBy = x.Event.EventOwener.FirstNameLang + " " + x.Event.EventOwener.MiddleNameLang + " " + x.Event.EventOwener.LastNameLang,
                 RequestedDate = x.CreatedAt,
             });
             return
