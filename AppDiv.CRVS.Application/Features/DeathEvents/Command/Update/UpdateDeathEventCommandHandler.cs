@@ -51,6 +51,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             //supporting docs cant be updated only new (one without id) are created
                             var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
                             var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                            var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
+                            var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
 
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                             deathEvent.Event.EventType = "Death";
@@ -69,13 +71,13 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                                 DeceasedId = deathEvent.Event.EventOwener.Id,
                                 RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };
-                            if (!request.IsFromCommand)
-                            {
                                 deathEvent.Event.EventSupportingDocuments = null;
                                 if (deathEvent.Event.PaymentExamption != null)
                                 {
                                     deathEvent.Event.PaymentExamption.SupportingDocuments = null;
                                 }
+                            if (!request.IsFromCommand)
+                            {
                                 _deathEventRepository.Update(deathEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
@@ -87,6 +89,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             else
                             {
                                 _deathEventRepository.Update(deathEvent);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
                                 _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Death");

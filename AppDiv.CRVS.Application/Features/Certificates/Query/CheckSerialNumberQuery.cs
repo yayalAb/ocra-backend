@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
             var response = new BaseResponse();
             try
             {
-                var user = _user.GetSingle(request.UserId == Guid.Empty ? "2f20c2f6-b3ab-47a4-a36e-0b4fb9b94006" : request.UserId.ToString());
+                var user = _user.GetSingle(request.UserId == Guid.Empty ? "134b4daa-bfac-445d-bd45-a83048eada3b" : request.UserId.ToString());
                 var inRange = _certificateRange.GetAll().FirstOrDefault(r => r.AddressId == user.AddressId
                                                                 && request.CertificateSerialNumber.CompareTo(r.From.ToString()) >= 0
                                                                 && request.CertificateSerialNumber.CompareTo(r.To.ToString()) <= 0);

@@ -59,7 +59,9 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 //supporting docs cant be updated only new (one without id) are created
                                 var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
                                 var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
-                                /////
+                                var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
+                                var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
+
                                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
 
                                 var personIds = new PersonIdObj
@@ -70,15 +72,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                     RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
                                 };
                                 // var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
-                                if (!request.IsFromCommand)
+                                birthEvent.Event.EventSupportingDocuments = null;
+                                if (birthEvent.Event.PaymentExamption != null)
                                 {
-                                    birthEvent.Event.EventSupportingDocuments = null;
-                                    if (birthEvent.Event.PaymentExamption != null)
-                                    {
                                         birthEvent.Event.PaymentExamption.SupportingDocuments = null;
                                     }
+                                if (!request.IsFromCommand)
+                                {
                                     _birthEventRepository.UpdateAll(birthEvent);
                                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                    var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                     _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                     _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
@@ -88,11 +91,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 {
                                     // _birthEventRepository.Update(birthEvent);
                                     _birthEventRepository.UpdateAll(birthEvent);
+                                    var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                    var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                     var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
                                     _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
                                     _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                                 }
-                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 await transaction.CommitAsync();
                             }
                             catch (System.Exception)

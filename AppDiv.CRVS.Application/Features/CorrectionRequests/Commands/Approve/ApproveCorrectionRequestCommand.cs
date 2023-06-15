@@ -48,12 +48,20 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         }
         public async Task<BaseResponse> Handle(ApproveCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Comment, false, cancellationToken);
-            if (response.Item1)
+            // var executionStrategy = _CorrectionRequestRepostory.Database.CreateExecutionStrategy();
+            // return await executionStrategy.ExecuteAsync(async () =>
+            // {
+
+            //     using (var transaction = _CorrectionRequestRepostory.Database.BeginTransaction())
+            //     {
+
+            try
+
             {
-
-
-                var modifiedEvent = _CorrectionRequestRepostory.GetAll()
+                var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Comment, false, cancellationToken);
+            if (response.Item1)
+                {
+                    var modifiedEvent = _CorrectionRequestRepostory.GetAll()
                 .Include(x => x.Event)
                 .AsNoTracking()
                 .Where(x => x.RequestId == request.Id)
@@ -99,7 +107,17 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                 Success = true,
                 Message = request.IsApprove ? "Correction Request Approved Successfuly" : "Correction Request Rejected Successfuly",
             };
-            return Response;
+                // await transaction.CommitAsync();
+                return Response;
+            }
+            catch (Exception)
+            {
+                // await transaction.RollbackAsync();
+                throw;
+            }
+            //     }
+
+            // });
         }
     }
 }

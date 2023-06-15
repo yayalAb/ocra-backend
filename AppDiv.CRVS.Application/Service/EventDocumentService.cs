@@ -96,15 +96,21 @@ namespace AppDiv.CRVS.Application.Service
             var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
             var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), examptiondocFolder);
 
-
-            eventDocs?.ToList().ForEach(doc =>
+            if (eventDocs != null)
+            {
+                eventDocs?.ToList().ForEach(doc =>
             {
                 _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
             });
-            examptionDocs?.ToList().ForEach(doc =>
+            }
+            if (examptionDocs != null)
+            {
+
+                examptionDocs?.ToList().ForEach(doc =>
             {
                 _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
             });
+            }
             return true;
         }
 

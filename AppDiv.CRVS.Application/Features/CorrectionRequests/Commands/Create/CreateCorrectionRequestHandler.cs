@@ -90,27 +90,27 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
                         var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
                         await transaction.CommitAsync();
-            string? userId = _userRepository.GetAll()
-                                .Where(u => u.PersonalInfoId == CorrectionRequest.Request.CivilRegOfficerId)
-                                .Select(u => u.Id).FirstOrDefault();
-            if (userId == null)
-            {
-                throw new NotFoundException("user not found");
-            }
-            var NewTranscation = new TransactionRequestDTO
-            {
-                CurrentStep = 0,
-                ApprovalStatus = true,
-                WorkflowId = WorkflowId,
-                RequestId = CorrectionRequest.RequestId,
-                CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
-                Remark = "Correction Request"
-            };
+                        string? userId = _userRepository.GetAll()
+                                            .Where(u => u.PersonalInfoId == CorrectionRequest.Request.CivilRegOfficerId)
+                                            .Select(u => u.Id).FirstOrDefault();
+                        if (userId == null)
+                        {
+                            throw new NotFoundException("user not found");
+                        }
+                        var NewTranscation = new TransactionRequestDTO
+                        {
+                            CurrentStep = 0,
+                            ApprovalStatus = true,
+                            WorkflowId = WorkflowId,
+                            RequestId = CorrectionRequest.RequestId,
+                            CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
+                            Remark = "Correction Request"
+                        };
 
-            await _transactionService.CreateTransaction(NewTranscation);
-            await _notificationService.CreateNotification(request.CorrectionRequest.EventId, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
-                               _WorkflowService.GetReceiverGroupId(Enum.GetName<NotificationType>(NotificationType.change)!, (int)CorrectionRequest.Request.NextStep), CorrectionRequest.RequestId,
-                             userId);
+                        await _transactionService.CreateTransaction(NewTranscation);
+                        await _notificationService.CreateNotification(request.CorrectionRequest.EventId, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
+                                           _WorkflowService.GetReceiverGroupId(Enum.GetName<NotificationType>(NotificationType.change)!, (int)CorrectionRequest.Request.NextStep), CorrectionRequest.RequestId,
+                                         userId);
                         return CreateAddressCommadResponse;
                     }
                     catch (Exception)
