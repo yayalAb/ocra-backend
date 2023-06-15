@@ -33,21 +33,18 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 
                         var updateDeathEventCommandResponse = new UpdateDeathEventCommandResponse();
 
-                        if (!request.IsFromCommand)
-                        {
-                            var validator = new UpdateDeathEventCommandValidator(_eventRepository);
-                            var validationResult = await validator.ValidateAsync(request, cancellationToken);
+                        var validator = new UpdateDeathEventCommandValidator(_eventRepository);
+                        var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-                            //Check and log validation errors
-                            if (validationResult.Errors.Count > 0)
-                            {
-                                updateDeathEventCommandResponse.Success = false;
-                                updateDeathEventCommandResponse.Status = 400;
-                                updateDeathEventCommandResponse.ValidationErrors = new List<string>();
-                                foreach (var error in validationResult.Errors)
-                                    updateDeathEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                                updateDeathEventCommandResponse.Message = updateDeathEventCommandResponse.ValidationErrors[0];
-                            }
+                        //Check and log validation errors
+                        if (validationResult.Errors.Count > 0)
+                        {
+                            updateDeathEventCommandResponse.Success = false;
+                            updateDeathEventCommandResponse.Status = 400;
+                            updateDeathEventCommandResponse.ValidationErrors = new List<string>();
+                            foreach (var error in validationResult.Errors)
+                                updateDeathEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
+                            updateDeathEventCommandResponse.Message = updateDeathEventCommandResponse.ValidationErrors[0];
                         }
                         if (updateDeathEventCommandResponse.Success)
                         {

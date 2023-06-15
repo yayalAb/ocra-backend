@@ -153,8 +153,9 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
             else
             {
                 _adoptionEventRepository.EFUpdate(adoptionEvent);
+                var result = await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
-                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
+                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Adoption");
                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
             }
             // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");

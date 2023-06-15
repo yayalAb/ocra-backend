@@ -61,9 +61,9 @@ namespace AppDiv.CRVS.Application.Service
                 Directory.CreateDirectory(examptiondocFolder);
             }
             var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
-            var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
-            string[] filesToMove1 = Directory.GetFiles(sourceFolderSupp);
-            string[] filesToMove2 = Directory.GetFiles(sourceFolederExa);
+            var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), sourceFolederExa);
+            // string[] filesToMove1 = Directory.GetFiles(sourceFolderSupp);
+            // string[] filesToMove2 = Directory.GetFiles(sourceFolederExa);
 
             eventDocs?.ToList().ForEach(doc =>
             {
@@ -77,7 +77,7 @@ namespace AppDiv.CRVS.Application.Service
             });
             examptionDocs?.ToList().ForEach(doc =>
             {
-                var file = Directory.GetFiles(sourceFolderSupp, doc.Id + "*").FirstOrDefault();
+                var file = Directory.GetFiles(examptiondocFolder, doc.Id + "*").FirstOrDefault();
                 if (file != null)
                 {
                     var sorcePath = Path.Combine(fullPathExamption, Path.GetFileName(file));

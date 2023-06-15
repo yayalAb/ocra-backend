@@ -114,8 +114,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                     marriageEvent.Event.PaymentExamption.SupportingDocuments = null;
                                 }
                                 await _marriageEventRepository.EFUpdateAsync(marriageEvent);
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _marriageEventRepository.SaveChangesAsync(cancellationToken);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
@@ -124,8 +124,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             else
                             {
                                 await _marriageEventRepository.EFUpdateAsync(marriageEvent);
+                                var result = await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
-                                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
+                                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Marriage");
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                             }
                             // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
