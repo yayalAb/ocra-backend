@@ -180,7 +180,6 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddPaymentExamptionDTO, PaymentExamption>();
             CreateMap<BirthEvent, AddBirthEventRequest>().ReverseMap();
             CreateMap<BirthEvent, BirthEventDTO>()
-            .ForMember(dest => dest.FacilityLookupStr, opt => opt.Ignore())
             .ReverseMap();
 
             CreateMap<BirthNotification, AddBirthNotificationRequest>().ReverseMap();
