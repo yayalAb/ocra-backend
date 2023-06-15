@@ -125,12 +125,22 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
         }
 
-        public async Task UpdateAll(BirthEvent entity)
+        public void UpdateAll(BirthEvent entity)
         {
             try
             {
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
+                entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
+                                                .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Dhiira%")
+                                                    || EF.Functions.Like(l.ValueStr, "%Male%"))
+                                                .Select(l => l.Id).FirstOrDefault();
+                entity.Mother.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
+                                        .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
+                                            || EF.Functions.Like(l.ValueStr, "%Dubara%")
+                                            || EF.Functions.Like(l.ValueStr, "%Female%"))
+                                        .Select(l => l.Id).FirstOrDefault();
                 // if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 // {
                 //     PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);
@@ -183,10 +193,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
                 //     entity.Mother = selectedperson;
                 // }
-                _dbContext.BirthEvents.Update(entity);
+                // _dbContext.BirthEvents.Update(entity);
 
-
-                // base.Update(entity);
+                base.Update(entity);
             }
             catch (System.Exception)
             {

@@ -147,7 +147,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                             Description = file.Description,
                             Label = file.Label,
                             Type = file.Type,
-                            base64String = file.base64String
+                            base64String = file?.base64String
                         };
                         supportingDocuments.Add(file);
                         newFile.base64String = "null";

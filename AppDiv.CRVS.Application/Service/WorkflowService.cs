@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Service
                                ITransactionService TransactionService,
                                IWorkflowRepository workflowRepository,
                                IRequestRepostory requestRepostory,
-                            //    IWorkflowService workflowService ,
+                               //    IWorkflowService workflowService ,
                                IUserRepository userRepository,
                                IStepRepository stepRepostory)
         {
@@ -108,6 +108,7 @@ namespace AppDiv.CRVS.Application.Service
             var request = _requestRepostory.GetAll()
             .Include(x => x.AuthenticationRequest).ThenInclude(a => a.Certificate)
             .Include(x => x.CorrectionRequest)
+            .Include(x => x.Notification)
             .Include(x => x.PaymentExamptionRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
             Guid ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
@@ -129,17 +130,23 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
-                        request.currentStep = nextStep;
-                        request.NextStep = this.GetNextStep(workflowType, nextStep, true);
-                        _requestRepostory.Update(request);
-                        _requestRepostory.SaveChanges();
                         string? userId = _userRepository.GetAll()
                                             .Where(u => u.PersonalInfoId == request.CivilRegOfficerId)
                                             .Select(u => u.Id).FirstOrDefault();
+
+
+                 
                         if (userId == null)
                         {
                             throw new NotFoundException("user not found");
                         }
+                        request.currentStep = nextStep;
+                        request.NextStep = this.GetNextStep(workflowType, nextStep, true);
+                        request.Notification.MessageStr = Remark;
+                        request.Notification.GroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
+                        request.Notification.SenderId = userId;
+                        _requestRepostory.Update(request);
+                        _requestRepostory.SaveChanges();
                         var NewTranscation = new TransactionRequestDTO
                         {
                             CurrentStep = 0,
@@ -151,9 +158,9 @@ namespace AppDiv.CRVS.Application.Service
                         };
 
                         await _TransactionService.CreateTransaction(NewTranscation);
-                        await notificationService.CreateNotification(request.Id, workflowType,Remark,
-                                           this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                         userId);
+                        // await notificationService.CreateNotification(request.Id, workflowType, Remark,
+                                        //    this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
+                                        //  userId);
 
                     }
                     catch (Exception exp)

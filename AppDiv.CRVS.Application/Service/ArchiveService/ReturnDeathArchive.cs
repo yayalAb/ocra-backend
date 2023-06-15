@@ -49,9 +49,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             // var causeOfDeath = JArray.Parse(death?.CauseOfDeath);
             return new DeathNotificationArchive
             {
-                CauseOfDeathOne = (string?)death?.CauseOfDeathArray?.ElementAtOrDefault(0)?.Value<string>("reason"),
-                CauseOfDeathTwo = (string?)death?.CauseOfDeathArray?.ElementAtOrDefault(1)?.Value<string>("reason"),
-                CauseOfDeathThree = (string?)death?.CauseOfDeathArray?.ElementAtOrDefault(2)?.Value<string>("reason"),
+                CauseOfDeath = death?.CauseOfDeathArray.Select(c => c?.Value<string>("reason")).ToList(),
+                // CauseOfDeathTwo = (string?)death?.CauseOfDeathArray?.ElementAtOrDefault(1)?.Value<string>("reason"),
+                // CauseOfDeathThree = (string?)death?.CauseOfDeathArray?.ElementAtOrDefault(2)?.Value<string>("reason"),
                 CauseOfDeathInfoTypeOr = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(death?.CauseOfDeathInfoTypeLookupId),
                 CauseOfDeathInfoTypeAm = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(death?.CauseOfDeathInfoTypeLookupId),
                 DeathNotificationSerialNumber = death?.DeathNotificationSerialNumber,

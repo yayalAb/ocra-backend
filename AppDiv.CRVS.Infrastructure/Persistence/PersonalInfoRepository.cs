@@ -23,7 +23,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await base.GetAsync(id);
         }
-        public IQueryable<PersonalInfo> GetAllQueryable(){
+        public IQueryable<PersonalInfo> GetAllQueryable()
+        {
             return dbContext.PersonalInfos;
         }
 
@@ -61,9 +62,41 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return dbContext.PersonalInfos.Where(p => p.Id == id).Any();
         }
-       
+
         public async Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query)
         {
+            _elasticClient.Indices.Delete("personal_info");
+            if (!_elasticClient.Indices.Exists("personal_info").Exists)
+            {
+
+                var indexRes = _elasticClient
+                   .IndexMany<PersonalInfoIndex>(dbContext.PersonalInfos
+                       .Select(p => new PersonalInfoIndex
+                       {
+                           Id = p.Id,
+                           FirstNameStr = p.FirstNameStr,
+                           FirstNameOr = p.FirstName == null ? null : p.FirstName.Value<string>("or"),
+                           FirstNameAm = p.FirstName == null ? null : p.FirstName.Value<string>("am"),
+                           MiddleNameStr = p.MiddleNameStr,
+                           MiddleNameOr = p.MiddleName == null ? null : p.MiddleName.Value<string>("or"),
+                           MiddleNameAm = p.MiddleName == null ? null : p.MiddleName.Value<string>("am"),
+                           LastNameStr = p.LastNameStr,
+                           LastNameOr = p.LastName == null ? null : p.LastName.Value<string>("or"),
+                           LastNameAm = p.LastName == null ? null : p.LastName.Value<string>("am"),
+                           NationalId = p.NationalId,
+                           PhoneNumber = p.PhoneNumber,
+                           BirthDate = p.BirthDate,
+                           GenderOr = p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("or"),
+                           GenderAm = p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("am"),
+                           GenderStr = p.SexLookup.ValueStr,
+                           TypeOfWorkStr = p.TypeOfWorkLookup.ValueStr,
+                           TitleStr = p.TitleLookup.ValueStr,
+                           MarriageStatusStr = p.MarraigeStatusLookup.ValueStr,
+                           AddressOr = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
+                           AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
+
+                       }).ToList(), "personal_info");
+            }
             var response = _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
                     .Index("personal_info")
                     .Source(src => src
@@ -89,7 +122,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         .Field(f => f.BirthDate)
                         .LessThanOrEquals(DateTime.Now.AddYears(-query.age)
                         )) : null,
-                        query.gender != "null" && query.gender !=null && query.gender != string.Empty?
+                        query.gender != "null" && query.gender != null && query.gender != string.Empty ?
                         mu => mu.Wildcard(w => w
                     .Field(f => f.GenderStr).Value($"*{query.gender}*")
                     ) : null
@@ -153,7 +186,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 return new List<PersonSearchResponse>();
             }
-            // _elasticClient.Indices.Delete("personal_info");
+            _elasticClient.Indices.Delete("personal_info");
             if (!_elasticClient.Indices.Exists("personal_info").Exists)
             {
 
@@ -296,6 +329,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             && queryParams.LastNameAm == null && queryParams.LastNameOr == null
             && queryParams.NationalId == null && queryParams.PhoneNumber == null;
         }
-       
+
     }
 }

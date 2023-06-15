@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Service
             var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", eventType);
             var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", eventType);
             var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
-            var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
+            var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), examptiondocFolder);
 
 
             eventDocs?.ToList().ForEach(doc =>
@@ -50,6 +50,16 @@ namespace AppDiv.CRVS.Application.Service
             var sourceFolederExa = Path.Combine("Resources", "CorrectionRequestExamptionDocuments", eventType);
             var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", eventType);
             var examptiondocFolder = Path.Combine("Resources", "ExamptionDocuments", eventType);
+            if (!Directory.Exists(supportingDocFolder))
+            {
+                // If folder does not exist, create it
+                Directory.CreateDirectory(supportingDocFolder);
+            }
+            if (!Directory.Exists(examptiondocFolder))
+            {
+                // If folder does not exist, create it
+                Directory.CreateDirectory(examptiondocFolder);
+            }
             var fullPathSupporting = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
             var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), supportingDocFolder);
             string[] filesToMove1 = Directory.GetFiles(sourceFolderSupp);
@@ -57,14 +67,22 @@ namespace AppDiv.CRVS.Application.Service
 
             eventDocs?.ToList().ForEach(doc =>
             {
-                var destFile = Path.Combine(fullPathSupporting, Path.GetFileName(filesToMove1.Where(n => n.Contains(doc.Id.ToString())).FirstOrDefault()));
-                File.Move(filesToMove1.Where(n => n.Contains(doc.Id.ToString())).FirstOrDefault(), destFile);
+                var file = Directory.GetFiles(sourceFolderSupp, doc.Id + "*").FirstOrDefault();
+                if (file != null)
+                {
+                    var destFile = Path.Combine(fullPathSupporting, Path.GetFileName(file));
+                    File.Move(file, destFile);
+                }
                 // _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
             });
             examptionDocs?.ToList().ForEach(doc =>
             {
-                var sorcePath = Path.Combine(Directory.GetCurrentDirectory(), sourceFolederExa, doc.Id.ToString());
-                File.Move(filesToMove1.Where(n => n == doc.Id.ToString()).FirstOrDefault(), fullPathExamption);
+                var file = Directory.GetFiles(sourceFolderSupp, doc.Id + "*").FirstOrDefault();
+                if (file != null)
+                {
+                    var sorcePath = Path.Combine(fullPathExamption, Path.GetFileName(file));
+                    File.Move(file, fullPathExamption);
+                }
                 // _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathExamption, FileMode.Create);
             });
             return true;
@@ -130,14 +148,22 @@ namespace AppDiv.CRVS.Application.Service
         public void MovePhotos(Dictionary<string, string> personPhotos, string eventType)
         {
             var folder = Path.Combine("Resources", "PersonPhotos");
+            if (!Directory.Exists(folder))
+            {
+                // If folder does not exist, create it
+                Directory.CreateDirectory(folder);
+            }
             var sourceFolder = Path.Combine("Resources", "CorrectionRequestSupportingDocuments", eventType);
             string[] filesToMove = Directory.GetFiles(sourceFolder);
             personPhotos.ToList().ForEach(p =>
             {
-                var destFullPath = Path.Combine(Directory.GetCurrentDirectory(), folder, p.Key + Path.GetExtension(filesToMove.Where(n => n.Contains(p.Key)).FirstOrDefault()));
-                var sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), sourceFolder, p.Value);
-
-                File.Move(filesToMove.Where(n => n.Contains(p.Value)).FirstOrDefault(), destFullPath);
+                var file = Directory.GetFiles(sourceFolder, p.Value + "*").FirstOrDefault();
+                // var sourceFullPath = Path.Combine(Directory.GetCurrentDirectory(), sourceFolder, p.Value);
+                if (file != null)
+                {
+                    var destFullPath = Path.Combine(Directory.GetCurrentDirectory(), folder, p.Key + Path.GetExtension(file));
+                    File.Move(file, destFullPath);
+                }
                 // _fileService.UploadBase64FileAsync(p.Value, p.Key, fullPath, FileMode.Create);
             });
 

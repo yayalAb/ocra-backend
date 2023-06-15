@@ -13,6 +13,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public DatabaseFacade Database { get; }
         Task<BirthEvent> GetWithIncludedAsync(Guid id);
         Task InsertOrUpdateAsync(BirthEvent entity, CancellationToken cancellationToken);
-        public Task UpdateAll(BirthEvent entity);
+        public void UpdateAll(BirthEvent entity);
     }
 }

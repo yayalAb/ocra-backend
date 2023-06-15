@@ -55,6 +55,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
 
                 var modifiedEvent = _CorrectionRequestRepostory.GetAll()
                 .Include(x => x.Event)
+                .AsNoTracking()
                 .Where(x => x.RequestId == request.Id)
                 .Include(x => x.Request).FirstOrDefault();
                 var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
@@ -63,6 +64,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                     UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
                     AdoptionCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(AdoptionCommand);
+                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
                 else if (modifiedEvent.Event.EventType == "Birth")
                 {
@@ -81,12 +83,14 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                     UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
                     DivorceCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(DivorceCommand);
+                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
                 else if (modifiedEvent.Event.EventType == "Marriage")
                 {
                     UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
                     MarriageCommand.IsFromCommand = true;
                     var response1 = await _mediator.Send(MarriageCommand);
+                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
                 // await _eventRepostory.SaveChangesAsync(cancellationToken);
             }
