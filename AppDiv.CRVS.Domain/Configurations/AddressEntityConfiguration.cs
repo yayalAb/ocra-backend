@@ -26,8 +26,6 @@ namespace AppDiv.CRVS.Domain.Configuration
             builder.HasMany(m => m.CertificateSerialRanges)
                 .WithOne(n => n.Address)
                 .HasForeignKey(n => n.AddressId);
-
-
         }
     }
 }

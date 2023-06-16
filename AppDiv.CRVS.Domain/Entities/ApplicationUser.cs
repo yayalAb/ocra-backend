@@ -17,6 +17,8 @@ namespace AppDiv.CRVS.Domain
         public virtual ICollection<CertificateSerialTransfer> RecieverCertificateSerialTransfers { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Transaction> CivilRegOfficerTransactions { get; set; }
+        public virtual ICollection<Plan> UserPlans { get; set; }
+
 
     }
 }
