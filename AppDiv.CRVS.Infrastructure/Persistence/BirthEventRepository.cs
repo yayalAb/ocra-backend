@@ -193,9 +193,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
                 //     entity.Mother = selectedperson;
                 // }
-                // _dbContext.BirthEvents.Update(entity);
+                _dbContext.BirthEvents.Update(entity);
 
-                base.Update(entity);
+                // base.Update(entity);
             }
             catch (System.Exception)
             {

@@ -76,7 +76,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             {
                                 deathEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
-                            _deathEventRepository.Update(deathEvent);
+                            _deathEventRepository.UpdateWithNested(deathEvent);
                             if (!request.IsFromCommand)
                             {
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);

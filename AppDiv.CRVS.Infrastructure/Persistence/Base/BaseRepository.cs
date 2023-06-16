@@ -239,6 +239,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             _dbContext.Entry(entity).State = EntityState.Modified;
         }
 
+        public virtual void UpdateWithNested(T entity)
+        {
+            _dbContext.Set<T>().Update(entity);
+            _dbContext.Entry(entity).State = EntityState.Modified;
+        }
+
         public virtual void Update(IEnumerable<T> entities)
         {
             foreach (var entity in entities)

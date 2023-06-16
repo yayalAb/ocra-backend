@@ -52,6 +52,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence.Base
         Task<bool> SaveChangesAsync(CancellationToken cancellationToken);
         void Update(IEnumerable<T> entities);
         void Update(T entity);
+        void UpdateWithNested(T entity);
         Task UpdateAsync(IEnumerable<T> entities, Func<T, int> getKey);
         Task UpdateAsync(IEnumerable<T> entities, Func<T, object> getKey);
         Task UpdateAsync(T entity, Func<T, int> getKey);
