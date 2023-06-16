@@ -1,4 +1,6 @@
 ﻿
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 // using AppDiv.CRVS.Domain.Interfaces;
@@ -22,19 +24,26 @@ namespace AppDiv.CRVS.Infrastructure.Services
             _logger = logger;
         }
 
-        public string GetUserEmail()
+        public string? GetUserEmail()
         {
-            return httpContext.HttpContext.User?.Claims?.SingleOrDefault(p => p.Type == "Email")?.Value;
+            return httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.Email);
         }
 
-        public Guid GetUserId()
+        public string? GetUserId()
         {
-            var guid = httpContext.HttpContext?.User?.Claims?.SingleOrDefault(p => p.Type == "UserId")?.Value;
-            if (guid == null || guid == string.Empty)
-            {
+
+            return  httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+       
+        }
+        public Guid GetUserPersonalId()
+        {
+            var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+            var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
+            if(personId == null){
                 return Guid.Empty;
             }
-            return new Guid(guid);
+            return new Guid(personId);
         }
 
         public string GetLocale()

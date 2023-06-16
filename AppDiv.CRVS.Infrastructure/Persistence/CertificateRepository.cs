@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await _dbContext.Certificates.Where(c => c.EventId == id).ToListAsync();
         }
- public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
+        public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
         {
             _elasticClient.Indices.Delete("certificate");
 
@@ -49,20 +49,20 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                            EventId = c.Event.Id,
                            EventType = c.Event.EventType,
                            NestedEventId = c.Event.EventType.ToLower() == "birth"
-                                            ?c.Event.BirthEvent.Id 
-                                            :c.Event.EventType.ToLower() == "death"
-                                            ?c.Event.DeathEventNavigation.Id
-                                            :c.Event.EventType.ToLower() == "marriage"
+                                            ? c.Event.BirthEvent.Id
+                                            : c.Event.EventType.ToLower() == "death"
+                                            ? c.Event.DeathEventNavigation.Id
+                                            : c.Event.EventType.ToLower() == "marriage"
                                             ? c.Event.MarriageEvent.Id
-                                            :c.Event.EventType.ToLower() == "adoption"
-                                            ?c.Event.AdoptionEvent.Id
-                                            :c.Event.EventType == "divorce"
-                                            ?c.Event.DivorceEvent.Id:null,
+                                            : c.Event.EventType.ToLower() == "adoption"
+                                            ? c.Event.AdoptionEvent.Id
+                                            : c.Event.EventType == "divorce"
+                                            ? c.Event.DivorceEvent.Id : null,
                            CertificateId = c.Event.CertificateId,
                            CertificateSerialNumber = c.CertificateSerialNumber,
                            ContentStr = c.ContentStr,
-                           AddressAm = c.Event.EventOwener.ResidentAddress == null?null :c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
-                           AddressOr = c.Event.EventOwener.ResidentAddress == null?null :c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
+                           AddressAm = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
+                           AddressOr = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
                            NationalId = c.Event.EventOwener.NationalId,
                            FirstNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"),
                            FirstNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"),
@@ -94,7 +94,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             f => f.CertificateId,
                             f => f.EventType,
                             f => f.CertificateSerialNumber
-                            
+
 
                         )
                     ))
@@ -192,11 +192,68 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (null, null, null, null, null);
         }
 
-        public override Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
-        {
-            
-            return base.SaveChangesAsync(cancellationToken);
-        }
+        // public override async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+        // {
+        //     var entries = _dbContext.ChangeTracker
+        //        .Entries()
+        //        .Where(e => e.Entity is Certificate && (
+        //                e.State == EntityState.Added
+        //                || e.State == EntityState.Modified
+        //                || e.State == EntityState.Deleted));
+        //     foreach (var entry in entries)
+        //     {
+        //         Certificate certificate = (Certificate)entry.Entity;
+        //         CertificateIndex certificateIndex = new CertificateIndex
+        //         {
+        //             Id = certificate.Id,
+        //             EventId = certificate.Event.Id,
+        //             EventType = certificate.Event.EventType,
+        //             NestedEventId = certificate.Event.EventType.ToLower() == "birth"
+        //                                     ? certificate.Event.BirthEvent.Id
+        //                                     : certificate.Event.EventType.ToLower() == "death"
+        //                                     ? certificate.Event.DeathEventNavigation.Id
+        //                                     : certificate.Event.EventType.ToLower() == "marriage"
+        //                                     ? certificate.Event.MarriageEvent.Id
+        //                                     : certificate.Event.EventType.ToLower() == "adoption"
+        //                                     ? certificate.Event.AdoptionEvent.Id
+        //                                     : certificate.Event.EventType == "divorce"
+        //                                     ? certificate.Event.DivorceEvent.Id : null,
+        //             CertificateId = certificate.Event.CertificateId,
+        //             CertificateSerialNumber = certificate.CertificateSerialNumber,
+        //             ContentStr = certificate.ContentStr,
+        //             AddressAm = certificate.Event.EventOwener.ResidentAddress == null ? null : certificate.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
+        //             AddressOr = certificate.Event.EventOwener.ResidentAddress == null ? null : certificate.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
+        //             NationalId = certificate.Event.EventOwener.NationalId,
+        //             FirstNameOr = certificate.Event.EventOwener.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("or"),
+        //             FirstNameAm = certificate.Event.EventOwener.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("am"),
+        //             MiddleNameOr = certificate.Event.EventOwener.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("or"),
+        //             MiddleNameAm = certificate.Event.EventOwener.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("am"),
+        //             LastNameOr = certificate.Event.EventOwener.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("or"),
+        //             LastNameAm = certificate.Event.EventOwener.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("am"),
+
+        //         };
+        //         if (entry.State == EntityState.Added)
+        //         {
+        //             // _elasticClient.inde
+        //             var response = await _elasticClient.IndexDocumentAsync<CertificateIndex>(certificateIndex);
+        //             var slice = 10;
+        //         }
+        //         else if (entry.State == EntityState.Modified)
+        //         {
+        //             await _elasticClient.UpdateAsync<CertificateIndex>(certificate.Id, u => u
+        //             .Index("certificate")
+        //             .Doc(certificateIndex));
+
+        //         }
+        //         else if (entry.State == EntityState.Deleted)
+        //         {
+
+        //         }
+
+        //     }
+
+        //     return await base.SaveChangesAsync(cancellationToken);
+        // }
     }
 
 }

@@ -56,7 +56,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             var errorResponse = new BaseResponse();
             if (request.CheckSerialNumber)
             {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() == Guid.Empty ? new Guid("134b4daa-bfac-445d-bd45-a83048eada3b") : _userResolverService.GetUserId() });
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserPersonalId() });
             }
             if (errorResponse.Status != 200)
             {

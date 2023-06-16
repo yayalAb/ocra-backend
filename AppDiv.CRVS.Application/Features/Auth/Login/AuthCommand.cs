@@ -42,10 +42,13 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             }
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {
-                                                    { "UserGroups", NavigationPropertyType.COLLECTION }
+                                                    { "UserGroups", NavigationPropertyType.COLLECTION },
+                                                    
                                                 };
             var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
-            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, response.roles));
+            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName,userData.PersonalInfoId, response.roles));
+            // _logger.LogCritical("auth");
+            // _logger.LogCritical(userData.Id);
 
             var userRoles = userData.UserGroups.SelectMany(ug => ug.Roles
             .Select(r => new RoleDto
