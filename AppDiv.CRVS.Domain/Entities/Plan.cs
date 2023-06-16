@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string EndDateEt { get; set; }
         public int TargetAmount { get; set; }
         public string Remark { get; set; } = string.Empty;
-        public Guid PlannedById { get; set; }
+        public string PlannedById { get; set; }
 
         public virtual Address Address { get; set; }
         public virtual Plan ParentPlan { get; set; }

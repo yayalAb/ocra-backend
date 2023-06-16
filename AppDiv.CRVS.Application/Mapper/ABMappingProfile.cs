@@ -237,6 +237,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddCertificateHistoryRequest, CertificateHistory>().ReverseMap();
             CreateMap<Request, AddRequest>().ReverseMap();
             CreateMap<CorrectionRequest, AddCorrectionRequest>().ReverseMap();
+            CreateMap<Plan, AddPlanRequest>().ReverseMap();
+            CreateMap<Plan, PlanDTO>().ReverseMap();
 
             CreateMap<CertificateSerialTransfer, CertificateTransferDTO>().ReverseMap();
             CreateMap<CertificateSerialTransfer, AddCertificateTransferRequest>().ReverseMap();

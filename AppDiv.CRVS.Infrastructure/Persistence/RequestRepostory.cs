@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task<IQueryable<Request>> GetAllRequest()
         {
-            return _DbContext.Request
+            return _DbContext.Requests
                         .Include(x => x.CivilRegOfficer)
                         .Include(x => x.AuthenticationRequest).
                          Include(c => c.AuthenticationRequest.Certificate)

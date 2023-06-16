@@ -133,6 +133,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<ISupportingDocumentRepository, SupportingDocumentRepository>();
 
             services.AddTransient<IEventRepository, EventRepository>();
+            services.AddTransient<IPlanRepository, PlanRepository>();
 
 
             services.AddScoped<CRVSDbContextInitializer>();
