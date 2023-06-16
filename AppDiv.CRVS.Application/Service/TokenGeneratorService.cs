@@ -23,19 +23,23 @@ namespace AppDiv.CRVS.Application.Service
             _expiryMinutes = expiryMinutes;
         }
 
-        public string GenerateJWTToken((string userId, string userName, IList<string> roles) userDetails)
+        public string GenerateJWTToken((string userId, string userName, Guid personId,  IList<string> roles) userDetails)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key));
             var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var (userId, userName, roles) = userDetails;
+            var (userId, userName,personId, roles) = userDetails;
 
             var claims = new List<Claim>()
             {
-                new Claim(JwtRegisteredClaimNames.Sub, userName),
-                new Claim(JwtRegisteredClaimNames.Jti, userId),
-                new Claim(ClaimTypes.Name, userName),
-                new Claim("UserId", userId)
+                // new Claim(JwtRegisteredClaimNames.Sub, userName),
+                // new Claim(JwtRegisteredClaimNames.Jti, userId),
+                // new Claim(ClaimTypes.Name, userName),
+                // new Claim(ClaimTypes.Email, this,d),
+                new Claim(ClaimTypes.NameIdentifier , userId),
+                // new Claim(ClaimTypes.PrimarySid, personId.ToString()),
+                new Claim("personId", personId.ToString()),
+                // new Claim("userId", "jkjkkkjk")
             };
             claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 

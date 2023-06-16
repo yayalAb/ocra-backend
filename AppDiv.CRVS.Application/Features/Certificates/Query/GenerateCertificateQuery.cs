@@ -94,7 +94,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var response = new CertificateResponseDTO();
             if (request.CheckSerialNumber)
             {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() == Guid.Empty ? request.UserId : _userResolverService.GetUserId() });
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserPersonalId() });
             }
             if (errorResponse.Status != 200)
             {

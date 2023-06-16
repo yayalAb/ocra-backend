@@ -9,6 +9,6 @@ namespace AppDiv.CRVS.Application.Interfaces
     public interface ITokenGeneratorService
     {
         //public string GenerateToken(string userName, string password);
-        public string GenerateJWTToken((string userId, string userName, IList<string> roles) userDetails);
+        public string GenerateJWTToken((string userId, string userName,Guid personId, IList<string> roles) userDetails);
     }
 }

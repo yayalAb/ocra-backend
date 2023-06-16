@@ -150,7 +150,11 @@ namespace AppDiv.CRVS.Infrastructure
                     auditEntity.AuditUserId = Guid.NewGuid();
                     if (userResolverService != null)
                     {
-                        auditEntity.AuditUserId = userResolverService.GetUserId();
+                        var userId = userResolverService.GetUserId();
+
+                        auditEntity.AuditUserId = userId != null
+                                ? new Guid(userId)
+                                : Guid.Empty;
                     }
 
                     auditEntity.Action = auditedEntity.Action;
@@ -191,7 +195,7 @@ namespace AppDiv.CRVS.Infrastructure
 
         public Guid GetCurrentUserId()
         {
-            return userResolverService.GetUserId();
+            return new Guid(userResolverService.GetUserId());
         }
     }
 }
