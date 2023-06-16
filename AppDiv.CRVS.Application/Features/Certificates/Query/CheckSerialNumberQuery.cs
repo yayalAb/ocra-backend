@@ -40,22 +40,39 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
             var response = new BaseResponse();
             try
             {
-                var user = _user.GetSingle(request.UserId == Guid.Empty ? "134b4daa-bfac-445d-bd45-a83048eada3b" : request.UserId.ToString());
-                var inRange = _certificateRange.GetAll().FirstOrDefault(r => r.AddressId == user.AddressId
-                                                                && request.CertificateSerialNumber.CompareTo(r.From.ToString()) >= 0
-                                                                && request.CertificateSerialNumber.CompareTo(r.To.ToString()) <= 0);
-                bool isDuplicated = _certificateRepository.GetAll()
-                                        .Where(c => c.CertificateSerialNumber == request.CertificateSerialNumber).Any();
-                if (inRange == null || isDuplicated)
+                var user = _user.GetSingle(request.UserId.ToString());
+                if (user?.Id == "134b4daa-bfac-445d-bd45-a83048eada3b")
                 {
-                    response.Status = 400;
-                    response.Message = "Serial Number out of range";
+                    user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
+                }
+                // var user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
+                if (user != null)
+                {
+                    // user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
+                    var inRange = _certificateRange.GetAll().FirstOrDefault(r => r.AddressId == user.AddressId
+                                                                    && request.CertificateSerialNumber.CompareTo(r.From.ToString()) >= 0
+                                                                    && request.CertificateSerialNumber.CompareTo(r.To.ToString()) <= 0);
+
+                    bool isDuplicated = _certificateRepository.GetAll()
+                                            .Where(c => c.CertificateSerialNumber == request.CertificateSerialNumber).Any();
+                    if (inRange == null || isDuplicated)
+                    {
+                        response.Status = 400;
+                        response.Message = "Serial Number out of range";
+                    }
+                }
+                else
+                {
+                    throw new Exception();
                 }
 
             }
             catch (Exception exp)
             {
-                throw new ApplicationException(exp.Message);
+                response.Status = 400;
+                response.Message = "Unable to get the user!";
+                return Task.FromResult(response);
+                // throw new ApplicationException(exp.Message);
             }
             return Task.FromResult(response);
         }

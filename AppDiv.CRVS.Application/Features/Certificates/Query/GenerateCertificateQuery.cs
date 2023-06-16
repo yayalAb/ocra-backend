@@ -39,6 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         // public bool AuthenticationStatus { get; set; }
         public string? CertificateSerialNumber { get; set; }
         public bool IsPrint { get; set; } = false;
+        public Guid UserId { get; set; } = new Guid("134b4daa-bfac-445d-bd45-a83048eada3b");
         public bool CheckSerialNumber { get; set; } = true;
 
         // public GenerateCertificateQuery(Guid Id, string SerialNumber)
@@ -93,7 +94,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var response = new CertificateResponseDTO();
             if (request.CheckSerialNumber)
             {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() });
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() == Guid.Empty ? request.UserId : _userResolverService.GetUserId() });
             }
             if (errorResponse.Status != 200)
             {

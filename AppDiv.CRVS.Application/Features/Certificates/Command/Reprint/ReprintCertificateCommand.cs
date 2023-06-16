@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public bool IsPrint { get; set; } = false;
         public string? CertificateSerialNumber { get; set; } = "";
         public Guid CivilRegOfficerId { get; set; }
+        // public Guid UserId { get; set; } = new Guid("134b4daa-bfac-445d-bd45-a83048eada3b");
         public JObject? Reason { get; set; }
         public bool CheckSerialNumber { get; set; } = true;
     }
@@ -55,7 +56,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             var errorResponse = new BaseResponse();
             if (request.CheckSerialNumber)
             {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() });
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() == Guid.Empty ? new Guid("134b4daa-bfac-445d-bd45-a83048eada3b") : _userResolverService.GetUserId() });
             }
             if (errorResponse.Status != 200)
             {
