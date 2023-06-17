@@ -129,7 +129,6 @@ namespace AppDiv.CRVS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<object> Get([FromQuery] string[] keys)
         {
-            _Ilog.LogCritical(keys[0]);
             return await _mediator.Send(new GetListOfLookupQuery { list = keys });
         }
 

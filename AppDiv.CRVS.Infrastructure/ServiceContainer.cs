@@ -38,7 +38,8 @@ namespace AppDiv.CRVS.Infrastructure
                     // options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
                     options.UseMySql(configuration.GetConnectionString("CRVSConnectionString"),
                         Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.29-mysql"),
-                        mySqlOptions => mySqlOptions.EnableRetryOnFailure()).EnableSensitiveDataLogging();
+                        mySqlOptions => mySqlOptions.EnableRetryOnFailure());
+                        // .EnableSensitiveDataLogging();
                 });
 
             #endregion db configuration
