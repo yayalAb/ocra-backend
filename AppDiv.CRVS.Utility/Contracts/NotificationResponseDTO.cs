@@ -1,5 +1,6 @@
 
-namespace AppDiv.CRVS.Application.Contracts.DTOs
+
+namespace AppDiv.CRVS.Utility.Contracts
 {
     public class NotificationResponseDTO 
     {
