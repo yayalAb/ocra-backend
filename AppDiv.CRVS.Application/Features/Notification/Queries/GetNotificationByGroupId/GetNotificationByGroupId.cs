@@ -1,7 +1,7 @@
 
 using MediatR;
 using AppDiv.CRVS.Application.Interfaces;
-using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Utility.Contracts;
 
 namespace AppDiv.CRVS.Application.Notification.Queries.GetNotificationByGroupId
 

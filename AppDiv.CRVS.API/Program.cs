@@ -8,6 +8,8 @@ using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Infrastructure;
 using AppDiv.CRVS.Api.Middleware;
+using System.Security.Claims;
+using AppDiv.CRVS.Utility.Hub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +46,50 @@ builder.Services.AddAuthentication(x =>
         ClockSkew = TimeSpan.FromMinutes(Convert.ToDouble(_expirtyMinutes))
 
     };
+    x.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            if (!string.IsNullOrEmpty(accessToken))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
+    // x.Events = new JwtBearerEvents
+    // {
+    //     OnTokenValidated = context =>
+    //     {
+    //         // Map additional claims to the ClaimsIdentity object
+    //         var identity = context?.Principal?.Identity as ClaimsIdentity;
+    //         if (identity != null)
+    //         {
+    //             var userId = context?.Principal?.FindFirst("userId")?.Value;
+
+    //             if (userId != null)
+    //             {
+    //                 identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
+    //             }
+    //             var personId = context?.Principal?.FindFirst("personId")?.Value;
+    //             if (personId != null)
+    //             {
+    //                 identity.AddClaim(new Claim(ClaimTypes.PrimarySid, personId));
+    //             }
+
+    //             var roles = context?.Principal?.FindFirst("roles")?.Value;
+    //             if (roles != null)
+    //             {
+    //                 var roleClaims = roles.Split(',').Select(r => new Claim(ClaimTypes.Role, r));
+    //                 identity.AddClaims(roleClaims);
+    //             }
+    //         }
+
+    //         return Task.CompletedTask;
+    //     }
+    // };
+
 });
 
 
@@ -55,7 +101,7 @@ builder.Services.AddApplication(builder.Configuration)
                 .AddInfrastructure(builder.Configuration);
 
 
-
+builder.Services.AddSignalR();
 builder.Services.AddCors(c =>
 {
     c.AddPolicy("CorsPolicy", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
@@ -98,6 +144,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -122,8 +169,13 @@ app.UseCors("CorsPolicy");
 // Added for authentication
 // Maintain middleware order
 app.UseAuthentication();
-
+app.UseRouting();
 app.UseAuthorization();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapHub<MessageHub>("/Notification");
+});
 
 app.MapControllers();
 

@@ -1,17 +1,19 @@
 
 using System.Security.Cryptography;
-using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Utility.Contracts;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace AppDiv.CRVS.Infrastructure.Service
 {
     public class NotificationService : INotificationService
     {
         private readonly CRVSDbContext _context;
+
 
         public NotificationService(CRVSDbContext context)
         {
@@ -79,6 +81,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     })
                     .ToListAsync();
         }
+
 
     }
 }
