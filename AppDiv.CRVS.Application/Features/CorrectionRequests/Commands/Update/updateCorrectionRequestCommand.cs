@@ -1,6 +1,8 @@
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -18,9 +20,15 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
     public class updateCorrectionRequestCommandHandler : IRequestHandler<updateCorrectionRequestCommand, AddCorrectionRequest>
     {
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
-        public updateCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory)
+        private readonly IEventDocumentService _eventDocumentService;
+        private readonly IEventRepository _eventRepository;
+        public updateCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory,
+                                                        IEventDocumentService eventDocumentService,
+                                                        IEventRepository eventRepository)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
+            _eventDocumentService = eventDocumentService;
+            _eventRepository = eventRepository;
         }
         public async Task<AddCorrectionRequest> Handle(updateCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
@@ -36,6 +44,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             {
                 await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
                 await _CorrectionRequestRepostory.SaveChangesAsync(cancellationToken);
+                var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
+                var supportingDocuments = GetSupportingDocuments(request.Content, "eventSupportingDocuments", out JObject newContent);
+                var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
+                _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
+
             }
             catch (Exception exp)
             {
@@ -46,6 +59,54 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             .Include(x => x.Request).FirstOrDefault();
             var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedCorrectionRequest);
             return CorrectionRequestResponse;
+        }
+        private ICollection<AddSupportingDocumentRequest> GetSupportingDocuments(JObject content, string type, out JObject modifiedContent)
+        {
+            // content = content?.Value<JObject>("event");
+            // modifiedContent = content;
+            try
+            {
+                var contentList = type switch
+                {
+                    "eventSupportingDocuments" => content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments"),
+                    "paymentExamption" => content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")
+                };
+                var supportingDocuments = new List<AddSupportingDocumentRequest>();
+                if (contentList != null)
+                {
+                    for (int i = 0; i < contentList.Count; i++)
+                    {
+                        JToken sup = contentList[i];
+                        AddSupportingDocumentRequest file = sup?.ToObject<AddSupportingDocumentRequest>();
+                        if (file.Id != null)
+                        {
+                            continue;
+                        }
+                        file.Id = Guid.NewGuid();
+                        var newFile = new AddSupportingDocumentRequest
+                        {
+                            Id = file.Id,
+                            Description = file.Description,
+                            Label = file.Label,
+                            Type = file.Type,
+                            base64String = file?.base64String
+                        };
+                        supportingDocuments.Add(file);
+                        newFile.base64String = "null";
+                        JToken supdoc = JToken.FromObject(newFile);
+                        if (type == "eventSupportingDocuments")
+                            content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments")?[i].Replace(supdoc);
+                        else
+                            content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")?[i].Replace(supdoc);
+                    }
+                }
+                modifiedContent = content;
+                return supportingDocuments;
+            }
+            catch (System.Exception)
+            {
+                throw;
+            }
         }
     }
 }
