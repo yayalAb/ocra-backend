@@ -164,13 +164,14 @@ app.UseHttpsRedirection();
 
 // Must be betwwen app.UseRouting() and app.UseEndPoints()
 // maintain middleware order
-app.UseCors("CorsPolicy");
+
 
 // Added for authentication
 // Maintain middleware order
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
+app.UseCors("CorsPolicy");
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
