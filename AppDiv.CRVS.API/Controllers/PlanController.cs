@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<object> Get(Guid id)
         {
-            return await _mediator.Send(new GetPlanByIdQuery(id));
+            return await _mediator.Send(new GetPlanByIdQuery { Id = id });
         }
         [HttpPut("Edit/{id}")]
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdatePlanCommand command)

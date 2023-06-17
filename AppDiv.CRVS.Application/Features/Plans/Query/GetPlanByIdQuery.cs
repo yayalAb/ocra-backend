@@ -15,12 +15,12 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
     // Customer GetCustomerByIdQuery with Customer response
     public class GetPlanByIdQuery : IRequest<PlanDTO>
     {
-        public Guid Id { get; private set; }
+        public Guid Id { get; set; }
 
-        public GetPlanByIdQuery(Guid Id)
-        {
-            this.Id = Id;
-        }
+        // public GetPlanByIdQuery(Guid Id)
+        // {
+        //     this.Id = Id;
+        // }
 
     }
 
