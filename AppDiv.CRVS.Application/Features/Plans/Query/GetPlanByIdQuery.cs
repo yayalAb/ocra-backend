@@ -34,12 +34,8 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
         }
         public async Task<PlanDTO> Handle(GetPlanByIdQuery request, CancellationToken cancellationToken)
         {
-            var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
-                                                {
-                                                    { "PaymentTypeLookup", NavigationPropertyType.REFERENCE },
-                                                    { "EventLookup", NavigationPropertyType.REFERENCE }
-                                                };
-            var selectedPlan = await _planRepository.GetWithAsync(request.Id, explicitLoadedProperties);
+            
+            var selectedPlan = await _planRepository.GetAsync(request.Id);
             return CustomMapper.Mapper.Map<PlanDTO>(selectedPlan);
             // return selectedCustomer;
         }

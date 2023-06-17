@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
+using AutoMapper.QueryableExtensions;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -33,11 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
 
             return await PaginatedList<PlanDTO>
                             .CreateAsync(
-                                _planRepository.GetAll().Select(pr => new PlanDTO
-                                {
-                                    Id = pr.Id,
-
-                                }).ToList()
+                                _planRepository.GetAll().ProjectTo<PlanDTO>(CustomMapper.Mapper.ConfigurationProvider)
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

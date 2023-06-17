@@ -195,7 +195,8 @@ namespace AppDiv.CRVS.Infrastructure
 
         public Guid GetCurrentUserId()
         {
-            return new Guid(userResolverService.GetUserId());
+            var userId = userResolverService.GetUserId();
+            return userId == null ? Guid.Empty : new Guid(userResolverService.GetUserId());
         }
     }
 }

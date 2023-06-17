@@ -11,5 +11,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string Description { get; set; }
         public string Type { get; set; }
         public string Label { get; set; }
+        public string base64String { get; set; }
     }
 }

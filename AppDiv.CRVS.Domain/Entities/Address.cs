@@ -41,8 +41,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<MarriageApplication> MarriageApplications { get; set; }
         public virtual ICollection<ApplicationUser> ApplicationuserAddresses { get; set; }
         public virtual ICollection<PaymentExamptionRequest> ExamptionRequestAddresses { get; set; }
-        public virtual ICollection<CertificateSerialRange> CertificateSerialRanges { get ;set;}
-        public virtual ICollection<Plan> AddressPlans { get; set; }
+        public virtual ICollection<CertificateSerialRange> CertificateSerialRanges { get; set; }
         [NotMapped]
         public string? AddressNameLang
         {
