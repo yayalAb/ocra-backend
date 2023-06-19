@@ -22,9 +22,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
         public string PlannedDateEt { get; set; }
         public int TargetAmount { get; set; }
         public int BudgetYear { get; set; }
-
         public string Remark { get; set; } = string.Empty;
-        public Guid PlannedById { get; set; }
 
     }
 
@@ -41,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
             try
             {
                 var plan = CustomMapper.Mapper.Map<Plan>(request);
-                await _planRepository.UpdateAsync(plan, x => x.Id);
+                _planRepository.Update(plan);
                 var result = await _planRepository.SaveChangesAsync(cancellationToken);
                 response.Status = 200;
                 response.Message = "Plan Updated Succesfully";
@@ -49,7 +47,9 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
             catch (Exception exp)
             {
                 response.Status = 400;
+                response.Success = false;
                 response.Message = "Unable to update the plan";
+                response.ValidationErrors = new List<string> { exp.Message };
                 return response;
                 // throw new ApplicationException(exp.Message);
             }

@@ -3,7 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.Notification.Commands.UpdateSeenStatus;
 using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByGroupId;
 using Microsoft.AspNetCore.SignalR;
-using AppDiv.CRVS.Utility.Hub;
+using AppDiv.CRVS.Infrastructure.Hub;
+// using AppDiv.CRVS.Utility.Hub;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -16,13 +17,12 @@ namespace AppDiv.CRVS.API.Controllers
             _messageHub = messageHub;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetNotification([FromBody] GetNotificationByGroupIdQuery query)
+        [HttpGet]
+        public async Task<string> GetNotification([FromQuery] GetNotificationByGroupIdQuery query)
         {
             var res =  await Mediator.Send(query);
-
-            await _messageHub.Clients.All.SendNotification(res);
-            return Ok();
+          await _messageHub.Clients.All.SendNotification(res);
+            return "message sent ";
         }
 
         [HttpPost("changeSeenStatus/{id}")]

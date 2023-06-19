@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 // using AppDiv.CRVS.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
@@ -16,12 +17,13 @@ namespace AppDiv.CRVS.Infrastructure.Services
     {
         private readonly IHttpContextAccessor httpContext;
         private readonly ILogger<UserResolverService> _logger;
-
+        // private readonly CRVSDbContext _dbContext;
 
         public UserResolverService(IHttpContextAccessor httpContext, ILogger<UserResolverService> logger)
         {
             this.httpContext = httpContext;
             _logger = logger;
+            // _dbContext = dbContext;
         }
 
         public string? GetUserEmail()
@@ -32,15 +34,16 @@ namespace AppDiv.CRVS.Infrastructure.Services
         public string? GetUserId()
         {
 
-            return  httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-       
+            return httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+
         }
         public Guid GetUserPersonalId()
         {
             var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
             var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
             var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
-            if(personId == null){
+            if (personId == null)
+            {
                 return Guid.Empty;
             }
             return new Guid(personId);
@@ -54,6 +57,5 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
             return string.Empty;
         }
-
     }
 }

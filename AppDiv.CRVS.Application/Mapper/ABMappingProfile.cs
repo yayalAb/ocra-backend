@@ -50,6 +50,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.Archive.DivorceArchive;
 using AppDiv.CRVS.Application.Features.Payments.Command.Create;
 using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
+using AppDiv.CRVS.Application.Features.Plans.Command.Update;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -239,6 +240,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<CorrectionRequest, AddCorrectionRequest>().ReverseMap();
             CreateMap<Plan, AddPlanRequest>().ReverseMap();
             CreateMap<Plan, PlanDTO>().ReverseMap();
+            CreateMap<Plan, UpdatePlanCommand>().ReverseMap();
 
             CreateMap<CertificateSerialTransfer, CertificateTransferDTO>().ReverseMap();
             CreateMap<CertificateSerialTransfer, AddCertificateTransferRequest>().ReverseMap();
