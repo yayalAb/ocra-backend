@@ -49,6 +49,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
                 response.Status = 400;
                 response.Success = false;
                 response.Message = "Unable to update the plan";
+                response.ValidationErrors = new List<string> { exp.Message };
                 return response;
                 // throw new ApplicationException(exp.Message);
             }

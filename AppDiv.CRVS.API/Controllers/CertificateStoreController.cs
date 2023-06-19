@@ -57,7 +57,7 @@ namespace AppDiv.CRVS.API.Controllers
         {
             try
             {
-                if (id != null)
+                if (id != Guid.Empty)
                 {
                     var result = await Mediator.Send(new UpdateCertificateTransferCommand { Id = id });
                     return Ok(result);
