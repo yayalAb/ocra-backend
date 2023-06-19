@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Infrastructure
                     options.UseMySql(configuration.GetConnectionString("CRVSConnectionString"),
                         Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.29-mysql"),
                         mySqlOptions => mySqlOptions.EnableRetryOnFailure());
-                        // .EnableSensitiveDataLogging();
+                    // .EnableSensitiveDataLogging();
                 });
 
             #endregion db configuration
@@ -156,6 +156,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IUpdateEventPaymetnService, UpdateEventPaymetnService>();
+            services.AddTransient<ILoginHistoryRepository, LoginHistoryRepository>();
 
 
 

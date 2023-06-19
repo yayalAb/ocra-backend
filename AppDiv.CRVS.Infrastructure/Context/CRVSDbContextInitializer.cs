@@ -31,7 +31,7 @@ namespace AppDiv.CRVS.Infrastructure
             try
             {
 
-                // await _context.Database.MigrateAsync();
+                await _context.Database.MigrateAsync();
             }
             catch (Exception ex)
             {
@@ -55,9 +55,9 @@ namespace AppDiv.CRVS.Infrastructure
 
         public async Task TrySeedAsync()
         {
-            // await SeedUser();
-            // await SeedSystemLookups();
-            // await SeedSetting();
+            await SeedUser();
+            await SeedSystemLookups();
+            await SeedSetting();
         }
         public async Task SeedSetting()
         {

@@ -62,6 +62,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<CertificateSerialTransfer> CertificateSerialTransfers { get; set; }
         public DbSet<Request> Requests { get; set; }
         public DbSet<Plan> Plans { get; set; }
+        public DbSet<LoginHistory> LoginHistorys { get; set; }
 
 
 
