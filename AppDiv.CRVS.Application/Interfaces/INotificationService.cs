@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Utility.Contracts;
 
 namespace AppDiv.CRVS.Application.Interfaces

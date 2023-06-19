@@ -11,13 +11,13 @@ using AppDiv.CRVS.Application.Features.Authentication.Querys;
 using AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Cors;
+// using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
 namespace AppDiv.CRVS.API.Controllers
 {
-    [EnableCors("CorsPolicy")]
+    // [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
     [ApiController]
 

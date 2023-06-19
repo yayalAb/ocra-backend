@@ -9,7 +9,8 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Infrastructure;
 using AppDiv.CRVS.Api.Middleware;
 using System.Security.Claims;
-using AppDiv.CRVS.Utility.Hub;
+// using AppDiv.CRVS.Utility.Hub;
+using AppDiv.CRVS.Infrastructure.Hub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -179,5 +180,6 @@ app.UseEndpoints(endpoints =>
 });
 
 app.MapControllers();
+
 
 app.Run();
