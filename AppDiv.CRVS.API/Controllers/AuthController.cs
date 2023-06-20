@@ -19,6 +19,15 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(await Mediator.Send(command));
         }
 
+        [HttpPut("Logout")]
+        [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
+        public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+
+
         [HttpPost("forgotPassword")]
         // [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordCommand command)

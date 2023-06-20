@@ -13,28 +13,49 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Domain.Repositories;
 
 namespace AppDiv.CRVS.Application.Features.LoginHistorys.Query
 {
-    public class GetAllLoginQuery : IRequest<PaginatedList<LoginHistory>>
+    public class GetAllLoginQuery : IRequest<PaginatedList<UserHistoryDTO>>
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
     }
-    public class GetAllLoginQueryHandler : IRequestHandler<GetAllLoginQuery, PaginatedList<LoginHistory>>
+    public class GetAllLoginQueryHandler : IRequestHandler<GetAllLoginQuery, PaginatedList<UserHistoryDTO>>
     {
-        private readonly ILoginHistoryRepository _LoginHistoryRepo;
+        private readonly IUserRepository _LoginHistoryRepo;
 
-        public GetAllLoginQueryHandler(ILoginHistoryRepository LoginHistoryRepo)
+        public GetAllLoginQueryHandler(IUserRepository LoginHistoryRepo)
         {
             _LoginHistoryRepo = LoginHistoryRepo;
         }
-        public async Task<PaginatedList<LoginHistory>> Handle(GetAllLoginQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<UserHistoryDTO>> Handle(GetAllLoginQuery request, CancellationToken cancellationToken)
         {
+            var UserLogHistory = _LoginHistoryRepo.GetAll()
+            .Include(x => x.LoginHistorys)
+            .Include(x => x.PersonalInfo)
+            .Include(x => x.UserGroups)
+            .Include(x => x.Address)
+            .Select(x => new UserHistoryDTO
+            {
+                Id = x.Id,
+                Name = x.PersonalInfo.FirstNameLang + " " + x.PersonalInfo.MiddleNameLang + " " + x.PersonalInfo.LastNameLang,
+                AssignedOffice = x.Address.AddressNameLang,
+                Role = x.UserGroups.Select(g => g.GroupName).FirstOrDefault(),
+                Historys = x.LoginHistorys.Select(h => new UserHistoryListDTO
+                {
+                    EventType = h.EventType,
+                    Device = h.Device,
+                    IpAddress = h.IpAddress,
+                    Date = h.EventDate
 
-            return await PaginatedList<LoginHistory>
+                }).ToList()
+
+            }).ToList();
+            return await PaginatedList<UserHistoryDTO>
                             .CreateAsync(
-                                _LoginHistoryRepo.GetAll()
+                               UserLogHistory
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
 
