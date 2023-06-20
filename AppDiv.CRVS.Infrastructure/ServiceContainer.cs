@@ -157,6 +157,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IUpdateEventPaymetnService, UpdateEventPaymetnService>();
             services.AddTransient<ILoginHistoryRepository, LoginHistoryRepository>();
+            services.AddTransient<IAuditLogRepository, AuditLogRepository>();
+
+
 
 
 

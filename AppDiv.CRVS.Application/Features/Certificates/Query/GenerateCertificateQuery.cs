@@ -92,14 +92,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         {
             var errorResponse = new BaseResponse();
             var response = new CertificateResponseDTO();
-            if (request.CheckSerialNumber)
-            {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserPersonalId() });
-            }
-            if (errorResponse.Status != 200)
-            {
-                return errorResponse;
-            }
+            // if (request.CheckSerialNumber)
+            // {
+            //     errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserPersonalId() });
+            // }
+            // if (errorResponse.Status != 200)
+            // {
+            //     return errorResponse;
+            // }
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _certificateRepository.GetContent(request.Id);
