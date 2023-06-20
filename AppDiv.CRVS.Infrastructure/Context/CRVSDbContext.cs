@@ -130,6 +130,8 @@ namespace AppDiv.CRVS.Infrastructure
                 modelBuilder.ApplyConfiguration(new CertificateSerialTransferEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new AuthenticationRequestConfiguration());
                 modelBuilder.ApplyConfiguration(new PlanEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new MessageEntityConfiguration());
+
 
 
 
