@@ -108,10 +108,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
             RuleFor(p => p.Adoption.AdoptiveMother.BirthDateEt)
                 .MustAsync(ValidateDateEt)
-                .WithMessage("{PropertyName} is invalid date.");
 
-            RuleFor(p => p.Adoption.Event.EventDateEt)
-                .MustAsync(ValidateDateEt)
                 .WithMessage("{PropertyName} is invalid date.");
             RuleFor(p => p.Adoption.Event.EventRegDateEt)
                 .MustAsync(ValidateRegDateEt)
