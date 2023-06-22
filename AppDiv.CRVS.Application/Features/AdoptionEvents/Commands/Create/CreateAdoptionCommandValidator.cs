@@ -61,8 +61,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     .NotNull()
                     .NotEmpty()
                     .Must((e, childLastName) => BeEqual(childLastName, e.Adoption.AdoptiveMother!.LastName)).WithMessage("the Child's lastname must be same as the Adoptive Mother's Lastname");
-
-
             });
             RuleFor(p => p.Adoption.ApprovedName.am)
                 .Cascade(CascadeMode.StopOnFirstFailure)

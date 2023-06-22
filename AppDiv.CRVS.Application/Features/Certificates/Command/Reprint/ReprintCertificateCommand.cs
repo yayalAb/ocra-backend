@@ -54,14 +54,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public async Task<object> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
             var errorResponse = new BaseResponse();
-            if (request.CheckSerialNumber)
-            {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserPersonalId() });
-            }
-            if (errorResponse.Status != 200)
-            {
-                return errorResponse;
-            }
+            // if (request.CheckSerialNumber)
+            // {
+            //     errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserPersonalId() });
+            // }
+            // if (errorResponse.Status != 200)
+            // {
+            //     return errorResponse;
+            // }
             string certId = "";
             var certificate = _certificateRepository.GetAll()
             .Include(x => x.Event)
