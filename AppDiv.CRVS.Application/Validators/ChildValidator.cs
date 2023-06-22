@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "SexLookupId");
             // RuleFor(p => p.BirthDateEt).NotEmpty().NotNull().IsValidDate("Child Birth Date");
             RuleFor(p => p.PhoneNumber).NotEmpty()
-                        .Matches(new Regex(@"^(\+251|0)?(7|9)\d{8}$")).WithMessage("Invalid phone number format.")
+                        .Matches(new Regex(@"^(\+251)\d{10}$")).WithMessage("Invalid phone number format.")
                         .When(p => p.PhoneNumber != null);
             RuleFor(p => p.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "NationalityLookupId");
             RuleFor(p => p.BirthAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "BirthAddressId");

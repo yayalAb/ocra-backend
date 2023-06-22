@@ -1,3 +1,4 @@
+using System;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using FluentValidation;
@@ -34,7 +35,7 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.RegistrarInfo.BirthDateEt).NotEmpty().NotNull()
             .IsAbove18("Registrar age");
             RuleFor(p => p.RegistrarInfo.PhoneNumber).NotEmpty()
-                        .Matches(new Regex(@"^(\+251|0)?(7|9)\d{8}$")).WithMessage("Invalid phone number format.")
+                        .Matches(new Regex(@"^(\+251)\d{10}$")).WithMessage("Invalid phone number format.")
                         .When(p => p.RegistrarInfo.PhoneNumber != null);
             // .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
         }
