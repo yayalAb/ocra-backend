@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
                                     Value = lo.ValueLang,
                                     StatisticCode = lo.StatisticCode,
                                     Code = lo.Code
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

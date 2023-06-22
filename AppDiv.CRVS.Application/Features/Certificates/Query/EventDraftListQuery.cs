@@ -60,7 +60,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   EventRegDate = e.EventRegDate,
                                   IsCertified = e.IsCertified
                               })
-                              .ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

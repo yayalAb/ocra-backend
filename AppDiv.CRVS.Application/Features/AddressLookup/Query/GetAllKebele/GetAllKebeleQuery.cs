@@ -55,7 +55,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
                                    Code = a.Code,
                                    StatisticCode = a.StatisticCode
 
-                               }).ToList()
+                               })
                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
 

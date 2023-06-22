@@ -40,40 +40,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             if (!_elasticClient.Indices.Exists("certificate").Exists)
             {
+                var indexRes = await indexCertificates();
+                await _elasticClient.Indices.RefreshAsync("certificate");
 
-                var indexRes = _elasticClient
-                   .IndexMany<CertificateIndex>(_dbContext.Certificates
-                       .Select(c => new CertificateIndex
-                       {
-                           Id = c.Id,
-                           EventId = c.Event.Id,
-                           EventType = c.Event.EventType,
-                           NestedEventId = c.Event.EventType.ToLower() == "birth"
-                                            ? c.Event.BirthEvent.Id
-                                            : c.Event.EventType.ToLower() == "death"
-                                            ? c.Event.DeathEventNavigation.Id
-                                            : c.Event.EventType.ToLower() == "marriage"
-                                            ? c.Event.MarriageEvent.Id
-                                            : c.Event.EventType.ToLower() == "adoption"
-                                            ? c.Event.AdoptionEvent.Id
-                                            : c.Event.EventType == "divorce"
-                                            ? c.Event.DivorceEvent.Id : null,
-                           CertificateId = c.Event.CertificateId,
-                           CertificateSerialNumber = c.CertificateSerialNumber,
-                           ContentStr = c.ContentStr,
-                           AddressAm = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
-                           AddressOr = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
-                           NationalId = c.Event.EventOwener.NationalId,
-                           FirstNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"),
-                           FirstNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"),
-                           MiddleNameOr = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("or"),
-                           MiddleNameAm = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("am"),
-                           LastNameOr = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or"),
-                           LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
-
-                       }).ToList(), "certificate");
             }
-
             var response = _elasticClient.SearchAsync<CertificateIndex>(s => s
                     .Index("certificate")
                     .Source(src => src
@@ -128,6 +98,40 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
+        private async Task<BulkResponse> indexCertificates()
+        {
+           return await _elasticClient
+                              .IndexManyAsync<CertificateIndex>(_dbContext.Certificates
+                                  .Select(c => new CertificateIndex
+                                  {
+                                      Id = c.Id,
+                                      EventId = c.Event.Id,
+                                      EventType = c.Event.EventType,
+                                      NestedEventId = c.Event.EventType.ToLower() == "birth"
+                                                       ? c.Event.BirthEvent.Id
+                                                       : c.Event.EventType.ToLower() == "death"
+                                                       ? c.Event.DeathEventNavigation.Id
+                                                       : c.Event.EventType.ToLower() == "marriage"
+                                                       ? c.Event.MarriageEvent.Id
+                                                       : c.Event.EventType.ToLower() == "adoption"
+                                                       ? c.Event.AdoptionEvent.Id
+                                                       : c.Event.EventType == "divorce"
+                                                       ? c.Event.DivorceEvent.Id : null,
+                                      CertificateId = c.Event.CertificateId,
+                                      CertificateSerialNumber = c.CertificateSerialNumber,
+                                      ContentStr = c.ContentStr,
+                                      AddressAm = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
+                                      AddressOr = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
+                                      NationalId = c.Event.EventOwener.NationalId,
+                                      FirstNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"),
+                                      FirstNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"),
+                                      MiddleNameOr = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("or"),
+                                      MiddleNameAm = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("am"),
+                                      LastNameOr = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or"),
+                                      LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
+
+                                  }), "certificate");
+        }
 
         public async Task<(BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce)> GetContent(Guid eventId)
         {

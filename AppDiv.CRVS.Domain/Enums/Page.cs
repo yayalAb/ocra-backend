@@ -63,5 +63,6 @@ public enum Page
     WitnessForLookup,
     PaymentTypeLookup,
     Unapproved,
-    CorrectionRequest
+    CorrectionRequest,
+    Approvel
 }

@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
                                     Country = c.AddressNameLang,
                                     Code = c.Code,
                                     StatisticCode = c.StatisticCode
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
 
         }

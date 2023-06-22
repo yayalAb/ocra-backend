@@ -64,6 +64,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 {
                     try
                     {
+                        request.Adoption.Event.EventOwener.MiddleName = request?.Adoption?.AdoptiveFather?.FirstName;
+                        request.Adoption.Event.EventOwener.LastName = request?.Adoption?.AdoptiveFather?.MiddleName;
                         var CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse();
                         var validator = new CreatAdoptionCommandValidator(_AdoptionEventRepository,
                                                                         _addressRepository, _PersonalInfo, _LookupsRepo,
