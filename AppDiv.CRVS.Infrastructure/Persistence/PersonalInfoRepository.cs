@@ -95,7 +95,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                            AddressOr = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
                            AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
 
-                       }).ToList(), "personal_info");
+                       }), "personal_info");
+                    await _elasticClient.Indices.RefreshAsync("personal_info");
             }
             var response = _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
                     .Index("personal_info")
@@ -216,7 +217,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                            AddressOr = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
                            AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
 
-                       }).ToList(), "personal_info");
+                       }), "personal_info");
+                    await _elasticClient.Indices.RefreshAsync("personal_info");
+
             }
 
 
