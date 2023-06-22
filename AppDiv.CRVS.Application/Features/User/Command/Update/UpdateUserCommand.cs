@@ -79,11 +79,11 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 MarriageStatusLookupId = request.PersonalInfo?.MarriageStatusLookupId,
                 BirthAddressId = request.PersonalInfo?.BirthAddressId,
                 ResidentAddressId = request.PersonalInfo?.ResidentAddressId,
-                NationLookupId = request.PersonalInfo.NationLookupId,
-                TitleLookupId = request.PersonalInfo.TitleLookupId,
-                ReligionLookupId = request.PersonalInfo.ReligionLookupId,
+                NationLookupId = request.PersonalInfo?.NationLookupId,
+                TitleLookupId = request.PersonalInfo?.TitleLookupId,
+                ReligionLookupId = request.PersonalInfo?.ReligionLookupId,
                 ModifiedAt = DateTime.Now,
-                ContactInfo = CustomMapper.Mapper.Map<ContactInfo>(request.PersonalInfo.ContactInfo)
+                ContactInfo = CustomMapper.Mapper.Map<ContactInfo>(request.PersonalInfo?.ContactInfo)
 
             };
             var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
@@ -95,7 +95,6 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 Id = request.Id,
                 UserName = request.UserName,
                 Email = request.Email,
-                
                 AddressId = request.AddressId,
                 UserGroups = listGroup,
                 PersonalInfo = person

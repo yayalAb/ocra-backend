@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using AppDiv.CRVS.Application.Common;
 using System.Text;
+using AppDiv.CRVS.Domain.Repositories;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -16,6 +17,8 @@ namespace AppDiv.CRVS.Application.Service
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<IdentityService> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
+
+
         // private readonly IConfiguration _configuration;
         // private readonly TokenGeneratorService _tokenGeneratorService;
 
@@ -24,6 +27,8 @@ namespace AppDiv.CRVS.Application.Service
             _userManager = userManager;
             _logger = logger;
             _signInManager = signInManager;
+           
+
             // _tokenGeneratorService = tokenGeneratorService;
         }
         public async Task<(Result result, IList<string>? roles, string? userId)> AuthenticateUser(string userName, string password)
@@ -204,20 +209,23 @@ namespace AppDiv.CRVS.Application.Service
 
         public async Task<Result> UpdateUserAsync(ApplicationUser user)
         {
-
-            var existingUser = await _userManager.FindByIdAsync(user.Id.ToString());
+            var existingUser = await _userManager.Users
+                    .Where(u => u.Id == user.Id)
+                    .Include(u => u.UserGroups).FirstOrDefaultAsync();
 
             if (existingUser == null)
             {
                 return Result.Failure(new string[] { "could not find user with the given id" });
             }
 
+            existingUser.UserGroups.Clear();
 
             existingUser.UserName = user.UserName;
             existingUser.Email = user.Email;
             // existingUser.Otp = otp;
             // existingUser.OtpExpiredDate = otpExpiredDate;
             existingUser.PersonalInfo = user.PersonalInfo;
+            existingUser.UserGroups = user.UserGroups;
 
             var response = await _userManager.UpdateAsync(existingUser);
 
