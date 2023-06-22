@@ -41,12 +41,12 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .NotEmpty()
-                    .Must((e, childMiddleName) => BeEqual(childMiddleName, e.Adoption.AdoptiveFather!.MiddleName)).WithMessage("the Child's MiddleName must be same as the Adoptive Father's MiddleName");
+                    .Must((e, childMiddleName) => BeEqual(childMiddleName, e.Adoption.AdoptiveFather!.FirstName)).WithMessage("the Child's MiddleName must be same as the Adoptive Father's Firstname");
                 RuleFor(e => e.Adoption.Event.EventOwener.LastName)
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotNull()
                     .NotEmpty()
-                    .Must((e, childLastName) => BeEqual(childLastName, e.Adoption.AdoptiveFather!.LastName)).WithMessage("the Child's lastname must be same as the Adoptive Father's Lastname");
+                    .Must((e, childLastName) => BeEqual(childLastName, e.Adoption.AdoptiveFather!.LastName)).WithMessage("the Child's lastname must be same as the Adoptive Father's MiddleName");
 
             });
             When(e => e.Adoption.AdoptiveFather == null && e.Adoption.AdoptiveMother != null, () =>
@@ -61,6 +61,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     .NotNull()
                     .NotEmpty()
                     .Must((e, childLastName) => BeEqual(childLastName, e.Adoption.AdoptiveMother!.LastName)).WithMessage("the Child's lastname must be same as the Adoptive Mother's Lastname");
+
 
             });
             RuleFor(p => p.Adoption.ApprovedName.am)
