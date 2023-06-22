@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                 OwnerFullName = e.EventOwener.FirstNameLang + " " + e.EventOwener.MiddleNameLang + " " + e.EventOwener.LastNameLang,
                                 Amount = e.EventPaymentRequest.Amount,
                                 PaymentRequestId = e.EventPaymentRequest.Id
-                            }).ToList()
+                            })
                         , request.PageCount ?? 1, request.PageSize ?? 10);
 
         }

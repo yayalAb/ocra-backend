@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
 
             return await PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
-                              await eventsQueriable.Include(e => e.EventOwener)
+                               eventsQueriable.Include(e => e.EventOwener)
                               .Select(e => new PaidCertificateDTO
                               {
                                   EventId = e.Id,
@@ -52,7 +52,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   EventRegDate = e.EventRegDate,
                                   IsCertified = e.IsCertified
                               })
-                              .ToListAsync()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
