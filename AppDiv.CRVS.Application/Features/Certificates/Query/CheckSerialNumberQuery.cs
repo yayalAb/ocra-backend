@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
     public class CheckSerialNoValidation : IRequest<BaseResponse>
     {
         public string CertificateSerialNumber { get; set; }
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
     }
 
     public class CheckSerialNoValidationHandler : IRequestHandler<CheckSerialNoValidation, BaseResponse>
@@ -40,18 +40,18 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
             var response = new BaseResponse();
             try
             {
-                var user = _user.GetSingle(request.UserId.ToString());
-                if (user?.Id == "134b4daa-bfac-445d-bd45-a83048eada3b")
-                {
-                    user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
-                }
+                var user = _user.GetSingle(request.UserId);
+                // if (user?.Id == "134b4daa-bfac-445d-bd45-a83048eada3b")
+                // {
+                //     user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
+                // }
                 // var user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
                 if (user != null)
                 {
                     // user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
                     var inRange = _certificateRange.GetAll().FirstOrDefault(r => r.AddressId == user.AddressId
-                                                                    && request.CertificateSerialNumber.CompareTo(r.From.ToString()) >= 0
-                                                                    && request.CertificateSerialNumber.CompareTo(r.To.ToString()) <= 0);
+                                                                    && request.CertificateSerialNumber.CompareTo(r.From) >= 0
+                                                                    && request.CertificateSerialNumber.CompareTo(r.To) <= 0);
 
                     bool isDuplicated = _certificateRepository.GetAll()
                                             .Where(c => c.CertificateSerialNumber == request.CertificateSerialNumber).Any();
