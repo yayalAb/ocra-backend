@@ -47,23 +47,26 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         }
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
-
+            var response = new BaseResponse();
             Guid WorkflowId = _WorkflowRepository.GetAll()
             .Where(wf => wf.workflowName == "authentication").Select(x => x.Id).FirstOrDefault();
             if (WorkflowId == null || WorkflowId == Guid.Empty)
             {
-                throw new Exception("authentication Work Flow Does not exist Pleace Create Workflow First");
+                response.Message = "authentication Work Flow Does not exist Pleace Create Workflow First";
+                response.Success = false;
+                return response;
+
             }
-            var next =  _WorkflowService.GetNextStep("authentication", 0, true);
+            var next = _WorkflowService.GetNextStep("authentication", 0, true);
             var AuthenticationRequest = new AuthenticationRequest
             {
                 CertificateId = request.CertificateId,
-                Request =  new Request
+                Request = new Request
                 {
                     RequestType = "authentication",
                     CivilRegOfficerId = request.CivilRegOfficer,
                     currentStep = 0,
-                    NextStep =next,
+                    NextStep = next,
                     WorkflowId = WorkflowId
                 }
             };
@@ -74,7 +77,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                                 .Select(u => u.Id).FirstOrDefault();
             if (userId == null)
             {
-                throw new NotFoundException("user not found");
+                response.Message = "user not Found";
+                response.Success = false;
+                return response;
             }
             var NewTranscation = new TransactionRequestDTO
             {
@@ -90,11 +95,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             await _notificationService.CreateNotification(AuthenticationRequest.Request.Id, "Authentication", request.Remark,
                                _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
                              userId);
+            response.Message = "Authentication Request Sent Sucessfully";
+            response.Success = true; ;
 
-            return new BaseResponse
-            {
-                Message = "authentication request Sent"
-            };
+            return response;
         }
     }
 }
