@@ -64,5 +64,6 @@ public enum Page
     PaymentTypeLookup,
     Unapproved,
     CorrectionRequest,
-    Approvel
+    Approvel,
+    CertificateInventory
 }
