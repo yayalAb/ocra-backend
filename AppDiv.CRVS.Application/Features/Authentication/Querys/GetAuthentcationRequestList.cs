@@ -87,8 +87,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  CanApprove = userGroup.UserGroups.Select(x => x.Id)
                  .FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep)
                  .Select(x => x.UserGroupId).FirstOrDefault()
-             }).Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault()
-             || rg.OfficerId == userGroup.PersonalInfoId);
+             }).Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
 
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
