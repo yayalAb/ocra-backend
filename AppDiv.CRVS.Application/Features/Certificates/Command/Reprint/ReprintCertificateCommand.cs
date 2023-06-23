@@ -89,7 +89,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                 {
                     var CertificateHistory = CustomMapper.Mapper.Map<CertificateHistory>(AddHistory);
                     await _CertificateHistoryRepository.InsertAsync(CertificateHistory, cancellationToken);
-                    var Historyresult = await _CertificateHistoryRepository.SaveChangesAsync(cancellationToken);
                     certificate.PrintCount += 1;
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
                     var result = await _certificateRepository.SaveChangesAsync(cancellationToken);

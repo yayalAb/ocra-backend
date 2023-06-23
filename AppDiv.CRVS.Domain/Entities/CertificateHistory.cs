@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual PersonalInfo CivilRegOfficer { get; set; }
         public virtual Certificate Certeficate { get; set; }
         [NotMapped]
-        public JObject Reason
+        public JObject? Reason
         {
 
             get
