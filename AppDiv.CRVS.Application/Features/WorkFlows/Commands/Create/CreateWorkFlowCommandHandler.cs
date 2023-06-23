@@ -9,6 +9,7 @@ using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
 {
@@ -42,16 +43,30 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
             if (CreateWorkFlowCommandResponse.Success)
             {
                 List<Guid> UserGroups = new List<Guid>();
-                var workflow = new Workflow
+                var workflo = _workflowRepository.GetAll()
+                .Where(x => x.workflowName == request.workflow.workflowName).FirstOrDefault();
+                if (workflo != null)
                 {
-                    Id = Guid.NewGuid(),
-                    workflowName = request.workflow.workflowName,
-                    Description = request.workflow.Description,
-                    HasPayment = request.workflow.HasPayment,
-                    PaymentStep = request.workflow.PaymentStep,
-                    Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.workflow.Steps)
-                };
-                await _workflowRepository.InsertAsync(workflow, cancellationToken);
+                    workflo.Description = request.workflow.Description;
+                    workflo.HasPayment = request.workflow.HasPayment;
+                    workflo.PaymentStep = request.workflow.PaymentStep;
+                    workflo.Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.workflow.Steps);
+                    await _workflowRepository.UpdateAsync(workflo, x => x.Id);
+                }
+                else
+                {
+                    var workflow = new Workflow
+                    {
+                        Id = Guid.NewGuid(),
+                        workflowName = request.workflow.workflowName,
+                        Description = request.workflow.Description,
+                        HasPayment = request.workflow.HasPayment,
+                        PaymentStep = request.workflow.PaymentStep,
+                        Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.workflow.Steps)
+                    };
+                    await _workflowRepository.InsertAsync(workflow, cancellationToken);
+                }
+
                 var result = await _workflowRepository.SaveChangesAsync(cancellationToken);
             }
             return CreateWorkFlowCommandResponse;
