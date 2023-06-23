@@ -84,6 +84,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                     SrialNo = request.CertificateSerialNumber,
                     Reason = request.Reason,
                     PrintType = "Certificate"
+
                 };
                 try
                 {
