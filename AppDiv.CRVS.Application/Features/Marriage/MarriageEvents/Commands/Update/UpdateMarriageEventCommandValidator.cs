@@ -192,11 +192,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         private bool BeUnmarried(Guid? personalInfoId, Guid marriageId)
         {
-            return personalInfoId == null || ! _marriageEventRepo.GetAll()
-                            .Where(m => 
+            return personalInfoId == null || !_marriageEventRepo.GetAll()
+                            .Where(m =>
                             (
-                             m.BrideInfoId == personalInfoId 
-                            || m.Event.EventOwenerId == personalInfoId) && (m.Id != marriageId)&& (!m.IsDivorced))
+                             m.BrideInfoId == personalInfoId
+                            || m.Event.EventOwenerId == personalInfoId) && (m.Id != marriageId) && (!m.IsDivorced))
                             .Any();
 
 
@@ -323,7 +323,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             {
                 return false;
             }
-            return marriageStatus.ValueStr.Contains(Enum.GetName<MarriageStatus>(MarriageStatus.divorced)!.ToLower());
+            return marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].or!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].or!.ToLower();
         }
         private bool isWidowed(Guid marriageStatusLookupId)
         {
@@ -332,7 +337,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             {
                 return false;
             }
-            return marriageStatus.ValueStr.Contains(Enum.GetName<MarriageStatus>(MarriageStatus.widowed)!.ToLower());
+            return marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedMan].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedMan].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedMan].or!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].or!.ToLower();
         }
         private bool BeAbove18YearsOld(string birthDate)
         {

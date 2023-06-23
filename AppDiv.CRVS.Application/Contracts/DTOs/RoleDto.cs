@@ -1,11 +1,11 @@
 namespace AppDiv.CRVS.Application.Contracts.DTOs;
 public class RoleDto
 {
-    public string Page { get; set; }
-    public string Title { get; set; }
-    public bool CanAdd { get; set; } = true;
-    public bool CanDelete { get; set; } = true;
-    public bool CanViewDetail { get; set; } = true;
-    public bool CanView { get; set; } = true;
-    public bool CanUpdate { get; set; } = true;
+    public string page { get; set; }
+    public string title { get; set; }
+    public bool canAdd { get; set; } = true;
+    public bool canDelete { get; set; } = true;
+    public bool canViewDetail { get; set; } = true;
+    public bool canView { get; set; } = true;
+    public bool canUpdate { get; set; } = true;
 }
