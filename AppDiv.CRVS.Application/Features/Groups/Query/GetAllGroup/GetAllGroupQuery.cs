@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup
                                     Id = g.Id,
                                     GroupName = g.GroupName,
                                     Description = g.Description.Value<string>("eng")
-                                }).ToList()
+                                })
 
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }

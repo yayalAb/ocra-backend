@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                     PrintCount = c.PrintCount,
                                     CertificateSerialNumber = c.CertificateSerialNumber,
                                     // Description = g.Description.Value<string>("eng")
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

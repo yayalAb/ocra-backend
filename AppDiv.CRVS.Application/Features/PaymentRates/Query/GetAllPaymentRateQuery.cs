@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
                                     Amount = pr.Amount,
                                     Status = pr.Status
                                     // Description = g.Description.Value<string>("eng")
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var paymentRateResponse = CustomMapper.Mapper.Map<List<PaymentRateDTO>>(paymentRateList);
             // return paymentRateResponse;

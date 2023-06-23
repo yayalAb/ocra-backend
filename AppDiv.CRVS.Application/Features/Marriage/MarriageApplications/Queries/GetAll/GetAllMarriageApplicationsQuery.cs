@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Extensions;
 using AppDiv.CRVS.Domain.Repositories;
 using AutoMapper;
 using MediatR;
@@ -33,13 +34,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Query
         }
         public async Task<PaginatedList<MarriageApplicationGridDTO>> Handle(GetAllMarriageApplicationsQuery request, CancellationToken cancellationToken)
         {
-           
-            return await PaginatedList<MarriageApplicationGridDTO>
-                            .CreateAsync(
-                               await _MarriageApplicationsRepository.GetAll().ProjectToListAsync<MarriageApplicationGridDTO>(CustomMapper.Mapper.ConfigurationProvider)
-                                , request.PageCount ?? 1, request.PageSize ?? 10);
-            // var MarriageApplicationsResponse = CustomMapper.Mapper.Map<List<MarriageApplicationsDTO>>(MarriageApplicationsList);
-            // return MarriageApplicationsResponse;
+           return await _MarriageApplicationsRepository.GetAll()
+                        .PaginateAsync<MarriageApplication, MarriageApplicationGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }
