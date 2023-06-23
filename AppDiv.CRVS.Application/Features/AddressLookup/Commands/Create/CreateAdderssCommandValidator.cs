@@ -17,27 +17,13 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
             _repo = repo;
             RuleFor(p => p.Address.AddressName)
                 .NotEmpty().WithMessage("{PropertyName} is required.");
-            RuleFor(p => p.Address.StatisticCode)
+            RuleFor(p => p.Address.Code)
                 .MustAsync(ValidateStatisticCode)
                 .WithMessage("{PropertyName} is must be unique.");
         }
-
-
-        private async Task<bool> ValidateForignkeyLookups(string code, CancellationToken token)
-        {
-            var address = _repo.GetAll().Where(x => x.StatisticCode == code);
-            if (address == null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
         private async Task<bool> ValidateStatisticCode(string code, CancellationToken token)
         {
-            var address = _repo.GetAll().Where(x => x.StatisticCode == code);
+            var address = _repo.GetAll().Where(x => x.StatisticCode == code).FirstOrDefault();
             if (address == null)
             {
                 return true;
