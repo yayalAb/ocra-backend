@@ -15,22 +15,37 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
         public CreateAdderssCommandValidator(IAddressLookupRepository repo)
         {
             _repo = repo;
-            // RuleFor(p => p.Address.AddressNameStr)
-            //     .NotEmpty().WithMessage("{PropertyName} is required.")
-            //     .NotNull()
-            //     .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
-            //RuleFor(e => e)
-            //   .MustAsync(phoneNumberUnique)
-            //   .WithMessage("A Customer phoneNumber already exists.");
+            RuleFor(p => p.Address.AddressName)
+                .NotEmpty().WithMessage("{PropertyName} is required.");
+            RuleFor(p => p.Address.StatisticCode)
+                .MustAsync(ValidateStatisticCode)
+                .WithMessage("{PropertyName} is must be unique.");
         }
 
-        //private async Task<bool> phoneNumberUnique(CreateCustomerCommand request, CancellationToken token)
-        //{
-        //    var member = await _repo.GetByIdAsync(request.FirstName);
-        //    if (member == null)
-        //        return true;
-        //    else return false;
-        //}
 
+        private async Task<bool> ValidateForignkeyLookups(string code, CancellationToken token)
+        {
+            var address = _repo.GetAll().Where(x => x.StatisticCode == code);
+            if (address == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        private async Task<bool> ValidateStatisticCode(string code, CancellationToken token)
+        {
+            var address = _repo.GetAll().Where(x => x.StatisticCode == code);
+            if (address == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }

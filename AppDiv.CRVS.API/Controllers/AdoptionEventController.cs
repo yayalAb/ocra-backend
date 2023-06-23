@@ -35,7 +35,6 @@ namespace AppDiv.CRVS.API.Controllers
             }
 
         }
-
         [HttpPut]
         public async Task<IActionResult> update([FromBody] UpdateAdoptionCommand command)
         {

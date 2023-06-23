@@ -92,7 +92,15 @@ namespace AppDiv.CRVS.API.Controllers
         {
             try
             {
-                return await _mediator.Send(new DeleteAddressCommand { Id = id });
+                var response = await _mediator.Send(new DeleteAddressCommand { Id = id });
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
             }
             catch (Exception exp)
             {
