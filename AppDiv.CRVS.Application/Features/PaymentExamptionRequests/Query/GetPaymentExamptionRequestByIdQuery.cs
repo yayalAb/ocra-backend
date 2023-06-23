@@ -36,8 +36,10 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         public async Task<PaymentExamptionRequestDTO> Handle(GetPaymentExamptionRequestByIdQuery request, CancellationToken cancellationToken)
         {
 
-            var selectedPaymentExamptionRequest = _PaymentExamptionRequestRepository.GetAll().Where(x => x.Id == request.Id)
+            var selectedPaymentExamptionRequest = _PaymentExamptionRequestRepository.GetAll()
+            .Include(x => x.ExamptedBy)
             .Include(m => m.Address)
+            .Where(x => x.Id == request.Id)
             .FirstOrDefault();
             return CustomMapper.Mapper.Map<PaymentExamptionRequestDTO>(selectedPaymentExamptionRequest);
             // return selectedCustomer;

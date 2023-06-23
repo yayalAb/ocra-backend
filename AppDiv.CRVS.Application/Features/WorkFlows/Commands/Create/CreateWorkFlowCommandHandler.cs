@@ -66,7 +66,6 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
                     };
                     await _workflowRepository.InsertAsync(workflow, cancellationToken);
                 }
-
                 var result = await _workflowRepository.SaveChangesAsync(cancellationToken);
             }
             return CreateWorkFlowCommandResponse;

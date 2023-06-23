@@ -82,6 +82,19 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
+        [HttpGet("Detail")]
+        public async Task<ActionResult> Detail([FromQuery] GetPaymentExamptionDetailById query)
+        {
+            try
+            {
+                var result = await Mediator.Send(query);
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
 
     }
 }
