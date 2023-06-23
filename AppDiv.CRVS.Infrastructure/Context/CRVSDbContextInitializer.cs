@@ -83,23 +83,23 @@ namespace AppDiv.CRVS.Infrastructure
             {
                 roles.Add(new RoleDto
                 {
-                    Page = page,
-                    Title = page,
-                    CanAdd = true,
-                    CanDelete = true,
-                    CanView = true,
-                    CanViewDetail = true,
-                    CanUpdate = true
+                    page = page,
+                    title = page,
+                    canAdd = true,
+                    canDelete = true,
+                    canView = true,
+                    canViewDetail = true,
+                    canUpdate = true
                 });
                 roles2.Add(new RoleDto
                 {
-                    Page = page,
-                    Title = page,
-                    CanAdd = true,
-                    CanDelete = true,
-                    CanView = true,
-                    CanViewDetail = true,
-                    CanUpdate = true
+                    page = page,
+                    title = page,
+                    canAdd = true,
+                    canDelete = true,
+                    canView = true,
+                    canViewDetail = true,
+                    canUpdate = true
                 });
             });
 
