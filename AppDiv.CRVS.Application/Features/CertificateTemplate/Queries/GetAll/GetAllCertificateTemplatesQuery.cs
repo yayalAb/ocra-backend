@@ -2,6 +2,8 @@
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Extensions;
 using AppDiv.CRVS.Domain.Repositories;
 using AutoMapper;
 using MediatR;
@@ -27,10 +29,12 @@ namespace AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetA
         }
         public async Task<PaginatedList<FetchCertificateTemplateDTO>> Handle(GetAllCertificateTemplatesQuery request, CancellationToken cancellationToken)
         {
-            return await PaginatedList<FetchCertificateTemplateDTO>
-                        .CreateAsync(
-                           await _CertificateTemplateslookupRepository.GetAllAsync()
-                           .ProjectToListAsync<FetchCertificateTemplateDTO>(_mapper.ConfigurationProvider), request.PageCount ?? 1, request.PageSize ?? 10);
+            return await _CertificateTemplateslookupRepository.GetAllAsync()
+                            .PaginateAsync<CertificateTemplate, FetchCertificateTemplateDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
+            // return await PaginatedList<FetchCertificateTemplateDTO>
+            //             .CreateAsync(
+            //                await _CertificateTemplateslookupRepository.GetAllAsync()
+            //                .ProjectToListAsync<FetchCertificateTemplateDTO>(_mapper.ConfigurationProvider), request.PageCount ?? 1, request.PageSize ?? 10);
 
         }
     }

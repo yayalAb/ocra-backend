@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Query
                                     FacilityLookupId = de.FacilityLookupId,
                                     // FacilityTypeLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityTypeLookup),
                                     // FacilityLookup = CustomMapper.Mapper.Map<LookupDTO>(de.FacilityLookup)
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var paymentRateResponse = CustomMapper.Mapper.Map<List<BirthEventDTO>>(paymentRateList);
             // return paymentRateResponse;

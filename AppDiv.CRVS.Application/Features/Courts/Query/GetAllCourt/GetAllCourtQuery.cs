@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Application.Features.Courts.Query.GetAllCourt
                                     id = co.Id,
                                     Name = co.NameLang,
                                     Description = co.DescriptionLang,
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

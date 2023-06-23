@@ -51,7 +51,6 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
             await PaginatedList<PaymentRequestListDTO>
                            .CreateAsync(
                                 paymentRequestList
-                               .ToList()
                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

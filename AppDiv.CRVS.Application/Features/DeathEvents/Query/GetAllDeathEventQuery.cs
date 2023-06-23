@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Query
                                     PlaceOfFuneral = de.PlaceOfFuneral,
                                     DeathNotification = CustomMapper.Mapper.Map<DeathNotificationDTO>(de.DeathNotification),
                                     Event = CustomMapper.Mapper.Map<EventDTO>(de.Event),
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var paymentRateResponse = CustomMapper.Mapper.Map<List<DeathEventDTO>>(paymentRateList);
             // return paymentRateResponse;

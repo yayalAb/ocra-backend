@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Query
                                     CertificateType = r.CertificateType,
                                     Address = CustomMapper.Mapper.Map<AddressDTO>(r.Address)
                                     // Description = g.Description.Value<string>("eng")
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
             // var PaymentExamptionRequestResponse = CustomMapper.Mapper.Map<List<PaymentExamptionRequestDTO>>(PaymentExamptionRequestList);
             // return PaymentExamptionRequestResponse;

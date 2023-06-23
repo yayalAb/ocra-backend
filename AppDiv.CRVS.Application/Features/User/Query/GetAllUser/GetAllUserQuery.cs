@@ -69,7 +69,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                         // ContactInfo = _mapper.Map<ContactInfoDTO>(user.PersonalInfo.ContactInfo)
 
                     }
-                }).ToList()
+                })
 
                 , request.PageCount ?? 1, request.PageSize ?? 10);
 

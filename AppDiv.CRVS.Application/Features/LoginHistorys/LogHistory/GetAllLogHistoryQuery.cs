@@ -15,6 +15,7 @@ using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Domain.Entities.Audit;
+using AppDiv.CRVS.Application.Extensions;
 
 namespace AppDiv.CRVS.Application.Features.LoginHistorys.LogHistory
 {
@@ -33,12 +34,8 @@ namespace AppDiv.CRVS.Application.Features.LoginHistorys.LogHistory
         }
         public async Task<PaginatedList<AuditLogDTO>> Handle(GetAllLogHistoryQuery request, CancellationToken cancellationToken)
         {
-            var UserLogHistory = _LoginHistoryRepo.GetAll().ToList();
-            return await PaginatedList<AuditLogDTO>
-                            .CreateAsync(
-                                CustomMapper.Mapper.Map<List<AuditLogDTO>>(UserLogHistory)
-
-                                , request.PageCount ?? 1, request.PageSize ?? 10);
+            return await _LoginHistoryRepo.GetAll()
+                            .PaginateAsync<AuditLog, AuditLogDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }
 
     }

@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Application.Features.LoginHistorys.Query
 
                 }).ToList()
 
-            }).ToList();
+            });
             return await PaginatedList<UserHistoryDTO>
                             .CreateAsync(
                                UserLogHistory

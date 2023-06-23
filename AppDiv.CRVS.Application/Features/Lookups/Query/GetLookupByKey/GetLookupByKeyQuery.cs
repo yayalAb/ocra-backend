@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
         }
         public async Task<PaginatedList<LookupByKeyDTO>> Handle(GetLookupByKeyQuery request, CancellationToken cancellationToken)
         {
-            var lookups = new List<LookupByKeyDTO>();
+            IQueryable<LookupByKeyDTO> lookups;
             if (request.Key.ToLower() == "facility-type")
             {
                 var result = from a in _lookupRepository.GetAll().Where(x => x.Key == "facility")
@@ -48,7 +48,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
                        id = lo.B.Id,
                        Key = lo.A.ValueLang,
                        Value = lo.B.ValueLang,
-                   }).ToList();
+                   });
 
 
             }
@@ -60,7 +60,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
                                     id = lo.Id,
                                     Key = lo.Key,
                                     Value = lo.ValueLang
-                                }).ToList();
+                                });
             }
             return await PaginatedList<LookupByKeyDTO>
                             .CreateAsync(

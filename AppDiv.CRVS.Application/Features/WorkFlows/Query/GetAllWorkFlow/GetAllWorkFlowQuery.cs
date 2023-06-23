@@ -45,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Query.GetAllWorkFlow
                                     HasPayment = wf.workflow.HasPayment,
                                     status = wf.Status,
                                     PaymentStep = wf.workflow.PaymentStep
-                                }).ToList()
+                                })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

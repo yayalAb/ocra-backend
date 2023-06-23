@@ -51,7 +51,6 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             return await PaginatedList<CorrectionRequestListDTO>
                            .CreateAsync(
                                 CorrectionRequest
-                               .ToList()
                                , request.PageCount ?? 1, request.PageSize ?? 10);
 
 
