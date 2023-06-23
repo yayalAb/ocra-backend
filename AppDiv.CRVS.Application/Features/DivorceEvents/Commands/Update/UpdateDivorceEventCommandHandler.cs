@@ -97,7 +97,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             divorceEvent.Event.EventSupportingDocuments = null;
                             if (divorceEvent.Event.PaymentExamption != null)
                             {
-                                    divorceEvent.Event.PaymentExamption.SupportingDocuments = null;
+                                divorceEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
                             _DivorceEventRepository.EFUpdate(divorceEvent);
                             if (!request.IsFromCommand)

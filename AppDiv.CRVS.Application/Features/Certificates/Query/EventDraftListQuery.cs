@@ -56,8 +56,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   CertificateId = e.CertificateId,
                                   EventType = e.EventType,
                                   OwnerFullName = e.EventOwener.FirstNameLang + " " + e.EventOwener.MiddleNameLang + " " + e.EventOwener.LastNameLang,
-                                  EventDate = e.EventDate,
-                                  EventRegDate = e.EventRegDate,
+                                  EventDate = e.EventDateEt,
+                                  EventRegDate = e.EventRegDateEt,
                                   IsCertified = e.IsCertified
                               })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);

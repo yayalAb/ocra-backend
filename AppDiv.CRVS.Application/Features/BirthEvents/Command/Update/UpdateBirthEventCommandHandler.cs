@@ -63,6 +63,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
 
                                 var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
+                                birthEvent.Event.EventType = "Birth";
 
                                 var personIds = new PersonIdObj
                                 {

@@ -272,15 +272,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         {
             var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
             return marriageType == null ||
-             marriageType.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Civil].or!.ToLower())
-                    || marriageType.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Civil].am!.ToLower());
-            // return marriageType.Value.Value<string>("en")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
-            //  || marriageType.Value.Value<string>("am")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower()
-            //  || marriageType.Value.Value<string>("or")?.ToLower() == Enum.GetName<MarriageType>(MarriageType.Civil)!.ToLower();
-
-
+             marriageType.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].or!.ToLower()
+             || marriageType.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].am!.ToLower();
+            ;
         }
 
         private async Task<bool> haveDevorceCertificateAttachementAsync(ICollection<AddSupportingDocumentRequest>? supportingDocs, Guid? perosnalInfoId, string type)
@@ -316,7 +310,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             {
                 return false;
             }
-            return marriageStatus.ValueStr.Contains(Enum.GetName<MarriageStatus>(MarriageStatus.divorced)!.ToLower());
+            return marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus. divorcedWoman].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus. divorcedWoman].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].or!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus. divorcedWoman].or!.ToLower();
         }
         private bool isWidowed(Guid marriageStatusLookupId)
         {
@@ -325,7 +324,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             {
                 return false;
             }
-            return marriageStatus.ValueStr.Contains(Enum.GetName<MarriageStatus>(MarriageStatus.widowed)!.ToLower());
+            return marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedMan].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedMan].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedMan].or!.ToLower()
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].or!.ToLower();
         }
 
         private bool BeAbove18YearsOld(string birthDate)

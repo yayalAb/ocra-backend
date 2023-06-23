@@ -32,16 +32,33 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet("Authenticate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<BaseResponse> Get([FromQuery] AuthenticatCommand query)
+        public async Task<ActionResult> Get([FromQuery] AuthenticatCommand query)
         {
-            return await _mediator.Send(query);
+            var result = await _mediator.Send(query);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
         }
 
         [HttpGet("AuthenticationRequest")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<BaseResponse> AuthenticationRequest([FromQuery] AuthenticationRequestCommad query)
+        public async Task<ActionResult> AuthenticationRequest([FromQuery] AuthenticationRequestCommad query)
         {
-            return await _mediator.Send(query);
+            var result = await _mediator.Send(query);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+
         }
 
         [HttpGet("AuthenticationRequestList")]

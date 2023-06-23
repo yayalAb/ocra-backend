@@ -93,6 +93,7 @@ namespace AppDiv.CRVS.Application.Service
         }
         public Guid GetReceiverGroupId(string workflowType, int step)
         {
+            Console.WriteLine("workFlow {0} Step {1} ", workflowType, step);
             var groupId = _workflowRepository.GetAll()
             .Where(w => w.workflowName == workflowType)
             .Select(w => w.Steps.Where(s => s.step == step).Select(s => s.UserGroupId).FirstOrDefault()
@@ -111,13 +112,13 @@ namespace AppDiv.CRVS.Application.Service
             .Include(x => x.Notification)
             .Include(x => x.PaymentExamptionRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
-            Guid ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
-            (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
-            request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
             if (request == null)
             {
                 throw new Exception("Request Does not Found");
             }
+            Guid ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
+            (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
+            request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
@@ -135,16 +136,20 @@ namespace AppDiv.CRVS.Application.Service
                                             .Select(u => u.Id).FirstOrDefault();
 
 
-                 
+
                         if (userId == null)
                         {
                             throw new NotFoundException("user not found");
                         }
                         request.currentStep = nextStep;
                         request.NextStep = this.GetNextStep(workflowType, nextStep, true);
-                        request.Notification.MessageStr = Remark;
-                        request.Notification.GroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
-                        request.Notification.SenderId = userId;
+                        if (request.Notification != null)
+                        {
+                            request.Notification.MessageStr = Remark;
+                            request.Notification.GroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
+                            request.Notification.SenderId = userId;
+                        }
+
                         _requestRepostory.Update(request);
                         _requestRepostory.SaveChanges();
                         var NewTranscation = new TransactionRequestDTO
@@ -159,8 +164,8 @@ namespace AppDiv.CRVS.Application.Service
 
                         await _TransactionService.CreateTransaction(NewTranscation);
                         // await notificationService.CreateNotification(request.Id, workflowType, Remark,
-                                        //    this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                        //  userId);
+                        //    this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
+                        //  userId);
 
                     }
                     catch (Exception exp)

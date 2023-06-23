@@ -104,49 +104,85 @@ namespace AppDiv.CRVS.Domain.Enums
      };
 
              public static Dictionary<MarriageStatus, lookupModel> marriageStatusDict = new Dictionary<MarriageStatus, lookupModel>{
-            {
-                MarriageStatus.single , new lookupModel{
-                    en = Enum.GetName<MarriageStatus>(MarriageStatus.single),
-                    or = "",
-                    am = "",
-                    statisticCode = "",
-                    code = ""
+                {
+                    MarriageStatus.singleMan , new lookupModel{
+                        en = "single",
+                        or = "",
+                        am = "",
+                        statisticCode = "",
+                        code = ""
+                    }
+                },
+                 {
+                    MarriageStatus.singleWoman , new lookupModel{
+                        en = "single",
+                        or = "",
+                        am = "",
+                        statisticCode = "",
+                        code = ""
+                    }
+                },
+                {
+                    MarriageStatus.marriedMan , new lookupModel{
+                        en ="married",
+                        or = "",
+                        am = "",
+                        statisticCode = "",
+                        code = ""
+                    }
+                },
+                {
+                    MarriageStatus.marriedWoman , new lookupModel{
+                        en = "married",
+                        or = "",
+                        am = "",
+                        statisticCode = "",
+                        code = ""
+                    }
+                },
+                {
+                    MarriageStatus.divorcedMan , new lookupModel{
+                        en = "divorced",
+                        or = "",
+                        am = "",
+                        statisticCode = "",
+                        code = ""
+                    }
+                },
+                 {
+                    MarriageStatus.divorcedWoman , new lookupModel{
+                        en = "divorced",
+                        or = "",
+                        am = "",
+                        statisticCode = "",
+                        code = ""
+                    }
+                },
+                {
+                    MarriageStatus.widowedMan , new lookupModel{
+                        en = "",
+                        or = "",
+                        am = "",
+                        statisticCode = "",
+                        code = ""
+                    }
+                },
+                 {
+                    MarriageStatus.widowedWoman , new lookupModel{
+                        en = "widow",
+                        or = "",
+                        am = "መበለት",
+                        statisticCode = "",
+                        code = ""
+                    }
                 }
-            },
-            {
-                MarriageStatus.married , new lookupModel{
-                    en = Enum.GetName<MarriageStatus>(MarriageStatus.married),
-                    or = "",
-                    am = "",
-                    statisticCode = "",
-                    code = ""
-                }
-            },
-            {
-                MarriageStatus.divorced , new lookupModel{
-                    en = Enum.GetName<MarriageStatus>(MarriageStatus.divorced),
-                    or = "",
-                    am = "",
-                    statisticCode = "",
-                    code = ""
-                }
-            },
-            {
-                MarriageStatus.widowed , new lookupModel{
-                    en = Enum.GetName<MarriageStatus>(MarriageStatus.widowed),
-                    or = "",
-                    am = "",
-                    statisticCode = "",
-                    code = ""
-                }
-            }
      };
       public static Dictionary<MarriageType, lookupModel> marriageTypeDict = new Dictionary<MarriageType, lookupModel>{
             {
                 MarriageType.Civil , new lookupModel{
                     en = Enum.GetName<MarriageType>(MarriageType.Civil),
                     or = "seera siivilii",
-                    am = "",
+                    am = "ሲቪል",
                     statisticCode = "",
                     code = ""
                 }
@@ -155,7 +191,7 @@ namespace AppDiv.CRVS.Domain.Enums
                 MarriageType.Cultural , new lookupModel{
                     en = Enum.GetName<MarriageType>(MarriageType.Cultural),
                     or = "aadaa",
-                    am = "",
+                    am = "ባህላዊ",
                     statisticCode = "",
                     code = ""
                 }
@@ -164,7 +200,7 @@ namespace AppDiv.CRVS.Domain.Enums
                 MarriageType.Religion , new lookupModel{
                     en = Enum.GetName<MarriageType>(MarriageType.Religion),
                     or = "amantaa",
-                    am = "",
+                    am = "ሃይማኖታዊ",
                     statisticCode = "",
                     code = ""
                 }
@@ -198,6 +234,35 @@ namespace AppDiv.CRVS.Domain.Enums
                     code = ""
                 }
             }
+     };
+        public static Dictionary<SupportingDcoumentType, lookupModel> supportingDocumentTypeDict = new Dictionary<SupportingDcoumentType, lookupModel>{
+            {
+                SupportingDcoumentType.DivorcePaper , new lookupModel{
+                    en = Enum.GetName<SupportingDcoumentType>(SupportingDcoumentType.DivorcePaper),
+                    or = "",
+                    am = "",
+                    statisticCode = "",
+                    code = ""
+                }
+            },
+         {
+                SupportingDcoumentType.DeathCertificate , new lookupModel{
+                    en = Enum.GetName<SupportingDcoumentType>(SupportingDcoumentType.DeathCertificate),
+                    or = "",
+                    am = "",
+                    statisticCode = "",
+                    code = ""
+                }
+            },
+          {
+                SupportingDcoumentType.NationalId , new lookupModel{
+                    en = Enum.GetName<SupportingDcoumentType>(SupportingDcoumentType.NationalId),
+                    or = "",
+                    am = "",
+                    statisticCode = "",
+                    code = ""
+                }
+            },
      };
     }
 

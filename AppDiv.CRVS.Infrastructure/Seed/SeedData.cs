@@ -22,31 +22,31 @@ namespace AppDiv.CRVS.Infrastructure.Seed
             List<UserGroup> groups = new List<UserGroup>();
             List<RoleDto> roles = new List<RoleDto>{
                     new RoleDto{
-                        Page = "dashboard",
-                        Title = "dashboard",
-                        CanAdd = true,
-                        CanDelete = true,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
+                        page = "dashboard",
+                        title = "dashboard",
+                        canAdd = true,
+                        canDelete = true,
+                        canView = true,
+                        canViewDetail = true,
+                        canUpdate = true
                         },
                         new RoleDto{
-                        Page = "birth",
-                        Title = "birth",
-                        CanAdd = true,
-                        CanDelete = true,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
+                        page = "birth",
+                        title = "birth",
+                        canAdd = true,
+                        canDelete = true,
+                        canView = true,
+                        canViewDetail = true,
+                        canUpdate = true
                         },
                         new RoleDto{
-                        Page = "death",
-                        Title = "death",
-                        CanAdd = true,
-                        CanDelete = true,
-                        CanView = true,
-                        CanViewDetail = true,
-                        CanUpdate = true
+                        page = "death",
+                        title = "death",
+                        canAdd = true,
+                        canDelete = true,
+                        canView = true,
+                        canViewDetail = true,
+                        canUpdate = true
                         }
                 };
             var groupId = new Guid("67998869-cebb-4d3f-a241-fb96b350993f");

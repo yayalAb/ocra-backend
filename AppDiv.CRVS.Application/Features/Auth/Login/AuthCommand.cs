@@ -60,22 +60,22 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             var userRoles = userData.UserGroups.SelectMany(ug => ug.Roles
             .Select(r => new RoleDto
             {
-                Page = r.Value<string>("Page") ?? "",
-                Title = r.Value<string>("Title") ?? "",
-                CanAdd = r.Value<bool>("CanAdd"),
-                CanDelete = r.Value<bool>("CanDelete"),
-                CanViewDetail = r.Value<bool>("CanViewDetail"),
-                CanView = r.Value<bool>("CanView"),
-                CanUpdate = r.Value<bool>("CanUpdate")
-            })).GroupBy(r => r.Page.Trim(), StringComparer.OrdinalIgnoreCase).Select(g => new RoleDto
+                page = r.Value<string>("page") ?? "",
+                title = r.Value<string>("title") ?? "",
+                canAdd = r.Value<bool>("canAdd"),
+                canDelete = r.Value<bool>("canDelete"),
+                canViewDetail = r.Value<bool>("canViewDetail"),
+                canView = r.Value<bool>("canView"),
+                canUpdate = r.Value<bool>("canUpdate")
+            })).GroupBy(r => r.page.Trim(), StringComparer.OrdinalIgnoreCase).Select(g => new RoleDto
             {
-                Page = g.Key,
-                Title = g.FirstOrDefault()?.Title ?? "",
-                CanAdd = g.Aggregate(false, (acc, x) => acc || x.CanAdd),
-                CanDelete = g.Aggregate(false, (acc, x) => acc || x.CanDelete),
-                CanUpdate = g.Aggregate(false, (acc, x) => acc || x.CanUpdate),
-                CanView = g.Aggregate(false, (acc, x) => acc || x.CanView),
-                CanViewDetail = g.Aggregate(false, (acc, x) => acc || x.CanViewDetail)
+                page = g.Key,
+                title = g.FirstOrDefault()?.title ?? "",
+                canAdd = g.Aggregate(false, (acc, x) => acc || x.canAdd),
+                canDelete = g.Aggregate(false, (acc, x) => acc || x.canDelete),
+                canUpdate = g.Aggregate(false, (acc, x) => acc || x.canUpdate),
+                canView = g.Aggregate(false, (acc, x) => acc || x.canView),
+                canViewDetail = g.Aggregate(false, (acc, x) => acc || x.canViewDetail)
             });
             var LoginHis = new LoginHistory
             {
@@ -83,8 +83,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 UserId = response.userId,
                 EventType = "Login",
                 EventDate = DateTime.Now,
-                IpAddress = _httpContext.HttpContext.Connection.RemoteIpAddress.ToString(),
-                Device = _httpContext.HttpContext.Request.Headers["User-Agent"].ToString()
+                IpAddress = _httpContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+                Device = _httpContext.HttpContext?.Request.Headers["User-Agent"].ToString()
 
             };
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
