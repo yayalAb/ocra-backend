@@ -14,8 +14,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public string EventType { get; set; }
         public DateTime PlannedDate { get; set; }
         public string PlannedDateEt { get; set; }
-        public int BudgetYear { get; set; }
-        public int TargetAmount { get; set; }
+        public uint BudgetYear { get; set; }
+        public uint TargetAmount { get; set; }
         public string Remark { get; set; } = string.Empty;
 
         [NotMapped]
