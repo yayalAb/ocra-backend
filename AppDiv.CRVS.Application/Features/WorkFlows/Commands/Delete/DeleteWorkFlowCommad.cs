@@ -15,12 +15,6 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
     public class DeleteWorkFlowCommad : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
-        // public DeleteWorkFlowCommad(Guid id)
-        // {
-        //     this.Id = id;
-        // }
-
-
     }
 
     // Customer delete command handler with BaseResponse response as output
