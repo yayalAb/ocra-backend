@@ -30,10 +30,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
         }
         public async Task<CreateCertificateTransferCommandResponse> Handle(CreateCertificateTransferCommand request, CancellationToken cancellationToken)
         {
-
-            // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request.customer);           
-
-            var createPaymentCommandResponse = new CreateCertificateTransferCommandResponse();
+            var response = new CreateCertificateTransferCommandResponse();
 
             var validator = new CreateCertificateTransferCommandValidator(_CertificateTransferRepository);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -41,25 +38,32 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
             //Check and log validation errors
             if (validationResult.Errors.Count > 0)
             {
-                createPaymentCommandResponse.Success = false;
-                createPaymentCommandResponse.ValidationErrors = new List<string>();
+                response.Success = false;
+                response.ValidationErrors = new List<string>();
                 foreach (var error in validationResult.Errors)
-                    createPaymentCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                createPaymentCommandResponse.Message = createPaymentCommandResponse.ValidationErrors[0];
+                    response.ValidationErrors.Add(error.ErrorMessage);
+                response.Message = response.ValidationErrors[0];
             }
-            if (createPaymentCommandResponse.Success)
+            if (response.Success) // if there is no validation error 
             {
-                var CertificateTransfer = CustomMapper.Mapper.Map<CertificateSerialTransfer>(request.CertificateTransfer);
-                Guid? recieverAddress = _userRepository.GetAll()
-                                                        .Where(u => u.Id == CertificateTransfer.RecieverId)
-                                                        .FirstOrDefault()?.AddressId;
-                CertificateTransfer.Status = false;
-                await _CertificateTransferRepository.InsertWithRangeAsync(CertificateTransfer, cancellationToken);
-                var result = await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
-                // await _CertificateTransferRepository.InsertWithRangeAsync(_logger, CertificateTransfer, cancellationToken);
+                try
+                {
+                    // map the request to the model
+                    var CertificateTransfer = CustomMapper.Mapper.Map<CertificateSerialTransfer>(request.CertificateTransfer);
+                    CertificateTransfer.Status = false;
+                    // save the date
+                    await _CertificateTransferRepository.InsertWithRangeAsync(CertificateTransfer, cancellationToken);
+                    await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
+                    response.Created("Certificate Transfer"); // set the response to success
+                }
+                catch (System.Exception)
+                {
+                    response.BadRequest("Unable to Transfer the Certificates...");
+                    // throw;
+                }
 
             }
-            return createPaymentCommandResponse;
+            return response;
         }
     }
 }

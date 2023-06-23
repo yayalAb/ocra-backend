@@ -14,7 +14,6 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Query
 {
-    // Customer GetCustomerByUserQuery with Customer response
     public class GetCertificateTransferByUserQuery : IRequest<PaginatedList<CertificateTransferDTO>>
     {
         public int? PageCount { set; get; } = 1!;
@@ -25,29 +24,32 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
     {
         private readonly ICertificateTransferRepository _certificateStoreRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IUserResolverService _userResolver;
 
-        public GetCertificateTransferByUserHandler(ICertificateTransferRepository certificateStoreRepository, IUserRepository userRepository)
+        public GetCertificateTransferByUserHandler(ICertificateTransferRepository certificateStoreRepository, 
+                                                    IUserRepository userRepository,
+                                                    IUserResolverService userResolver)
         {
             _certificateStoreRepository = certificateStoreRepository;
             _userRepository = userRepository;
+            _userResolver = userResolver;
         }
         public async Task<PaginatedList<CertificateTransferDTO>> Handle(GetCertificateTransferByUserQuery request, CancellationToken cancellationToken)
         {
-            var transfers = _certificateStoreRepository.GetAll().Where(t => t.SenderId == "");
+            // return the paginated list of sent certificate serial numbers by the user.
             return await PaginatedList<CertificateTransferDTO>
                             .CreateAsync(
                                 _certificateStoreRepository.GetAll()
-                                    // .Where(c => c.RecieverId == user)
+                                    .Where(c => c.SenderId == _userResolver.GetUserId())
                                     .Select(sn => new CertificateTransferDTO
                                     {
                                         Id = sn.Id,
                                         From = sn.From,
                                         To = sn.To,
                                         Status = sn.Status,
-                                        RecieverName = _userRepository.GetAll().Where(u => u.Id == sn.RecieverId).FirstOrDefault().UserName,
-                                    }).ToList()
+                                        RecieverName = _userRepository.GetSingle(sn.RecieverId).UserName,
+                                    })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
-            // return selectedCustomer;
         }
     }
 }

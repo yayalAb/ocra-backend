@@ -63,26 +63,21 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 {
                     try
                     {
+                        // Get the reciever address from the user id.
                         Address? recieverAddress = _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
                                                         .Where(u => u.Id == transfer.RecieverId)
                                                         .FirstOrDefault()?.Address;
+                        // Get the sender address from the user id.
                         Address? senderAddress = (transfer.SenderId != null)
                                                     ? _dbContext.Users.Include(i => i.Address).ThenInclude(a => a.CertificateSerialRanges)
                                                         .Where(u => u.Id == transfer.SenderId)
                                                         .FirstOrDefault()?.Address : null;
+                        // Get the sender serial number range between the given numbers.
                         var senderRange = senderAddress?.CertificateSerialRanges?
-                                                        .Where(r => r.From <= transfer.From)
-                                                        .Where(r => r.To >= transfer.To)
+                                                        .Where(r => r.From.CompareTo(transfer.From) <= 0)
+                                                        .Where(r => r.To.CompareTo(transfer.To) >= 0)
                                                         .FirstOrDefault();
-                        // CertificateSerialRange? senderRange = (recieverAddress != null) ? _dbContext.CertificateSerialRanges.Where(r => r.AddressId == senderAddress.Id)
-                        //                                 .Where(r => r.From >= transfer.From)
-                        //                                 .Where(r => r.To <= transfer.To)
-                        //                                 .FirstOrDefault() : null;
-                        // _dbContext.CertificateSerialRanges.Add(range);
-                        // CertificateSerialRange? recieverRange = (recieverAddress != null) ? _dbContext.CertificateSerialRanges.Where(r => r.AddressId == recieverAddress.Id)
-                        // .Where(r => r.From >= transfer.From)
-                        // .Where(r => r.To <= transfer.To)
-                        // .FirstOrDefault() : null;
+
                         var recieverRange = new CertificateSerialRange
                         {
                             From = transfer.From,
@@ -96,32 +91,32 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         if (!string.IsNullOrEmpty(transfer.SenderId))
                         {
 
-                            if (transfer.From > senderRange?.From && transfer.To < senderRange?.To)
+                            if (transfer.From.CompareTo(senderRange?.From) > 0 && transfer.To.CompareTo(senderRange?.To) < 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.To = transfer.To - 1;
+                                senderRange1.To = substractOneFrom(transfer.To);
                                 senderRange1.From = senderRange.From;
                                 senderRange1.AddressId = senderAddress.Id;
                                 var senderRange2 = new CertificateSerialRange();
-                                senderRange2.From = transfer.From + 1;
+                                senderRange2.From = addOneTo(transfer.From);
                                 senderRange2.To = senderRange.To;
                                 senderRange2.AddressId = senderAddress.Id;
                                 // senderAddress.CertificateSerialRanges = new List<CertificateSerialRange>();
                                 _dbContext?.CertificateSerialRanges.Add(senderRange1);
                                 _dbContext?.CertificateSerialRanges.Add(senderRange2);
                             }
-                            else if (transfer.From == senderRange?.From && transfer.To < senderRange?.To)
+                            else if (transfer.From == senderRange?.From && transfer.To.CompareTo(senderRange?.To) < 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.From = transfer.To + 1;
+                                senderRange1.From = addOneTo(transfer.To);
                                 senderRange1.To = senderRange.To;
                                 senderRange1.AddressId = senderAddress.Id;
                                 _dbContext?.CertificateSerialRanges.Add(senderRange1);
                             }
-                            else if (transfer.To == senderRange?.To && transfer.From > senderRange?.From)
+                            else if (transfer.To == senderRange?.To && transfer.From.CompareTo(senderRange?.From) > 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.To = transfer.To - 1;
+                                senderRange1.To = substractOneFrom(transfer.To);
                                 senderRange1.From = senderRange.From;
                                 senderRange1.AddressId = senderAddress.Id;
                                 _dbContext?.CertificateSerialRanges.Add(senderRange1);
@@ -149,6 +144,73 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     }
                 }
             });
+        }
+
+        private string substractOneFrom(string serialNumber)
+        {
+            int numIndex = -1;
+
+            // loop through each character in the string to find the index where the numeric part starts
+            for (int i = 0; i < serialNumber.Length; i++)
+            {
+                if (char.IsDigit(serialNumber[i]))
+                {
+                    numIndex = i;
+                    break;
+                }
+            }
+
+            if (numIndex != -1)
+            {
+                string alphabets = serialNumber.Substring(0, numIndex); // extract the alphabetic part
+                string numbers = serialNumber.Substring(numIndex); // extract the numeric part
+
+                int num = int.Parse(numbers); // convert the numeric part to integer
+                num--; // decrement the integer
+
+                string newNumbers = num.ToString().PadLeft(numbers.Length, '0'); // convert the integer back to string and pad with leading zeros if necessary
+
+                string newStr = alphabets + newNumbers; // concatenate the alphabetic and numeric parts
+
+                return newStr; // return the new string
+            }
+            else
+            {
+                return ("Numeric part not found in the string.");
+            }
+        }
+        private string addOneTo(string serialNumber)
+        {
+            int numIndex = -1;
+
+            // loop through each character in the string to find the index where the numeric part starts
+            for (int i = 0; i < serialNumber.Length; i++)
+            {
+                if (char.IsDigit(serialNumber[i]))
+                {
+                    numIndex = i;
+                    break;
+                }
+            }
+
+            if (numIndex != -1)
+            {
+                string alphabets = serialNumber.Substring(0, numIndex); // extract the alphabetic part
+                string numbers = serialNumber.Substring(numIndex); // extract the numeric part
+
+                int num = int.Parse(numbers); // convert the numeric part to integer
+                num++; // decrement the integer
+
+                string newNumbers = num.ToString().PadLeft(numbers.Length, '0'); // convert the integer back to string and pad with leading zeros if necessary
+
+                string newStr = alphabets + newNumbers; // concatenate the alphabetic and numeric parts
+
+                return newStr; // return the new string
+            }
+            else
+            {
+                return ("Numeric part not found in the string.");
+            }
         }
 
     }

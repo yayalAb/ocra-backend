@@ -11,8 +11,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? SenderId { get; set; }
         public string RecieverId { get; set; }
         public bool Status { get; set; }
-        public int From { get; set; }
-        public int To { get; set; }
+        public string From { get; set; }
+        public string To { get; set; }
         public string? ReceivedFrom { get; set; }
         public virtual ApplicationUser Sender { get; set; }
         public virtual ApplicationUser Reciever { get; set; }
