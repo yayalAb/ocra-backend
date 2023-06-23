@@ -1,6 +1,8 @@
 ﻿
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Utility.Services;
@@ -19,9 +21,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageEventRepository _marriageEventRepo;
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepo;
         private readonly IAddressLookupRepository _addressRepo;
+        private readonly ISettingRepository _settingRepository;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo, ISettingRepository settingRepository)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -30,7 +33,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _marriageEventRepo = marriageEventRepo;
             _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _addressRepo = addressRepo;
-
+            _settingRepository = settingRepository;
             var fieldNames =
             new List<string>{
 
@@ -94,9 +97,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
 
 
-            RuleFor(e => e.Witnesses)
+            RuleFor(e => e.Witnesses.Count)
             .NotNull()
-            .Must(w => w.Count >= 4).WithMessage("there should be atleast 4 witnesses to register a divorce");
+            .Must(meetMinimumWitnessCount)
+            .WithMessage("number of witnesses should be equal or greater than the limit set in marriage setting or 4 if not set");
 
             RuleFor(e => e.Witnesses.Select(w => w.WitnessForLookupId)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
@@ -114,12 +118,16 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true)).WithMessage("the bride cannot be below the age limit set in setting");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must(BeAbove18YearsOld).WithMessage("the Groom cannot be below 18 years old");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false)).WithMessage("the Groom cannot be below the age limit set in setting");
 
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
+                RuleFor(e => e.BrideInfo.Id)
+                .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt))
+                .WithMessage("divorced bride must wait 6 months to marry again ");
+
                 RuleFor(e => e.Event.EventSupportingDocuments)
                 .NotNull()
                 .NotEmpty()
@@ -139,8 +147,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .NotEmpty()
                 .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
             });
-            When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
+            When(e => isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
            {
+
                RuleFor(e => e.Event.EventSupportingDocuments)
                .NotNull()
                .NotEmpty()
@@ -188,6 +197,65 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
             });
 
+        }
+
+        private bool meetMinimumDivorceMarriageGapLimit(Guid? brideId, string eventDateEt)
+        {
+            if (brideId == null)
+            {
+                return true;
+            }
+            var brideInfo = _personalInfoRepo.GetAll()
+                   .Include(p => p.DivorceWifeNavigation)
+                   .ThenInclude(d => d.Event)
+                   .Where(p => p.Id == brideId).FirstOrDefault();
+            if (brideInfo == null)
+            {
+                throw new NotFoundException("Bride with the provided Id is not found");
+            }
+            var marriageSetting = _settingRepository.GetAll()
+                  .Where(s => s.Key == "marriageSetting")
+                  .FirstOrDefault();
+            if (marriageSetting == null)
+            {
+                throw new NotFoundException("marriage setting not found");
+            }
+            var remarryGapLimit = marriageSetting.Value.Value<string>("divorced_bride_month_limit_for_remarrying");
+
+            var brideLastDivorceDate = brideInfo.DivorceWifeNavigation
+                      .OrderBy(d => d.Event.EventDate)
+                      .Select(d => d.Event.EventDate).LastOrDefault();
+            var eventDate = new CustomDateConverter(eventDateEt).gorgorianDate;
+            if (int.TryParse(remarryGapLimit, out int result))
+            {
+                return brideLastDivorceDate == null || HelperService.GetMonthDifference(brideLastDivorceDate, eventDate) >= result;
+            }
+            else
+            {
+                return brideLastDivorceDate == null || HelperService.GetMonthDifference(brideLastDivorceDate, eventDate) >= 6;
+            }
+
+        }
+
+        private bool meetMinimumWitnessCount(int numberOfWitnesses)
+        {
+            var marriageSetting = _settingRepository.GetAll()
+                    .Where(s => s.Key == "marriageSetting")
+                    .FirstOrDefault();
+            if (marriageSetting == null)
+            {
+                throw new NotFoundException("marriage setting not found");
+            }
+            var minWitnessCount = marriageSetting.Value.Value<string>("how_many_witness");
+
+            if (int.TryParse(minWitnessCount, out int result))
+            {
+                return numberOfWitnesses >= result;
+            }
+            else
+            {
+                return numberOfWitnesses >= 4;
+            }
         }
 
         private bool notEmptyGuid(object arg)
@@ -311,11 +379,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 return false;
             }
             return marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].en!.ToLower()
-                    || marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus. divorcedWoman].en!.ToLower()
+                    || marriageStatus.Value.Value<string>("en")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].en!.ToLower()
                     || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].am!.ToLower()
-                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus. divorcedWoman].am!.ToLower()
+                    || marriageStatus.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].am!.ToLower()
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].or!.ToLower()
-                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus. divorcedWoman].or!.ToLower();
+                    || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].or!.ToLower();
         }
         private bool isWidowed(Guid marriageStatusLookupId)
         {
@@ -332,25 +400,42 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].or!.ToLower();
         }
 
-        private bool BeAbove18YearsOld(string birthDate)
+        private bool BeAboveTheAgeLimit(string birthDate, string eventDate, bool isBride)
         {
-            DateTime converted = new CustomDateConverter(birthDate).gorgorianDate;
-            return DateTime.Now.Year - converted.Year >= 18;
+            DateTime birthDateConverted = new CustomDateConverter(birthDate).gorgorianDate;
+            DateTime eventDateConverted = new CustomDateConverter(eventDate).gorgorianDate;
+
+            var marriageSetting = _settingRepository.GetAll()
+                    .Where(s => s.Key == "marriageSetting")
+                    .FirstOrDefault();
+            if (marriageSetting == null)
+            {
+                throw new NotFoundException("marriage setting not found");
+            }
+            var ageLimit = isBride
+                            ? marriageSetting.Value.Value<string>("bride_min_age")
+                            : marriageSetting.Value.Value<string>("groom_min_age");
+            if (ageLimit == null)
+            {
+                throw new NotFoundException("marriage miminum age setting not found");
+            }
+            if (!int.TryParse(ageLimit, out int result))
+            {
+                throw new InvalidCastException("invalid marriage minimum age limit setting ");
+            }
+            return eventDateConverted.Year - birthDateConverted.Year >= int.Parse(ageLimit);
+
         }
 
         public bool isReligionMarriage(Guid marriageTypeId)
         {
             var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
-            if (marriageType == null)
-            {
-                return false;
-            }
-            return marriageType.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Religion].ToString()!.ToLower()
-                    );
+            return marriageType == null ||
+                  marriageType.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Religion].or!.ToLower()
+                  || marriageType.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Religion].am!.ToLower();
+            ;
 
         }
-
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {
             var param = Expression.Parameter(typeof(T), "x");

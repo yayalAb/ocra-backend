@@ -24,6 +24,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepository;
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepository;
         private readonly ISmsService _smsService;
+        private readonly ISettingRepository _settingRepository;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
 
         public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
@@ -36,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                                  IAddressLookupRepository addressRepository,
                                                  IPaymentExamptionRequestRepository paymentExamptionRequestRepository,
                                                  ISmsService smsService,
+                                                 ISettingRepository settingRepository,
                                                  ILogger<CreateMarriageEventCommandHandler> logger)
         {
             _marriageEventRepository = marriageEventRepository;
@@ -48,6 +50,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _addressRepository = addressRepository;
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
             _smsService = smsService;
+            _settingRepository = settingRepository;
             this.logger = logger;
         }
 
@@ -66,7 +69,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     {
                         var CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse();
 
-                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository);
+                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository,_settingRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors
