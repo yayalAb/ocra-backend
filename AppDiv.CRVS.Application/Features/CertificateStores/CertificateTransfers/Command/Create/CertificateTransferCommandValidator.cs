@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
                             .When(p => string.IsNullOrEmpty(p.CertificateTransfer.ReceivedFrom));
             RuleFor(p => p.CertificateTransfer.From).NotNull().NotEmpty()
                             .Must(p => false).WithMessage("'From' must be less than 'To'")
-                            .When(p => p.CertificateTransfer.To < p.CertificateTransfer.From);
+                            .When(p => p.CertificateTransfer.To.CompareTo(p.CertificateTransfer.From) < 0);
             RuleFor(p => p.CertificateTransfer.To).NotNull().NotEmpty();
 
         }

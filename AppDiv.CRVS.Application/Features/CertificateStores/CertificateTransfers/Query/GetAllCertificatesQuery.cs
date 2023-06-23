@@ -13,44 +13,42 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Query
 {
-    // Customer query with List<Customer> response
     public record GetAllCertificateTransferQuery : IRequest<PaginatedList<CertificateTransferDTO>>
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
-        // public string UserName { get; set; }
     }
 
     public class GetAllCertificateTransferHandler : IRequestHandler<GetAllCertificateTransferQuery, PaginatedList<CertificateTransferDTO>>
     {
         private readonly ICertificateTransferRepository _certificateStoreRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IUserResolverService _userResolver;
 
-        public GetAllCertificateTransferHandler(ICertificateTransferRepository certificateStoreQueryRepository, IUserRepository userRepository)
+        public GetAllCertificateTransferHandler(ICertificateTransferRepository certificateStoreQueryRepository, 
+                                                IUserRepository userRepository,
+                                                IUserResolverService userResolver)
         {
             _certificateStoreRepository = certificateStoreQueryRepository;
             _userRepository = userRepository;
+            _userResolver = userResolver;
         }
         public async Task<PaginatedList<CertificateTransferDTO>> Handle(GetAllCertificateTransferQuery request, CancellationToken cancellationToken)
         {
-            // var user = _userRepository.GetAll().Where(u => u.UserName == request.UserName).FirstOrDefault().Id;
-
-            // var recieve = _certificateStoreRepository.GetAll().Where(c => c.RecieverId == user);
+            // return the paginated list of received certificate serial numbers by the user.
             return await PaginatedList<CertificateTransferDTO>
                             .CreateAsync(
                                 _certificateStoreRepository.GetAll()
-                                    // .Where(c => c.RecieverId == user)
+                                    .Where(c => c.RecieverId == _userResolver.GetUserId())
                                     .Select(sn => new CertificateTransferDTO
                                     {
                                         Id = sn.Id,
                                         From = sn.From,
                                         To = sn.To,
                                         Status = sn.Status,
-                                        SenderName = _userRepository.GetAll().Where(u => u.Id == sn.SenderId).FirstOrDefault().UserName,
-                                    }).ToList()
+                                        SenderName = _userRepository.GetSingle(sn.SenderId).UserName,
+                                    })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
-            // var certificateStoreResponse = CustomMapper.Mapper.Map<List<CertificateTransferDTO>>(certificateStoreList);
-            // return certificateStoreResponse;
         }
     }
 }
