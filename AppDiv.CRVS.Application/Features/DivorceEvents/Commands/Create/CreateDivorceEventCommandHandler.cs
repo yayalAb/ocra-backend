@@ -114,8 +114,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                             }
                             if (amount != 0 || divorceEvent.Event.IsExampted)
+                            {
                                 createDivorceEventCommandResponse.Message = "Divorce event created successfully";
-                            await transaction.CommitAsync();
+                                await transaction.CommitAsync();
+                            }
                         }
                         return createDivorceEventCommandResponse;
                     }
