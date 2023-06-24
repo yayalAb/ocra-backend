@@ -28,22 +28,28 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Create
                 .Must(x => x != Guid.Empty).WithMessage("Event must not be empty.");
             RuleFor(pr => pr.PaymentRate.Amount)
                 .NotEmpty().WithMessage("{PropertyName} is required.")
-                .NotNull().Must(am => am > 0.0).WithMessage("{PropertyName} must be greater than 0.");
-            RuleFor(p => p.PaymentRate).Must(p => false).WithMessage("PaymentRate must be unique.")
-            .WhenAsync(async  (p, c) =>
-                (await _repo.GetCountAsyc(pr => pr.EventLookupId == p.PaymentRate.EventLookupId && 
-                                            pr.PaymentTypeLookupId == p.PaymentRate.PaymentTypeLookupId && 
-                                            pr.IsForeign == p.PaymentRate.IsForeign && 
-                                            pr.Status == p.PaymentRate.Status)) > 0 );
+                .NotNull();
+            RuleFor(e => e)
+              .MustAsync(PaymentRateDuplicationCheck)
+              .WithMessage("The specified Payment Rate  already exists.");
         }
 
-        //private async Task<bool> phoneNumberUnique(CreateCustomerCommand request, CancellationToken token)
-        //{
-        //    var member = await _repo.GetByIdAsync(request.FirstName);
-        //    if (member == null)
-        //        return true;
-        //    else return false;
-        //}
+        private async Task<bool> PaymentRateDuplicationCheck(CreatePaymentRateCommand request, CancellationToken token)
+        {
+            var member = _repo.GetAll()
+            .Where(x => ((x.PaymentTypeLookup.Id == request.PaymentRate.PaymentTypeLookupId) &&
+            (x.EventLookupId == request.PaymentRate.EventLookupId)) && (x.IsForeign == request.PaymentRate.IsForeign)).FirstOrDefault();
+            if (member == null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+
+        }
 
     }
 }

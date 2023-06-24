@@ -56,8 +56,9 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
-
+            float amount = 0;
             var executionStrategy = _AdoptionEventRepository.Database.CreateExecutionStrategy();
+
             return await executionStrategy.ExecuteAsync(async () =>
             {
                 using (var transaction = _AdoptionEventRepository.Database.BeginTransaction())
@@ -172,27 +173,44 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 {
                                     //--create payment request and send sms notification to the users
                                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, "CertificateGeneration", null, cancellationToken);
+                                    if (response.amount == 0)
+                                    {
+                                        CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
+                                        {
+                                            Success = false,
+                                            Message = "Payment Rate Does't Found, Please Create Payment Rate First"
+                                        };
+                                        amount = 0;
+                                    }
+                                    else
+                                    {
+                                        string message = $"Dear Customer,\nThis is to inform you that your request for Adoption certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using  code {response.code}.\n OCRA";
+                                        List<string> msgRecepients = new List<string>();
+                                        if (adoptionEvent.AdoptiveFather?.PhoneNumber != null)
+                                        {
+                                            msgRecepients.Add(adoptionEvent.AdoptiveFather.PhoneNumber);
+                                        }
+                                        if (adoptionEvent.AdoptiveMother?.PhoneNumber != null)
+                                        {
+                                            msgRecepients.Add(adoptionEvent.AdoptiveMother.PhoneNumber);
+                                        }
+                                        await _smsService.SendBulkSMS(msgRecepients, message);
+                                    }
 
-                                    string message = $"Dear Customer,\nThis is to inform you that your request for Adoption certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using  code {response.code}.\n OCRA";
-                                    List<string> msgRecepients = new List<string>();
-                                    if (adoptionEvent.AdoptiveFather?.PhoneNumber != null)
-                                    {
-                                        msgRecepients.Add(adoptionEvent.AdoptiveFather.PhoneNumber);
-                                    }
-                                    if (adoptionEvent.AdoptiveMother?.PhoneNumber != null)
-                                    {
-                                        msgRecepients.Add(adoptionEvent.AdoptiveMother.PhoneNumber);
-                                    }
-                                    await _smsService.SendBulkSMS(msgRecepients, message);
+
                                     //
 
                                 }
-                                await transaction.CommitAsync();
-                                CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
+                                if (amount != 0)
                                 {
-                                    Success = true,
-                                    Message = "Adoption Event created Successfully"
-                                };
+                                    await transaction.CommitAsync();
+                                    CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
+                                    {
+                                        Success = true,
+                                        Message = "Adoption Event created Successfully"
+                                    };
+                                }
+
                             }
                             catch (Exception ex)
                             {

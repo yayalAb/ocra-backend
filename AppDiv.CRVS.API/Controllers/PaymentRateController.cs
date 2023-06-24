@@ -27,7 +27,16 @@ namespace AppDiv.CRVS.API.Controllers
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreatePaymentRate(CreatePaymentRateCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            var result = await Mediator.Send(command);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+
         }
 
         [HttpGet("GetAll")]
