@@ -8,11 +8,12 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public record AuthResponseDTO
     {
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         public Guid? PersonalInfoId { get; set; }
-        public string Name { get; set; }
-        public string Token { get; set; }
-        public List<Guid> GroupIds {get;set;}
-        public List<RoleDto> Roles { get; set; }
+        public string? Name { get; set; }
+        public string? Token { get; set; }
+        public List<Guid>? GroupIds {get;set;}
+        public List<RoleDto>? Roles { get; set; }
+        public bool isFirstTime {get; set;} = false;
     }
 }
