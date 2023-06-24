@@ -37,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
+            float amount = 0;
             var executionStrategy = _birthEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -72,7 +73,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
                                 await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-
                                 // var supportingDocuments = birthEvent.Event?.EventSupportingDocuments;
                                 var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
                                 var personIds = new PersonIdObj
@@ -88,24 +88,32 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 if (!birthEvent.Event.IsExampted)
                                 {
                                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, cancellationToken);
-                                    string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
-                                    List<string> msgRecepients = new List<string>();
-                                    if (birthEvent.Mother?.PhoneNumber != null)
+                                    amount = response.amount;
+                                    if (response.amount == 0)
                                     {
-                                        msgRecepients.Add(birthEvent.Mother?.PhoneNumber);
+                                        createBirthEventCommandResponse.Success = false;
+                                        createBirthEventCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
+                                        amount = 0;
                                     }
-                                    if (birthEvent.Father?.PhoneNumber != null)
+                                    else
                                     {
-                                        msgRecepients.Add(birthEvent.Father?.PhoneNumber);
+                                        string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
+                                        List<string> msgRecepients = new List<string>();
+                                        if (birthEvent.Mother?.PhoneNumber != null)
+                                        {
+                                            msgRecepients.Add(birthEvent.Mother?.PhoneNumber);
+                                        }
+                                        if (birthEvent.Father?.PhoneNumber != null)
+                                        {
+                                            msgRecepients.Add(birthEvent.Father?.PhoneNumber);
+                                        }
+                                        if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
+                                        {
+                                            msgRecepients.Add(birthEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber);
+                                        }
+                                        await _smsService.SendBulkSMS(msgRecepients, message);
                                     }
-                                    if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
-                                    {
-                                        msgRecepients.Add(birthEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber);
-                                    }
-                                    await _smsService.SendBulkSMS(msgRecepients, message);
-
                                 }
-
                             }
                             catch (System.Exception ex)
                             {
@@ -113,9 +121,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 createBirthEventCommandResponse.Status = 400;
                                 throw;
                             }
-                            createBirthEventCommandResponse.Message = "Birth Event created Successfully";
-                            createBirthEventCommandResponse.Status = 200;
-                            await transaction.CommitAsync();
+                            if (amount != 0 || request.BirthEvent.Event.IsExampted)
+                            {
+                                createBirthEventCommandResponse.Message = "Birth Event created Successfully";
+                                createBirthEventCommandResponse.Status = 200;
+                                await transaction.CommitAsync();
+                            }
+
                         }
                         return createBirthEventCommandResponse;
 

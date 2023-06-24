@@ -37,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
+            float amount = 0;
             var executionStrategy = _deathEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -84,10 +85,20 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 if (!deathEvent.Event.IsExampted)
                                 {
                                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, cancellationToken);
-                                    string message = $"Dear Customer,\nThis is to inform you that your request for Death certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
-                                    if (deathEvent.Event.EventRegistrar?.RegistrarInfo.PhoneNumber != null)
+                                    amount = response.amount;
+                                    if (response.amount == 0)
                                     {
-                                        await _smsService.SendSMS(deathEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber, message);
+                                        createDeathCommandResponse.Success = false;
+                                        createDeathCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
+                                        amount = 0;
+                                    }
+                                    else
+                                    {
+                                        string message = $"Dear Customer,\nThis is to inform you that your request for Death certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
+                                        if (deathEvent.Event.EventRegistrar?.RegistrarInfo.PhoneNumber != null)
+                                        {
+                                            await _smsService.SendSMS(deathEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber, message);
+                                        }
                                     }
                                     //
                                 }
@@ -98,7 +109,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 createDeathCommandResponse.Status = 400;
                                 throw;
                             }
-                            createDeathCommandResponse.Message = "Death Event created Successfully";
+                            if (amount != 0 || request.DeathEvent.Event.IsExampted)
+                                createDeathCommandResponse.Message = "Death Event created Successfully";
                             createDeathCommandResponse.Status = 200;
                             await transaction.CommitAsync();
                         }

@@ -59,7 +59,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
         {
-
+            float amount = 0;
             var executionStrategy = _marriageEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     {
                         var CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse();
 
-                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository,_settingRepository, _eventRepository);
+                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository, _settingRepository, _eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors
@@ -110,21 +110,34 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             if (!marriageEvent.Event.IsExampted)
                             {
                                 (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, "CertificateGeneration", null, cancellationToken);
-                                string message = $"Dear Customer,\nThis is to inform you that your request for Marriage certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
-                                List<string> msgRecepients = new List<string>();
-                                if (marriageEvent.BrideInfo?.PhoneNumber != null)
+                                amount = response.amount;
+                                if (response.amount == 0)
                                 {
-                                    msgRecepients.Add(marriageEvent.BrideInfo.PhoneNumber);
+                                    CreateMarriageEventCommandResponse.Success = false;
+                                    CreateMarriageEventCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
+                                    amount = 0;
                                 }
-                                if (marriageEvent.Event.EventOwener?.PhoneNumber != null)
+                                else
                                 {
-                                    msgRecepients.Add(marriageEvent.Event.EventOwener.PhoneNumber);
+                                    string message = $"Dear Customer,\nThis is to inform you that your request for Marriage certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
+                                    List<string> msgRecepients = new List<string>();
+                                    if (marriageEvent.BrideInfo?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(marriageEvent.BrideInfo.PhoneNumber);
+                                    }
+                                    if (marriageEvent.Event.EventOwener?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(marriageEvent.Event.EventOwener.PhoneNumber);
+                                    }
+                                    await _smsService.SendBulkSMS(msgRecepients, message);
                                 }
-                                await _smsService.SendBulkSMS(msgRecepients, message);
+                            }
+                            if (amount != 0 || marriageEvent.Event.IsExampted)
+                            {
+                                CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
+                                await transaction.CommitAsync();
                             }
 
-                            CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
-                            await transaction.CommitAsync();
                         }
                         return CreateMarriageEventCommandResponse;
                     }

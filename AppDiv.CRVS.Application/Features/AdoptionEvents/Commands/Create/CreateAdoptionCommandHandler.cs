@@ -173,6 +173,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 {
                                     //--create payment request and send sms notification to the users
                                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, "CertificateGeneration", null, cancellationToken);
+                                    amount = response.amount;
                                     if (response.amount == 0)
                                     {
                                         CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
@@ -201,7 +202,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     //
 
                                 }
-                                if (amount != 0)
+                                if (amount != 0 || adoptionEvent.Event.IsExampted)
                                 {
                                     await transaction.CommitAsync();
                                     CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse

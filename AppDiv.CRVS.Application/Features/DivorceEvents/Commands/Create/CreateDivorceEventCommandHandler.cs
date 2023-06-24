@@ -45,6 +45,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
+            float amount = 0;
             var executionStrategy = _DivorceEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -88,20 +89,32 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             if (!divorceEvent.Event.IsExampted)
                             {
                                 (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", null, cancellationToken);
-                                string message = $"Dear Customer,\nThis is to inform you that your request for Divorce certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office.\n OCRA";
-                                List<string> msgRecepients = new List<string>();
-                                if (divorceEvent.DivorcedWife?.PhoneNumber != null)
+                                amount = response.amount;
+                                if (response.amount == 0)
                                 {
-                                    msgRecepients.Add(divorceEvent.DivorcedWife.PhoneNumber);
+                                    createDivorceEventCommandResponse.Success = false;
+                                    createDivorceEventCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
+                                    amount = 0;
                                 }
-                                if (divorceEvent.Event.EventOwener?.PhoneNumber != null)
+                                else
                                 {
-                                    msgRecepients.Add(divorceEvent.Event.EventOwener.PhoneNumber);
+                                    string message = $"Dear Customer,\nThis is to inform you that your request for Divorce certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office.\n OCRA";
+                                    List<string> msgRecepients = new List<string>();
+                                    if (divorceEvent.DivorcedWife?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(divorceEvent.DivorcedWife.PhoneNumber);
+                                    }
+                                    if (divorceEvent.Event.EventOwener?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(divorceEvent.Event.EventOwener.PhoneNumber);
+                                    }
+                                    await _smsService.SendBulkSMS(msgRecepients, message);
+
                                 }
-                                await _smsService.SendBulkSMS(msgRecepients, message);
 
                             }
-                            createDivorceEventCommandResponse.Message = "Divorce event created successfully";
+                            if (amount != 0 || divorceEvent.Event.IsExampted)
+                                createDivorceEventCommandResponse.Message = "Divorce event created successfully";
                             await transaction.CommitAsync();
                         }
                         return createDivorceEventCommandResponse;
