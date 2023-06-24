@@ -19,9 +19,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IMarriageEventRepository _marriageEventRepo;
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepo;
         private readonly IAddressLookupRepository _addressRepo;
+        private readonly IEventRepository _eventRepo;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo, IEventRepository eventRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -30,6 +31,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _marriageEventRepo = marriageEventRepo;
             _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _addressRepo = addressRepo;
+            _eventRepo = eventRepo;
+
 
             var fieldNames =
             new List<string>{
@@ -92,7 +95,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .NotEmpty().WithMessage("civilRegOfficerId cannot be empty")
                 .Must(BeFoundInPersonalInfoTable).WithMessage("civilRegistrar officer with the provided id is not found");
 
-
+            RuleFor(e => e.Event.CertificateId)
+                .MustAsync(ValidateCertifcateId)
+                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.");
 
             RuleFor(e => e.Witnesses)
             .NotNull()
@@ -102,6 +107,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.MiddleName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
+            
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.SexLookupId))
             .ForEach(lookupId => lookupId
                     .NotEmpty()
@@ -204,6 +210,27 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 return false;
             }
 
+        }
+        private async Task<bool> ValidateCertifcateId(string CertId, CancellationToken token)
+        {
+            var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
+            if (valid)
+            {
+                var certfcate = _eventRepo.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefault();
+                if (certfcate == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private bool BeUnmarried(Guid? personalInfoId)
