@@ -58,12 +58,13 @@ public enum Page
     MartialStatusFemaleLookup,
     MartialStatusMaleLookup,
     Receive,
-    Transfer,
     Verification,
     WitnessForLookup,
     PaymentTypeLookup,
     Unapproved,
     CorrectionRequest,
     Approvel,
-    CertificateInventory
+    CertificateInventory,
+    CertificateStoreTransfer,
+    CertificateStoreReceive
 }
