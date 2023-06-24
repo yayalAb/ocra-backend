@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly IAddressLookupRepository _addressLookupRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly ISmsService _smsService;
+        private readonly IEventRepository _eventRepository;
         private readonly ICourtRepository _courtRepository;
 
         public CreateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
@@ -29,6 +30,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                                 IAddressLookupRepository addressLookupRepository,
                                                 IEventPaymentRequestService paymentRequestService,
                                                 ISmsService smsService,
+                                                IEventRepository eventRepository,
                                                 ICourtRepository courtRepository)
         {
             _DivorceEventRepository = DivorceEventRepository;
@@ -38,6 +40,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _addressLookupRepository = addressLookupRepository;
             _paymentRequestService = paymentRequestService;
             _smsService = smsService;
+            _eventRepository = eventRepository;
             _courtRepository = courtRepository;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
@@ -52,7 +55,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                     {
                         var createDivorceEventCommandResponse = new CreateDivorceEventCommandResponse();
 
-                        var validator = new CreateDivorceEventCommandValidator(_personalInfoRepository, _lookupRepository, _addressLookupRepository, _courtRepository);
+                        var validator = new CreateDivorceEventCommandValidator(_personalInfoRepository, _lookupRepository, _addressLookupRepository, _courtRepository, _eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors

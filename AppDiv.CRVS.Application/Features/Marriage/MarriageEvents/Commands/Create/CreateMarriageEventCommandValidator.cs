@@ -22,9 +22,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepo;
         private readonly IAddressLookupRepository _addressRepo;
         private readonly ISettingRepository _settingRepository;
+        private readonly IEventRepository _eventRepo;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo, ISettingRepository settingRepository)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo, ISettingRepository settingRepository, IEventRepository eventRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -33,7 +34,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _marriageEventRepo = marriageEventRepo;
             _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _addressRepo = addressRepo;
-            _settingRepository = settingRepository;
+            _settingRepository = settingRepository;            
+            _eventRepo = eventRepo;
+
+
             var fieldNames =
             new List<string>{
 
@@ -95,7 +99,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .NotEmpty().WithMessage("civilRegOfficerId cannot be empty")
                 .Must(BeFoundInPersonalInfoTable).WithMessage("civilRegistrar officer with the provided id is not found");
 
-
+            RuleFor(e => e.Event.CertificateId)
+                .MustAsync(ValidateCertifcateId)
+                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.");
 
             RuleFor(e => e.Witnesses.Count)
             .NotNull()
@@ -106,6 +112,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.MiddleName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
+            
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.SexLookupId))
             .ForEach(lookupId => lookupId
                     .NotEmpty()
@@ -124,6 +131,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
+                RuleFor(e => e.BrideInfo.Id)
+                .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt))
+                .WithMessage("divorced bride must wait 6 months to marry again ");
+
                 RuleFor(e => e.BrideInfo.Id)
                 .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt))
                 .WithMessage("divorced bride must wait 6 months to marry again ");
@@ -149,6 +160,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             });
             When(e => isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
            {
+
 
                RuleFor(e => e.Event.EventSupportingDocuments)
                .NotNull()
@@ -257,7 +269,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 return numberOfWitnesses >= 4;
             }
         }
-
         private bool notEmptyGuid(object arg)
         {
             try
@@ -272,6 +283,27 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 return false;
             }
 
+        }
+        private async Task<bool> ValidateCertifcateId(string CertId, CancellationToken token)
+        {
+            var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
+            if (valid)
+            {
+                var certfcate = _eventRepo.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefault();
+                if (certfcate == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private bool BeUnmarried(Guid? personalInfoId)

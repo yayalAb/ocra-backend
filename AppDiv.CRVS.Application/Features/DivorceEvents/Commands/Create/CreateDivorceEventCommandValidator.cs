@@ -12,16 +12,19 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly ILookupRepository _lookupRepo;
         private readonly IAddressLookupRepository _addressRepo;
         private readonly ICourtRepository _courtRepo;
+        private readonly IEventRepository _eventRepo;
 
         public CreateDivorceEventCommandValidator(IPersonalInfoRepository personalInfoRepo,
                                                   ILookupRepository lookupRepo,
                                                   IAddressLookupRepository addressRepo,
-                                                  ICourtRepository courtRepo)
+                                                  ICourtRepository courtRepo,
+                                                  IEventRepository eventRepo)
         {
             _personalInfoRepo = personalInfoRepo;
             _lookupRepo = lookupRepo;
             _addressRepo = addressRepo;
             _courtRepo = courtRepo;
+            _eventRepo = eventRepo;
             var fieldNames = new List<string>{"DivorcedWife","DateOfMarriageEt", "DivorceReason", "CourtCase","NumberOfChildren","Event",
             "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId",
             "DivorcedWife.BirthAddressId","DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
@@ -105,8 +108,32 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                     .NotNull().WithMessage("court cannot be null if courtId is null")
                     .MustAsync(BeFoundInCourtTable).WithMessage("court with the specified id is not found");
             });
+            RuleFor(e => e.Event.CertificateId)
+                .MustAsync(ValidateCertifcateId)
+                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.");
         }
 
+        private async Task<bool> ValidateCertifcateId(string CertId, CancellationToken token)
+        {
+            var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
+            if (valid)
+            {
+                var certfcate = _eventRepo.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefault();
+                if (certfcate == null)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            else
+            {
+                return false;
+            }
+        }
         private async Task<bool> BeFoundInCourtTable(Guid? courtId, CancellationToken token)
         {
             return courtId != null && (await _courtRepo.GetAsync(courtId)) != null;
