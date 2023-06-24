@@ -29,9 +29,11 @@ namespace AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries
         }
         public async Task<List<MarriageApplicationSearchDto>> Handle(SearchMarriageapplicationQuery request, CancellationToken cancellationToken)
         {
+
             var marriageApplication = _marriageApplicationRepository.GetAll()
             .Include(model => model.MarriageEvent)
-            .Where(model => model.MarriageEvent == null &&
+            .Where(model => model.ApplicationDate <= DateTime.Now.AddMonths(-1) )
+            .Where(model => model.MarriageEvent == null && 
                           (EF.Functions.Like(model.Id.ToString(), $"%{request.SearchString}%")
                           ||EF.Functions.Like(model.GroomInfo.FirstNameStr, $"%{request.SearchString}%")
                         || EF.Functions.Like(model.GroomInfo.LastNameStr, $"%{request.SearchString}%")

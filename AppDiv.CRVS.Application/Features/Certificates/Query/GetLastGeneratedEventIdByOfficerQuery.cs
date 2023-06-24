@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         }
         public async Task<object> Handle(GetLastGeneratedEventIdByOfficerQuery request, CancellationToken cancellationToken)
         {
-
+            var convertor = new CustomDateConverter();
 
             var officer = _identityService.AllUsersDetail()
             .Where(u => u.PersonalInfoId == request.CivilRegOfficerId)
@@ -63,7 +63,8 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                     {
                         LastIdNumber = 0000,
                         AddressCode = officer?.Address?.Code,
-                        year = ethiopiandate
+                        Date = ethiopiandate,
+                        year = convertor.getSplitted(ethiopiandate).year
                     };
 
                 }
@@ -73,7 +74,8 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                     {
                         LastIdNumber = int.Parse(lastEventIdInfo?.CertificateId?.Substring(lastEventIdInfo.CertificateId.Length - 4)),
                         AddressCode = officer?.Address?.Code,
-                        year = ethiopiandate
+                        Date = ethiopiandate,
+                        year = convertor.getSplitted(ethiopiandate).year
                     };
                 }
             }

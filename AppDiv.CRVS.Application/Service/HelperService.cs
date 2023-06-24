@@ -14,6 +14,21 @@ namespace AppDiv.CRVS.Application.Service
 
             return code;
         }
+
+        public static int GetMonthDifference(DateTime startDate, DateTime endDate)
+        {
+            int monthsApart = (endDate.Year - startDate.Year) * 12 + (endDate.Month - startDate.Month);
+
+            // Check if the end day is less than the start day
+            if (endDate.Day < startDate.Day)
+            {
+                // Subtract one month if end day is less than start day
+                monthsApart--;
+            }
+
+            return monthsApart;
+        }
     }
 }
+
 

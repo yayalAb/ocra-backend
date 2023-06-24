@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
     public class GetAuthentcationRequestList : IRequest<object>
     {
         public Guid UserId { get; set; }
+        public bool IsYourRequestList { get; set; } = false;
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
 
@@ -87,7 +88,19 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  CanApprove = userGroup.UserGroups.Select(x => x.Id)
                  .FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep)
                  .Select(x => x.UserGroupId).FirstOrDefault()
-             }).Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
+             });
+
+            //  .Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault()
+            //  || rg.OfficerId == userGroup.PersonalInfoId);
+
+            if (!request.IsYourRequestList)
+            {
+                RequestList = RequestList.Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
+            }
+            else
+            {
+                RequestList = RequestList.Where(rg => rg.OfficerId == userGroup.PersonalInfoId);
+            }
 
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(

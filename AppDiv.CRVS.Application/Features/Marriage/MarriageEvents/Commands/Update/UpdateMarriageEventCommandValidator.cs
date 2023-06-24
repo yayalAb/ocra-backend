@@ -255,28 +255,22 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             return applicationId != null && _marriageApplicationRepo.exists((Guid)applicationId);
         }
 
+
         private bool isCivilMarriage(Guid marriageTypeId)
         {
             var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
-            if (marriageType == null)
-            {
-                return false;
-            }
-            return marriageType.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Civil].ToString()!.ToLower()
-                    );
-
+            return marriageType == null ||
+             marriageType.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].or!.ToLower()
+             || marriageType.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].am!.ToLower();
+            ;
         }
         public bool isReligionMarriage(Guid marriageTypeId)
         {
             var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
-            if (marriageType == null)
-            {
-                return false;
-            }
-            return marriageType.ValueStr.ToLower()
-                    .Contains(EnumDictionary.marriageTypeDict[MarriageType.Religion].ToString()!.ToLower()
-                    );
+            return marriageType == null ||
+                  marriageType.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Religion].or!.ToLower()
+                  || marriageType.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Religion].am!.ToLower();
+            ;
 
         }
         // public bool BeUnmarried(Guid marriageStatusId)
