@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
     {
         public string Id { get; set; }
         public string? UserName { get; set; }
+        public bool Status {get; set; }
         public string? Email { get; set; }
         public Guid AddressId {get; set; }
         public string? UserImage { get; set; }
@@ -97,7 +98,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 Email = request.Email,
                 AddressId = request.AddressId,
                 UserGroups = listGroup,
-                PersonalInfo = person
+                PersonalInfo = person,
+                Status = request.Status
 
             };
 
@@ -109,9 +111,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 var file = request.UserImage;
                 var folderName = Path.Combine("Resources", "UserProfiles");
                 var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                var fileName = request.Id;
-                logger.LogCritical(file);
-                
+                var fileName = request.Id;                
                 await _fileService.UploadBase64FileAsync(file, fileName, pathToSave, FileMode.Create);
                 }
             }

@@ -47,15 +47,25 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             {
                 throw new AuthenticationException(string.Join(",", response.result.Errors));
             }
+            if (response.isFirstTime)
+            {
+                return new AuthResponseDTO
+                {
+                    UserId = response.userId,
+                    Name = request.UserName,
+                    isFirstTime = true,
+                };
+
+            }
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {
                                                     { "UserGroups", NavigationPropertyType.COLLECTION },
 
                                                 };
             var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
+
             string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, response.roles));
-            // _logger.LogCritical("auth");
-            // _logger.LogCritical(userData.Id);
+
 
             var userRoles = userData.UserGroups.SelectMany(ug => ug.Roles
             .Select(r => new RoleDto
@@ -89,6 +99,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             };
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
+
             return new AuthResponseDTO()
             {
                 UserId = userData.Id,
@@ -96,7 +107,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Token = token,
                 PersonalInfoId = userData.PersonalInfoId,
                 GroupIds = userData.UserGroups.Select(g => g.Id).ToList(),
-                Roles = userRoles.ToList(),
+                Roles = userRoles.ToList()
             };
         }
     }

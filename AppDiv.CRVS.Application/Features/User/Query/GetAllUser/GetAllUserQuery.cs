@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     Id = user.Id,
                     UserName = user.UserName,
                     Email = user.Email,
-                    Status = !user.LockoutEnabled || user.LockoutEnd==null || user.LockoutEnd <= DateTime.Now,
+                    Status =user.Status && (!user.LockoutEnabled || user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now),
                     AddressId = user.AddressId,
                     PersonalInfo = new PersonalInfoDTO
                     {

@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         public string? UserImage { get; set; }
         public Guid AddressId { get; set; }
         public List<Guid> UserGroups { get; init; }
+        public bool Status {get; set; }
         // public string Password { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }
 

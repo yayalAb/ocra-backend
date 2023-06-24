@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         Task<string> GetUserNameAsync(string userId);
         Task<ApplicationUser> GetUserByEmailAsync(string email);
         Task<ApplicationUser> GetUserByName(string userName);
-        Task<(Result result, IList<string>? roles, string? userId)> AuthenticateUser(string email, string password);
+        Task<(Result result, IList<string>? roles, string? userId, bool isFirstTime)> AuthenticateUser(string email, string password);
         Task<(Result result, string password)> createUser(string userName, string email, Guid personalInfoId, Guid userGroupId);
         Task<(Result result, string password, string id)> createUser(ApplicationUser user);
 
