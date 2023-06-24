@@ -42,7 +42,7 @@ namespace AppDiv.CRVS.Application.Service
                 if (RequestId == null || RequestId == Guid.Empty)
                 {
 
-                    throw new Exception("payment rate not found");
+                    return (0, "payment rate not found");
                 }
                 else
                 {
