@@ -38,7 +38,7 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "Mother.ResidentAddressId");
             RuleFor(p => p.NationLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "Mother.NationLookupId");
             RuleFor(p => p.PhoneNumber).NotEmpty()
-                        .Matches(new Regex(@"^(\+251)\d{10}$")).WithMessage("Invalid phone number format.")
+                        .Matches(new Regex(@"^(\+251)?\d{9}$")).WithMessage("Invalid phone number format.")
                         .When(p => p.PhoneNumber != null);
         }
     }

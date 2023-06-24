@@ -42,7 +42,7 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.BirthDateEt).NotEmpty().NotNull()
             .IsValidDate("Father Birth date");//.IsAbove18("Father age");
             RuleFor(p => p.PhoneNumber).NotEmpty()
-                        .Matches(new Regex(@"^(\+251)\d{10}$")).WithMessage("Invalid phone number format.")
+                        .Matches(new Regex(@"^(\+251)?\d{9}$")).WithMessage("Invalid phone number format.")
                         .When(p => p.PhoneNumber != null);
             // .Must(date => date < DateTime.Now && date > new DateTime(1900, 1, 1));
             RuleFor(p => p.BirthAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "Father.BirthAddressId");
