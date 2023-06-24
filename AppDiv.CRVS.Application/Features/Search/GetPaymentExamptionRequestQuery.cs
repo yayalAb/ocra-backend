@@ -1,16 +1,13 @@
-using AppDiv.CRVS.Application.Contracts.DTOs;
-using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
 using MediatR;
-using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.Search
 {
     // Customer GetPaymentExamptionRequestQuery with  response
     public class GetPaymentExamptionRequestQuery : IRequest<object>
     {
-        public string SearchString { get; set; }
+        public string? SearchString { get; set; }
 
     }
 
@@ -22,7 +19,7 @@ namespace AppDiv.CRVS.Application.Features.Search
         {
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
         }
-        public async Task<object> Handle(GetPaymentExamptionRequestQuery request, CancellationToken cancellationToken)
+        public Task<object> Handle(GetPaymentExamptionRequestQuery request, CancellationToken cancellationToken)
         {
             var SelectedInfo = _paymentExamptionRequestRepository.GetAllQueryable()
                                         .Where(model => model.status)
@@ -42,14 +39,14 @@ namespace AppDiv.CRVS.Application.Features.Search
                                                 ExamptedClientId = pe.ExamptedClientId,
                                                 ExamptedClientFullName = pe.ExamptedClientFullName,
                                                 ExamptedDate = pe.ExamptedDate,
-                                                ExamptedBy = pe.ExamptedBy,
+                                                // ExamptedBy = pe.ExamptedBy,
                                                 NumberOfClient = pe.NumberOfClient,
-                                                AddressId = pe.AddressId,
-                                                AddressName = pe.Address.AddressNameLang,
+                                                // AddressId = pe.AddressId,
+                                                // AddressName = pe.Address.AddressNameLang,
                                                 CertificateType = pe.CertificateType
                                             })
                                             .Take(50);
-            return SelectedInfo;
+            return Task.FromResult<object>(SelectedInfo);
         }
     }
 }
