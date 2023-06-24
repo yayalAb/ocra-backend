@@ -103,8 +103,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .MustAsync(ValidateCertifcateId)
                 .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.");
 
-
-            RuleFor(e => e.Witnesses.Count)
             RuleFor(e => e.Witnesses.Count)
             .NotNull()
             .Must(meetMinimumWitnessCount)
@@ -128,9 +126,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
             .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true)).WithMessage("the bride cannot be below the age limit set in setting");
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true)).WithMessage("the bride cannot be below the age limit set in setting");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false)).WithMessage("the Groom cannot be below the age limit set in setting");
             .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false)).WithMessage("the Groom cannot be below the age limit set in setting");
 
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
@@ -162,7 +158,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .NotEmpty()
                 .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
             });
-            When(e => isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
             When(e => isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
            {
 
@@ -274,66 +269,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 return numberOfWitnesses >= 4;
             }
         }
-
-        private bool meetMinimumDivorceMarriageGapLimit(Guid? brideId, string eventDateEt)
-        {
-            if (brideId == null)
-            {
-                return true;
-            }
-            var brideInfo = _personalInfoRepo.GetAll()
-                   .Include(p => p.DivorceWifeNavigation)
-                   .ThenInclude(d => d.Event)
-                   .Where(p => p.Id == brideId).FirstOrDefault();
-            if (brideInfo == null)
-            {
-                throw new NotFoundException("Bride with the provided Id is not found");
-            }
-            var marriageSetting = _settingRepository.GetAll()
-                  .Where(s => s.Key == "marriageSetting")
-                  .FirstOrDefault();
-            if (marriageSetting == null)
-            {
-                throw new NotFoundException("marriage setting not found");
-            }
-            var remarryGapLimit = marriageSetting.Value.Value<string>("divorced_bride_month_limit_for_remarrying");
-
-            var brideLastDivorceDate = brideInfo.DivorceWifeNavigation
-                      .OrderBy(d => d.Event.EventDate)
-                      .Select(d => d.Event.EventDate).LastOrDefault();
-            var eventDate = new CustomDateConverter(eventDateEt).gorgorianDate;
-            if (int.TryParse(remarryGapLimit, out int result))
-            {
-                return brideLastDivorceDate == null || HelperService.GetMonthDifference(brideLastDivorceDate, eventDate) >= result;
-            }
-            else
-            {
-                return brideLastDivorceDate == null || HelperService.GetMonthDifference(brideLastDivorceDate, eventDate) >= 6;
-            }
-
-        }
-
-        private bool meetMinimumWitnessCount(int numberOfWitnesses)
-        {
-            var marriageSetting = _settingRepository.GetAll()
-                    .Where(s => s.Key == "marriageSetting")
-                    .FirstOrDefault();
-            if (marriageSetting == null)
-            {
-                throw new NotFoundException("marriage setting not found");
-            }
-            var minWitnessCount = marriageSetting.Value.Value<string>("how_many_witness");
-
-            if (int.TryParse(minWitnessCount, out int result))
-            {
-                return numberOfWitnesses >= result;
-            }
-            else
-            {
-                return numberOfWitnesses >= 4;
-            }
-        }
-
         private bool notEmptyGuid(object arg)
         {
             try
