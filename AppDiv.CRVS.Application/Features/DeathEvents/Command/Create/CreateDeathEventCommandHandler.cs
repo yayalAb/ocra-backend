@@ -110,9 +110,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 throw;
                             }
                             if (amount != 0 || request.DeathEvent.Event.IsExampted)
+                            {
                                 createDeathCommandResponse.Message = "Death Event created Successfully";
-                            createDeathCommandResponse.Status = 200;
-                            await transaction.CommitAsync();
+                                createDeathCommandResponse.Status = 200;
+                                await transaction.CommitAsync();
+                            }
                         }
                         return createDeathCommandResponse;
                     }
