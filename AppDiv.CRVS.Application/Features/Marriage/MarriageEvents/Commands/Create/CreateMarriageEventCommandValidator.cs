@@ -131,41 +131,38 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
             When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
-                RuleFor(e => e.BrideInfo.Id)
-                .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt))
-                .WithMessage("divorced bride must wait 6 months to marry again ");
 
                 RuleFor(e => e.BrideInfo.Id)
                 .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt))
                 .WithMessage("divorced bride must wait 6 months to marry again ");
 
-                RuleFor(e => e.Event.EventSupportingDocuments)
-                .NotNull()
-                .NotEmpty()
-                .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.BrideInfo.Id, "wife")).WithMessage("divorce paper document should be attached if bride is a divorcee");
+                // RuleFor(e => e.Event.EventSupportingDocuments)
+                // .NotNull()
+                // .NotEmpty()
+                // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.BrideInfo.Id, "wife")).WithMessage("divorce paper document should be attached if bride is a divorcee");
             });
             When(e => isDivorcee(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
-                RuleFor(e => e.Event.EventSupportingDocuments)
-                .NotNull()
-                .NotEmpty()
-                .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.Event.EventOwener.Id, "husband")).WithMessage("divorce paper document should be attached if eventOwner(Groom) is a divorcee");
+                // RuleFor(e => e.Event.EventSupportingDocuments)
+                // .NotNull()
+                // .NotEmpty()
+                // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.Event.EventOwener.Id, "husband")).WithMessage("divorce paper document should be attached if eventOwner(Groom) is a divorcee");
             });
             When(e => isWidowed(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
-                RuleFor(e => e.Event.EventSupportingDocuments)
-                .NotNull()
-                .NotEmpty()
-                .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
+                // RuleFor(e => e.Event.EventSupportingDocuments)
+                // .NotNull()
+                // .NotEmpty()
+                // .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
             });
             When(e => isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
            {
 
 
-               RuleFor(e => e.Event.EventSupportingDocuments)
-               .NotNull()
-               .NotEmpty()
-               .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
+            //    RuleFor(e => e.Event.EventSupportingDocuments)
+            //    .NotNull()
+            //    .NotEmpty()
+            //    .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a widow");
            });
             When(e => !isCivilMarriage(e.MarriageTypeId), () =>
             {
