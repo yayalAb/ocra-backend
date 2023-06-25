@@ -35,7 +35,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParen
                 id = an.Id,
                 ParentAddressId = an.ParentAddressId,
                 AddressName = an.AddressNameLang,
-                AdminType = string.IsNullOrEmpty(an.AdminTypeLookup.ValueLang) ? "" : an.AdminTypeLookup.ValueLang
+                AdminType = string.IsNullOrEmpty(an.AdminTypeLookup.ValueLang) ? "" : an.AdminTypeLookup.ValueLang,
+                AdminLevel = an.AdminLevel
             });
 
             return formatedAddress.ToList();            //CustomMapper.Mapper.Map<List<AddressForLookupDTO>>(formatedAddress);
