@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllKebeleQueryHandler : IRequestHandler<GetAllKebeleQuery, PaginatedList<KebeleDTO>>
@@ -32,12 +33,24 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
         }
         public async Task<PaginatedList<KebeleDTO>> Handle(GetAllKebeleQuery request, CancellationToken cancellationToken)
         {
+            var query = _AddresslookupRepository.GetAll()
+                                .Include(a => a.ParentAddress)
+                               .Where(a => a.AdminLevel == 5);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                query = query.Where(a =>
+                             EF.Functions.Like(a.AddressNameStr, "%" + request.SearchString + "%")
+                             || (a.ParentAddress != null && EF.Functions.Like(a.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                             || ((a.ParentAddress != null && a.ParentAddress.ParentAddress != null) && EF.Functions.Like(a.ParentAddress.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                             || ((a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null) && EF.Functions.Like(a.ParentAddress.ParentAddress.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                             || ((a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress.ParentAddress != null)
+                                && EF.Functions.Like(a.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                             );
+            }
 
             return await PaginatedList<KebeleDTO>
                            .CreateAsync(
-                                _AddresslookupRepository.GetAll()
-                                .Include(a => a.ParentAddress)
-                               .Where(a => a.AdminLevel == 5)
+                               query
                                .Select(a => new KebeleDTO
                                {
                                    Id = a.Id,

@@ -60,7 +60,7 @@ namespace AppDiv.CRVS.Infrastructure
                {
                    // Default Lockout settings.
                    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromDays(99999);
-                   options.Lockout.MaxFailedAccessAttempts = 4;
+                   options.Lockout.MaxFailedAccessAttempts = 5;
                    options.Lockout.AllowedForNewUsers = true;
                    // Default Password settings.
                    options.Password.RequireDigit = false;

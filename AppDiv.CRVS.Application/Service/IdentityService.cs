@@ -27,11 +27,11 @@ namespace AppDiv.CRVS.Application.Service
             _userManager = userManager;
             _logger = logger;
             _signInManager = signInManager;
-           
+
 
             // _tokenGeneratorService = tokenGeneratorService;
         }
-        public async Task<(Result result, IList<string>? roles, string? userId)> AuthenticateUser(string userName, string password)
+        public async Task<(Result result, IList<string>? roles, string? userId, bool isFirstTime)> AuthenticateUser(string userName, string password)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user != null)
@@ -39,7 +39,15 @@ namespace AppDiv.CRVS.Application.Service
                 var authResult = await _signInManager.PasswordSignInAsync(user, password, true, true);
                 if (authResult.IsLockedOut)
                 {
-                    return (Result.Failure(new string[] { "AccountLocked!:\n you have excedded the maximum limit of login attempts please contact the Administrator" }), null, null);
+
+                    var message = "AccountLocked!:\n you have excedded the maximum limit of login attempts please contact the Administrator";
+
+                    return (Result.Failure(new string[] { message }), null, null, false);
+                }
+                if (!user.Status)
+                {
+                    var message = "Your Account is Diactivated please contact the Administrator";
+                    return (Result.Failure(new string[] { message }), null, null, false);
                 }
 
                 if (await _userManager.CheckPasswordAsync(user, password))
@@ -47,7 +55,9 @@ namespace AppDiv.CRVS.Application.Service
                     var userRoles = await _userManager.GetRolesAsync(user);
 
 
-                    return (Result.Success(), userRoles, user.Id);
+
+
+                    return (Result.Success(), userRoles, user.Id, user.Otp != null);
 
 
                 }
@@ -56,7 +66,7 @@ namespace AppDiv.CRVS.Application.Service
 
             string[] errors = new string[] { "Invalid login" };
 
-            return (Result.Failure(errors), null, null);
+            return (Result.Failure(errors), null, null, false);
 
         }
 
@@ -104,6 +114,7 @@ namespace AppDiv.CRVS.Application.Service
                 PersonalInfoId = personalInfoId
             };
             string password = GeneratePassword();
+            newUser.Otp = password;
             var result = await _userManager.CreateAsync(newUser, password);
             if (!result.Succeeded)
             {
@@ -124,6 +135,7 @@ namespace AppDiv.CRVS.Application.Service
                 return (Result.Failure(new string[] { "username is already taken" }), string.Empty, string.Empty);
             }
             string password = GeneratePassword();
+            user.Otp = password;
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
@@ -176,6 +188,8 @@ namespace AppDiv.CRVS.Application.Service
             {
                 throw new Exception($"Change password failed! ");
             }
+            user.Otp = null;
+            await _userManager.UpdateAsync(user);
             return Result.Success();
         }
 
@@ -226,6 +240,14 @@ namespace AppDiv.CRVS.Application.Service
             // existingUser.OtpExpiredDate = otpExpiredDate;
             existingUser.PersonalInfo = user.PersonalInfo;
             existingUser.UserGroups = user.UserGroups;
+
+
+            //if the user was locked and status is updated to true
+            if (user.Status && existingUser.LockoutEnd > DateTime.Now && !existingUser.Status && existingUser.LockoutEnabled)
+            {
+                existingUser.LockoutEnd = DateTime.Now;
+            }
+            existingUser.Status = user.Status;
 
             var response = await _userManager.UpdateAsync(existingUser);
 

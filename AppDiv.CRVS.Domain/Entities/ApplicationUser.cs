@@ -7,6 +7,7 @@ namespace AppDiv.CRVS.Domain
     public class ApplicationUser : IdentityUser
     {
         public string? Otp { get; set; }
+        public bool Status {get; set; } = true;
         public DateTime? OtpExpiredDate { get; set; }
         public Guid PersonalInfoId { get; set; }
         public Guid AddressId { get; set; }

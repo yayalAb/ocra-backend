@@ -12,24 +12,24 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid BrideInfoId { get; set; }
         public Guid GroomInfoId { get; set;}
         public Guid CivilRegOfficerId { get; set; }
-
-        [NotMapped]
-        public string? _ApplicationDate
-        {
-            get { return ApplicationDateEt; }
-            set
-            {
-                ApplicationDateEt = value;
-
-                ApplicationDate = new CustomDateConverter(ApplicationDateEt).gorgorianDate;
-            }
-        }
-
         public virtual Address ApplicationAddress { get; set;}
         public virtual PersonalInfo BrideInfo { get; set;}
         public virtual PersonalInfo GroomInfo { get; set;}
         public virtual PersonalInfo CivilRegOfficer { get; set;}
         public virtual MarriageEvent MarriageEvent { get; set; }
+
+        [NotMapped]
+        public string? _ApplicationDateEt
+        {
+            get { return ApplicationDateEt; }
+            set
+            {
+                this.ApplicationDateEt = value;
+
+                ApplicationDate = new CustomDateConverter(ApplicationDateEt).gorgorianDate;
+            }
+        }
+
 
     }
 }
