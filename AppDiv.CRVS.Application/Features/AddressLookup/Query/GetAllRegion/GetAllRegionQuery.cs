@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
 
@@ -12,6 +13,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllRegionQueryHandler : IRequestHandler<GetAllRegionQuery, PaginatedList<RegionDTO>>
@@ -24,10 +26,17 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
         }
         public async Task<PaginatedList<RegionDTO>> Handle(GetAllRegionQuery request, CancellationToken cancellationToken)
         {
+            var query = _AddresslookupRepository.GetAll()
+                    .Where(a => a.AdminLevel == 2);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                query = query.Where(a => EF.Functions.Like(a.AddressNameStr, "%" + request.SearchString + "%")
+                             || (a.ParentAddress != null && EF.Functions.Like(a.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                             );
+            }
             return await PaginatedList<RegionDTO>
                 .CreateAsync(
-                     _AddresslookupRepository.GetAll()
-                    .Where(a => a.AdminLevel == 2)
+                   query
                     .Select(c => new RegionDTO
                     {
                         Id = c.Id,

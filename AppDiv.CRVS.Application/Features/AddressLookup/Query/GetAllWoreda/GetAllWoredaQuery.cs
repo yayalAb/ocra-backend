@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllWoredaQueryHandler : IRequestHandler<GetAllWoredaQuery, PaginatedList<WoredaDTO>>
@@ -31,10 +33,20 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda
         }
         public async Task<PaginatedList<WoredaDTO>> Handle(GetAllWoredaQuery request, CancellationToken cancellationToken)
         {
+            var query = _AddresslookupRepository.GetAll()
+                    .Where(a => a.AdminLevel == 4);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                query = query.Where(a =>
+                        EF.Functions.Like(a.AddressNameStr, "%" + request.SearchString + "%")
+                        || (a.ParentAddress != null && EF.Functions.Like(a.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                        || ((a.ParentAddress != null && a.ParentAddress.ParentAddress != null) && EF.Functions.Like(a.ParentAddress.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                        || ((a.ParentAddress != null && a.ParentAddress.ParentAddress != null && a.ParentAddress.ParentAddress.ParentAddress != null) && EF.Functions.Like(a.ParentAddress.ParentAddress.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                        );
+            }
             return await PaginatedList<WoredaDTO>
                 .CreateAsync(
-                     _AddresslookupRepository.GetAll()
-                    .Where(a => a.AdminLevel == 4)
+                    query
                     .Select(a => new WoredaDTO
                     {
                         Id = a.Id,

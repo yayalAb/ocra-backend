@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllZoneQueryHandler : IRequestHandler<GetAllZoneQuery, PaginatedList<ZoneDTO>>
@@ -31,10 +33,19 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
         }
         public async Task<PaginatedList<ZoneDTO>> Handle(GetAllZoneQuery request, CancellationToken cancellationToken)
         {
+            var query = _AddresslookupRepository.GetAll()
+                    .Where(a => a.AdminLevel == 3);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                query = query.Where(a =>
+                        EF.Functions.Like(a.AddressNameStr, "%" + request.SearchString + "%")
+                        || (a.ParentAddress != null && EF.Functions.Like(a.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                        || ((a.ParentAddress != null && a.ParentAddress.ParentAddress != null) && EF.Functions.Like(a.ParentAddress.ParentAddress.AddressNameStr, "%" + request.SearchString + "%"))
+                        );
+            }
             return await PaginatedList<ZoneDTO>
               .CreateAsync(
-                   _AddresslookupRepository.GetAll()
-                  .Where(a => a.AdminLevel == 3)
+                  query
                   .Select(a => new ZoneDTO
                   {
                       Id = a.Id,

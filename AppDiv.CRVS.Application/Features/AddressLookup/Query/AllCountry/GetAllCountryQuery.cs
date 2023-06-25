@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllCountryQueryHandler : IRequestHandler<GetAllCountryQuery, PaginatedList<CountryDTO>>
@@ -31,10 +33,15 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
         }
         public async Task<PaginatedList<CountryDTO>> Handle(GetAllCountryQuery request, CancellationToken cancellationToken)
         {
+            var query = _AddresslookupRepository.GetAll()
+                                .Where(a => a.AdminLevel == 1);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                query = query.Where(a => EF.Functions.Like(a.AddressNameStr, "%" + request.SearchString + "%"));
+            }
             return await PaginatedList<CountryDTO>
                             .CreateAsync(
-                                 _AddresslookupRepository.GetAll()
-                                .Where(a => a.AdminLevel == 1)
+                               query
                                 .Select(c => new CountryDTO
                                 {
                                     Id = c.Id,
