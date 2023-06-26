@@ -173,6 +173,8 @@ namespace AppDiv.CRVS.Application.Service
                 var errors = resetPassResult.Errors.Select(e => e.Description);
                 throw new Exception($"password reset failed! \n {string.Join(",", errors)}\n {token}");
             }
+            user.Otp = null;
+            await _userManager.UpdateAsync(user);
             return Result.Success();
         }
 
