@@ -140,16 +140,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken)
         {
-            entity.BrideInfo.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+            entity.BrideInfo.SexLookupId =await dbContext.Lookups.Where(l => l.Key == "sex")
                                         .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
                                             || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                             || EF.Functions.Like(l.ValueStr, "%Female%"))
-                                        .Select(l => l.Id).FirstOrDefault();
-            entity.Event.EventOwener.SexLookupId = dbContext.Lookups.Where(l => l.Key == "sex")
+                                        .Select(l => l.Id).FirstOrDefaultAsync();
+            entity.Event.EventOwener.SexLookupId = await dbContext.Lookups.Where(l => l.Key == "sex")
                                                 .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
                                                     || EF.Functions.Like(l.ValueStr, "%Dhiira%")
                                                     || EF.Functions.Like(l.ValueStr, "%Male%"))
-                                                .Select(l => l.Id).FirstOrDefault();
+                                                .Select(l => l.Id).FirstOrDefaultAsync();
             if (entity.Event.EventOwener.Id != null && entity.Event.EventOwener.Id != Guid.Empty)
             {
 

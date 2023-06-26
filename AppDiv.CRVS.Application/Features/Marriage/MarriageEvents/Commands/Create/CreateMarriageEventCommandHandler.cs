@@ -75,7 +75,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                         var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository, _settingRepository, _eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-                        //Check and log validation errors
+                        // Check and log validation errors
                         if (validationResult.Errors.Count > 0)
                         {
                             CreateMarriageEventCommandResponse.Success = false;
@@ -135,8 +135,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             if (amount != 0 || marriageEvent.Event.IsExampted)
                             {
                                 CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
-                                await transaction.CommitAsync();
                             }
+                                await transaction.CommitAsync();
 
                         }
                         return CreateMarriageEventCommandResponse;

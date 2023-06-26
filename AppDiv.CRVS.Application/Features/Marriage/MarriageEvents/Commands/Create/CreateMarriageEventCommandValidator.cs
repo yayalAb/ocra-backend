@@ -77,7 +77,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             foreach (var lookupFeild in lookupFeilds)
             {
                 var rule = RuleFor(GetNestedProperty<CreateMarriageEventCommand>(lookupFeild))
-                    .Must(BeFoundInLookupTable)
+                    .MustAsync(async(l , c) => await BeFoundInLookupTable(l))
                     .WithMessage("{PropertyName} with the provided id is not found");
 
 
@@ -117,7 +117,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             .ForEach(lookupId => lookupId
                     .NotEmpty()
                     .NotNull()
-                    .Must(BeFoundInLookupTable).WithMessage("witness sexLookup with the provided id is not found"));
+                    .MustAsync(async (l, c) => await BeFoundInLookupTable(l)).WithMessage("witness sexLookup with the provided id is not found"));
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.Id))
                     .Must(NotHaveDuplicateWitness)
                     .WithMessage("duplicate witness personal info data: one person can only be registered as a witness once for a single marriage event");
@@ -129,7 +129,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
             .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false)).WithMessage("the Groom cannot be below the age limit set in setting");
 
-            When(e => isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
+            WhenAsync(async (e,CancellationToken) =>await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
 
                 RuleFor(e => e.BrideInfo.Id)
@@ -141,21 +141,21 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 // .NotEmpty()
                 // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.BrideInfo.Id, "wife")).WithMessage("divorce paper document should be attached if bride is a divorcee");
             });
-            When(e => isDivorcee(e.Event.EventOwener.MarriageStatusLookupId), () =>
+            WhenAsync(async (e,c) =>await isDivorcee(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
                 // RuleFor(e => e.Event.EventSupportingDocuments)
                 // .NotNull()
                 // .NotEmpty()
                 // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.Event.EventOwener.Id, "husband")).WithMessage("divorce paper document should be attached if eventOwner(Groom) is a divorcee");
             });
-            When(e => isWidowed(e.Event.EventOwener.MarriageStatusLookupId), () =>
+            WhenAsync(async (e,c) => await isWidowed(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
                 // RuleFor(e => e.Event.EventSupportingDocuments)
                 // .NotNull()
                 // .NotEmpty()
                 // .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
             });
-            When(e => isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
+            WhenAsync(async (e,c) => await isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
            {
 
 
@@ -164,12 +164,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             //    .NotEmpty()
             //    .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a widow");
            });
-            When(e => !isCivilMarriage(e.MarriageTypeId), () =>
+            WhenAsync(async (e,c) =>!( await isCivilMarriage(e.MarriageTypeId)), () =>
             {
                 RuleFor(e => e.ApplicationId)
                 .Must(id => id == null).WithMessage("MarriageApplicationId must be null if marriage type is not civil marriage");
             });
-            When(e => isCivilMarriage(e.MarriageTypeId), () =>
+            WhenAsync(async (e,c) => await isCivilMarriage(e.MarriageTypeId), () =>
             {
                 RuleFor(e => e.ApplicationId)
                 .NotNull().WithMessage("marriage application id is required for 'civil' marriage type")
@@ -181,7 +181,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .MustAsync(async (model, eventRegDateEt, CancellationToken) => await Be15DaysAfterMarriageApplicationDateAsync(eventRegDateEt, model))
                 .WithMessage("there should be atleast 15 day gap between marriage application date and marriage registered date");
             });
-            When(e => !isReligionMarriage(e.MarriageTypeId), () =>
+            WhenAsync(async(e,c) => !await isReligionMarriage(e.MarriageTypeId), () =>
           {
               RuleFor(e => e.BrideInfo.Id)
               .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
@@ -207,7 +207,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             });
 
         }
-
         private bool meetMinimumDivorceMarriageGapLimit(Guid? brideId, string eventDateEt)
         {
             if (brideId == null)
@@ -286,7 +285,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
             if (valid)
             {
-                var certfcate = _eventRepo.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefault();
+                var certfcate = await _eventRepo.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefaultAsync();
                 if (certfcate == null)
                 {
                     return true;
@@ -337,16 +336,16 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return _personalInfoRepo.GetById(guid) != null;
         }
 
-        private bool BeFoundInLookupTable(object lookupId)
+        private async Task<bool> BeFoundInLookupTable(object lookupId)
         {
             var l = lookupId;
             // return false;
 
-            return lookupId != null && _lookupRepo.GetLookupById((Guid)lookupId) != null;
+            return lookupId != null && await _lookupRepo.GetLookupById((Guid)lookupId) != null;
         }
-        private bool BeFoundInLookupTable(Guid lookupId)
+        private async Task<bool> BeFoundInLookupTable(Guid lookupId)
         {
-            return lookupId != null && _lookupRepo.GetLookupById((Guid)lookupId) != null;
+            return lookupId != null && await _lookupRepo.GetLookupById((Guid)lookupId) != null;
         }
 
 
@@ -365,9 +364,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return applicationId == null || _marriageApplicationRepo.exists((Guid)applicationId);
         }
 
-        private bool isCivilMarriage(Guid marriageTypeId)
+        private async Task<bool> isCivilMarriage(Guid marriageTypeId)
         {
-            var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
+            var marriageType =await  _lookupRepo.GetLookupById(marriageTypeId);
             return marriageType == null ||
              marriageType.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].or!.ToLower()
              || marriageType.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].am!.ToLower();
@@ -400,9 +399,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         }
 
 
-        private bool isDivorcee(Guid marriageStatusLookupId)
+        private async Task<bool> isDivorcee(Guid marriageStatusLookupId)
         {
-            var marriageStatus = _lookupRepo.GetLookupById(marriageStatusLookupId);
+            var marriageStatus = await _lookupRepo.GetLookupById(marriageStatusLookupId);
             if (marriageStatus == null)
             {
                 return false;
@@ -414,9 +413,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].or!.ToLower()
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].or!.ToLower();
         }
-        private bool isWidowed(Guid marriageStatusLookupId)
+        private async Task<bool> isWidowed(Guid marriageStatusLookupId)
         {
-            var marriageStatus = _lookupRepo.GetLookupById(marriageStatusLookupId);
+            var marriageStatus = await _lookupRepo.GetLookupById(marriageStatusLookupId);
             if (marriageStatus == null)
             {
                 return false;
@@ -456,9 +455,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         }
 
-        public bool isReligionMarriage(Guid marriageTypeId)
+        public async Task<bool> isReligionMarriage(Guid marriageTypeId)
         {
-            var marriageType = _lookupRepo.GetLookupById(marriageTypeId);
+            var marriageType = await _lookupRepo.GetLookupById(marriageTypeId);
             return marriageType == null ||
                   marriageType.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Religion].or!.ToLower()
                   || marriageType.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Religion].am!.ToLower();
