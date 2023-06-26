@@ -12,8 +12,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? PersonalInfoId { get; set; }
         public string? Name { get; set; }
         public string? Token { get; set; }
-        public List<Guid>? GroupIds {get;set;}
+        public List<Guid>? GroupIds { get; set; }
         public List<RoleDto>? Roles { get; set; }
-        public bool isFirstTime {get; set;} = false;
+        public bool isFirstTime { get; set; } = false;
+        public int? AdminLevel { get; set; }
+        public Guid? AddressId { get; set; }
     }
 }

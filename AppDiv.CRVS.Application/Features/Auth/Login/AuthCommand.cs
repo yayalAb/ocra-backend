@@ -60,6 +60,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {
                                                     { "UserGroups", NavigationPropertyType.COLLECTION },
+                                                    { "Address", NavigationPropertyType.REFERENCE }
 
                                                 };
             var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
@@ -104,6 +105,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             {
                 UserId = userData.Id,
                 Name = userData.UserName,
+                AdminLevel = userData?.Address?.AdminLevel,
+                AddressId = userData?.AddressId,
                 Token = token,
                 PersonalInfoId = userData.PersonalInfoId,
                 GroupIds = userData.UserGroups.Select(g => g.Id).ToList(),
