@@ -61,7 +61,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             {
                 var rule = RuleFor(GetNestedProperty<CreateDivorceEventCommand>(lookupFeild))
                     .Cascade(CascadeMode.StopOnFirstFailure)
-                    .Must(BeFoundInLookupTable)
+                    .MustAsync(async (lookupId , _) => await BeFoundInLookupTable(lookupId))
                     .WithMessage("{PropertyName} with the provided id is not found");
 
                 // add more validation rules for the field here, if needed
@@ -150,9 +150,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             return _personalInfoRepo.GetById(guid) != null;
         }
 
-        private bool BeFoundInLookupTable(object lookupId)
+        private async Task<bool> BeFoundInLookupTable(object lookupId)
         {
-            return lookupId != null && _lookupRepo.GetLookupById((Guid)lookupId) != null;
+            return lookupId != null && await _lookupRepo.GetLookupById((Guid)lookupId) != null;
         }
         private Expression<Func<T, object>> GetNestedProperty<T>(string propertyPath)
         {
