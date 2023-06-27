@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Service
             var randomValue = BitConverter.ToUInt32(randomBytes, 0);
             var code = randomValue.ToString("D6");
 
-            return code;
+            return code.Substring(0, 6);
         }
 
         public static int GetMonthDifference(DateTime startDate, DateTime endDate)

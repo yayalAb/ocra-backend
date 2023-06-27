@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public Guid? EventId { get; set; }
         public Guid? PaymentExamptionId { get; set;}
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string DocumentUrl { get; set; }
         public string Type {get; set;}
         public string Label { get; set; }

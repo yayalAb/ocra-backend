@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     public class SupportingDocumentRequest
     {
         public Guid Id { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public string DocumentUrl { get; set; }
         [NotMapped]
         public string FileStr { get; set; }
