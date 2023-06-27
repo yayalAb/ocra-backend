@@ -57,6 +57,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         {
             // return Fill.Filler<Person, PersonalInfo>(new Person(), person);
             // var convertor = new CustomDateConverter();
+            var personName = person?.FirstName?.Value<string>("or");
+            var personSexLookupId = person?.SexLookup?.Value?.Value<string>("or") ?? lookupService.GetLookupOr(person?.SexLookupId);
+
             var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
             (string am, string or)? birthAddress = (person?.BirthAddressId == Guid.Empty
                || person?.BirthAddress == null) ? null :
@@ -78,8 +81,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 MiddleNameOr = person?.MiddleName?.Value<string>("or"),
                 LastNameOr = person?.LastName?.Value<string>("or"),
 
-                GenderAm = person?.SexLookup?.Value?.Value<string>("am"),
-                GenderOr = person?.SexLookup?.Value?.Value<string>("or"),
+                GenderAm = person?.SexLookup?.Value?.Value<string>("am") ?? lookupService.GetLookupAm(person?.SexLookupId),
+                GenderOr = person?.SexLookup?.Value?.Value<string>("or") ?? lookupService.GetLookupOr(person?.SexLookupId),
 
                 NationalId = person?.NationalId,
 
