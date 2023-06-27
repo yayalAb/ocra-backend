@@ -6,6 +6,8 @@ using AppDiv.CRVS.Application.Features.Auth.ForgotPassword;
 using AppDiv.CRVS.Application.Features.Auth.ResetPassword;
 using AppDiv.CRVS.Application.Features.Auth.ChangePassword;
 using AppDiv.CRVS.Application.Features.Auth.UnlockUser;
+using AppDiv.CRVS.Application.Features.Auth.YourTeam;
+using AppDiv.CRVS.Domain;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -79,6 +81,13 @@ namespace AppDiv.CRVS.API.Controllers
             {
                 return BadRequest(res);
             }
+        }
+
+        [HttpGet("YourTeam")]
+        public async Task<IActionResult> GetYourTeam([FromQuery] GetYourTeamQuery command)
+        {
+            return Ok(await Mediator.Send(command));
+
         }
     }
 }
