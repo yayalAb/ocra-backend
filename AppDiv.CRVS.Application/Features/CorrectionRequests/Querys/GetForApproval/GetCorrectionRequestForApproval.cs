@@ -45,14 +45,6 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForAppro
         }
         public async Task<CorrectionApprovalDTO> Handle(GetCorrectionRequestForApproval request, CancellationToken cancellationToken)
         {
-
-            // var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType + " " + "Archive").FirstOrDefault();
-
-            // response.Content = certificate;
-            // response.TemplateId = certificateTemplateId?.Id;
-            // return response;
-
-
             GenerateArchiveQuery request1 = new GenerateArchiveQuery
             {
                 Id = request.CorrectionRequestId,
@@ -70,8 +62,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForAppro
             response.OldData = certificate;
 
             response.CurrentStep = CorrectionRequest?.Request.currentStep;
-            var eventContent = _correctionRequestRepository.GetAll().Where(cr => cr.EventId == CorrectionRequest.EventId)
-                                                        .FirstOrDefault()?.Content;
+            var eventContent = _correctionRequestRepository.GetAll().Where(cr => cr.EventId == CorrectionRequest.EventId).FirstOrDefault()?.Content;
             response.NewData = selectedEvent.EventType switch
             {
                 "Birth" => _archiveGenerator.GetBirthArchivePreview(ReturnArchiveFromJObject.GetArchive<BirthEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId),
