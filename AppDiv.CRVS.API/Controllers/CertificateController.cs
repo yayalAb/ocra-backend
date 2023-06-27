@@ -16,6 +16,7 @@ using System.Data;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Verify;
 using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
+using AppDiv.CRVS.Application.Features.Certificates.Command.ReprintRequest;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -100,6 +101,15 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await Mediator.Send(query);
         }
+
+        [HttpGet("ReprintRequest")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> ReprintRequest([FromQuery] ReprintRequestCommand query)
+        {
+            return await Mediator.Send(query);
+        }
+
+
 
         [HttpGet("History")]
         [ProducesResponseType(StatusCodes.Status200OK)]
