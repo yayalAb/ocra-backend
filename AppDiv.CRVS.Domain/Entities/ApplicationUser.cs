@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Domain
         public DateTime? OtpExpiredDate { get; set; }
         public Guid PersonalInfoId { get; set; }
         public Guid AddressId { get; set; }
+        public string PreferedLanguage { get;set; }
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual Address Address { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }

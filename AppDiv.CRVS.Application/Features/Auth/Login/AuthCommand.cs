@@ -108,6 +108,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 AdminLevel = userData?.Address?.AdminLevel,
                 AddressId = userData?.AddressId,
                 Token = token,
+                PreferedLanguage = userData?.PreferedLanguage,
                 PersonalInfoId = userData.PersonalInfoId,
                 GroupIds = userData.UserGroups.Select(g => g.Id).ToList(),
                 Roles = userRoles.ToList()

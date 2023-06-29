@@ -50,7 +50,8 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 Email = u.Email,
                 Status = u.Status &&(!u.LockoutEnabled || u.LockoutEnd==null || u.LockoutEnd <= DateTime.Now),
                 UserGroups = u.UserGroups.Select(u => u.Id).ToList(),
-                PersonalInfo = CustomMapper.Mapper.Map<AddPersonalInfoRequest>(u.PersonalInfo)
+                PersonalInfo = CustomMapper.Mapper.Map<AddPersonalInfoRequest>(u.PersonalInfo),
+                PreferedLanguage = u.PreferedLanguage
             }).FirstOrDefaultAsync();
             if (userData == null)
             {
