@@ -115,6 +115,7 @@ namespace AppDiv.CRVS.Application.Service
             };
             string password = GeneratePassword();
             newUser.Otp = password;
+            newUser.OtpExpiredDate = null;
             var result = await _userManager.CreateAsync(newUser, password);
             if (!result.Succeeded)
             {
@@ -174,6 +175,7 @@ namespace AppDiv.CRVS.Application.Service
                 throw new Exception($"password reset failed! \n {string.Join(",", errors)}\n {token}");
             }
             user.Otp = null;
+            user.OtpExpiredDate = null;
             await _userManager.UpdateAsync(user);
             return Result.Success();
         }
