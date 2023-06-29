@@ -57,7 +57,7 @@ namespace AppDiv.CRVS.Application.Service
 
 
 
-                    return (Result.Success(), userRoles, user.Id, user.Otp != null);
+                    return (Result.Success(), userRoles, user.Id, !string.IsNullOrEmpty(user.Otp));
 
 
                 }

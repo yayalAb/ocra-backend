@@ -15,12 +15,14 @@ using Microsoft.EntityFrameworkCore;
 namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
 
 {
-    public class GetYourTeamQuery : IRequest<List<ApplicationUser>>
+    public class GetYourTeamQuery : IRequest<PaginatedList<YourTeamDTO>>
     {
         public string UserName { get; set; }
+        public int? PageCount { get; set; }
+        public int? PageSize { get; set; }
     }
 
-    public class GetYourTeamQueryHandler : IRequestHandler<GetYourTeamQuery, List<ApplicationUser>>
+    public class GetYourTeamQueryHandler : IRequestHandler<GetYourTeamQuery, PaginatedList<YourTeamDTO>>
     {
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContext;
@@ -31,55 +33,59 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
             _httpContext = httpContext;
         }
 
-        public async Task<List<ApplicationUser>> Handle(GetYourTeamQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<YourTeamDTO>> Handle(GetYourTeamQuery request, CancellationToken cancellationToken)
         {
 
             var response = _userRepository
             .GetAll()
             .Include(x => x.Address)
             .Where(x => x.UserName == request.UserName).FirstOrDefault();
+            var response2 = _userRepository
+                    .GetAll()
+                    .Include(x => x.Address)
+                        .ThenInclude(x => x.ParentAddress)
+                            .ThenInclude(x => x.ParentAddress)
+                                .ThenInclude(x => x.ParentAddress).AsQueryable();
             if (response.Address.AdminLevel == 2)
             {
-                var response2 = _userRepository
-                            .GetAll()
-                            .Include(x => x.Address)
-                            .ThenInclude(x => x.ParentAddress)
-                            .ThenInclude(x => x.ParentAddress)
-                            .ThenInclude(x => x.ParentAddress).Where(x => x.Address.ParentAddress != null)
-                            .Where(x => x.Address.ParentAddress.ParentAddress.ParentAddress.Id == response.AddressId);
-                return response2.ToList();
+                response2 = response2.Where(x => ((
+                            (x.Address.ParentAddress.ParentAddress.ParentAddress.Id == response.AddressId
+                             || x.Address.ParentAddress.ParentAddress.Id == response.AddressId)
+                             || (x.Address.ParentAddressId == response.AddressId
+                             || x.Address.Id == response.AddressId)))
+                             );
             }
-            if (response.Address.AdminLevel == 2)
+            else if (response.Address.AdminLevel == 3)
             {
-                var response2 = _userRepository
-
-                            .GetAll()
-                            .Include(x => x.Address)
-                            .Where(x => x.Address.ParentAddress.ParentAddress.Id == response.AddressId);
-                return response2.ToList();
+                response2 = response2.Where(x => (
+                            (x.Address.ParentAddress.ParentAddress.Id == response.AddressId)
+                             || (x.Address.ParentAddressId == response.AddressId
+                             || x.Address.Id == response.AddressId))
+                             );
             }
-            if (response.Address.AdminLevel == 3)
+            else if (response.Address.AdminLevel == 4)
             {
-                var response2 = _userRepository
-
-                            .GetAll()
-                            .Include(x => x.Address)
-                            .Where(x => x.Address.ParentAddress.Id == response.AddressId);
-                return response2.ToList();
+                response2 = response2.Where(x => x.Address.ParentAddressId == response.AddressId
+                             || x.Address.Id == response.AddressId
+                             );
             }
-            if (response.Address.AdminLevel == 4)
+            else if (response.Address.AdminLevel == 5)
             {
-                var response2 = _userRepository
-
-                            .GetAll()
-                            .Include(x => x.Address)
-                            .Where(x => x.AddressId == response.AddressId);
-                return response2.ToList();
+                response2 = response2.Where(x => x.Address.Id == response.AddressId);
             }
+            var result = response2.Select(x => new YourTeamDTO
+            {
+                Id = x.Id,
+                UserName = x.UserName,
+                UserGroup = x.UserGroups.Select(x => x.GroupName).FirstOrDefault(),
+                AddressName = x.Address.AddressNameLang,
+                ParentAddressId = x.Address.ParentAddressId,
+            });
 
-
-            var res = new List<ApplicationUser>();
-            return res;
+            return await PaginatedList<YourTeamDTO>
+                            .CreateAsync(
+                                 result
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }
