@@ -45,9 +45,10 @@ namespace AppDiv.CRVS.Application.Features.Auth.ResetPassword
                 {
                     throw new NotFoundException("user not found");
                 }
-                if (user.OtpExpiredDate == null || DateTime.Compare((DateTime)user.OtpExpiredDate, DateTime.Now) < 0 || user.Otp != request.resetPassword.Otp)
+
+                if (user.OtpExpiredDate != null && DateTime.Compare((DateTime)user.OtpExpiredDate, DateTime.Now) < 0 || user.Otp != request.resetPassword.Otp)
                 {
-                    throw new AuthenticationException("could not authenticate user");
+                    throw new AuthenticationException("could not authenticate user:"+ user.Otp != request.resetPassword.Otp?"\n otp expired":"");
                 }
                 var forgotPasswordRes = await _identityService.ForgotPassword(email: null, user.UserName);
                 if (!forgotPasswordRes.result.Succeeded)
