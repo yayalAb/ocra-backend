@@ -131,6 +131,11 @@ namespace AppDiv.CRVS.Application.Service
 
                 await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
             }
+            else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "reprint")
+            {
+
+                await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
+            }
             else
             {
                 throw new Exception("Unkown Payment Added");

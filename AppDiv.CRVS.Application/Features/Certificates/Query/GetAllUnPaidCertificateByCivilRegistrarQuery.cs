@@ -33,8 +33,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                 CertificateId = e.CertificateId,
                                 EventType = e.EventType,
                                 OwnerFullName = e.EventOwener.FirstNameLang + " " + e.EventOwener.MiddleNameLang + " " + e.EventOwener.LastNameLang,
-                                Amount = e.EventPaymentRequest.Amount,
-                                PaymentRequestId = e.EventPaymentRequest.Id
+                                Amount = e.EventPaymentRequest.FirstOrDefault().Amount,
+                                PaymentRequestId = e.EventPaymentRequest.FirstOrDefault().Id
                             })
                         , request.PageCount ?? 1, request.PageSize ?? 10);
 
