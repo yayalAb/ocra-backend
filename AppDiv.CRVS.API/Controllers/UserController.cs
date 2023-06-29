@@ -80,9 +80,15 @@ namespace AppDiv.CRVS.API.Controllers
         {
             try
             {
-                string result = string.Empty;
-                result = await Mediator.Send(new DeleteUserCommand(id));
-                return Ok(result);
+                var response = await Mediator.Send(new DeleteUserCommand(id));
+                if (response.Status == 200)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
             }
             catch (Exception exp)
             {
