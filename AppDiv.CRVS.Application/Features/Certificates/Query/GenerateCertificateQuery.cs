@@ -108,6 +108,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
                 selectedEvent.IsCertified = true;
+                selectedEvent.OnReprintPaymentRequest = false;
+                selectedEvent.ReprintWaiting = false;
                 _eventRepository.Update(CustomMapper.Mapper.Map<Event>(selectedEvent));
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);

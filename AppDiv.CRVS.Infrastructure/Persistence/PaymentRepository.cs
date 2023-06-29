@@ -26,9 +26,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 throw new NotFoundException("payment request not found");
             }
-            if (paymentRequest.Event.IsPaid)
+            if (paymentRequest.Event.IsCertified)
             {
-                paymentRequest.Event.IsPaid = true;
+                paymentRequest.Event.ReprintWaiting = true;
             }
             else
             {

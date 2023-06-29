@@ -39,7 +39,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
         private readonly IMediator _mediator;
         private readonly IUserResolverService _userResolverService;
-        public ReprintCertificateCommandHandler(ICertificateTemplateRepository ICertificateTemplateRepository,
+        private readonly IEventRepository _EventRepository;
+        public ReprintCertificateCommandHandler(IEventRepository EventRepository, ICertificateTemplateRepository ICertificateTemplateRepository,
                                                 ICertificateRepository certificateRepository,
                                                 ICertificateHistoryRepository CertificateHistoryRepository,
                                                 IMediator mediator,
@@ -50,6 +51,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             _ICertificateTemplateRepository = ICertificateTemplateRepository;
             _userResolverService = userResolverService;
             _mediator = mediator;
+            _EventRepository = EventRepository;
         }
         public async Task<object> Handle(ReprintCertificateCommand request, CancellationToken cancellationToken)
         {
@@ -92,6 +94,10 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                     await _CertificateHistoryRepository.InsertAsync(CertificateHistory, cancellationToken);
                     certificate.PrintCount += 1;
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
+                    var even = await _EventRepository.GetAsync(certificate.EventId);
+                    even.OnReprintPaymentRequest = false;
+                    even.ReprintWaiting = false;
+                    await _EventRepository.UpdateAsync(even, x => x.Id);
                     var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
                 }
                 catch (Exception exp)

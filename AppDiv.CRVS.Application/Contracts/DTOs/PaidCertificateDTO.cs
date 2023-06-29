@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public String? EventDate { get; set; }
         public String? EventRegDate { get; set; }
         public bool IsCertified { get; set; } = false;
+        public bool IsReprint { get; set; } = false;
         public DateTime? CertifiedAt { get; set; }
 
 

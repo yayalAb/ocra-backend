@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             }
             else
             {
-                eventsQueriable = eventByCivilReg.Where(e => !e.IsCertified && (e.IsPaid || e.IsExampted));
+                eventsQueriable = eventByCivilReg.Where(e => (!e.IsCertified && (e.IsPaid || e.IsExampted) || (e.ReprintWaiting)));
             }
 
             return await PaginatedList<PaidCertificateDTO>
@@ -50,7 +50,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   OwnerFullName = e.EventOwener.FirstNameLang + " " + e.EventOwener.MiddleNameLang + " " + e.EventOwener.LastNameLang,
                                   EventDate = e.EventDateEt,
                                   EventRegDate = e.EventRegDateEt,
-                                  IsCertified = e.IsCertified
+                                  IsCertified = e.IsCertified,
+                                  IsReprint = e.ReprintWaiting
                               })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
