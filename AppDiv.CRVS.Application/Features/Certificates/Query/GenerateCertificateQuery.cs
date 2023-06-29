@@ -101,6 +101,10 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 return errorResponse;
             }
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
+            if (selectedEvent.ReprintWaiting)
+            {
+                throw new Exception("please request it on reprint");
+            }
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _certificateRepository.GetContent(request.Id);
             var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo?.Event?.CertificateId);
@@ -108,6 +112,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
                 selectedEvent.IsCertified = true;
+                selectedEvent.OnReprintPaymentRequest = false;
+                selectedEvent.ReprintWaiting = false;
                 _eventRepository.Update(CustomMapper.Mapper.Map<Event>(selectedEvent));
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);

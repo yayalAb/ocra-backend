@@ -66,6 +66,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(query);
         }
 
+        [HttpGet("onWaitingCertificatesByOfficer")]
+        public async Task<PaginatedList<PaidCertificateDTO>> GetAllOnWaiting([FromQuery] OnWaitingCertificateQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+
         [HttpGet("unPaidCertificatesByOfficer")]
         public async Task<PaginatedList<UnPaidCertificateDTO>> Get([FromQuery] GetAllUnPaidCertificateByCivilRegistrarQuery query)
         {

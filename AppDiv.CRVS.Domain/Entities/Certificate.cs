@@ -11,8 +11,6 @@ namespace AppDiv.CRVS.Domain.Entities
         public string ContentStr { get; set; }
         public bool Status { get; set; }
         public bool AuthenticationStatus { get; set; }
-        public bool OnReprintPaymentRequest { get; set; } = false;
-        public bool ReprintWaiting { get; set; } = false;
         public int PrintCount { get; set; }
         public string CertificateSerialNumber { get; set; }
 

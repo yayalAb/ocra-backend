@@ -24,6 +24,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool IsPaid { get; set; } = false;
         public bool IsCertified { get; set; } = false;
         public bool IsVerified { get; set; } = false;
+        public bool OnReprintPaymentRequest { get; set; } = false;
+        public bool ReprintWaiting { get; set; } = false;
         public virtual Address EventAddress { get; set; }
 
         public virtual PersonalInfo EventOwener { get; set; }
@@ -34,7 +36,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual AdoptionEvent AdoptionEvent { get; set; }
         public virtual DivorceEvent DivorceEvent { get; set; }
         public virtual PaymentExamption PaymentExamption { get; set; }
-        public virtual PaymentRequest EventPaymentRequest { get; set; }
+        public virtual ICollection<PaymentRequest> EventPaymentRequest { get; set; }
         public virtual ICollection<Certificate> EventCertificates { get; set; }
 
         public virtual MarriageEvent MarriageEvent { get; set; }

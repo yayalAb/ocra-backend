@@ -126,7 +126,8 @@ namespace AppDiv.CRVS.Application.Service
                     // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
             }
-            else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "certificategeneration")
+            else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "certificategeneration" ||
+            requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "reprint")
             {
 
                 await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
