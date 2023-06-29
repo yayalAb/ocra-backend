@@ -76,7 +76,6 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 
                         await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
                         var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
-                        await transaction.CommitAsync();
                         string? userId = _userRepository.GetAll()
                                             .Where(u => u.PersonalInfoId == CorrectionRequest.Request.CivilRegOfficerId)
                                             .Select(u => u.Id).FirstOrDefault();
@@ -95,9 +94,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         };
 
                         await _transactionService.CreateTransaction(NewTranscation);
-                        await _notificationService.CreateNotification(request.CorrectionRequest.EventId, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
+                        await _notificationService.CreateNotification(CorrectionRequest.Id, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
                                            _WorkflowService.GetReceiverGroupId(Enum.GetName<NotificationType>(NotificationType.change)!, (int)CorrectionRequest.Request.NextStep), CorrectionRequest.RequestId,
                                          userId);
+                        await transaction.CommitAsync();
+
                         return CreateAddressCommadResponse;
                     }
                     catch (Exception)

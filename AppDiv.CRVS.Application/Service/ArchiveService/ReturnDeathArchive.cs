@@ -69,8 +69,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         {
             DeceasedPerson deceasedInfo = CustomMapper.Mapper.Map<DeceasedPerson>(ReturnPerson.GetPerson(deceased, _dateAndAddressService, _lookupService));
             deceasedInfo.Age = DateTime.Today.Year - deceased?.BirthDate?.Year;
-            deceasedInfo.TitileAm = deceased.TitleLookup.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(deceased?.TitleLookupId);
-            deceasedInfo.TitileOr = deceased.TitleLookup.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(deceased?.TitleLookupId);
+            deceasedInfo.TitileAm = deceased?.TitleLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(deceased?.TitleLookupId);
+            deceasedInfo.TitileOr = deceased?.TitleLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(deceased?.TitleLookupId);
             return deceasedInfo;
         }
         public DeathArchiveDTO GetDeathArchive(Event death, string? BirthCertNo)

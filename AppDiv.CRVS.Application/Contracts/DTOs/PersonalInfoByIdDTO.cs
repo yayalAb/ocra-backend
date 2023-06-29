@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public JObject? LastName { get; set; }
         public string? BirthDateEt { get; set; }
         public string? NationalId { get; set; }
-        public Guid SexLookupId { get; set; }
+        public Guid? SexLookupId { get; set; }
         public Guid? PlaceOfBirthLookupId { get; set; }
         public Guid? NationalityLookupId { get; set; }
         public Guid? TitleLookupId { get; set; }

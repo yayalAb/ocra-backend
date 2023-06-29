@@ -12,14 +12,14 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class PersonalInfo : BaseAuditableEntity
     {
-        public string FirstNameStr { get; set; }
+        public string? FirstNameStr { get; set; }
         public string? MiddleNameStr { get; set; }
         public string? LastNameStr { get; set; }
         public string? PhoneNumber { get; set; }
         public string? NationalId { get; set; }
         public DateTime? BirthDate { get; set; }
         public string? BirthDateEt { get; set; }
-        public Guid SexLookupId { get; set; }
+        public Guid? SexLookupId { get; set; }
         public Guid? PlaceOfBirthLookupId { get; set; }
         public Guid? NationalityLookupId { get; set; }
         public Guid? TitleLookupId { get; set; }
@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                FirstNameStr = value.ToString();
+                FirstNameStr = value?.ToString();
             }
         }
         public string? PropertyLang
@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get
             {
-                return FirstName.Value<string>(lang);
+                return FirstName?.Value<string>(lang);
             }
         }
         [NotMapped]
@@ -78,7 +78,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                MiddleNameStr = value.ToString();
+                MiddleNameStr = value?.ToString();
             }
         }
         [NotMapped]
@@ -86,7 +86,7 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get
             {
-                return MiddleName.Value<string>(lang);
+                return MiddleName?.Value<string>(lang);
             }
         }
         [NotMapped]
@@ -98,7 +98,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                LastNameStr = value.ToString();
+                LastNameStr = value?.ToString();
             }
         }
         [NotMapped]
@@ -106,7 +106,7 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get
             {
-                return LastName.Value<string>(lang);
+                return LastName?.Value<string>(lang);
             }
         }
 
