@@ -201,8 +201,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
                 RuleFor(e => e.Event.PaymentExamption)
                     .Cascade(CascadeMode.StopOnFirstFailure)
-                    .NotNull().WithMessage("paymentExamptionRequestId cannot be null")
-                    .NotEmpty().WithMessage("paymentExamptionRequestId cannot be empty")
+                    .NotNull().WithMessage("paymentExamptionReasonId cannot be null")
+                    .NotEmpty().WithMessage("paymentExamptionReasonId cannot be empty")
                     .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
             });
 
@@ -318,7 +318,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         }
         private bool BeFoundInExamptionRequestTable(AddPaymentExamptionRequest? paymentExamption)
         {
-            return paymentExamption == null || _paymentExamptionRequestRepo.exists(paymentExamption!.ExamptionRequestId);
+            return paymentExamption == null || _paymentExamptionRequestRepo.exists(paymentExamption!.ExamptionReasonLookupId);
         }
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)

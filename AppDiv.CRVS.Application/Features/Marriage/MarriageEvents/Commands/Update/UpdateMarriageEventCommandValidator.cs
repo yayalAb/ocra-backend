@@ -181,10 +181,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotEmpty().WithMessage("payment Examption cannot be empty if isExapmted = true")
                     .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
-                RuleFor(e => e.Event.PaymentExamption.ExamptionRequestId)
+                RuleFor(e => e.Event.PaymentExamption.ExamptionReasonLookupId)
                     .Cascade(CascadeMode.StopOnFirstFailure)
-                    .NotNull().WithMessage("paymentExamptionRequestId cannot be null")
-                    .NotEmpty().WithMessage("paymentExamptionRequestId cannot be empty")
+                    .NotNull().WithMessage("paymentExamptionReasonLookupId cannot be null")
+                    .NotEmpty().WithMessage("paymentExamptionReasonLookupId cannot be empty")
                     .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
             });
 

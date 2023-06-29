@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     public class UpdatePaymentExamptionRequest
     {
         public Guid Id { get; set;}
-        public Guid ExamptionRequestId { get; set; }
+        public Guid ExamptionReasonLookupId { get; set; }
         public ICollection<UpdateSupportingDocumentRequest> SupportingDocuments { get; set; }
 
     }

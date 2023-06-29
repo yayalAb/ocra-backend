@@ -8,9 +8,9 @@ namespace AppDiv.CRVS.Domain.Configurations
     {
         public void Configure(EntityTypeBuilder<PaymentExamption> builder)
         {
-            builder.HasOne(m => m.ExamptionRequest)
-               .WithMany(n => n.ExamptionRequestNavigation)
-               .HasForeignKey(m => m.ExamptionRequestId);
+            builder.HasOne(m => m.ExamptionReasonLookup)
+               .WithMany(n => n.PaymentExamptionNavigation)
+               .HasForeignKey(m => m.ExamptionReasonLookupId);
         }
     }
 
