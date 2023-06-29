@@ -46,7 +46,17 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                         .ThenInclude(x => x.ParentAddress)
                             .ThenInclude(x => x.ParentAddress)
                                 .ThenInclude(x => x.ParentAddress).AsQueryable();
-            if (response.Address.AdminLevel == 2)
+            if (response.Address.AdminLevel == 1)
+            {
+                response2 = response2.Where(x => ((
+                             x.Address.ParentAddress.ParentAddress.ParentAddress.ParentAddress.Id == response.AddressId ||
+                            (x.Address.ParentAddress.ParentAddress.ParentAddress.Id == response.AddressId
+                             || x.Address.ParentAddress.ParentAddress.Id == response.AddressId)
+                             || (x.Address.ParentAddressId == response.AddressId
+                             || x.Address.Id == response.AddressId)))
+                             );
+            }
+            else if (response.Address.AdminLevel == 2)
             {
                 response2 = response2.Where(x => ((
                             (x.Address.ParentAddress.ParentAddress.ParentAddress.Id == response.AddressId
