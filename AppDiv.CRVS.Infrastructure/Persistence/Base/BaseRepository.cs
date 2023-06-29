@@ -1,5 +1,6 @@
 ﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
+using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
@@ -1081,7 +1082,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // and have a state of Added or Modified
             var entries = _dbContext.ChangeTracker
                 .Entries()
-                .Where(e => e.Entity is BaseAuditableEntity && (
+                .Where(e => e.Entity is BaseAuditableEntity || e.Entity is ApplicationUser && (
                         e.State == EntityState.Added
                         || e.State == EntityState.Modified));
 

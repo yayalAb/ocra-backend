@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         public Guid AddressId { get; set; }
         public List<Guid> UserGroups { get; init; }
         public bool Status {get; set; }
-        public string PreferedLanguage {get; set; }
+        public string PreferedLanguage {get; set; }= "oro";
         // public string Password { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }
 

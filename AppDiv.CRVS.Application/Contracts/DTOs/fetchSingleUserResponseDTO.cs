@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 
         public ICollection<Guid> UserGroups { get; set; }
         // public Guid PersonalInfoId { get; set; }
-        public AddPersonalInfoRequest PersonalInfo { get; set; }
+        public UpdatePersonalInfoRequest PersonalInfo { get; set; }
         // public ContactInfoDTO ContactInfo {get; set; }
 
     }
