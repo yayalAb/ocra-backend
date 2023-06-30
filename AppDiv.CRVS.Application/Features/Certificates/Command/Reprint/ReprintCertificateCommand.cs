@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 
         public Guid Id { get; set; }
         public bool IsPrint { get; set; } = false;
-        public string? CertificateSerialNumber { get; set; } = "";
+        public string? serialNo { get; set; } = "";
         public Guid CivilRegOfficerId { get; set; }
         // public Guid UserId { get; set; } = new Guid("134b4daa-bfac-445d-bd45-a83048eada3b");
         public JObject? Reason { get; set; }
@@ -58,7 +58,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             var errorResponse = new BaseResponse();
             if (request.CheckSerialNumber)
             {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() });
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.serialNo, UserId = _userResolverService.GetUserId() });
             }
             if (errorResponse.Status != 200)
             {
@@ -80,14 +80,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             .Where(c => c.CertificateType == certificate.Event.EventType)
             .FirstOrDefault();
             certId = certificateTemplateId.Id.ToString();
-            if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
+            if (request.IsPrint && !string.IsNullOrEmpty(request.serialNo))
             {
 
                 var AddHistory = new AddCertificateHistoryRequest
                 {
                     CerteficateId = cert.EventCertificates.FirstOrDefault().Id,
                     CivilRegOfficerId = request.CivilRegOfficerId,
-                    SrialNo = request.CertificateSerialNumber,
+                    SrialNo = request.serialNo,
                     Reason = request.Reason,
                     PrintType = "Certificate"
 
