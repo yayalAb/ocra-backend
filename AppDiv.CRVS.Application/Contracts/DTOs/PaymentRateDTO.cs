@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Address Address { get; set; }
         public float Amount { get; set; }
         public float Backlog { get; set; }
+        public float HasCamera { get; set; }
         public bool Status { get; set; }
     }
 }
