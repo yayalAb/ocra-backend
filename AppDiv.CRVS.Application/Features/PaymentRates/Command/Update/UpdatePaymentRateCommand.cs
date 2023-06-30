@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Update
         public Guid EventLookupId { get; set; }
         public bool IsForeign { get; set; }
         public float Amount { get; set; }
+        public float Backlog { get; set; }
         public bool Status { get; set; }
     }
 
@@ -43,6 +44,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Update
                 IsForeign = request.IsForeign,
                 Amount = request.Amount,
                 Status = request.Status,
+                Backlog = request.Backlog,
                 ModifiedAt = DateTime.Now
             };
 

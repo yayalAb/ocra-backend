@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid EventId { get; set; }
         public bool IsForeign { get; set; }
         public float Amount { get; set; }
+        public float Backlog { get; set; }
         public bool Status { get; set; }
 
     }

@@ -52,7 +52,8 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
                                     Event = pr.EventLookup.ValueLang != null ? pr.EventLookup.ValueLang : "",
                                     IsForeign = pr.IsForeign,
                                     Amount = pr.Amount,
-                                    Status = pr.Status
+                                    Status = pr.Status,
+                                    Backlog = pr.Backlog
                                     // Description = g.Description.Value<string>("eng")
                                 })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);

@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public LookupDTO EventLookup { get; set; }
         public Address Address { get; set; }
         public float Amount { get; set; }
+        public float Backlog { get; set; }
         public bool Status { get; set; }
     }
 }
