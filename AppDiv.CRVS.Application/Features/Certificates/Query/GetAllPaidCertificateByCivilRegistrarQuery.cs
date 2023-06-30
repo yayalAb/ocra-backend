@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
-                              .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId);
+                              .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId || e.ReprintWaiting);
             IQueryable<Event> eventsQueriable;
             if (request.isVerification)
             {
