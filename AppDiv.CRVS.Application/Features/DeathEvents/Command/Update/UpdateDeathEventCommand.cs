@@ -23,5 +23,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
         public AddDeathNotificationRequest? DeathNotification { get; set; }
         public AddEventForDeathRequest Event { get; set; }
         public bool IsFromCommand { get; set; } = false;
+        public bool ValidateFirst { get; set; } = false;
     }
 }

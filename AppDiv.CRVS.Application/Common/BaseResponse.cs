@@ -48,11 +48,11 @@ namespace AppDiv.CRVS.Application.Common
             this.Message = message;
         }
 
-        public void Created(string entityName = "Entity")
+        public void Created(string entity = "Entity",string message = null)
         {
             this.Success = true;
             this.Status = 200;
-            this.Message = $"{entityName} created Successfully!";
+            this.Message = message ?? $"{entity} created Successfully!";
         }
     
 

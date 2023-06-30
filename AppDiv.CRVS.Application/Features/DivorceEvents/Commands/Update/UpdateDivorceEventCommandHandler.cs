@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
             return await executionStrategy.ExecuteAsync(async () =>
             {
 
-                using (var transaction = _DivorceEventRepository.Database.BeginTransaction())
+                using (var transaction = request.IsFromCommand ? null : _DivorceEventRepository.Database.BeginTransaction())
                 {
                     try
                     {
@@ -65,6 +65,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                         }
                         if (updateDivorceEventCommandResponse.Success)
                         {
+                            if (request.ValidateFirst == true)
+                            {
+                                updateDivorceEventCommandResponse.Created(entity: "Death", message: "Valid Input.");
+                                return updateDivorceEventCommandResponse;
+                            }
                             //supporting docs cant be updated only new (one without id) are created
                             var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
                             var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
@@ -125,12 +130,12 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             updateDivorceEventCommandResponse.Message = "Divorce event Updated successfully";
 
                         }
-                        await transaction.CommitAsync();
+                        await transaction?.CommitAsync()!;
                         return updateDivorceEventCommandResponse;
                     }
                     catch (Exception)
                     {
-                        await transaction.RollbackAsync();
+                        await transaction?.RollbackAsync()!;
                         throw;
                     }
                 }

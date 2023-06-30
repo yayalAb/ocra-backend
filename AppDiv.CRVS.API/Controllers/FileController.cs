@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<IActionResult> Get([FromQuery] Guid id , [FromQuery]string fileType ,[FromQuery] string? eventType)
         {
         
-              var response = _fileService.getFile(id.ToString(),fileType , eventType);
+            var response = _fileService.getFile(id.ToString(),fileType , eventType);
 
             return File(response.file,
                             "application/octet-stream"

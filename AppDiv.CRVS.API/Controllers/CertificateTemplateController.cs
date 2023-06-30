@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
 using AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetAllCertificateTemplates;
 using AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetCertificateTemplates;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -14,7 +15,12 @@ namespace AppDiv.CRVS.API.Controllers
 {
     public class CertificateTemplateController : ApiControllerBase
     {
+        private readonly IFileService _fileService;
 
+        public CertificateTemplateController(IFileService fileService)
+        {
+            _fileService = fileService;
+        }
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateCertificateTemplate([FromForm] CreateCertificateTemplateCommand command)
@@ -36,9 +42,14 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetByName")]
         // [ProducesDefaultResponseType(typeof(int))]
-        public async Task<ActionResult> GetByName([FromQuery] string name)
+        public async Task<IActionResult> GetByName([FromQuery] string name)
         {
-            return Ok(await Mediator.Send(new GetCertificateTemplatesByNameQuery { Name = name }));
+            var templateId = await Mediator.Send(new GetCertificateTemplatesByNameQuery { Name = name });
+            var response = _fileService.getFile(templateId?.ToString(),"CertificateTemplates", null);
+
+            return File(response.file,
+                            "application/octet-stream"
+                            , response.fileName+response.fileExtenion);
         }
 
     }

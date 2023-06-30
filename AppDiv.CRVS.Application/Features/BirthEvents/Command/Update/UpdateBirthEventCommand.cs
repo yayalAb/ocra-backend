@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         public virtual AddEventForBirthRequest Event { get; set; }
         public virtual AddBirthNotificationRequest? BirthNotification { get; set; }
         public bool IsFromCommand { get; set; } = false;
+        public bool ValidateFirst { get; set; } = false;
 
     }
 }

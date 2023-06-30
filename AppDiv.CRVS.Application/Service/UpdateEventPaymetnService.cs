@@ -20,16 +20,26 @@ namespace AppDiv.CRVS.Application.Service
     {
         private readonly IPaymentRequestRepository _PaymentRequestRepository;
         private readonly IPaymentRepository _paymentRepository;
+        private readonly IContentValidator _contentValidator;
         private readonly IWorkflowService _WorkflowService;
         private readonly IEventRepository _eventRepostory;
         private readonly IMediator _mediator;
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
         private readonly IAuthenticationRepository _AuthenticationRequestRepostory;
         private readonly ICertificateRepository _CertificateRepository;
-        public UpdateEventPaymetnService(ICertificateRepository CertificateRepository, IAuthenticationRepository AuthenticationRequestRepostory, IEventRepository eventRepostory, ICorrectionRequestRepostory CorrectionRequestRepostory, IMediator mediator, IWorkflowService WorkflowService, IPaymentRequestRepository PaymentRequestRepository, IPaymentRepository paymentRepository)
+        public UpdateEventPaymetnService(ICertificateRepository CertificateRepository,
+                                         IAuthenticationRepository AuthenticationRequestRepostory,
+                                         IEventRepository eventRepostory,
+                                         ICorrectionRequestRepostory CorrectionRequestRepostory,
+                                         IMediator mediator,
+                                         IWorkflowService WorkflowService,
+                                         IPaymentRequestRepository PaymentRequestRepository,
+                                         IPaymentRepository paymentRepository,
+                                         IContentValidator contentValidator)
         {
             _PaymentRequestRepository = PaymentRequestRepository;
             _paymentRepository = paymentRepository;
+            this._contentValidator = contentValidator;
             _WorkflowService = WorkflowService;
             _mediator = mediator;
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
@@ -88,36 +98,37 @@ namespace AppDiv.CRVS.Application.Service
                                         .Where(x => x.RequestId == requst.Request.Id)
                                         .Include(x => x.Request).FirstOrDefault();
                         var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
-                        if (modifiedEvent.Event.EventType == "Adoption")
-                        {
-                            UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
-                            AdoptionCommand.IsFromCommand = true;
-                            var response1 = await _mediator.Send(AdoptionCommand);
-                        }
-                        else if (modifiedEvent.Event.EventType == "Birth")
-                        {
-                            UpdateBirthEventCommand BirthCommand = CorrectionRequestResponse.Content.ToObject<UpdateBirthEventCommand>();
-                            BirthCommand.IsFromCommand = true;
-                            var response1 = await _mediator.Send(BirthCommand);
-                        }
-                        else if (modifiedEvent.Event.EventType == "Death")
-                        {
-                            UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
-                            DeathCommand.IsFromCommand = true;
-                            var response1 = await _mediator.Send(DeathCommand);
-                        }
-                        else if (modifiedEvent.Event.EventType == "Divorce")
-                        {
-                            UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
-                            DivorceCommand.IsFromCommand = true;
-                            var response1 = await _mediator.Send(DivorceCommand);
-                        }
-                        else if (modifiedEvent.Event.EventType == "Marriage")
-                        {
-                            UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
-                            MarriageCommand.IsFromCommand = true;
-                            var response1 = await _mediator.Send(MarriageCommand);
-                        }
+                        _ = await _contentValidator.ValidateAsync(modifiedEvent.Event.EventType, CorrectionRequestResponse.Content);
+                        // if (modifiedEvent.Event.EventType == "Adoption")
+                        // {
+                        //     UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
+                        //     AdoptionCommand.IsFromCommand = true;
+                        //     var response1 = await _mediator.Send(AdoptionCommand);
+                        // }
+                        // else if (modifiedEvent.Event.EventType == "Birth")
+                        // {
+                        //     UpdateBirthEventCommand BirthCommand = CorrectionRequestResponse.Content.ToObject<UpdateBirthEventCommand>();
+                        //     BirthCommand.IsFromCommand = true;
+                        //     var response1 = await _mediator.Send(BirthCommand);
+                        // }
+                        // else if (modifiedEvent.Event.EventType == "Death")
+                        // {
+                        //     UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
+                        //     DeathCommand.IsFromCommand = true;
+                        //     var response1 = await _mediator.Send(DeathCommand);
+                        // }
+                        // else if (modifiedEvent.Event.EventType == "Divorce")
+                        // {
+                        //     UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
+                        //     DivorceCommand.IsFromCommand = true;
+                        //     var response1 = await _mediator.Send(DivorceCommand);
+                        // }
+                        // else if (modifiedEvent.Event.EventType == "Marriage")
+                        // {
+                        //     UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
+                        //     MarriageCommand.IsFromCommand = true;
+                        //     var response1 = await _mediator.Send(MarriageCommand);
+                        // }
                     }
                     else if (requst?.Request?.RequestType == "verfication")
                     {
