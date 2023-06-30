@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public string? UserName { get; set; }
         public bool Status {get; set; }
         public string? Email { get; set; }
+        public string PreferedLanguage {get; set; } = "oro";
         public Guid AddressId {get; set; }
         public string? UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
@@ -99,7 +100,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 AddressId = request.AddressId,
                 UserGroups = listGroup,
                 PersonalInfo = person,
-                Status = request.Status
+                Status = request.Status,
+                PreferedLanguage = request.PreferedLanguage
 
             };
 

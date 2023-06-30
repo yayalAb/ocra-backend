@@ -17,5 +17,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public bool isFirstTime { get; set; } = false;
         public int? AdminLevel { get; set; }
         public Guid? AddressId { get; set; }
+        public string? PreferedLanguage { get; set; }
     }
 }

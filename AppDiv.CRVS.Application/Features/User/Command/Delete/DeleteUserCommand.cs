@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces;
 using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.User.Command.Delete
 {
 
-    public class DeleteUserCommand : IRequest<String>
+    public class DeleteUserCommand : IRequest<BaseResponse>
     {
         public string Id { get; private set; }
 
@@ -19,7 +20,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Delete
     }
 
     // Customer delete command handler with string response as output
-    public class DeleteLookupCommandHandler : IRequestHandler<DeleteUserCommand, String>
+    public class DeleteLookupCommandHandler : IRequestHandler<DeleteUserCommand, BaseResponse>
     {
         private readonly IIdentityService _identityService;
         public DeleteLookupCommandHandler(IIdentityService identityService)
@@ -27,18 +28,21 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Delete
             _identityService = identityService;
         }
 
-        public async Task<string> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
         {
+            var deleteUserCommandResponse = new BaseResponse();
             try
             {
                 await _identityService.DeleteUser(request.Id);
+                deleteUserCommandResponse.Message = "User information has been deleted!";
+                deleteUserCommandResponse.Status = 200;
             }
             catch (Exception exp)
             {
                 throw (new ApplicationException(exp.Message));
             }
 
-            return "User information has been deleted!";
+            return deleteUserCommandResponse;
         }
     }
 }

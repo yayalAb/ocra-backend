@@ -91,22 +91,16 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete/{id}")]
-        public async Task<BaseResponse> DeleteLookup(Guid id)
+        public async Task<IActionResult> DeleteLookup(Guid id)
         {
-            try
+            var res = await _mediator.Send(new DeleteLookupCommand { Id = id });
+            if (res.Success)
             {
-                string result = string.Empty;
-                return await _mediator.Send(new DeleteLookupCommand { Id = id });
+                return Ok(res);
             }
-            catch (Exception exp)
-            {
-                var res = new BaseResponse
-                {
-                    Success = false,
-                    Message = exp.Message
-                };
-                return res;
-            }
+            return BadRequest(res);
+
+
         }
 
         [HttpGet]
