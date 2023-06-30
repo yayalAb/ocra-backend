@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Domain.Entities
                 return Reason.Value<string>(lang);
             }
         }
-        public virtual ICollection<PaymentExamption> ExamptionRequestNavigation { get; set; }
+        // public virtual ICollection<PaymentExamption> ExamptionRequestNavigation { get; set; }
         public virtual Address Address { get; set; }
 
         // [NotMapped]
