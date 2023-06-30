@@ -30,8 +30,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
             var applicationuser = _userRepository.GetAll()
-
-            .Where(x => x.PersonalInfoId == request.CivilRegOfficerId);
+            .Include(x => x.Address)
+            .Where(x => x.PersonalInfoId == request.CivilRegOfficerId).FirstOrDefault();
             if (applicationuser == null)
             {
                 throw new Exception("user does not exist");
@@ -42,15 +42,42 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             if (request.isVerification)
             {
                 eventsQueriable = eventByCivilReg
-                .Include(x => x.CivilRegOfficer)
-                .ThenInclude(x => x.ApplicationUser)
-                .ThenInclude(a => a.Address)
-                .ThenInclude(p => p.ParentAddress)
-                .ThenInclude(p => p.ParentAddress)
-                .ThenInclude(p => p.ParentAddress)
-                .ThenInclude(p => p.ParentAddress)
-                .Where(e => e.IsCertified && !e.IsVerified);
-
+               .Include(x => x.CivilRegOfficer)
+               .ThenInclude(x => x.ApplicationUser)
+               .ThenInclude(a => a.Address)
+               .ThenInclude(p => p.ParentAddress)
+               .ThenInclude(p => p.ParentAddress)
+               .ThenInclude(p => p.ParentAddress)
+               .Where(e => e.IsCertified && !e.IsVerified);
+                if (applicationuser.Address.AdminLevel == 1)
+                {
+                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                }
+                else if (applicationuser.Address.AdminLevel == 2)
+                {
+                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                }
+                else if (applicationuser.Address.AdminLevel == 3)
+                {
+                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
+                   || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                }
+                else if (applicationuser.Address.AdminLevel == 4)
+                {
+                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
+                    || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                }
+                else if (applicationuser.Address.AdminLevel == 5)
+                {
+                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                }
             }
             else
             {
