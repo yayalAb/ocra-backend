@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create;
 using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Update;
 using AppDiv.CRVS.Application.Features.MarriageApplications.Query;
 using AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries.Search;
+using AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries.LastEventRegisteredDate;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -43,5 +44,14 @@ namespace AppDiv.CRVS.API.Controllers
 
             return Ok(await Mediator.Send(new SearchMarriageapplicationQuery { SearchString = SearchString }));
         }
+
+        [HttpGet("LastEventRegDate")]
+        public async Task<object> LastEventRegDate([FromQuery] LasteEventRegDateQuery query)
+        {
+
+            return Ok(await Mediator.Send(query));
+        }
+
+
     }
 }
