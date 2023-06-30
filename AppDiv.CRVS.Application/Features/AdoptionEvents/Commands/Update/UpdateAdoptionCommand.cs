@@ -30,6 +30,7 @@ public class UpdateAdoptionCommand : IRequest<UpdateAdoptionCommandResponse>
     public virtual AddCourtCaseRequest CourtCase { get; set; }
     public virtual AddAdoptionEventRequest Event { get; set; }
     public bool IsFromCommand { get; set; } = false;
+    public bool ValidateFirst { get; set; } = false;
 
 }
 
@@ -165,6 +166,11 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
         }
         else if (UpdateAdoptionCommandResponse.Success)
         {
+            if (request.ValidateFirst == true)
+            {
+                UpdateAdoptionCommandResponse.Created(entity: "Birth", message: "Valid Input.");
+                return UpdateAdoptionCommandResponse;
+            }
             try
             {
                 request.Event.EventType = "Adoption";

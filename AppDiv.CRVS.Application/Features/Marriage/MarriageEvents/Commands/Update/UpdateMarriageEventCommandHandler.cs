@@ -56,7 +56,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             return await executionStrategy.ExecuteAsync(async () =>
             {
 
-                using (var transaction = _marriageEventRepository.Database.BeginTransaction())
+                using (var transaction = request.IsFromCommand ? null : _marriageEventRepository.Database.BeginTransaction())
                 {
 
                     try
@@ -79,6 +79,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                         }
                         if (updateMarriageEventCommandResponse.Success)
                         {
+                            if (request.ValidateFirst == true)
+                            {
+                                updateMarriageEventCommandResponse.Created(entity: "Death", message: "Valid Input.");
+                                return updateMarriageEventCommandResponse;
+                            }
 
                             var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
                             var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
@@ -136,14 +141,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             // _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>?)docs.examptionDocs, "Marriage");
                             updateMarriageEventCommandResponse.Message = "Marriage Event Updated Successfully";
-                            await transaction.CommitAsync();
+                            await transaction?.CommitAsync()!;
                         }
                         return updateMarriageEventCommandResponse;
 
                     }
                     catch (Exception)
                     {
-                        await transaction.RollbackAsync();
+                        await transaction?.RollbackAsync()!;
                         throw;
                     }
                 }

@@ -6,31 +6,35 @@ using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
-
+using AppDiv.CRVS.Application.Common;
 
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
 {
     // Customer create command with CustomerResponse
-    public class updateCorrectionRequestCommand : IRequest<AddCorrectionRequest>
+    public class updateCorrectionRequestCommand : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
         public JArray? Description { get; set; }
         public JObject Content { get; set; }
     }
-    public class updateCorrectionRequestCommandHandler : IRequestHandler<updateCorrectionRequestCommand, AddCorrectionRequest>
+    public class updateCorrectionRequestCommandHandler : IRequestHandler<updateCorrectionRequestCommand, BaseResponse>
     {
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IEventRepository _eventRepository;
+        private readonly IContentValidator _contentValidator;
+
         public updateCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory,
-                                                        IEventDocumentService eventDocumentService,
-                                                        IEventRepository eventRepository)
+                                                    IEventDocumentService eventDocumentService,
+                                                    IEventRepository eventRepository,
+                                                    IContentValidator contentValidator)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
             _eventDocumentService = eventDocumentService;
             _eventRepository = eventRepository;
+            this._contentValidator = contentValidator;
         }
-        public async Task<AddCorrectionRequest> Handle(updateCorrectionRequestCommand request, CancellationToken cancellationToken)
+        public async Task<BaseResponse> Handle(updateCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
             var correctionRequestData = _CorrectionRequestRepostory.GetAll()
             .Include(x => x.Request).Where(x => x.Id == request.Id).FirstOrDefault();
@@ -40,11 +44,18 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             }
             correctionRequestData.Description = request.Description;
             correctionRequestData.Content = request.Content;
+            var response = new BaseResponse();
             try
             {
+                var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
+                var validationResponse = await _contentValidator.ValidateAsync(events.EventType, correctionRequestData.Content);
+                if(validationResponse.Status != 200)
+                {
+                    return validationResponse;
+                }
                 await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
                 await _CorrectionRequestRepostory.SaveChangesAsync(cancellationToken);
-                var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
+                // var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
                 var supportingDocuments = GetSupportingDocuments(request.Content, "eventSupportingDocuments", out JObject newContent);
                 var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
                 _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
@@ -52,13 +63,10 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             }
             catch (Exception exp)
             {
-                throw new ApplicationException(exp.Message);
+                response.BadRequest(exp.Message);
+                // throw new ApplicationException(exp.Message);
             }
-            var modifiedCorrectionRequest = _CorrectionRequestRepostory.GetAll()
-            .Where(x => x.Id == request.Id)
-            .Include(x => x.Request).FirstOrDefault();
-            var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedCorrectionRequest);
-            return CorrectionRequestResponse;
+            return response;
         }
         private ICollection<AddSupportingDocumentRequest> GetSupportingDocuments(JObject content, string type, out JObject modifiedContent)
         {

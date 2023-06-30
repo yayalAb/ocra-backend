@@ -22,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
         public bool IsFromCommand { get; set; } = false;
+        public bool ValidateFirst { get; set; } = false;
 
 
     }

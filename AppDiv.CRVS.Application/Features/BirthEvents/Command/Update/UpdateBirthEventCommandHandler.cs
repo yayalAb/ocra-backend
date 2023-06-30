@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
             var executionStrategy = _birthEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                using (var transaction = _birthEventRepository.Database.BeginTransaction())
+                using (var transaction = request.IsFromCommand ? null : _birthEventRepository.Database.BeginTransaction())
                 {
                     try
                     {
@@ -51,9 +51,15 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             foreach (var error in validationResult.Errors)
                                 updateBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
                             updateBirthEventCommandResponse.Message = updateBirthEventCommandResponse.ValidationErrors[0];
+                            
                         }
                         if (updateBirthEventCommandResponse.Success)
-                        {
+                        { 
+                            if (request.ValidateFirst == true)
+                            {
+                                updateBirthEventCommandResponse.Created(entity: "Birth", message: "Valid Input.");
+                                return updateBirthEventCommandResponse;
+                            }
                             try
                             {
                                 //supporting docs cant be updated only new (one without id) are created
@@ -99,7 +105,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                     _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
                                 }
                                 // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                await transaction.CommitAsync();
+                                await transaction?.CommitAsync()!;
                             }
                             catch (System.Exception)
                             {
@@ -115,7 +121,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     }
                     catch (Exception)
                     {
-                        await transaction.RollbackAsync();
+                        await transaction?.RollbackAsync()!;
                         throw;
                     }
                 }

@@ -41,6 +41,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IReturnMarriageArchive, ReturnMarriageArchive>();
             services.AddScoped<IReturnDivorceArchive, ReturnDivorceArchive>();
             services.AddScoped<IWorkflowService, WorkflowService>();
+            services.AddScoped<IContentValidator, ContentValidator>();
 
 
 

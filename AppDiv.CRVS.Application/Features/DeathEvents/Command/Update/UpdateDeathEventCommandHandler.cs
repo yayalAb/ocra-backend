@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             var executionStrategy = _deathEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                using (var transaction = _deathEventRepository.Database.BeginTransaction())
+                using (var transaction = request.IsFromCommand ? null : _deathEventRepository.Database.BeginTransaction())
                 {
                     try
                     {
@@ -48,6 +48,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         }
                         if (updateDeathEventCommandResponse.Success)
                         {
+                            if (request.ValidateFirst == true)
+                            {
+                                updateDeathEventCommandResponse.Created(entity: "Death", message: "Valid Input.");
+                                return updateDeathEventCommandResponse;
+                            }
                             //supporting docs cant be updated only new (one without id) are created
                             var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
                             var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
@@ -99,7 +104,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             // _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Death");
-                            await transaction.CommitAsync();
+                            await transaction?.CommitAsync()!;
                             updateDeathEventCommandResponse.Success = true;
                             updateDeathEventCommandResponse.Status = 200;
                             updateDeathEventCommandResponse.Message = "Death Event Updated Succesfully.";
@@ -112,7 +117,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                     }
                     catch (Exception)
                     {
-                        await transaction.RollbackAsync();
+                        await transaction?.RollbackAsync()!;
                         throw;
                     }
                 }

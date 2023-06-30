@@ -24,6 +24,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
         public int NumberOfChildren { get; set; }
         public AddEventForDivorceRequest Event { get; set; }
         public bool IsFromCommand { get; set; } = false;
+        public bool ValidateFirst { get; set; } = false;
 
     }
 }
