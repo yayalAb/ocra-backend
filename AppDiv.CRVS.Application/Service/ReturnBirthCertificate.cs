@@ -38,10 +38,10 @@ namespace AppDiv.CRVS.Application.Service
                 GenderAm = birth.Event?.EventOwener?.SexLookup?.Value?.Value<string>("am"),
                 GenderOr = birth.Event?.EventOwener?.SexLookup?.Value?.Value<string>("or"),
 
-                BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).month, "or").month,
-                BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).month, "Am").month,
-                BirthDay = convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).day.ToString(),
-                BirthYear = convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).year.ToString(),
+                // BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).month, "or").month,
+                // BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).month, "Am").month,
+                // BirthDay = convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).day.ToString(),
+                // BirthYear = convertor.getSplitted(birth.Event.EventOwener.BirthDateEt).year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
                 BirthAddressAm = address?.am,

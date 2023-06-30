@@ -47,39 +47,40 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             //     NationalId = "kkkk",
             //     BirthDateEt = "bbbb"
             // });
-        var response1 =     _elasticClient
-                .IndexMany<PersonDtoElastic>(dbContext.PersonalInfos
-                    .Select(p => new PersonDtoElastic
-                    {
-                        FirstNameStr = p.FirstNameStr,
-                        MiddleNameStr = p.MiddleNameStr,
-                        LastNameStr = p.LastNameStr,
-                        NationalId = p.NationalId,
-                        BirthDateEt = p.BirthDateEt
-                    }), "person2");
+            var response1 = _elasticClient
+                    .IndexMany<PersonDtoElastic>(dbContext.PersonalInfos
+                        .Select(p => new PersonDtoElastic
+                        {
+                            FirstNameStr = p.FirstNameStr,
+                            MiddleNameStr = p.MiddleNameStr,
+                            LastNameStr = p.LastNameStr,
+                            NationalId = p.NationalId,
+                            BirthDateEt = p.BirthDateEt
+                        }), "person2");
             var response = _elasticClient
               .SearchAsync<PersonDtoElastic>(s =>
               s.Query(q => q.QueryString(d => d.Query('*' + "kdjfakl" + '*')))
               .Size(5000));
             var result = response.Result.Documents.ToList();
             var res = await _elasticClient.GetAsync<PersonDtoElastic>(1, idx => idx.Index("person2"));
-            var res2 =   await _elasticClient.SearchAsync<PersonDtoElastic>(s => s
+            var res2 = await _elasticClient.SearchAsync<PersonDtoElastic>(s => s
                                         .Query(q => q
-                                         
+
                                             .Match(m => m
                                                 .Field(f => f.NationalId)
                                                 .Query("string")
-                                                
+
                                             )
                                         )
 );
-//             var res3 =   await _elasticClient.SearchAsync<PersonDtoElastic>(s => s
-//                                         .Query(q => q.
-//                                         )
-// );
-         if(!res2.IsValid){
-           var error =  res2.OriginalException?.Message;
-         }
+            //             var res3 =   await _elasticClient.SearchAsync<PersonDtoElastic>(s => s
+            //                                         .Query(q => q.
+            //                                         )
+            // );
+            if (!res2.IsValid)
+            {
+                var error = res2.OriginalException?.Message;
+            }
             var f = true;
 
         }
@@ -189,7 +190,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                 .Include(m => m.EventOwener.NationLookup)
                                 .Include(m => m.EventOwener.ReligionLookup)
                                 .Include(m => m.EventOwener.SexLookup)
-                                .Include(m => m.PaymentExamption)
+                                 .Include(m => m.PaymentExamption)
                                 .Include(d => d.CivilRegOfficer);
             // var n =
             // return e.ElementAt(0);
