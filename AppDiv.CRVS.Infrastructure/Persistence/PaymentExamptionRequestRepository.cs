@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public bool exists(Guid id)
         {
-            return _dbContext.PaymentExamptionRequests.Where(m => m.Id == id).Any();
+            return _dbContext.PaymentExamptionRequests.Any(p => p.Id == id);
         }
         public IQueryable<PaymentExamptionRequest> GetAllQueryable()
         {

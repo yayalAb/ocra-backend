@@ -56,7 +56,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     "BrideInfo.NationLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    "Event.EventOwener.NationLookupId"
+                    "Event.EventOwener.NationLookupId, Event.PaymentExamption.ExamptionReasonLookupId"
             };
             foreach (var lookupFeild in lookupFeilds)
             {
@@ -181,11 +181,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotEmpty().WithMessage("payment Examption cannot be empty if isExapmted = true")
                     .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
-                RuleFor(e => e.Event.PaymentExamption.ExamptionReasonLookupId)
-                    .Cascade(CascadeMode.StopOnFirstFailure)
-                    .NotNull().WithMessage("paymentExamptionReasonLookupId cannot be null")
-                    .NotEmpty().WithMessage("paymentExamptionReasonLookupId cannot be empty")
-                    .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
+                // RuleFor(e => e.Event.PaymentExamption.ExamptionReasonLookupId)
+                //     .Cascade(CascadeMode.StopOnFirstFailure)
+                //     .NotNull().WithMessage("paymentExamptionReasonLookupId cannot be null")
+                //     .NotEmpty().WithMessage("paymentExamptionReasonLookupId cannot be empty")
+                //     .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
             });
 
         }
