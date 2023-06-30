@@ -85,7 +85,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 
                 var AddHistory = new AddCertificateHistoryRequest
                 {
-                    CerteficateId = request.Id,
+                    CerteficateId = cert.EventCertificates.FirstOrDefault().Id,
                     CivilRegOfficerId = request.CivilRegOfficerId,
                     SrialNo = request.CertificateSerialNumber,
                     Reason = request.Reason,
@@ -114,7 +114,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             return new
             {
                 Content = CertificateResponse.Content,
-                certificateTemplateId = certId
+                TemplateId = certId
             };
         }
     }
