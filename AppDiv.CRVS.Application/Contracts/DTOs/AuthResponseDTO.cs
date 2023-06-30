@@ -15,6 +15,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public List<Guid>? GroupIds { get; set; }
         public List<RoleDto>? Roles { get; set; }
         public bool isFirstTime { get; set; } = false;
+        public bool isOtpExpired {get; set; } =false;
+        public bool isOtpUnverified { get; set; } = false;
         public int? AdminLevel { get; set; }
         public Guid? AddressId { get; set; }
         public string? PreferedLanguage { get; set; }

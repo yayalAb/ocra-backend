@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
             if(otpCode == null ){
                 otpCode = HelperService.GenerateRandomCode();
             }
-            var updateResponse = await _identityService.UpdateUser(user.Id, user.UserName, user.Email, user.PersonalInfoId, otpCode?.ToString(), DateTime.Now.AddSeconds(expirySecond));
+            var updateResponse = await _identityService.UpdateUser(user.Id, user.UserName, user.Email, user.PersonalInfoId, otpCode?.ToString(), DateTime.Now.AddSeconds(expirySecond), true);
             if (!updateResponse.Succeeded)
             {
                 throw new Exception(string.Join(",", updateResponse.Errors));

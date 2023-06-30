@@ -1,8 +1,16 @@
 using System.Security.Cryptography;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
+
 namespace AppDiv.CRVS.Application.Service
 {
     public class HelperService
     {
+        private readonly ISettingRepository _settingRepository;
+
+        public HelperService(ISettingRepository settingRepository )
+        {
+            _settingRepository = settingRepository;
+        }
         public static string GenerateRandomCode()
         {
             using var rngCryptoServiceProvider = new RNGCryptoServiceProvider();
@@ -27,6 +35,16 @@ namespace AppDiv.CRVS.Application.Service
             }
 
             return monthsApart;
+        }
+        public int getOtpExpiryDurationSetting()
+        {
+            var generalSetting = _settingRepository.GetAll().Where(s => s.Key.ToLower() == "generalsetting").FirstOrDefault();
+            int expiryDuration = 15;
+            if (generalSetting != null)
+            {
+                expiryDuration = generalSetting.Value.Value<int?>("otp_expiry_duration_in_days") ?? expiryDuration;
+            }
+            return expiryDuration;
         }
     }
 }

@@ -9,6 +9,8 @@ using Microsoft.Extensions.Configuration;
 using AppDiv.CRVS.Application.Common;
 using System.Text;
 using AppDiv.CRVS.Domain.Repositories;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Domain.Enums;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -17,21 +19,25 @@ namespace AppDiv.CRVS.Application.Service
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<IdentityService> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IUserResolverService _userResolverService;
+        private readonly HelperService _helperService;
 
 
         // private readonly IConfiguration _configuration;
         // private readonly TokenGeneratorService _tokenGeneratorService;
 
-        public IdentityService(UserManager<ApplicationUser> userManager, ILogger<IdentityService> logger, SignInManager<ApplicationUser> signInManager)
+        public IdentityService(UserManager<ApplicationUser> userManager, ILogger<IdentityService> logger, SignInManager<ApplicationUser> signInManager, IUserResolverService userResolverService, HelperService helperService)
         {
             _userManager = userManager;
             _logger = logger;
             _signInManager = signInManager;
+            _userResolverService = userResolverService;
+            _helperService = helperService;
 
 
             // _tokenGeneratorService = tokenGeneratorService;
         }
-        public async Task<(Result result, IList<string>? roles, string? userId, bool isFirstTime)> AuthenticateUser(string userName, string password)
+        public async Task<(Result result, IList<string>? roles, string? userId,AuthStatus status)> AuthenticateUser(string userName, string password)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user != null)
@@ -42,31 +48,35 @@ namespace AppDiv.CRVS.Application.Service
 
                     var message = "AccountLocked!:\n you have excedded the maximum limit of login attempts please contact the Administrator";
 
-                    return (Result.Failure(new string[] { message }), null, null, false);
+                    return (Result.Failure(new string[] { message }), null, null, AuthStatus.Locked);
                 }
                 if (!user.Status)
                 {
                     var message = "Your Account is Diactivated please contact the Administrator";
-                    return (Result.Failure(new string[] { message }), null, null, false);
+                    return (Result.Failure(new string[] { message }), null, null, AuthStatus.Diactivated);
                 }
 
                 if (await _userManager.CheckPasswordAsync(user, password))
                 {
                     var userRoles = await _userManager.GetRolesAsync(user);
-
-
-
-
-                    return (Result.Success(), userRoles, user.Id, !string.IsNullOrEmpty(user.Otp));
+                    var status = string.IsNullOrEmpty(user.Otp) 
+                                ? user.OtpExpiredDate != null && user.OtpExpiredDate > DateTime.Now
+                                    ?AuthStatus.Active 
+                                    :AuthStatus.OtpExpired
+                                : user.OtpExpiredDate == null
+                                    ? AuthStatus.FirstTimeLogin
+                                    : AuthStatus.OtpUnverified;
+                    return (Result.Success(), userRoles, user.Id, status);
 
 
                 }
+
             }
 
 
             string[] errors = new string[] { "Invalid login" };
 
-            return (Result.Failure(errors), null, null, false);
+            return (Result.Failure(errors), null, null, AuthStatus.UnAuthenticated);
 
         }
 
@@ -116,6 +126,8 @@ namespace AppDiv.CRVS.Application.Service
             string password = GeneratePassword();
             newUser.Otp = password;
             newUser.OtpExpiredDate = null;
+            newUser.CreatedAt = DateTime.UtcNow;
+            newUser.CreatedBy = _userResolverService.GetUserId() != null ? new Guid(_userResolverService.GetUserId()!) : Guid.Empty;
             var result = await _userManager.CreateAsync(newUser, password);
             if (!result.Succeeded)
             {
@@ -137,12 +149,17 @@ namespace AppDiv.CRVS.Application.Service
             }
             string password = GeneratePassword();
             user.Otp = password;
+            user.OtpExpiredDate = null;
+            user.CreatedAt = DateTime.UtcNow;
+            user.CreatedBy = _userResolverService.GetUserId() != null ? new Guid(_userResolverService.GetUserId()!) : Guid.Empty;
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
                 return (result.ToApplicationResult(), string.Empty, string.Empty);
             }
+
             string userId = await _userManager.GetUserIdAsync(user);
+
             return (Result.Success(), password, userId);
         }
 
@@ -175,7 +192,7 @@ namespace AppDiv.CRVS.Application.Service
                 throw new Exception($"password reset failed! \n {string.Join(",", errors)}\n {token}");
             }
             user.Otp = null;
-            user.OtpExpiredDate = null;
+            user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
             await _userManager.UpdateAsync(user);
             return Result.Success();
         }
@@ -193,11 +210,12 @@ namespace AppDiv.CRVS.Application.Service
                 throw new Exception($"Change password failed! ");
             }
             user.Otp = null;
+            user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
             await _userManager.UpdateAsync(user);
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp, DateTime? otpExpiredDate)
+        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp, DateTime? otpExpiredDate , bool resetPasswordOtpOn)
         {
 
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -213,6 +231,7 @@ namespace AppDiv.CRVS.Application.Service
             user.Otp = otp;
             user.OtpExpiredDate = otpExpiredDate;
             user.PersonalInfoId = personalInfoId;
+            user.ResetPasswordOtpOn = resetPasswordOtpOn;
 
             var response = await _userManager.UpdateAsync(user);
 
@@ -240,18 +259,16 @@ namespace AppDiv.CRVS.Application.Service
 
             existingUser.UserName = user.UserName;
             existingUser.Email = user.Email;
-            // existingUser.Otp = otp;
-            // existingUser.OtpExpiredDate = otpExpiredDate;
             existingUser.PersonalInfo = user.PersonalInfo;
             existingUser.UserGroups = user.UserGroups;
-
-
             //if the user was locked and status is updated to true
             if (user.Status && existingUser.LockoutEnd > DateTime.Now && !existingUser.Status && existingUser.LockoutEnabled)
             {
                 existingUser.LockoutEnd = DateTime.Now;
             }
             existingUser.Status = user.Status;
+            existingUser.ModifiedAt = DateTime.UtcNow;
+            existingUser.ModifiedBy = _userResolverService.GetUserId() != null ? new Guid(_userResolverService.GetUserId()!) : Guid.Empty;
 
             var response = await _userManager.UpdateAsync(existingUser);
 
@@ -260,8 +277,22 @@ namespace AppDiv.CRVS.Application.Service
                 throw new Exception($"User Updating failed! \n {response.Errors}");
             }
 
+
             return Result.Success();
 
+        }
+        public async Task<(Result result , string? email , string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return (Result.Failure(new string[] { "could not find user with the given id" }), null, null);
+            }
+            user.Otp = otp;
+            user.OtpExpiredDate = otpExpiry;
+            await _userManager.UpdateAsync(user);
+            return  (Result.Success(), user.Email , user.PhoneNumber);
         }
         public async Task<Result> DeleteUser(string userId)
         {

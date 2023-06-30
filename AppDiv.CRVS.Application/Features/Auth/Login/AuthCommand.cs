@@ -9,6 +9,11 @@ using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.AspNetCore.Http;
+using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Utility.Config;
+using AppDiv.CRVS.Domain.Enums;
+using Microsoft.Extensions.Options;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
 
@@ -24,39 +29,86 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
         private readonly ITokenGeneratorService _tokenGenerator;
         private readonly ILogger<AuthCommandHandler> _logger;
         private readonly IUserRepository _userRepository;
+        private readonly HelperService _helperService;
+        private readonly IMailService _mailService;
+        private readonly ISmsService _smsService;
         private readonly IIdentityService _identityService;
         private readonly ILoginHistoryRepository _loginHistoryRepository;
         private readonly IHttpContextAccessor _httpContext;
+        private readonly SMTPServerConfiguration _config;
 
-        public AuthCommandHandler(IHttpContextAccessor httpContext, ILoginHistoryRepository loginHistoryRepository, IIdentityService identityService, ITokenGeneratorService tokenGenerator, ILogger<AuthCommandHandler> logger, IUserRepository userRepository)
+        public AuthCommandHandler(IHttpContextAccessor httpContext,
+                                  ILoginHistoryRepository loginHistoryRepository,
+                                  IIdentityService identityService,
+                                  ITokenGeneratorService tokenGenerator,
+                                  ILogger<AuthCommandHandler> logger,
+                                  IUserRepository userRepository,
+                                  HelperService helperService,
+                                  IMailService mailService,
+                                  IOptions<SMTPServerConfiguration> config,
+                                  ISmsService smsService)
         {
             _identityService = identityService;
             _tokenGenerator = tokenGenerator;
             _logger = logger;
             _userRepository = userRepository;
+            _helperService = helperService;
+            _mailService = mailService;
+            _smsService = smsService;
             _loginHistoryRepository = loginHistoryRepository;
             _httpContext = httpContext;
+            _config = config.Value;
         }
 
         public async Task<AuthResponseDTO> Handle(AuthCommand request, CancellationToken cancellationToken)
         {
 
             var response = await _identityService.AuthenticateUser(request.UserName, request.Password);
-
+            //if locked or unauthenticated or diactivated
             if (!response.result.Succeeded)
             {
                 throw new AuthenticationException(string.Join(",", response.result.Errors));
             }
-            if (response.isFirstTime)
+            if (response.status == AuthStatus.FirstTimeLogin || response.status == AuthStatus.OtpUnverified)
             {
                 return new AuthResponseDTO
                 {
                     UserId = response.userId,
                     Name = request.UserName,
-                    isFirstTime = true,
+                    isFirstTime = response.status == AuthStatus.FirstTimeLogin ,
+                    isOtpUnverified = response.status == AuthStatus.OtpUnverified
                 };
 
             }
+            //\\\\\\\\\\\
+
+            // otp expired , generate new otp 
+            if (response.status == AuthStatus.OtpExpired)
+            {
+                var newOtp = HelperService.GenerateRandomCode();
+                var newOtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
+                var res = await _identityService.ReGenerateOtp(response.userId, newOtp, newOtpExpiredDate);
+                if (!res.result.Succeeded)
+                {
+                    throw new AuthenticationException(string.Join(",", response.result.Errors));
+                }
+                 //send otp by email    
+                var content =newOtp+ "is your new otp code";
+                var subject = "OCRVS";
+                await _mailService.SendAsync(body: content, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: res.email, cancellationToken);
+
+                //send otp by phone 
+                await _smsService.SendSMS(res.phone , subject +"\n"+content);
+                return  new AuthResponseDTO
+                {
+                    UserId = response.userId,
+                    Name = request.UserName,
+                    isOtpExpired = true
+                };
+            }
+            ////\\\\\\\\
+
+            //else if active
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {
                                                     { "UserGroups", NavigationPropertyType.COLLECTION },
@@ -64,6 +116,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
 
                                                 };
             var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
+
 
             string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, response.roles));
 

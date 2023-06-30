@@ -18,9 +18,9 @@ namespace AppDiv.CRVS.Infrastructure.Services
             _context = context;
         }
 
-    
 
-        public  JObject getPasswordPolicy()
+
+        public JObject getPasswordPolicy()
         {
 
             var policy = _context.Settings.Where(s => s.Key.ToLower() == "passwordpolicy")
@@ -31,6 +31,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
             return policy;
         }
+       
         public static T UpdateObjectFeilds<T>(T personalInfo, Dictionary<string, object> fieldValues)
         {
             foreach (var fieldValue in fieldValues)
@@ -55,17 +56,18 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
             return personalInfo;
         }
-        public static int CalculateAge(DateTime birthDate){
-            int age = DateTime.Now.Year - birthDate.Year;
-        
-        // Check if the current date is before the birth date in the current year
-        if (DateTime.Now.Month < birthDate.Month || (DateTime.Now.Month == birthDate.Month && DateTime.Now.Day < birthDate.Day))
+        public static int CalculateAge(DateTime birthDate)
         {
-            age--;
+            int age = DateTime.Now.Year - birthDate.Year;
+
+            // Check if the current date is before the birth date in the current year
+            if (DateTime.Now.Month < birthDate.Month || (DateTime.Now.Month == birthDate.Month && DateTime.Now.Day < birthDate.Day))
+            {
+                age--;
+            }
+            return age;
         }
-        return age;
-        }
-         public static string getCurrentLanguage()
+        public static string getCurrentLanguage()
         {
             var lang = "or";
             var httpContext = new HttpContextAccessor().HttpContext;
@@ -77,6 +79,6 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
             return lang;
         }
-    
+
     }
 }

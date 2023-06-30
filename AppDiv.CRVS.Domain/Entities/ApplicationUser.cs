@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Domain
         public DateTime ModifiedAt { get; set; }
         public virtual Guid? CreatedBy { get; set; }
         public virtual Guid? ModifiedBy { get; set; }
+        public bool ResetPasswordOtpOn {get; set ;} = false;
         
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual Address Address { get; set; }
