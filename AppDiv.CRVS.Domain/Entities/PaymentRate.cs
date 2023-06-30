@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid PaymentTypeLookupId { get; set; }
         public Guid EventLookupId { get; set; }
         public float Amount { get; set; }
+        public float Backlog { get; set; } = 0;
+        public float HasCamera { get; set; } = 0;
         public bool Status { get; set; }
         public bool IsForeign { get; set; }
         public virtual Lookup PaymentTypeLookup { get; set; }

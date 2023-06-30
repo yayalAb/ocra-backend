@@ -54,7 +54,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.ReprintRequest
             {
                 try
                 {
-                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "Reprint", null, cancellationToken);
+                    Console.WriteLine("payment rate : {0}", certificate.Event.EventType);
+                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "Reprint", null, false, cancellationToken);
                     if (response.amount == 0)
                     {
                         res.Message = "Payment Rate not found";

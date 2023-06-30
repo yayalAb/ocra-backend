@@ -12,14 +12,17 @@ namespace AppDiv.CRVS.Application.Service
         private readonly IPaymentRateRepository _paymentRateRepository;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
         private readonly ILookupRepository _lookupRepository;
+        private readonly ISettingRepository _SettinglookupRepository;
 
-        public EventPaymentRequestService(IPaymentRateRepository paymentRateRepository, IPaymentRequestRepository paymentRequestRepository, ILookupRepository lookupRepository)
+        public EventPaymentRequestService(ISettingRepository SettinglookupRepository, IPaymentRateRepository paymentRateRepository, IPaymentRequestRepository paymentRequestRepository, ILookupRepository lookupRepository)
         {
             _paymentRateRepository = paymentRateRepository;
             _paymentRequestRepository = paymentRequestRepository;
             _lookupRepository = lookupRepository;
+            _SettinglookupRepository = SettinglookupRepository;
         }
-        public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, string paymentType, Guid? RequestId, CancellationToken cancellationToken)
+        public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, string paymentType,
+         Guid? RequestId, bool IsUseCamera, CancellationToken cancellationToken)
         {
             var nationalityLookup = _lookupRepository.GetAll().Where(x => x.Id == Event.EventOwener.NationalityLookupId).FirstOrDefault();
             if (nationalityLookup == null)
@@ -56,18 +59,32 @@ namespace AppDiv.CRVS.Application.Service
             }
             while (_paymentRequestRepository.GetAll().Any(x => x.PaymentCode == paymentCode));
             string massage = "";
+            float amount = 0;
             if (paymentType.ToLower() == "certificategeneration")
             {
+                if (eventType.ToLower() == "marriage")
+                {
+                    amount = await this.IsActive(eventType, Event.EventDate, Event.EventRegDate) ? paymentRate.Amount : paymentRate.Backlog;
+                    amount = IsUseCamera ? amount + paymentRate.HasCamera : amount;
+
+                }
+                else
+                {
+                    amount = await this.IsActive(eventType, Event.EventDate, Event.EventRegDate) ? paymentRate.Amount : paymentRate.Backlog;
+
+                }
                 massage = " Certificate Generation";
             }
             else
             {
+                amount = paymentRate.Amount;
                 massage = " Certificate " + paymentType;
             }
+
             var paymentRequest = new PaymentRequest
             {
                 EventId = Event?.Id,
-                Amount = paymentRate.Amount,
+                Amount = amount,
                 RequestId = RequestId,
                 status = false,
                 PaymentCode = paymentCode,
@@ -81,6 +98,20 @@ namespace AppDiv.CRVS.Application.Service
             await _paymentRequestRepository.InsertAsync(paymentRequest, cancellationToken);
             _paymentRequestRepository.SaveChanges();
             return (amount: paymentRate.Amount, code: paymentCode);
+        }
+        public async Task<bool> IsActive(string eventType, DateTime EventDate, DateTime EventRegDate)
+        {
+            string eve = eventType.ToLower() + "Setting";
+            var defualtAddress = _SettinglookupRepository.GetAll().Where(x => x.Key == eve).FirstOrDefault();
+            if (defualtAddress == null)
+            {
+                throw new NotFoundException("Defualt Address not Found");
+            }
+            int days = int.Parse(defualtAddress.Value.Value<string>("active_registration"));
+
+            TimeSpan deff = EventRegDate - EventDate;
+            int daysDef = Convert.ToInt32(deff.TotalDays);
+            return daysDef <= days;
         }
 
     }

@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 
         public Guid Id { get; set; }
         public bool IsPrint { get; set; } = false;
-        public string? CertificateSerialNumber { get; set; } = "";
+        public string? serialNo { get; set; } = "";
         public Guid CivilRegOfficerId { get; set; }
         // public Guid UserId { get; set; } = new Guid("134b4daa-bfac-445d-bd45-a83048eada3b");
         public JObject? Reason { get; set; }
@@ -58,16 +58,20 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             var errorResponse = new BaseResponse();
             if (request.CheckSerialNumber)
             {
-                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.CertificateSerialNumber, UserId = _userResolverService.GetUserId() });
+                errorResponse = await _mediator.Send(new CheckSerialNoValidation { CertificateSerialNumber = request.serialNo, UserId = _userResolverService.GetUserId() });
             }
             if (errorResponse.Status != 200)
             {
                 return errorResponse;
             }
             string certId = "";
+            var cert = _EventRepository.GetAll()
+            .Include(c => c.EventCertificates.OrderByDescending(c => c.CreatedAt))
+            .Where(e => e.Id == request.Id).FirstOrDefault();
+
             var certificate = _certificateRepository.GetAll()
             .Include(x => x.Event)
-            .Where(x => x.Id == request.Id).FirstOrDefault();
+            .Where(x => x.Id == cert.EventCertificates.FirstOrDefault().Id).FirstOrDefault();
             if (certificate == null)
             {
                 throw new Exception("Certificate With This Id Not Found");
@@ -76,14 +80,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             .Where(c => c.CertificateType == certificate.Event.EventType)
             .FirstOrDefault();
             certId = certificateTemplateId.Id.ToString();
-            if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
+            if (request.IsPrint && !string.IsNullOrEmpty(request.serialNo))
             {
 
                 var AddHistory = new AddCertificateHistoryRequest
                 {
-                    CerteficateId = request.Id,
+                    CerteficateId = cert.EventCertificates.FirstOrDefault().Id,
                     CivilRegOfficerId = request.CivilRegOfficerId,
-                    SrialNo = request.CertificateSerialNumber,
+                    SrialNo = request.serialNo,
                     Reason = request.Reason,
                     PrintType = "Certificate"
 
@@ -105,12 +109,12 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                     throw new ApplicationException(exp.Message);
                 }
             }
-            var modifiedCertificate = await _certificateRepository.GetAsync(request.Id);
+            var modifiedCertificate = await _certificateRepository.GetAsync(cert?.EventCertificates?.FirstOrDefault()?.Id);
             var CertificateResponse = CustomMapper.Mapper.Map<CertificateDTO>(modifiedCertificate);
             return new
             {
                 Content = CertificateResponse.Content,
-                certificateTemplateId = certId
+                TemplateId = certId
             };
         }
     }

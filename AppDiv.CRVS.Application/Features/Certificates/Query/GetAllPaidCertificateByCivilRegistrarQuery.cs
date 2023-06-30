@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,19 +20,36 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
     public class GetAllPaidCertificateByCivilRegistrarQueryHandler : IRequestHandler<GetAllPaidCertificateByCivilRegistrarQuery, PaginatedList<PaidCertificateDTO>>
     {
         private readonly IEventRepository _eventRepository;
+        private readonly IUserRepository _userRepository;
 
-        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IEventRepository eventRepository)
+        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IUserRepository userRepository, IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
+            _userRepository = userRepository;
         }
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
+            var applicationuser = _userRepository.GetAll()
+
+            .Where(x => x.PersonalInfoId == request.CivilRegOfficerId);
+            if (applicationuser == null)
+            {
+                throw new Exception("user does not exist");
+            }
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
-                              .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId);
+                              .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId || e.ReprintWaiting);
             IQueryable<Event> eventsQueriable;
             if (request.isVerification)
             {
-                eventsQueriable = eventByCivilReg.Where(e => e.IsCertified && !e.IsVerified);
+                eventsQueriable = eventByCivilReg
+                .Include(x => x.CivilRegOfficer)
+                .ThenInclude(x => x.ApplicationUser)
+                .ThenInclude(a => a.Address)
+                .ThenInclude(p => p.ParentAddress)
+                .ThenInclude(p => p.ParentAddress)
+                .ThenInclude(p => p.ParentAddress)
+                .ThenInclude(p => p.ParentAddress)
+                .Where(e => e.IsCertified && !e.IsVerified);
 
             }
             else
