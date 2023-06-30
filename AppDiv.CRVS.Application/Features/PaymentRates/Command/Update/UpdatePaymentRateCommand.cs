@@ -20,8 +20,9 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Update
         public Guid PaymentTypeLookupId { get; set; }
         public Guid EventLookupId { get; set; }
         public bool IsForeign { get; set; }
-        public float Amount { get; set; }
-        public float Backlog { get; set; }
+        public float Amount { get; set; } = 0;
+        public float Backlog { get; set; } = 0;
+        public float HasVideo { get; set; } = 0;
         public bool Status { get; set; }
     }
 
@@ -45,6 +46,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Update
                 Amount = request.Amount,
                 Status = request.Status,
                 Backlog = request.Backlog,
+                HasVideo = request.HasVideo,
                 ModifiedAt = DateTime.Now
             };
 

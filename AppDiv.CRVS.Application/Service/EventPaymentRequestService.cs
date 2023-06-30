@@ -66,6 +66,8 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     amount = await this.IsActive(eventType, Event.EventDate, Event.EventRegDate) ? paymentRate.Amount : paymentRate.Backlog;
                     amount = IsUseCamera ? amount + paymentRate.HasCamera : amount;
+                    // amount = HasVideo ? amount + paymentRate.HasCamera : amount;
+
 
                 }
                 else

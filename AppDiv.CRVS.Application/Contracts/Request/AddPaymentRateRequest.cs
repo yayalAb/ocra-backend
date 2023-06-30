@@ -13,6 +13,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public float Amount { get; set; }
         public float Backlog { get; set; } = 0;
         public float HasCamera { get; set; } = 0;
+        public float HasVideo { get; set; } = 0;
+
         public bool Status { get; set; }
     }
 }

@@ -54,7 +54,8 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
                                     Amount = pr.Amount,
                                     Status = pr.Status,
                                     Backlog = pr.Backlog,
-                                    HasCamera = pr.HasCamera
+                                    HasCamera = pr.HasCamera,
+                                    HasVideo = pr.HasVideo
                                     // Description = g.Description.Value<string>("eng")
                                 })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
