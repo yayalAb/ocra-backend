@@ -76,6 +76,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             {
                                 deathEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
+                            deathEvent.Event.EventOwener.DeathStatus = true;
                             _deathEventRepository.UpdateWithNested(deathEvent);
                             if (!request.IsFromCommand)
                             {
