@@ -63,7 +63,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "BrideInfo.NationLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    "Event.EventOwener.NationLookupId"
+                    "Event.EventOwener.NationLookupId, Event.PaymentExamption.ExamptionReasonLookupId"
             };
             foreach (var fieldName in fieldNames)
             {
@@ -199,11 +199,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotEmpty().WithMessage("payment Examption cannot be empty if isExapmted = true")
                     .NotNull().WithMessage("payment Examption cannot be null if isExapmted = true");
-                RuleFor(e => e.Event.PaymentExamption)
-                    .Cascade(CascadeMode.StopOnFirstFailure)
-                    .NotNull().WithMessage("paymentExamptionReasonId cannot be null")
-                    .NotEmpty().WithMessage("paymentExamptionReasonId cannot be empty")
-                    .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
+                // RuleFor(e => e.Event.PaymentExamption)
+                //     .Cascade(CascadeMode.StopOnFirstFailure)
+                //     .NotNull().WithMessage("paymentExamptionReasonId cannot be null")
+                //     .NotEmpty().WithMessage("paymentExamptionReasonId cannot be empty")
+                //     .Must(BeFoundInLookupTable).WithMessage("paymentExamptionRequest with the provided id is not found");
             });
 
         }
@@ -315,10 +315,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         {
             var withoutNulls = personalIfoIds.Where(id => id != null && id != Guid.Empty);
             return withoutNulls.Count() == withoutNulls.Distinct().Count();
-        }
-        private bool BeFoundInExamptionRequestTable(AddPaymentExamptionRequest? paymentExamption)
-        {
-            return paymentExamption == null || _paymentExamptionRequestRepo.exists(paymentExamption!.ExamptionReasonLookupId);
         }
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)

@@ -2,6 +2,7 @@
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
 using AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetAllCertificateTemplates;
+using AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetCertificateTemplates;
 using AppDiv.CRVS.Domain;
 using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -31,6 +32,13 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<ActionResult> Get([FromQuery] GetAllCertificateTemplatesQuery query)
         {
             return Ok(await Mediator.Send(query));
+        }
+
+        [HttpGet("GetByName")]
+        // [ProducesDefaultResponseType(typeof(int))]
+        public async Task<ActionResult> GetByName([FromQuery] string name)
+        {
+            return Ok(await Mediator.Send(new GetCertificateTemplatesByNameQuery { Name = name }));
         }
 
     }
