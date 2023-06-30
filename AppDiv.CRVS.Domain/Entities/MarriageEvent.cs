@@ -12,7 +12,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid MarriageTypeId { get; set; }
         public Guid? ApplicationId { get; set; }
         public Guid EventId { get; set; }
-        public bool IsDivorced { get; set;}
+        public bool IsDivorced { get; set; }
+        public bool HasCamera { get; set; } = false;
 
         public virtual PersonalInfo BrideInfo { get; set; }
         public virtual Lookup MarriageType { get; set; }

@@ -29,6 +29,9 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Create
             RuleFor(pr => pr.PaymentRate.Amount)
                 .NotEmpty().WithMessage("{PropertyName} is required.")
                 .NotNull();
+            RuleFor(pr => pr.PaymentRate.Backlog)
+                    .NotEmpty().WithMessage("{PropertyName} is required.")
+                    .NotNull();
             RuleFor(e => e)
               .MustAsync(PaymentRateDuplicationCheck)
               .WithMessage("The specified Payment Rate  already exists.");
