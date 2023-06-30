@@ -62,6 +62,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 {
                     PersonalInfo selectedperson = this.UpdatePerson(entity.Event.EventOwener);
                     selectedperson.TitleLookupId = entity.Event?.EventOwener?.TitleLookupId;
+                    selectedperson.DeathStatus = true;
 
                     // _dbContext.PersonalInfos.Update(selectedperson);
                     _dbContext.PersonalInfos.Update(selectedperson);
