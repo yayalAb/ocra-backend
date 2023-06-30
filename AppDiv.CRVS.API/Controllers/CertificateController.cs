@@ -39,6 +39,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(new GenerateArchiveQuery { Id = id, IsPrint = IsPrint });
         }
 
+        [HttpPost("ArchivePreview")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> GetArchive([FromBody] GenerateArchivePreviewQuery command)
+        {
+            return await Mediator.Send(command);
+        }
+
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateCertificate(CreateCertificateCommand command)
