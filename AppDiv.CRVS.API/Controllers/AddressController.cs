@@ -61,8 +61,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
 
-        [HttpPost("Merige")]
-        public async Task<ActionResult<AddressDTO>> MerigeAndSplit([FromBody] mergeAndSplitCommand command)
+        [HttpPost("Merge")]
+        public async Task<ActionResult<AddressDTO>> MerigeAndSplit([FromBody] MergeAndSplitCommand command)
         {
             var result = await _mediator.Send(command);
             if (result.Success)
