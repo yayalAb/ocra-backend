@@ -15,9 +15,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MarigeAndSplit
         public MerigeAndSplitCommandValidetor(IAddressLookupRepository repo)
         {
             _repo = repo;
-            RuleFor(p => p.Address.AddressName)
+            RuleFor(p => p.Address[0].AddressName)
                 .NotEmpty().WithMessage("{PropertyName} is required.");
-            RuleFor(p => p.Address.Code)
+            RuleFor(p => p.Address[0].Code)
                 .MustAsync(ValidateStatisticCode)
                 .WithMessage("{PropertyName} is must be unique.");
         }

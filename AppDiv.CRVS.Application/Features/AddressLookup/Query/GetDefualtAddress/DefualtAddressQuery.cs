@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
             }
             var selectedAddress = _AddresslookupRepository.GetAll().
              Include(ad => ad.AdminTypeLookup)
-            .Where(x => x.ParentAddressId == (Guid.Equals(parentId, Guid.Empty) ? null : parentId));
+            .Where(x => x.ParentAddressId == (Guid.Equals(parentId, Guid.Empty) ? null : parentId) && !x.Status);
             // var lng = "";
             var formatedAddress = selectedAddress.Select(an => new AddressForLookupDTO
             {
@@ -63,7 +63,6 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
                 AddressName = an.AddressNameLang,
                 AdminType = string.IsNullOrEmpty(an.AdminTypeLookup.ValueLang) ? "" : an.AdminTypeLookup.ValueLang
             });
-
             return formatedAddress.ToList();            //CustomMapper.Mapper.Map<List<AddressForLookupDTO>>(formatedAddress);
             // return selectedCustomer;
         }

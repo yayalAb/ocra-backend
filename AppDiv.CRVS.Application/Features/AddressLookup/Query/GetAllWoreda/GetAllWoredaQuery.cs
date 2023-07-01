@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda
         public async Task<PaginatedList<WoredaDTO>> Handle(GetAllWoredaQuery request, CancellationToken cancellationToken)
         {
             var query = _AddresslookupRepository.GetAll()
-                    .Where(a => a.AdminLevel == 4);
+                    .Where(a => a.AdminLevel == 4 && !a.Status);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 query = query.Where(a =>

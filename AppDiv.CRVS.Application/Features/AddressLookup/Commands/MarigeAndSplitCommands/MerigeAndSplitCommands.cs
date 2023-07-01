@@ -4,7 +4,7 @@ using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MarigeAndSplitCommands
 {
-    public record MerigeAndSplitCommand(AddAddressRequest Address) : IRequest<MerigeAndSplitCommandResponse>
+    public record MerigeAndSplitCommand(List<AddAddressRequest> Address) : IRequest<MerigeAndSplitCommandResponse>
     {
 
     }
