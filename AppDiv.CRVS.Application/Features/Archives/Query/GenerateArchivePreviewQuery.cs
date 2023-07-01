@@ -56,20 +56,26 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         public async Task<object> Handle(GenerateArchivePreviewQuery request, CancellationToken cancellationToken)
         {
             var preview = new ArchiveResponseDTO();
+            TRes Call<T, TRes>(Func<T, TRes> f, T arg) => f(arg);
             switch (request.EventType)
             {
                 case "Birth":
                     preview.Content = request.Command switch
                     {
-                        "Create" => 
-                        _archiveGenerator.GetBirthArchivePreview(
-                            CustomMapper.Mapper.Map<BirthEvent>(
-                                ReturnArchiveFromJObject.GetArchive<AddBirthEventRequest>(request.Content)),
-                            ""),
-                        "Update" => _archiveGenerator.GetBirthArchivePreview(
-                            CustomMapper.Mapper.Map<BirthEvent>(
-                                ReturnArchiveFromJObject.GetArchive<UpdateBirthEventCommand>(request.Content)),
-                            ""),
+                        "Create" => Call<JObject, JObject>((content) =>
+                        {
+                            return _archiveGenerator.GetBirthArchivePreview(
+                                    CustomMapper.Mapper.Map<BirthEvent>(
+                                        ReturnArchiveFromJObject.GetArchive<AddBirthEventRequest>(content)),
+                                    "");
+                        }, request.Content),
+                        "Update" => Call<JObject, JObject>((content) =>
+                        {
+                            return _archiveGenerator.GetBirthArchivePreview(
+                                    CustomMapper.Mapper.Map<BirthEvent>(
+                                        ReturnArchiveFromJObject.GetArchive<UpdateBirthEventCommand>(request.Content)),
+                                    "");
+                        }, request.Content)
                     };
                     break;
                 case "Death":
@@ -89,15 +95,25 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                 case "Adoption":
                     preview.Content = request.Command switch
                     {
-                        "Create" => 
-                        _archiveGenerator.GetAdoptionArchivePreview(
-                            CustomMapper.Mapper.Map<AdoptionEvent>(
-                                ReturnArchiveFromJObject.GetArchive<AddAdoptionRequest>(request.Content)),
-                            ""),
-                        "Update" => _archiveGenerator.GetAdoptionArchivePreview(
-                            CustomMapper.Mapper.Map<AdoptionEvent>(
-                                ReturnArchiveFromJObject.GetArchive<UpdateAdoptionCommand>(request.Content)),
-                            ""),
+                        "Create" => Call<JObject, JObject>((content) =>
+                        { 
+                            var createDto = ReturnArchiveFromJObject.GetArchive<UpdateAdoptionCommand>(request.Content);
+                            createDto.Event.EventDateEt = createDto.CourtCase.ConfirmedDateEt;
+                            var adoption = CustomMapper.Mapper.Map<AdoptionEvent>(createDto);
+                            adoption.Event.EventType = "Adoption";
+                            adoption.Event.EventAddressId = createDto.CourtCase?.Court?.AddressId;
+                            return _archiveGenerator.GetAdoptionArchivePreview(adoption, "");
+                        }, request.Content),
+
+                        "Update" => Call<JObject, JObject>((content) =>
+                        {
+                            var updateDto = ReturnArchiveFromJObject.GetArchive<UpdateAdoptionCommand>(request.Content);
+                            updateDto.Event.EventDateEt = updateDto.CourtCase.ConfirmedDateEt;
+                            var adoption = CustomMapper.Mapper.Map<AdoptionEvent>(updateDto);
+                            adoption.Event.EventType = "Adoption";
+                            adoption.Event.EventAddressId = updateDto.CourtCase?.Court?.AddressId;
+                            return _archiveGenerator.GetAdoptionArchivePreview(adoption,"");
+                        }, request.Content),
                     };
                     break;
                 case "Divorce":

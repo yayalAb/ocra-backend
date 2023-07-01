@@ -64,70 +64,75 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
             // {
             //     throw new Exception("User Group Not Found/unauthorized access ");
             // }
-
-            try
-
+            var executionStrategy = _CorrectionRequestRepostory.Database.CreateExecutionStrategy();
+            return await executionStrategy.ExecuteAsync(async () =>
             {
-                var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Comment, request.ReasonLookupId, false, cancellationToken);
-                if (response.Item1)
+
+                using (var transaction =  _CorrectionRequestRepostory.Database.BeginTransaction())
                 {
-                    var modifiedEvent = _CorrectionRequestRepostory.GetAll()
-                   .Include(x => x.Event)
-                   .AsNoTracking()
-                   .Where(x => x.RequestId == request.Id)
-                   .Include(x => x.Request).FirstOrDefault();
-                    var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
-                    if (modifiedEvent.Event.EventType == "Adoption")
+                    try
+
                     {
-                        UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
-                        AdoptionCommand.IsFromCommand = true;
-                        var response1 = await _mediator.Send(AdoptionCommand);
-                        // await _eventRepostory.SaveChangesAsync(cancellationToken);
+                        var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Comment, request.ReasonLookupId, false, cancellationToken);
+                        if (response.Item1)
+                        {
+                            var modifiedEvent = _CorrectionRequestRepostory.GetAll()
+                           .Include(x => x.Event)
+                           .AsNoTracking()
+                           .Where(x => x.RequestId == request.Id)
+                           .Include(x => x.Request).FirstOrDefault();
+                            var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
+                            if (modifiedEvent.Event.EventType == "Adoption")
+                            {
+                                UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
+                                AdoptionCommand.IsFromCommand = true;
+                                var response1 = await _mediator.Send(AdoptionCommand);
+                                // await _eventRepostory.SaveChangesAsync(cancellationToken);
+                            }
+                            else if (modifiedEvent.Event.EventType == "Birth")
+                            {
+                                UpdateBirthEventCommand BirthCommand = CorrectionRequestResponse.Content.ToObject<UpdateBirthEventCommand>();
+                                BirthCommand.IsFromCommand = true;
+                                var response1 = await _mediator.Send(BirthCommand);
+                            }
+                            else if (modifiedEvent.Event.EventType == "Death")
+                            {
+                                UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
+                                DeathCommand.IsFromCommand = true;
+                                var response1 = await _mediator.Send(DeathCommand);
+                            }
+                            else if (modifiedEvent.Event.EventType == "Divorce")
+                            {
+                                UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
+                                DivorceCommand.IsFromCommand = true;
+                                var response1 = await _mediator.Send(DivorceCommand);
+                                // await _eventRepostory.SaveChangesAsync(cancellationToken);
+                            }
+                            else if (modifiedEvent.Event.EventType == "Marriage")
+                            {
+                                UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
+                                MarriageCommand.IsFromCommand = true;
+                                var response1 = await _mediator.Send(MarriageCommand);
+                                // await _eventRepostory.SaveChangesAsync(cancellationToken);
+                            }
+                            // await _eventRepostory.SaveChangesAsync(cancellationToken);
+                        }
+                        var Response = new BaseResponse
+                        {
+                            Success = true,
+                            Message = request.IsApprove ? "Correction Request Approved Successfuly" : "Correction Request Rejected Successfuly",
+                        };
+                        await transaction.CommitAsync();
+                        return Response;
                     }
-                    else if (modifiedEvent.Event.EventType == "Birth")
+                    catch (Exception)
                     {
-                        UpdateBirthEventCommand BirthCommand = CorrectionRequestResponse.Content.ToObject<UpdateBirthEventCommand>();
-                        BirthCommand.IsFromCommand = true;
-                        var response1 = await _mediator.Send(BirthCommand);
+                        await transaction.RollbackAsync();
+                        throw;
                     }
-                    else if (modifiedEvent.Event.EventType == "Death")
-                    {
-                        UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
-                        DeathCommand.IsFromCommand = true;
-                        var response1 = await _mediator.Send(DeathCommand);
-                    }
-                    else if (modifiedEvent.Event.EventType == "Divorce")
-                    {
-                        UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
-                        DivorceCommand.IsFromCommand = true;
-                        var response1 = await _mediator.Send(DivorceCommand);
-                        // await _eventRepostory.SaveChangesAsync(cancellationToken);
-                    }
-                    else if (modifiedEvent.Event.EventType == "Marriage")
-                    {
-                        UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
-                        MarriageCommand.IsFromCommand = true;
-                        var response1 = await _mediator.Send(MarriageCommand);
-                        // await _eventRepostory.SaveChangesAsync(cancellationToken);
-                    }
-                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
-                var Response = new BaseResponse
-                {
-                    Success = true,
-                    Message = request.IsApprove ? "Correction Request Approved Successfuly" : "Correction Request Rejected Successfuly",
-                };
-                // await transaction.CommitAsync();
-                return Response;
-            }
-            catch (Exception)
-            {
-                // await transaction.RollbackAsync();
-                throw;
-            }
-            //     }
 
-            // });
+            });
         }
     }
 }
