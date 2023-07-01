@@ -24,6 +24,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
         public string? MarriageStatusStr { get; set; }
         public string? AddressOr { get;set; }
         public string? AddressAm { get; set;}
+        public bool? DeathStatus {get; set; }
+        public bool? HasCivilMarriage {get; set; }
 
         
         
