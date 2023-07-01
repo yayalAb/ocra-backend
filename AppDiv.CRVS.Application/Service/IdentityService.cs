@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Service
 
             // _tokenGeneratorService = tokenGeneratorService;
         }
-        public async Task<(Result result, IList<string>? roles, string? userId,AuthStatus status)> AuthenticateUser(string userName, string password)
+        public async Task<(Result result, IList<string>? roles, string? userId, AuthStatus status)> AuthenticateUser(string userName, string password)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user != null)
@@ -59,10 +59,10 @@ namespace AppDiv.CRVS.Application.Service
                 if (await _userManager.CheckPasswordAsync(user, password))
                 {
                     var userRoles = await _userManager.GetRolesAsync(user);
-                    var status = string.IsNullOrEmpty(user.Otp) 
+                    var status = string.IsNullOrEmpty(user.Otp)
                                 ? user.OtpExpiredDate != null && user.OtpExpiredDate > DateTime.Now
-                                    ?AuthStatus.Active 
-                                    :AuthStatus.OtpExpired
+                                    ? AuthStatus.Active
+                                    : AuthStatus.OtpExpired
                                 : user.OtpExpiredDate == null
                                     ? AuthStatus.FirstTimeLogin
                                     : AuthStatus.OtpUnverified;
@@ -191,8 +191,16 @@ namespace AppDiv.CRVS.Application.Service
                 var errors = resetPassResult.Errors.Select(e => e.Description);
                 throw new Exception($"password reset failed! \n {string.Join(",", errors)}\n {token}");
             }
-            user.Otp = null;
-            user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
+            if (user.OtpExpiredDate == null)//first time login
+            {
+                user.Otp = null;
+                user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
+            }
+            else
+            {
+                user.PasswordResetOtp = null;
+                user.PasswordResetOtpExpiredDate = null;
+            }
             await _userManager.UpdateAsync(user);
             return Result.Success();
         }
@@ -215,7 +223,7 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp, DateTime? otpExpiredDate , bool resetPasswordOtpOn)
+        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp, DateTime? otpExpiredDate)
         {
 
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -228,10 +236,17 @@ namespace AppDiv.CRVS.Application.Service
 
             user.UserName = userName;
             user.Email = email;
-            user.Otp = otp;
-            user.OtpExpiredDate = otpExpiredDate;
             user.PersonalInfoId = personalInfoId;
-            user.ResetPasswordOtpOn = resetPasswordOtpOn;
+            if (user.OtpExpiredDate != null)
+            {
+                user.PasswordResetOtp = otp;
+                user.PasswordResetOtpExpiredDate = otpExpiredDate;
+            }
+            else // if first time login
+            {
+                user.Otp = otp;
+                user.OtpExpiredDate = otpExpiredDate;
+            }
 
             var response = await _userManager.UpdateAsync(user);
 
@@ -281,7 +296,7 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
 
         }
-        public async Task<(Result result , string? email , string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry)
+        public async Task<(Result result, string? email, string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry)
         {
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -292,7 +307,7 @@ namespace AppDiv.CRVS.Application.Service
             user.Otp = otp;
             user.OtpExpiredDate = otpExpiry;
             await _userManager.UpdateAsync(user);
-            return  (Result.Success(), user.Email , user.PhoneNumber);
+            return (Result.Success(), user.Email, user.PhoneNumber);
         }
         public async Task<Result> DeleteUser(string userId)
         {
