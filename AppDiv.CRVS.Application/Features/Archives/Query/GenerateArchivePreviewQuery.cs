@@ -133,11 +133,11 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                 case "Marriage":
                     preview.Content = request.Command switch
                     {
-                        "Create" => 
-                        _archiveGenerator.GetMarriageArchivePreview(
-                            CustomMapper.Mapper.Map<MarriageEvent>(
-                                ReturnArchiveFromJObject.GetArchive<CreateMarriageEventCommand>(request.Content)),
-                            ""),
+                        "Create" => Call<JObject, JObject>((content) =>
+                        { 
+                            var marriage = CustomMapper.Mapper.Map<MarriageEvent>(ReturnArchiveFromJObject.GetArchive<CreateMarriageEventCommand>(request.Content));
+                            return _archiveGenerator.GetMarriageArchivePreview(marriage, "");
+                        }, request.Content),
                         "Update" => _archiveGenerator.GetMarriageArchivePreview(
                             CustomMapper.Mapper.Map<MarriageEvent>(
                                 ReturnArchiveFromJObject.GetArchive<UpdateMarriageEventCommand>(request.Content)),

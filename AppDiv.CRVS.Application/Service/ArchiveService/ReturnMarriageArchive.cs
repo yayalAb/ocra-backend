@@ -55,8 +55,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             marriageInfo.BrideBirthCertificateId = marriage.MarriageEvent.BirthCertificateBrideId;
             marriageInfo.GroomBirthCertificateId = marriage.MarriageEvent.BirthCertificateGroomId;
 
-            marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(marriage.MarriageEvent.MarriageTypeId);
-            marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(marriage.MarriageEvent.MarriageTypeId);
+            marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(marriage.MarriageEvent.MarriageTypeId);
+            marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(marriage.MarriageEvent.MarriageTypeId);
 
             // foreach (var w in marriage.MarriageEvent.Witnesses)
             // {
