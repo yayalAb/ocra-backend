@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface ITransactionService
     {
-         public Task<Guid> CreateTransaction(TransactionRequestDTO transactionObj);
+        public Task<Guid> CreateTransaction(TransactionRequestDTO transactionObj);
 
 
     }

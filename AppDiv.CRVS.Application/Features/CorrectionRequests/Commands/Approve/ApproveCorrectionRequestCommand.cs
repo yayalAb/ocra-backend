@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
         public Guid Id { get; set; }
         public string? Comment { get; set; }
         public bool IsApprove { get; set; } = false;
+        public Guid? ReasonLookupId { get; set; }
     }
     public class ApproveCorrectionRequestCommandHandler : IRequestHandler<ApproveCorrectionRequestCommand, BaseResponse>
     {
@@ -67,7 +68,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
             try
 
             {
-                var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Comment, false, cancellationToken);
+                var response = await _WorkflowService.ApproveService(request.Id, "change", request.IsApprove, request.Comment, request.ReasonLookupId, false, cancellationToken);
                 if (response.Item1)
                 {
                     var modifiedEvent = _CorrectionRequestRepostory.GetAll()

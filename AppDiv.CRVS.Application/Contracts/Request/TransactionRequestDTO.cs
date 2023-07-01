@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid RequestId { get; set; }
         public string CivilRegOfficerId { get; set; }
         public string? Remark { get; set; }
+        public Guid? ReasonLookupId { get; set; }
 
     }
 }
