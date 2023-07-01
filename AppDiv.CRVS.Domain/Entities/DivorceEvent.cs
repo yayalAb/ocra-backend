@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid DivorcedWifeId { get; set; }
         public string? WifeBirthCertificateId { get; set; }
         public string? HusbandBirthCertificate { get; set; }
-        public DateTime DateOfMarriage { get; set; }
+        public DateTime? DateOfMarriage { get; set; }
         public string? DateOfMarriageEt {get;set ;}
         public string DivorceReasonStr { get; set; }
         public Guid CourtCaseId { get; set; }
@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 DateOfMarriageEt = value;
-                DateOfMarriage = new CustomDateConverter(DateOfMarriageEt).gorgorianDate;
+                DateOfMarriage = DateOfMarriageEt ==null ?null: new CustomDateConverter(DateOfMarriageEt).gorgorianDate;
 
               
             }

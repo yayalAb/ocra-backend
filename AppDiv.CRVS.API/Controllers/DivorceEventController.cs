@@ -45,5 +45,13 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(await Mediator.Send(new GetDivorceEventByIdQuery { Id = id }));
 
         }
+        [HttpGet]
+        [Route("getWife/{id}")]
+        public async Task<IActionResult> getWives(Guid id)
+        {
+
+            return Ok(await Mediator.Send(new GetWivesQuery { HusbandId = id }));
+
+        }
     }
 }
