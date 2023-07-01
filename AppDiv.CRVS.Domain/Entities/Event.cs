@@ -36,6 +36,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual AdoptionEvent AdoptionEvent { get; set; }
         public virtual DivorceEvent DivorceEvent { get; set; }
         public virtual PaymentExamption PaymentExamption { get; set; }
+        public virtual VerficationRequest VerficationRequestNavigation { get; set; }
         public virtual ICollection<PaymentRequest> EventPaymentRequest { get; set; }
         public virtual ICollection<Certificate> EventCertificates { get; set; }
 

@@ -63,6 +63,8 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<Request> Requests { get; set; }
         public DbSet<Plan> Plans { get; set; }
         public DbSet<LoginHistory> LoginHistorys { get; set; }
+        public DbSet<VerficationRequest> VerficationRequests { get; set; }
+
 
 
 

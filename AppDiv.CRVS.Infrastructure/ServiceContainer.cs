@@ -158,18 +158,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IUpdateEventPaymetnService, UpdateEventPaymetnService>();
             services.AddTransient<ILoginHistoryRepository, LoginHistoryRepository>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
-
-
-
-
-
-
-
+            services.AddTransient<IVerficationRequestRepository, VerficationRequestRepository>();
 
             // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
-
-
-
             #endregion Repositories DI
 
             return services;

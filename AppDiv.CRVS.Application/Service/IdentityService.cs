@@ -185,13 +185,14 @@ namespace AppDiv.CRVS.Application.Service
             {
                 return Result.Failure(new string[] { "user not found" });
             }
+            var isLoginOtp = user.Otp != null;
             var resetPassResult = await _userManager.ResetPasswordAsync(user, token, password);
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(e => e.Description);
                 throw new Exception($"password reset failed! \n {string.Join(",", errors)}\n {token}");
             }
-            if (user.OtpExpiredDate == null)//first time login
+            if (isLoginOtp)//login otp
             {
                 user.Otp = null;
                 user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
@@ -223,7 +224,7 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> UpdateUser(string id, string userName, string email, Guid personalInfoId, string? otp, DateTime? otpExpiredDate)
+        public async Task<Result> UpdateResetOtp( string id , string? otp, DateTime? otpExpiredDate)
         {
 
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -232,22 +233,8 @@ namespace AppDiv.CRVS.Application.Service
             {
                 return Result.Failure(new string[] { "could not find user with the given id" });
             }
-
-
-            user.UserName = userName;
-            user.Email = email;
-            user.PersonalInfoId = personalInfoId;
-            if (user.OtpExpiredDate != null)
-            {
-                user.PasswordResetOtp = otp;
-                user.PasswordResetOtpExpiredDate = otpExpiredDate;
-            }
-            else // if first time login
-            {
-                user.Otp = otp;
-                user.OtpExpiredDate = otpExpiredDate;
-            }
-
+            user.PasswordResetOtp = otp;
+            user.PasswordResetOtpExpiredDate = otpExpiredDate;
             var response = await _userManager.UpdateAsync(user);
 
             if (!response.Succeeded)

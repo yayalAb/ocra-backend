@@ -162,10 +162,10 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
-        [HttpPut("Verify/{eventId}")]
-        public async Task<ActionResult> VerifyCertificate(Guid eventId)
+        [HttpPut("Verify")]
+        public async Task<ActionResult> VerifyCertificate(VerifyCertificateCommand command)
         {
-            var result = await Mediator.Send(new VerifyCertificateCommand { EventId = eventId });
+            var result = await Mediator.Send(command);
             return Ok(result);
 
 
