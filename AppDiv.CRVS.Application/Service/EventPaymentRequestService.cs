@@ -22,7 +22,7 @@ namespace AppDiv.CRVS.Application.Service
             _SettinglookupRepository = SettinglookupRepository;
         }
         public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, string paymentType,
-         Guid? RequestId, bool IsUseCamera, CancellationToken cancellationToken)
+         Guid? RequestId, bool IsUseCamera, bool HasVideo, CancellationToken cancellationToken)
         {
             var nationalityLookup = _lookupRepository.GetAll().Where(x => x.Id == Event.EventOwener.NationalityLookupId).FirstOrDefault();
             if (nationalityLookup == null)
@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     amount = await this.IsActive(eventType, Event.EventDate, Event.EventRegDate) ? paymentRate.Amount : paymentRate.Backlog;
                     amount = IsUseCamera ? amount + paymentRate.HasCamera : amount;
-
+                    amount = HasVideo ? amount + paymentRate.HasCamera : amount;
                 }
                 else
                 {

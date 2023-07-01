@@ -17,7 +17,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string Email { get; set; }
         public bool Status { get; set; }
         public string PreferedLanguage {get; set; }
-
+        public string? Otp {get; set; }
+        public DateTime? OtpExpiredDate {get; set;}
+        public Guid? CreatedBy {get; set; }
         public ICollection<Guid> UserGroups { get; set; }
         // public Guid PersonalInfoId { get; set; }
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }

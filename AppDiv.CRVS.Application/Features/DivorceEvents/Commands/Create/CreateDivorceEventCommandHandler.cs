@@ -88,7 +88,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             // create payment request for the event if it is not exempted
                             if (!divorceEvent.Event.IsExampted)
                             {
-                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", null, false, cancellationToken);
+                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                 amount = response.amount;
                                 if (response.amount == 0)
                                 {

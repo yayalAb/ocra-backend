@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Domain;
+using AppDiv.CRVS.Domain.Enums;
 
 namespace AppDiv.CRVS.Application.Interfaces
 {
@@ -13,7 +14,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         Task<string> GetUserNameAsync(string userId);
         Task<ApplicationUser> GetUserByEmailAsync(string email);
         Task<ApplicationUser> GetUserByName(string userName);
-        Task<(Result result, IList<string>? roles, string? userId, bool isFirstTime)> AuthenticateUser(string email, string password);
+        Task<(Result result, IList<string>? roles, string? userId,AuthStatus status )> AuthenticateUser(string email, string password);
         Task<(Result result, string password)> createUser(string userName, string email, Guid personalInfoId, Guid userGroupId);
         Task<(Result result, string password, string id)> createUser(ApplicationUser user);
 
@@ -27,6 +28,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<Result> DeleteUser(string userId);
         public Task<Result> UnlockUserAsync(string userName);
+        public  Task<(Result result,string? email , string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry);
         // string GetUserGroupId(string userId);
     }
 }
