@@ -3,25 +3,25 @@ using MediatR;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.Extensions.Logging;
 
-namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MarigeAndSplitCommands
+namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitCommands
 {
-    public class MerigeAndSplitCommandHandler : IRequestHandler<MerigeAndSplitCommand, MerigeAndSplitCommandResponse>
+    public class MergeAndSplitCommandHandler : IRequestHandler<MergeAndSplitCommand, MergeAndSplitCommandResponse>
     {
         private readonly IAddressLookupRepository _AddressRepository;
-        private readonly ILogger<MerigeAndSplitCommandHandler> _logger;
-        public MerigeAndSplitCommandHandler(IAddressLookupRepository AddresslookupRepository, ILogger<MerigeAndSplitCommandHandler> logger)
+        private readonly ILogger<MergeAndSplitCommandHandler> _logger;
+        public MergeAndSplitCommandHandler(IAddressLookupRepository AddresslookupRepository, ILogger<MergeAndSplitCommandHandler> logger)
         {
             _AddressRepository = AddresslookupRepository;
             _logger = logger;
         }
-        public async Task<MerigeAndSplitCommandResponse> Handle(MerigeAndSplitCommand request, CancellationToken cancellationToken)
+        public async Task<MergeAndSplitCommandResponse> Handle(MergeAndSplitCommand request, CancellationToken cancellationToken)
         {
 
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request.customer);           
 
-            var CreateAddressCommadResponse = new MerigeAndSplitCommandResponse();
+            var CreateAddressCommadResponse = new MergeAndSplitCommandResponse();
 
-            var validator = new MerigeAndSplitCommandValidetor(_AddressRepository);
+            var validator = new MergeAndSplitCommandValidetor(_AddressRepository);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors
