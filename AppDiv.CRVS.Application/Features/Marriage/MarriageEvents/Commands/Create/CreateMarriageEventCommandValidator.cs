@@ -63,7 +63,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "BrideInfo.NationLookupId",
                     "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
                     "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    "Event.EventOwener.NationLookupId, Event.PaymentExamption.ExamptionReasonLookupId"
+                    "Event.EventOwener.NationLookupId"
             };
             foreach (var fieldName in fieldNames)
             {
