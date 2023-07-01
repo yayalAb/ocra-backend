@@ -84,7 +84,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Death");
                                 if (!deathEvent.Event.IsExampted)
                                 {
-                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, false, cancellationToken);
+                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                     amount = response.amount;
                                     if (response.amount == 0)
                                     {

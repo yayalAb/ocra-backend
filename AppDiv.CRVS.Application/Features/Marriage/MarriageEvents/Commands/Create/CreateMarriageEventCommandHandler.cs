@@ -109,7 +109,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             // create payment request for the event if it is not exempted
                             if (!marriageEvent.Event.IsExampted)
                             {
-                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, "CertificateGeneration", null, marriageEvent.HasCamera, cancellationToken);
+                                (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, "CertificateGeneration", null, marriageEvent.HasCamera, marriageEvent.HasVideo, cancellationToken);
                                 amount = response.amount;
                                 if (response.amount == 0)
                                 {

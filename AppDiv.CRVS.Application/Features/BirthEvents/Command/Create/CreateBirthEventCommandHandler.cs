@@ -87,7 +87,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Birth");
                                 if (!birthEvent.Event.IsExampted)
                                 {
-                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, cancellationToken);
+                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                     amount = response.amount;
                                     if (response.amount == 0)
                                     {
