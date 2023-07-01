@@ -29,6 +29,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         public Guid CivilRegOfficerId { get; set; }
         // public Guid UserId { get; set; } = new Guid("134b4daa-bfac-445d-bd45-a83048eada3b");
         public JObject? Reason { get; set; }
+        public Guid? ReasonLookupId { get; set; }
+
         public bool CheckSerialNumber { get; set; } = true;
     }
 
@@ -82,12 +84,19 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             certId = certificateTemplateId.Id.ToString();
             if (request.IsPrint && !string.IsNullOrEmpty(request.serialNo))
             {
+                var findPerCertificates = _certificateRepository.GetAll().Where(x => x.EventId == request.Id).ToList();
+                foreach (var item in findPerCertificates)
+                {
+                    item.Status = false;
+                    await _certificateRepository.UpdateAsync(item, x => x.Id);
+                }
 
                 var AddHistory = new AddCertificateHistoryRequest
                 {
                     CerteficateId = cert.EventCertificates.FirstOrDefault().Id,
                     CivilRegOfficerId = request.CivilRegOfficerId,
                     SrialNo = request.serialNo,
+                    ReasonLookupId = request.ReasonLookupId,
                     Reason = request.Reason,
                     PrintType = "Certificate"
 

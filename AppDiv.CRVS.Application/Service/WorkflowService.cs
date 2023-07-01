@@ -104,11 +104,12 @@ namespace AppDiv.CRVS.Application.Service
             }
             return (Guid)groupId;
         }
-        public async Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, string? Remark, bool paymentAdded, CancellationToken cancellationToken)
+        public async Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, string? Remark, Guid? ReasonLookupId, bool paymentAdded, CancellationToken cancellationToken)
         {
             var request = _requestRepostory.GetAll()
             .Include(x => x.AuthenticationRequest).ThenInclude(a => a.Certificate)
             .Include(x => x.CorrectionRequest)
+            .Include(x => x.VerficationRequest)
             .Include(x => x.Notification)
             .Include(x => x.PaymentExamptionRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
@@ -116,9 +117,19 @@ namespace AppDiv.CRVS.Application.Service
             {
                 throw new Exception("Request Does not Found");
             }
-            Guid ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
-            (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
-            request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
+            Guid ReturnId = Guid.Empty;
+            if (request.RequestType == "verification")
+            {
+                ReturnId = request.VerficationRequest.EventId;
+            }
+            else
+            {
+                ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
+                  (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
+                  request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
+
+            }
+
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
@@ -159,7 +170,8 @@ namespace AppDiv.CRVS.Application.Service
                             WorkflowId = request.WorkflowId,
                             RequestId = request.Id,
                             CivilRegOfficerId = userId,
-                            Remark = Remark
+                            Remark = Remark,
+                            ReasonLookupId = ReasonLookupId
                         };
 
                         await _TransactionService.CreateTransaction(NewTranscation);
