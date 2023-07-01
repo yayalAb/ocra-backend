@@ -80,7 +80,7 @@ namespace AppDiv.CRVS.Application.Service
                     throw new Exception("Request Does't Found");
                 }
 
-                var response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", true, cancellationToken);
+                var response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, true, cancellationToken);
                 if (response.Item1)
                 {
                     if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")

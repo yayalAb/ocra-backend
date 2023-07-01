@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
@@ -21,11 +22,13 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
     {
         private readonly IEventRepository _eventRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IReturnVerficationList _ReturnVerficationList;
 
-        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IUserRepository userRepository, IEventRepository eventRepository)
+        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IReturnVerficationList ReturnVerficationList, IUserRepository userRepository, IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
             _userRepository = userRepository;
+            _ReturnVerficationList = ReturnVerficationList;
         }
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
@@ -41,43 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             IQueryable<Event> eventsQueriable;
             if (request.isVerification)
             {
-                eventsQueriable = eventByCivilReg
-               .Include(x => x.CivilRegOfficer)
-               .ThenInclude(x => x.ApplicationUser)
-               .ThenInclude(a => a.Address)
-               .ThenInclude(p => p.ParentAddress)
-               .ThenInclude(p => p.ParentAddress)
-               .ThenInclude(p => p.ParentAddress)
-               .Where(e => e.IsCertified && !e.IsVerified);
-                if (applicationuser.Address.AdminLevel == 1)
-                {
-                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
-                }
-                else if (applicationuser.Address.AdminLevel == 2)
-                {
-                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
-                }
-                else if (applicationuser.Address.AdminLevel == 3)
-                {
-                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-                   || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
-                }
-                else if (applicationuser.Address.AdminLevel == 4)
-                {
-                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-                    || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
-                }
-                else if (applicationuser.Address.AdminLevel == 5)
-                {
-                    eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
-                }
+                eventsQueriable = await _ReturnVerficationList.GetVerficationRequestedCertificateList(request.CivilRegOfficerId);
             }
             else
             {
