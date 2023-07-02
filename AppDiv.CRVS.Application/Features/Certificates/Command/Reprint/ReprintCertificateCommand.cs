@@ -84,7 +84,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             certId = certificateTemplateId.Id.ToString();
             if (request.IsPrint && !string.IsNullOrEmpty(request.serialNo))
             {
-                var findPerCertificates = _certificateRepository.GetAll().Where(x => x.EventId == request.Id).ToList();
+                var findPerCertificates = _certificateRepository.GetAll()
+                .Where(x => x.EventId == request.Id && x.Status).ToList();
                 foreach (var item in findPerCertificates)
                 {
                     item.Status = false;
@@ -106,6 +107,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                     var CertificateHistory = CustomMapper.Mapper.Map<CertificateHistory>(AddHistory);
                     await _CertificateHistoryRepository.InsertAsync(CertificateHistory, cancellationToken);
                     certificate.PrintCount += 1;
+                    certificate.Status = true;
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
                     var even = await _EventRepository.GetAsync(certificate.EventId);
                     even.OnReprintPaymentRequest = false;
