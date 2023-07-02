@@ -7,5 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
         public string? FullName { get; set; }
         public string? Address { get;set; }
         public string? NationalId { get; set; }
+        public bool? IsDead {get; set; }
+        public bool? HasCivilMarriage {get; set; }
     }
 }

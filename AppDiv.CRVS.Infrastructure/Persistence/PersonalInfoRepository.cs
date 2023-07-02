@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Domain.Entities;
 using Nest;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -71,6 +72,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
                 var indexRes = _elasticClient
                    .IndexMany<PersonalInfoIndex>(dbContext.PersonalInfos
+                        .Where(p => p.DeathStatus == false)
+                        
                        .Select(p => new PersonalInfoIndex
                        {
                            Id = p.Id,
@@ -94,6 +97,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                            MarriageStatusStr = p.MarraigeStatusLookup.ValueStr,
                            AddressOr = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
                            AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
+                           DeathStatus = p.DeathStatus,
+                           HasCivilMarriage = p.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
+                                // &&  (EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%Seera Siivilii%")|| EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%በመዘጋጃ የተመዘገቡ%"))
+                                ).Any()  
+                                
 
                        }), "personal_info");
                     await _elasticClient.Indices.RefreshAsync("personal_info");
@@ -112,7 +120,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             f => f.LastNameOr,
                             f => f.AddressAm,
                             f => f.AddressOr,
-                            f => f.NationalId
+                            f => f.NationalId,
+                            f => f.DeathStatus,
+                            f => f.HasCivilMarriage
                         )
                     ))
                     .Query(q =>
@@ -177,7 +187,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 Address = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.AddressAm
                     : d.AddressOr,
-                NationalId = d.NationalId
+                NationalId = d.NationalId,
+                IsDead = d.DeathStatus,
+                HasCivilMarriage = d.HasCivilMarriage
 
             }).ToList();
         }
@@ -193,6 +205,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
                 var indexRes = _elasticClient
                    .IndexMany<PersonalInfoIndex>(dbContext.PersonalInfos
+                        .Where(p => p.DeathStatus == false)
                        .Select(p => new PersonalInfoIndex
                        {
                            Id = p.Id,
@@ -216,7 +229,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                            MarriageStatusStr = p.MarraigeStatusLookup.ValueStr,
                            AddressOr = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
                            AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
-
+                           DeathStatus = p.DeathStatus
                        }), "personal_info");
                     await _elasticClient.Indices.RefreshAsync("personal_info");
 
