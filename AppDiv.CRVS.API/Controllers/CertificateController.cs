@@ -120,7 +120,17 @@ namespace AppDiv.CRVS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<object> ReprintRequest([FromQuery] ReprintRequestCommand query)
         {
-            return await Mediator.Send(query);
+            var result = await Mediator.Send(query);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+
+
         }
 
 
