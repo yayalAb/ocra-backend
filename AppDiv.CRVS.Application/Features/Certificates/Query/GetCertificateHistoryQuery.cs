@@ -57,7 +57,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             var events = _EventRepository.GetAll()
             .Include(x => x.CivilRegOfficer)
             .Include(x => x.CivilRegOfficer.ApplicationUser.UserGroups)
-            .Include(x => x.EventPaymentRequest.FirstOrDefault().Payment)
+            .Include(x => x.EventPaymentRequest).ThenInclude(x => x.Payment)
             .Include(x => x.EventCertificates)
             .Include(x => x.CorrectionRequests)
             .Where(x => x.Id == selectedEvent.EventId)
