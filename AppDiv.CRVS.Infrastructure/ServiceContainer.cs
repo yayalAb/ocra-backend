@@ -15,6 +15,10 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Infrastructure.Extensions;
 using AppDiv.CRVS.Infrastructure.Service;
+using CouchDB.Driver.DependencyInjection;
+using AppDiv.CRVS.Infrastructure.Context;
+using AppDiv.CRVS.Application.Persistence.Couch;
+using AppDiv.CRVS.Infrastructure.Persistence.Couch;
 // using AppDiv.CRVS.Infrastructure.Extensions;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -47,8 +51,18 @@ namespace AppDiv.CRVS.Infrastructure
             // #region  elasticSearch    
 
             services.AddElasticSearch(configuration);
-
             // #endregion elasticSearch
+            #region  couch db config
+
+            var couchUrl = configuration["CouchDB:URL"];
+            var couchDb = configuration["CouchDB:DbName"];
+            var couchUser = configuration["CouchDB:UserName"];
+            var couchPassword = configuration["CouchDB:Password"];
+            services.AddCouchContext<CRVSCouchDbContext>(builder => builder
+                .UseEndpoint(couchUrl)
+                .UseBasicAuthentication(username: couchUser, password: couchPassword));
+
+            #endregion couch db config
 
             #region  identity
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -152,6 +166,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ICorrectionRequestRepostory, CorrectionRequestRepostory>();
             services.AddScoped<IAuthenticationRepository, AuthenticationRepository>();
             services.AddScoped<IRequestRepostory, RequestRepostory>();
+            services.AddScoped<ILookupCouchRepository, LookupCouchRepository>();
+            services.AddScoped<IAddressLookupCouchRepository, AddressLookupCouchRepository>();
+
 
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ITransactionService, TransactionService>();

@@ -9,6 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<Lookup> GetByIdAsync(Guid id);
         Task<Lookup> GetLookupByKey(string key);
          Task<Lookup?> GetLookupById(Guid id);
+        Task InitializeLookupCouch();
     }
 }
 
