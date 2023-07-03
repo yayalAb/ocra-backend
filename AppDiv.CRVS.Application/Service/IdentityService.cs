@@ -176,6 +176,7 @@ namespace AppDiv.CRVS.Application.Service
 
             return (Result.Success(), token);
         }
+
         public async Task<Result> ResetPassword(string? email, string? userName, string password, string token)
         {
             var user = email != null
@@ -224,7 +225,7 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<Result> UpdateResetOtp( string id , string? otp, DateTime? otpExpiredDate)
+        public async Task<Result> UpdateResetOtp(string id, string? otp, DateTime? otpExpiredDate)
         {
 
             var user = await _userManager.FindByIdAsync(id.ToString());
@@ -295,6 +296,19 @@ namespace AppDiv.CRVS.Application.Service
             user.OtpExpiredDate = otpExpiry;
             await _userManager.UpdateAsync(user);
             return (Result.Success(), user.Email, user.PhoneNumber);
+        }
+        public async Task<Result> VerifyOtp(string userName, string otp)
+        {
+            var user = await _userManager.Users.Where(x => x.UserName == userName).FirstOrDefaultAsync();
+            if(user == null){
+                throw new NotFoundException($"user with username {userName} is not found");
+            }
+            if(user.Otp != otp){
+                throw new AuthenticationException("invalid otp");
+            }
+            user.Otp = null;
+            user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
+            return Result.Success();
         }
         public async Task<Result> DeleteUser(string userId)
         {

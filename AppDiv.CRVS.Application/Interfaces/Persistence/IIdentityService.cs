@@ -28,6 +28,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<Result> DeleteUser(string userId);
         public Task<Result> UnlockUserAsync(string userName);
+        public Task<Result> VerifyOtp(string userName, string otp);
         public  Task<(Result result,string? email , string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry);
         // string GetUserGroupId(string userId);
     }
