@@ -97,11 +97,11 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPut("ChangeStatus")]
-        public async Task<ActionResult> Activate([FromBody] string id)
+        public async Task<ActionResult> Activate([FromBody] ActivateUserCommand command)
         {
             try
             {
-                var result = await Mediator.Send(new ActivateUserCommand { Id = id });
+                var result = await Mediator.Send(command);
                 if (result.Status != 200)
                     return BadRequest(result);
                 return Ok(result);
