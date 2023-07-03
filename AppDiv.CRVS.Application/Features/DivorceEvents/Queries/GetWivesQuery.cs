@@ -36,13 +36,16 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
             var husbandInfo = await _personalInfoRepository.GetAll()
                     .Where(p => p.Id == request.HusbandId)
                     .Include(p => p.Events)
-                        .ThenInclude(e => e.MarriageEvent)
-                        .ThenInclude(e => e.MarriageType)
+                        .ThenInclude(e => e.MarriageEvent.MarriageType)
+                    .Include(p => p.Events)
+                        .ThenInclude(e => e.MarriageEvent.BrideInfo.ResidentAddress)
+                    .Include(p => p.Events)
+                        .ThenInclude(e => e.MarriageEvent.BrideInfo.Events)
                         // .ThenInclude(b =>b.ResidentAddress)
                         .FirstOrDefaultAsync();
-                var vvv = husbandInfo?.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
-                                &&  (e.MarriageEvent.MarriageType.ValueStr.Contains("Seera Siivilii")|| e.MarriageEvent.MarriageType.ValueStr.Contains("በመዘጋጃ የተመዘገቡ"))
-                                ).Any()  ;
+                // var vvv = husbandInfo?.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
+                //                 &&  (e.MarriageEvent.MarriageType.ValueStr.Contains("Seera Siivilii")|| e.MarriageEvent.MarriageType.ValueStr.Contains("በመዘጋጃ የተመዘገቡ"))
+                //                 ).Any()  ;
                 
             if(husbandInfo == null){
                 throw new NotFoundException($"person with id {request.HusbandId} is not found");
