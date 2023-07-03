@@ -1,7 +1,10 @@
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Features.DivorceEvents.Query;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.Services;
+using MediatR;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -10,11 +13,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
     public class DivorceEventRepository : BaseRepository<DivorceEvent>, IDivorceEventRepository
     {
         private readonly CRVSDbContext dbContext;
+        private readonly IMediator _mediator;
+
         public DatabaseFacade Database => dbContext.Database;
 
-        public DivorceEventRepository(CRVSDbContext dbContext) : base(dbContext)
+        public DivorceEventRepository(CRVSDbContext dbContext, IMediator mediator) : base(dbContext)
         {
             this.dbContext = dbContext;
+            this._mediator = mediator;
         }
         public IQueryable<DivorceEvent> GetAllQueryableAsync()
         {
@@ -156,6 +162,24 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             if (existing == null)
             {
                 throw new NotFoundException($"{feildName} with the provided id is not found");
+            }
+            if (feildName == "eventOwner")
+            {
+                var wifes = await _mediator.Send(new GetWivesQuery { HusbandId = id });
+                if(wifes.Count <= 1)
+                {
+                    existing.MarriageStatusLookupId = dbContext.Lookups.Where(l => l.Key == "marriage-status")
+                                                        .Where(l => EF.Functions.Like(l.ValueStr, "%የተፋታ%")
+                                                            || EF.Functions.Like(l.ValueStr, "%kan hiike%"))
+                                                        .Select(l => l.Id).FirstOrDefault();
+                }
+            }
+            else if (feildName == "DivorcedWife")
+            {
+                existing.MarriageStatusLookupId = dbContext.Lookups.Where(l => l.Key == "marriage-status")
+                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%የተፋታች%")
+                                                        || EF.Functions.Like(l.ValueStr, "%kan hiikte%"))
+                                                    .Select(l => l.Id).FirstOrDefault();
             }
 
             existing = HelperService.UpdateObjectFeilds<PersonalInfo>(existing, keyValuePair);

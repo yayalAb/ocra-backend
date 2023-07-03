@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
                         .ThenInclude(e => e.MarriageType)
                         // .ThenInclude(b =>b.ResidentAddress)
                         .FirstOrDefaultAsync();
-                var vvv = husbandInfo.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
+                var vvv = husbandInfo?.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
                                 &&  (e.MarriageEvent.MarriageType.ValueStr.Contains("Seera Siivilii")|| e.MarriageEvent.MarriageType.ValueStr.Contains("በመዘጋጃ የተመዘገቡ"))
                                 ).Any()  ;
                 
