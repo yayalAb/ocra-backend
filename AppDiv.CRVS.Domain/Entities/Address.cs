@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public string AddressNameStr { get; set; }
         public string StatisticCode { get; set; }
         public string Code { get; set; }
+        public string? CodePerfix { get; set; }
+        public string? CodePostfix { get; set; }
         public int AdminLevel { get; set; } = 1;
         public bool Status { get; set; } = false;
         public Guid? OldAddressId { get; set; }

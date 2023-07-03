@@ -48,19 +48,14 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitC
                         AreaTypeLookupId = add.AreaTypeLookupId,
                         ParentAddressId = add.ParentAddressId,
                         AdminTypeLookupId = add.AdminTypeLookupId,
-                        OldAddressId = add.OldAddressId
+                        OldAddressId = add.Id
                     };
-                    var oldAddress = _AddressRepository.GetAll().Where(x => x.Id == add.OldAddressId).FirstOrDefault();
+                    var oldAddress = _AddressRepository.GetAll().Where(x => x.Id == add.Id).FirstOrDefault();
                     oldAddress.Status = true;
                     await _AddressRepository.UpdateAsync(oldAddress, x => x.Id);
                     await _AddressRepository.InsertAsync(Address, cancellationToken);
                 }
-
-                //
                 var result = await _AddressRepository.SaveChangesAsync(cancellationToken);
-
-                //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
-                // CreateLookupCommadResponse.Customer = customerResponse;          
             }
             return CreateAddressCommadResponse;
         }

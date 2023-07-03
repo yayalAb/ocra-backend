@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressbyAdminstra
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParent;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddressInfoByParent;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda;
@@ -140,6 +141,14 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(new GetAddressByParntId { Id = parentId });
         }
+        [HttpGet]
+        [Route("GetDetailByParent")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<AddressForMergeDTO>> GetAllByParent([FromQuery] Guid parentId)
+        {
+            return await _mediator.Send(new GetlaaAddressInfoByParentQuery { Id = parentId });
+        }
+
 
         [HttpGet]
         [Route("DefualtAddress")]
