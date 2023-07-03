@@ -12,5 +12,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? UserGroup { get; set; }
         public string? AddressName { get; set; }
         public Guid? ParentAddressId { get; set; }
+        public bool Status { get; set; }
     }
 }
