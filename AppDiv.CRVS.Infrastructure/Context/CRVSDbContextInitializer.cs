@@ -1,5 +1,6 @@
 ﻿
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
@@ -17,13 +18,22 @@ namespace AppDiv.CRVS.Infrastructure
         private readonly CRVSDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILookupRepository _lookupRepository;
+        private readonly IAddressLookupRepository _addressLookupRepository;
 
-        public CRVSDbContextInitializer(ILogger<CRVSDbContextInitializer> logger, CRVSDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public CRVSDbContextInitializer(ILogger<CRVSDbContextInitializer> logger,
+                                        CRVSDbContext context,
+                                        UserManager<ApplicationUser> userManager,
+                                        RoleManager<IdentityRole> roleManager,
+                                        ILookupRepository lookupRepository,
+                                        IAddressLookupRepository addressLookupRepository)
         {
             _logger = logger;
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
+            _lookupRepository = lookupRepository;
+            _addressLookupRepository = addressLookupRepository;
         }
 
         public async Task InitialiseAsync()
@@ -58,6 +68,8 @@ namespace AppDiv.CRVS.Infrastructure
             await SeedUser();
             await SeedSystemLookups();
             await SeedSetting();
+            await _lookupRepository.InitializeLookupCouch();
+            await _addressLookupRepository.InitializeAddressLookupCouch();
         }
         public async Task SeedSetting()
         {

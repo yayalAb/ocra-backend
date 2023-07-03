@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
         public async Task<PaginatedList<CountryDTO>> Handle(GetAllCountryQuery request, CancellationToken cancellationToken)
         {
             var query = _AddresslookupRepository.GetAll()
-                                .Where(a => a.AdminLevel == 1);
+                                .Where(a => a.AdminLevel == 1 && !a.Status);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 query = query.Where(a => EF.Functions.Like(a.AddressNameStr, "%" + request.SearchString + "%"));

@@ -7,17 +7,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MarigeAndSplitCommands
+namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitCommands
 {
-    public class MerigeAndSplitCommandValidetor : AbstractValidator<MerigeAndSplitCommand>
+    public class MergeAndSplitCommandValidetor : AbstractValidator<MergeAndSplitCommand>
     {
         private readonly IAddressLookupRepository _repo;
-        public MerigeAndSplitCommandValidetor(IAddressLookupRepository repo)
+        public MergeAndSplitCommandValidetor(IAddressLookupRepository repo)
         {
             _repo = repo;
-            RuleFor(p => p.Address.AddressName)
+            RuleFor(p => p.Address[0].AddressName)
                 .NotEmpty().WithMessage("{PropertyName} is required.");
-            RuleFor(p => p.Address.Code)
+            RuleFor(p => p.Address[0].Code)
                 .MustAsync(ValidateStatisticCode)
                 .WithMessage("{PropertyName} is must be unique.");
         }

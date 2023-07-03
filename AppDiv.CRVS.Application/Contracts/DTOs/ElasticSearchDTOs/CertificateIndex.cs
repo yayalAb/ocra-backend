@@ -23,6 +23,17 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
         public string? GenderAm { get; set; }
         public string? AddressOr { get;set; }
         public string? AddressAm { get; set;}
+        public string? MotherFirstNameAm {get; set; }
+        public string? MotherFirstNameOr {get; set; }
+        public string? MotherMiddleNameAm {get; set; }
+        public string? MotherMiddleNameOr {get; set; }
+        public string? MotherLastNameAm {get; set; }
+        public string? MotherLastNameOr {get; set; }
+        public string? CivilRegOfficerNameAm {get; set; }
+        public string? CivilRegOfficerNameOr {get; set; }
+        public string? EventAddressAm {get; set; }
+        public string? EventAddressOr {get; set; }
+
 
         
         

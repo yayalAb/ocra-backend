@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
         {
             var query = _AddresslookupRepository.GetAll()
                                 .Include(a => a.ParentAddress)
-                               .Where(a => a.AdminLevel == 5);
+                               .Where(a => a.AdminLevel == 5 && !a.Status);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 query = query.Where(a =>

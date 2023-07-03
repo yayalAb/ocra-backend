@@ -63,9 +63,19 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             f => f.NationalId,
                             f => f.CertificateId,
                             f => f.EventType,
-                            f => f.CertificateSerialNumber
-
-
+                            f => f.CertificateSerialNumber,
+                            f =>f.CivilRegOfficerNameAm,
+                            f => f.CivilRegOfficerNameOr,
+                            f => f.AddressAm,
+                            f => f.AddressOr,
+                            f => f.EventAddressAm,
+                            f => f.EventAddressOr,
+                            f => f.MotherFirstNameAm,
+                            f => f.MotherFirstNameOr,
+                            f => f.MotherMiddleNameAm,
+                            f => f.MotherMiddleNameOr,
+                            f => f.MotherLastNameAm,
+                            f => f.MotherLastNameOr
                         )
                     ))
                     .Query(q =>
@@ -87,9 +97,18 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                 ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                 : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
+                MotherName = HelperService.getCurrentLanguage().ToLower() == "am"
+                ? d.MotherFirstNameAm + " " + d.MotherMiddleNameAm + " " + d.MotherLastNameAm
+                : d.MotherFirstNameOr + " " + d.MotherMiddleNameOr + " " + d.MotherLastNameOr,
+                CivilRegOfficerName = HelperService.getCurrentLanguage().ToLower() == "am"
+                ? d.CivilRegOfficerNameAm
+                : d.CivilRegOfficerNameOr,
                 Address = HelperService.getCurrentLanguage().ToLower() == "am"
                 ? d.AddressAm
                 : d.AddressOr,
+                EventAddress = HelperService.getCurrentLanguage().ToLower() == "am"
+                ? d.EventAddressAm
+                : d.EventAddressOr,
                 NationalId = d.NationalId,
                 CertificateId = d.CertificateId,
                 EventType = d.EventType,
@@ -100,37 +119,75 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         private async Task<BulkResponse> indexCertificates()
         {
-           return await _elasticClient
-                              .IndexManyAsync<CertificateIndex>(_dbContext.Certificates
-                                  .Select(c => new CertificateIndex
-                                  {
-                                      Id = c.Id,
-                                      EventId = c.Event.Id,
-                                      EventType = c.Event.EventType,
-                                      NestedEventId = c.Event.EventType.ToLower() == "birth"
-                                                       ? c.Event.BirthEvent.Id
-                                                       : c.Event.EventType.ToLower() == "death"
-                                                       ? c.Event.DeathEventNavigation.Id
-                                                       : c.Event.EventType.ToLower() == "marriage"
-                                                       ? c.Event.MarriageEvent.Id
-                                                       : c.Event.EventType.ToLower() == "adoption"
-                                                       ? c.Event.AdoptionEvent.Id
-                                                       : c.Event.EventType == "divorce"
-                                                       ? c.Event.DivorceEvent.Id : null,
-                                      CertificateId = c.Event.CertificateId,
-                                      CertificateSerialNumber = c.CertificateSerialNumber,
-                                      ContentStr = c.ContentStr,
-                                      AddressAm = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
-                                      AddressOr = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
-                                      NationalId = c.Event.EventOwener.NationalId,
-                                      FirstNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"),
-                                      FirstNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"),
-                                      MiddleNameOr = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("or"),
-                                      MiddleNameAm = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("am"),
-                                      LastNameOr = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or"),
-                                      LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
+            return await _elasticClient
+                               .IndexManyAsync<CertificateIndex>(_dbContext.Certificates
+                                   .Select(c => new CertificateIndex
+                                   {
+                                       Id = c.Id,
+                                       EventId = c.Event.Id,
+                                       EventType = c.Event.EventType,
+                                       NestedEventId = c.Event.EventType.ToLower() == "birth"
+                                                        ? c.Event.BirthEvent.Id
+                                                        : c.Event.EventType.ToLower() == "death"
+                                                        ? c.Event.DeathEventNavigation.Id
+                                                        : c.Event.EventType.ToLower() == "marriage"
+                                                        ? c.Event.MarriageEvent.Id
+                                                        : c.Event.EventType.ToLower() == "adoption"
+                                                        ? c.Event.AdoptionEvent.Id
+                                                        : c.Event.EventType == "divorce"
+                                                        ? c.Event.DivorceEvent.Id : null,
+                                       MotherFirstNameAm = c.Event.EventType.ToLower() == "birth"
+                                                         ? (c.Event.BirthEvent.Mother.FirstName == null ? null : c.Event.BirthEvent.Mother.FirstName.Value<string>("am"))
+                                                         : c.Event.EventType.ToLower() == "adoption" ?
+                                                         (c.Event.AdoptionEvent.AdoptiveMother.FirstName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.FirstName.Value<string>("am"))
+                                                         : null,
+                                       MotherFirstNameOr = c.Event.EventType.ToLower() == "birth"
+                                                         ? (c.Event.BirthEvent.Mother.FirstName == null ? null : c.Event.BirthEvent.Mother.FirstName.Value<string>("or"))
+                                                         : c.Event.EventType.ToLower() == "adoption" ?
+                                                         (c.Event.AdoptionEvent.AdoptiveMother.FirstName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.FirstName.Value<string>("or"))
+                                                         : null,
+                                       MotherMiddleNameAm = c.Event.EventType.ToLower() == "birth"
+                                                         ? (c.Event.BirthEvent.Mother.MiddleName == null ? null : c.Event.BirthEvent.Mother.MiddleName.Value<string>("am"))
+                                                         : c.Event.EventType.ToLower() == "adoption" ?
+                                                         (c.Event.AdoptionEvent.AdoptiveMother.MiddleName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("am"))
+                                                         : null,
+                                       MotherMiddleNameOr = c.Event.EventType.ToLower() == "birth"
+                                                         ? (c.Event.BirthEvent.Mother.MiddleName == null ? null : c.Event.BirthEvent.Mother.MiddleName.Value<string>("or"))
+                                                         : c.Event.EventType.ToLower() == "adoption" ?
+                                                         (c.Event.AdoptionEvent.AdoptiveMother.MiddleName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("or"))
+                                                         : null,
+                                       MotherLastNameAm = c.Event.EventType.ToLower() == "birth"
+                                                         ? (c.Event.BirthEvent.Mother.LastName == null ? null : c.Event.BirthEvent.Mother.LastName.Value<string>("am"))
+                                                         : c.Event.EventType.ToLower() == "adoption" ?
+                                                         (c.Event.AdoptionEvent.AdoptiveMother.LastName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("am"))
+                                                         : null,
+                                       MotherLastNameOr = c.Event.EventType.ToLower() == "birth"
+                                                         ? (c.Event.BirthEvent.Mother.LastName == null ? null : c.Event.BirthEvent.Mother.LastName.Value<string>("or"))
+                                                         : c.Event.EventType.ToLower() == "adoption" ?
+                                                         (c.Event.AdoptionEvent.AdoptiveMother.LastName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("or"))
+                                                         : null,
+                                       CivilRegOfficerNameAm = c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("am")
+                                                             + c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("am")
+                                                             + c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("am"),
+                                       CivilRegOfficerNameOr = c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("or")
+                                                             + c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("or")
+                                                             + c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("or"),
+                                       CertificateId = c.Event.CertificateId,
+                                       CertificateSerialNumber = c.CertificateSerialNumber,
+                                       ContentStr = c.ContentStr,
+                                       AddressAm = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
+                                       AddressOr = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
+                                       NationalId = c.Event.EventOwener.NationalId,
+                                       FirstNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"),
+                                       FirstNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"),
+                                       MiddleNameOr = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("or"),
+                                       MiddleNameAm = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("am"),
+                                       LastNameOr = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or"),
+                                       LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
+                                       EventAddressAm = c.Event.EventAddress.AddressName.Value<string>("am"),
+                                       EventAddressOr = c.Event.EventAddress.AddressName.Value<string>("or")
 
-                                  }), "certificate");
+                                   }), "certificate");
         }
 
         public async Task<(BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce)> GetContent(Guid eventId)

@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MarigeAndSplitCommands
+namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitCommands
 {
-    public class MerigeAndSplitCommandResponse : BaseResponse
+    public class MergeAndSplitCommandResponse : BaseResponse
     {
-        public MerigeAndSplitCommandResponse() : base()
+        public MergeAndSplitCommandResponse() : base()
         {
 
         }

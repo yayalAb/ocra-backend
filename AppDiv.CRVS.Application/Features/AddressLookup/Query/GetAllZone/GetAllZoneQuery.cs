@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
         public async Task<PaginatedList<ZoneDTO>> Handle(GetAllZoneQuery request, CancellationToken cancellationToken)
         {
             var query = _AddresslookupRepository.GetAll()
-                    .Where(a => a.AdminLevel == 3);
+                    .Where(a => a.AdminLevel == 3 && !a.Status);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 query = query.Where(a =>

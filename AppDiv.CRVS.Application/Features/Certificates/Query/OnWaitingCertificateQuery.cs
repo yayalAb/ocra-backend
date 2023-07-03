@@ -48,7 +48,9 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                eventByCivilReg.Include(e => e.EventOwener)
                               .Select(e => new PaidCertificateDTO
                               {
-                                  EventId = e.Id,
+                                  EventId = e.BirthEvent == null ? e.DeathEventNavigation == null ? e.AdoptionEvent == null ?
+                                  e.MarriageEvent == null ? e.DivorceEvent == null ? Guid.Empty : e.DivorceEvent.Id : e.MarriageEvent.Id :
+                                  e.AdoptionEvent.Id : e.DeathEventNavigation.Id : e.BirthEvent.Id,
                                   CertificateId = e.CertificateId,
                                   EventType = e.EventType,
                                   OwnerFullName = e.EventOwener.FirstNameLang + " " + e.EventOwener.MiddleNameLang + " " + e.EventOwener.LastNameLang,

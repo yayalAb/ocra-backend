@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllRegion
         public async Task<PaginatedList<RegionDTO>> Handle(GetAllRegionQuery request, CancellationToken cancellationToken)
         {
             var query = _AddresslookupRepository.GetAll()
-                    .Where(a => a.AdminLevel == 2);
+                    .Where(a => a.AdminLevel == 2 && !a.Status);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 query = query.Where(a => EF.Functions.Like(a.AddressNameStr, "%" + request.SearchString + "%")

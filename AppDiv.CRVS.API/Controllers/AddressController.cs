@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete;
+using AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitCommands;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressbyAdminstrativeLevel;
@@ -59,6 +60,25 @@ namespace AppDiv.CRVS.API.Controllers
             }
 
         }
+
+        [HttpPost("Merge")]
+        public async Task<ActionResult<AddressDTO>> MerigeAndSplit([FromBody] MergeAndSplitCommand command)
+        {
+            var result = await _mediator.Send(command);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+
+        }
+
+
+
+
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<object> Get(Guid id)

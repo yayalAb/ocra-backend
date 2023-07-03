@@ -1,7 +1,9 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Infrastructure.Context;
+using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
@@ -14,9 +16,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
     public class AddressLookupRepository : BaseRepository<Address>, IAddressLookupRepository
     {
         private readonly CRVSDbContext _DbContext;
-        public AddressLookupRepository(CRVSDbContext dbContext) : base(dbContext)
+        private readonly IAddressLookupCouchRepository addressLookupCouchRepo;
+
+        public AddressLookupRepository(CRVSDbContext dbContext, IAddressLookupCouchRepository addressLookupCouchRepo) : base(dbContext)
         {
             _DbContext = dbContext;
+            this.addressLookupCouchRepo = addressLookupCouchRepo;
         }
 
         // Task<Address> IAddressLookupRepository.DeleteAsync(Address entities)
@@ -44,5 +49,42 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         // {
         //     return _DbContext.Addresses.Where(p => p.Id == id).Any();
         // }
+          public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+
+            var entries = _DbContext.ChangeTracker
+              .Entries()
+              .Where(e => e.Entity is Address &&
+                      (e.State == EntityState.Added
+                      || e.State == EntityState.Modified));
+            foreach (var entry in entries)
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Added:
+                        await addressLookupCouchRepo.InserAsync((Address)entry.Entity);
+                        break;
+                    case EntityState.Modified:
+                        await addressLookupCouchRepo.UpdateAsync((Address)entry.Entity);
+                        break;
+                    case EntityState.Deleted:
+                        await addressLookupCouchRepo.RemoveAsync((Address)entry.Entity);
+                        break;
+                    default: break;
+
+                }
+            }
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+        public async Task InitializeAddressLookupCouch()
+        {
+            var empty = await addressLookupCouchRepo.IsEmpty();
+            if (empty)
+            {
+                await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses.ToList());
+            }
+        }
     }
 }
+    

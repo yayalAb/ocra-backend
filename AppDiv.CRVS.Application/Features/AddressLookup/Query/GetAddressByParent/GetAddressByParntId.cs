@@ -28,7 +28,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParen
             // var Addresss = await _mediator.Send(new GetAllAddressQuery());
             var selectedAddress = _AddresslookupRepository.GetAll().
              Include(ad => ad.AdminTypeLookup)
-            .Where(x => x.ParentAddressId == (Guid.Equals(request.Id, Guid.Empty) ? null : request.Id));
+            .Where(x => x.ParentAddressId == (Guid.Equals(request.Id, Guid.Empty) ? null : request.Id) && !x.Status);
             // var lng = "";
             var formatedAddress = selectedAddress.Select(an => new AddressForLookupDTO
             {
