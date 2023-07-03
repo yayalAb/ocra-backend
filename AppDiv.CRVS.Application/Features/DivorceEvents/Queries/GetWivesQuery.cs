@@ -57,9 +57,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
                                 Address = e.MarriageEvent.BrideInfo.ResidentAddress.AddressNameLang,
                                 NationalId = e.MarriageEvent.BrideInfo.NationalId,
                                 IsDead = e.MarriageEvent.BrideInfo.DeathStatus,
-                                HasCivilMarriage = e.MarriageEvent.BrideInfo.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
-                                &&  (EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%Seera Siivilii%")|| EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%በመዘጋጃ የተመዘገቡ%"))
-                                ).Any()  
+                                // HasCivilMarriage = e.MarriageEvent.BrideInfo.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
+                                // &&  (EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%Seera Siivilii%")|| EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%በመዘጋጃ የተመዘገቡ%"))
+                                // ).Any()  
                             }).ToList();
         }
     }
