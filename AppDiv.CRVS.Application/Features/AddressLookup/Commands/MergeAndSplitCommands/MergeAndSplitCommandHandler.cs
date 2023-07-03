@@ -2,21 +2,22 @@ using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitCommands
 {
     public class MergeAndSplitCommandHandler : IRequestHandler<MergeAndSplitCommand, MergeAndSplitCommandResponse>
     {
         private readonly IAddressLookupRepository _AddressRepository;
-        private readonly ILogger<MergeAndSplitCommandHandler> _logger;
-        public MergeAndSplitCommandHandler(IAddressLookupRepository AddresslookupRepository, ILogger<MergeAndSplitCommandHandler> logger)
+        private readonly IMergeAndSplitAddressService _MergeAndSplitAddressService;
+        public MergeAndSplitCommandHandler(IAddressLookupRepository AddresslookupRepository, IMergeAndSplitAddressService MergeAndSplitAddressService)
         {
             _AddressRepository = AddresslookupRepository;
-            _logger = logger;
+            _MergeAndSplitAddressService = MergeAndSplitAddressService;
         }
+
         public async Task<MergeAndSplitCommandResponse> Handle(MergeAndSplitCommand request, CancellationToken cancellationToken)
         {
-
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request.customer);           
 
             var CreateAddressCommadResponse = new MergeAndSplitCommandResponse();
@@ -35,27 +36,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitC
             }
             if (CreateAddressCommadResponse.Success)
             {
-                //can use this instead of automapper
-                foreach (var add in request.Address)
-                {
-                    var Address = new Address
-                    {
-                        Id = Guid.NewGuid(),
-                        AddressName = add.AddressName,
-                        StatisticCode = add.StatisticCode,
-                        Code = add.Code,
-                        AdminLevel = add.AdminLevel,
-                        AreaTypeLookupId = add.AreaTypeLookupId,
-                        ParentAddressId = add.ParentAddressId,
-                        AdminTypeLookupId = add.AdminTypeLookupId,
-                        OldAddressId = add.Id
-                    };
-                    var oldAddress = _AddressRepository.GetAll().Where(x => x.Id == add.Id).FirstOrDefault();
-                    oldAddress.Status = true;
-                    await _AddressRepository.UpdateAsync(oldAddress, x => x.Id);
-                    await _AddressRepository.InsertAsync(Address, cancellationToken);
-                }
-                var result = await _AddressRepository.SaveChangesAsync(cancellationToken);
+                await _MergeAndSplitAddressService.MergeAndSplitAddress(request.Address, cancellationToken);
+                // var result = await _AddressRepository.SaveChangesAsync(cancellationToken);
             }
             return CreateAddressCommadResponse;
         }

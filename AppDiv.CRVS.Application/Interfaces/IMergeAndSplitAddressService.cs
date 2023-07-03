@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface IMergeAndSplitAddressService
     {
-        public string GetAdoptionCertificate(List<AddAddressRequest> Address);
+        public Task<string> MergeAndSplitAddress(List<AddAddressRequest> Address, CancellationToken cancellationToken);
 
     }
 }
