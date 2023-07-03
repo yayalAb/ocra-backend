@@ -44,6 +44,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
                     AddressName = request.Address.AddressName,
                     StatisticCode = request.Address.StatisticCode,
                     Code = request.Address.Code,
+                    CodePerfix = request.Address.CodePerfix,
+                    CodePostfix = request.Address.CodePostfix,
                     AdminLevel = request.Address.AdminLevel,
                     AreaTypeLookupId = request.Address.AreaTypeLookupId,
                     ParentAddressId = request.Address.ParentAddressId,
