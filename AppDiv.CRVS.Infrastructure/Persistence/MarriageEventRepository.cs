@@ -219,9 +219,24 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private async Task updatePersonalInfo(Dictionary<string, object> keyValuePair, Guid id, string feildName)
         {
             var existing = await dbContext.PersonalInfos.FindAsync(id);
+            // { "am": "የገባ", "or": "Fuudhe", "en": "Married" }
             if (existing == null)
             {
                 throw new NotFoundException($"{feildName} with the provided id is not found");
+            }
+            if (feildName == "Event Owner")
+            {
+                existing.MarriageStatusLookupId = dbContext.Lookups.Where(l => l.Key == "marriage-status")
+                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%ያገባ%")
+                                                        || EF.Functions.Like(l.ValueStr, "%Fuudhe%"))
+                                                    .Select(l => l.Id).FirstOrDefault();
+            }
+            else if (feildName == "BrideInfo")
+            {
+                existing.MarriageStatusLookupId = dbContext.Lookups.Where(l => l.Key == "marriage-status")
+                                                    .Where(l => EF.Functions.Like(l.ValueStr, "%ያገባች%")
+                                                        || EF.Functions.Like(l.ValueStr, "%Heernmte%"))
+                                                    .Select(l => l.Id).FirstOrDefault();
             }
 
             existing = HelperService.UpdateObjectFeilds<PersonalInfo>(existing, keyValuePair);
