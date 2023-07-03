@@ -90,6 +90,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                 UserGroup = x.UserGroups.Select(x => x.GroupName).FirstOrDefault(),
                 AddressName = x.Address.AddressNameLang,
                 ParentAddressId = x.Address.ParentAddressId,
+                Status = x.Status
             });
 
             return await PaginatedList<YourTeamDTO>

@@ -54,6 +54,12 @@ namespace AppDiv.CRVS.Application.Common
             this.Status = 200;
             this.Message = message ?? $"{entity} created Successfully!";
         }
+        public void Updated(string entity = "Entity",string message = null)
+        {
+            this.Success = true;
+            this.Status = 200;
+            this.Message = message ?? $"{entity} updated Successfully!";
+        }
     
 
         public void Deleted(string entityName = "Entity")
