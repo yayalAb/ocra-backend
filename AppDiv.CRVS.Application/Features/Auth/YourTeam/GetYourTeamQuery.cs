@@ -98,7 +98,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                 throw new NotFoundException("the requested user have not team member");
 
             }
-            var result = response2.Select(x => new YourTeamDTO
+            var result = response2.Where(x => x.Id != response.Id).Select(x => new YourTeamDTO
             {
                 Id = x.Id,
                 UserName = x.UserName,
