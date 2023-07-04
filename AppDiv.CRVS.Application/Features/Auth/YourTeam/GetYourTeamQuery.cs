@@ -39,6 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
             var response = _userRepository
             .GetAll()
             .Include(x => x.Address)
+            .Include(x => x.PersonalInfo)
             .Where(x => x.UserName == request.UserName).FirstOrDefault();
             var response2 = _userRepository
                     .GetAll()
@@ -89,8 +90,30 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                 UserName = x.UserName,
                 UserGroup = x.UserGroups.Select(x => x.GroupName).FirstOrDefault(),
                 AddressName = x.Address.AddressNameLang,
-                ParentAddressId = x.Address.ParentAddressId,
-                Status = x.Status
+                AddressId = x.Address.Id,
+                Email = x.Email,
+                Status = x.Status && (!x.LockoutEnabled || x.LockoutEnd == null || x.LockoutEnd <= DateTime.Now),
+                PersonalInfo = new PersonalInfoDTO
+                {
+                    Id = x.PersonalInfo.Id,
+                    FirstName = x.PersonalInfo.FirstNameLang,
+                    MiddleName = x.PersonalInfo.MiddleNameLang,
+
+                    // LastName = x.PersonalInfo.LastNameLang,
+                    BirthDate = x.PersonalInfo.BirthDate,
+                    NationalId = x.PersonalInfo.NationalId,
+                    // PlaceOfBirthLookup = x.PersonalInfo.PlaceOfBirthLookup.ValueLang,
+                    NationalityLookup = x.PersonalInfo.NationalityLookup.ValueLang,
+                    // TitleLookup = x.PersonalInfo.TitleLookup.ValueLang,
+                    // ReligionLookup = x.PersonalInfo.ReligionLookup.ValueLang,
+                    EducationalStatusLookup = x.PersonalInfo.EducationalStatusLookup.ValueLang,
+                    // TypeOfWorkLookup = x.PersonalInfo.TypeOfWorkLookup.ValueLang,
+                    MarraigeStatusLookup = x.PersonalInfo.MarraigeStatusLookup.ValueLang,
+                    NationLookup = x.PersonalInfo.NationLookup.ValueLang,
+                    CreatedDate = x.PersonalInfo.CreatedAt,
+                    // ContactInfo = _mapper.Map<ContactInfoDTO>(x.PersonalInfo.ContactInfo)
+
+                }
             });
 
             return await PaginatedList<YourTeamDTO>
