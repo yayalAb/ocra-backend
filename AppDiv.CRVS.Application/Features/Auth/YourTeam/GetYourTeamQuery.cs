@@ -41,13 +41,22 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
             .Include(x => x.Address)
             .Include(x => x.PersonalInfo)
             .Where(x => x.UserName == request.UserName).FirstOrDefault();
+            if (response == null)
+            {
+                throw new NotFoundException("User Name Does not Found ");
+            }
+
             var response2 = _userRepository
-                    .GetAll()
-                    .Include(x => x.Address)
-                        .ThenInclude(x => x.ParentAddress)
-                            .ThenInclude(x => x.ParentAddress)
-                                .ThenInclude(x => x.ParentAddress).AsQueryable();
-            if (response.Address.AdminLevel == 1)
+                                .GetAll()
+                                .Include(x => x.Address)
+                                    .ThenInclude(x => x.ParentAddress)
+                                        .ThenInclude(x => x.ParentAddress)
+                                            .ThenInclude(x => x.ParentAddress).AsQueryable();
+            if (response2 == null)
+            {
+                throw new NotFoundException("invalid User Address");
+            }
+            if (response?.Address?.AdminLevel == 1)
             {
                 response2 = response2.Where(x => ((
                              x.Address.ParentAddress.ParentAddress.ParentAddress.ParentAddress.Id == response.AddressId ||
@@ -57,7 +66,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                              || x.Address.Id == response.AddressId)))
                              );
             }
-            else if (response.Address.AdminLevel == 2)
+            else if (response?.Address?.AdminLevel == 2)
             {
                 response2 = response2.Where(x => ((
                             (x.Address.ParentAddress.ParentAddress.ParentAddress.Id == response.AddressId
@@ -66,7 +75,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                              || x.Address.Id == response.AddressId)))
                              );
             }
-            else if (response.Address.AdminLevel == 3)
+            else if (response?.Address?.AdminLevel == 3)
             {
                 response2 = response2.Where(x => (
                             (x.Address.ParentAddress.ParentAddress.Id == response.AddressId)
@@ -74,15 +83,20 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                              || x.Address.Id == response.AddressId))
                              );
             }
-            else if (response.Address.AdminLevel == 4)
+            else if (response?.Address?.AdminLevel == 4)
             {
                 response2 = response2.Where(x => x.Address.ParentAddressId == response.AddressId
                              || x.Address.Id == response.AddressId
                              );
             }
-            else if (response.Address.AdminLevel == 5)
+            else if (response?.Address?.AdminLevel == 5)
             {
                 response2 = response2.Where(x => x.Address.Id == response.AddressId);
+            }
+            if (response2 == null)
+            {
+                throw new NotFoundException("the requested user have not team member");
+
             }
             var result = response2.Select(x => new YourTeamDTO
             {
@@ -120,6 +134,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
                             .CreateAsync(
                                  result
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
+
+
         }
     }
 }
