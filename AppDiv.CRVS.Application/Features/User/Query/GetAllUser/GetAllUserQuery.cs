@@ -117,7 +117,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
 
             return await PaginatedList<UserResponseDTO>
              .CreateAsync(
-                 response2
+                 response2.Where(x => x.PersonalInfoId == userId)
                 .Select(user => new UserResponseDTO
                 {
                     Id = user.Id,
