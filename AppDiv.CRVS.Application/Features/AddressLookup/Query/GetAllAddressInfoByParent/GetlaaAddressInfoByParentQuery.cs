@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddressInfo
             {
                 Id = an.Id,
                 ParentAddressId = an.ParentAddressId,
-                AddressName = an.AddressNameLang,
+                AddressName = an.AddressName,
                 AdminTypeLookupId = an.AdminTypeLookupId,
                 AdminLevel = an.AdminLevel,
                 StatisticCode = an.StatisticCode,

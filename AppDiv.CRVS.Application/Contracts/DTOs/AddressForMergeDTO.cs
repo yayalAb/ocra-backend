@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class AddressForMergeDTO
     {
         public Guid Id { get; set; }
-        public string? AddressName { get; set; }
+        public JObject? AddressName { get; set; }
         public Guid? ParentAddressId { get; set; }
         public Guid? AdminTypeLookupId { get; set; }
         public int? AdminLevel { get; set; }
