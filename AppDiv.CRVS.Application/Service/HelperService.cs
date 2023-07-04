@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 
 namespace AppDiv.CRVS.Application.Service
@@ -7,7 +8,7 @@ namespace AppDiv.CRVS.Application.Service
     {
         private readonly ISettingRepository _settingRepository;
 
-        public HelperService(ISettingRepository settingRepository )
+        public HelperService(ISettingRepository settingRepository)
         {
             _settingRepository = settingRepository;
         }
@@ -45,6 +46,22 @@ namespace AppDiv.CRVS.Application.Service
                 expiryDuration = generalSetting.Value.Value<int?>("otp_expiry_duration_in_days") ?? expiryDuration;
             }
             return expiryDuration;
+        }
+        public PasswordPolicy? getPasswordPolicySetting()
+        {
+            var passwordPolicy = _settingRepository.GetAll()
+                .Where(s => s.Key.ToLower() == "passwordpolicy")
+                .FirstOrDefault();
+            return passwordPolicy == null ? null : new PasswordPolicy
+            {
+                Number = passwordPolicy.Value.Value<bool>("number"),
+                LowerCase = passwordPolicy.Value.Value<bool>("lowerCase"),
+                OtherChar = passwordPolicy.Value.Value<bool>("otherCharacter"),
+                UpperCase = passwordPolicy.Value.Value<bool>("upperCase"),
+                Min = passwordPolicy.Value.Value<int>("minLength"),
+                Max = passwordPolicy.Value.Value<int>("maxLength")
+
+            };
         }
     }
 }

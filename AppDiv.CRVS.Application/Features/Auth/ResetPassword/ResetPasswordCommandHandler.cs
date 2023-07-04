@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using Microsoft.AspNetCore.WebUtilities;
@@ -15,17 +16,19 @@ namespace AppDiv.CRVS.Application.Features.Auth.ResetPassword
     {
         private readonly IIdentityService _identityService;
         private readonly ISettingRepository _settingRepository;
+        private readonly HelperService _helperService;
 
-        public ResetPasswordCommandHandler(IIdentityService identityService, ISettingRepository settingRepository)
+        public ResetPasswordCommandHandler(IIdentityService identityService, ISettingRepository settingRepository, HelperService helperService)
         {
             _identityService = identityService;
             _settingRepository = settingRepository;
+            _helperService = helperService;
         }
         public async Task<BaseResponse> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
         {
             var resetPasswordResponse = new BaseResponse();
 
-            var validator = new ResetPasswordCommandValidator(_settingRepository);
+            var validator = new ResetPasswordCommandValidator(_settingRepository, _helperService);
             var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
             //Check and log validation errors

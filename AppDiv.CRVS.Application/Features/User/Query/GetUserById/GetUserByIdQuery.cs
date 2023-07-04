@@ -65,10 +65,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
             {
                 throw new NotFoundException($"user with id = {request.Id} is not found");
             }
-            if(currentUserId != userData.CreatedBy.ToString() ){
-                userData.Otp = null;
-                userData.OtpExpiredDate = null;
-            }
+
             return userData;
 
         }

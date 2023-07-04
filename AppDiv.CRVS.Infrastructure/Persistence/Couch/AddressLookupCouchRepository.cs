@@ -17,7 +17,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
         var newAddress = new AddressLookupCouch
         {
             Id = address.Id,
-            ParentAddressId = address.ParentAddressId,
+            ParentAddressId = address.ParentAddressId?.ToString() ?? "",
             NameAm = address.AddressName?.Value<string>("am"),
             NameOr = address.AddressName?.Value<string>("or")
         };
@@ -36,17 +36,32 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
     }
     public async Task<bool> BulkInsertAsync(List<Address> addresses)
     {
-        var res = await _couchContext.Addresses.AddOrUpdateRangeAsync(addresses.Select(
+        var c = addresses.Where(a => a.Id.ToString() == "3af12870-adc3-431f-b3cb-ae67d3b98c8f");
+        var d = c.First().ParentAddressId?.ToString();
+        var e = string.IsNullOrEmpty(c.First().ParentAddressId?.ToString());
+        var res = await _couchContext.Addresses.AddOrUpdateRangeAsync(addresses.Where(a => a.ParentAddressId != null).Select(
          address => new AddressLookupCouch
          {
-            Id = address.Id,
-            ParentAddressId = address.ParentAddressId,
-            NameAm = address.AddressName?.Value<string>("am"),
-            NameOr = address.AddressName?.Value<string>("or")
-        }
+             Id = address.Id,
+             ParentAddressId = string.IsNullOrEmpty(address.ParentAddressId?.ToString())
+                    ? "country" : address.ParentAddressId?.ToString()!,
+             NameAm = address.AddressName?.Value<string>("am"),
+             NameOr = address.AddressName?.Value<string>("or")
+         }
         ).ToList());
+
+        var res2 = await _couchContext.Countries.AddOrUpdateRangeAsync(addresses.Where(a => a.ParentAddressId == null).Select(
+            address => new CountryCouch
+            {
+                Id = address.Id,
+                NameAm = address.AddressName?.Value<string>("am"),
+                NameOr = address.AddressName?.Value<string>("or")
+            }
+            ).ToList());
         return true;
     }
+
+
     public async Task<bool> UpdateAsync(Address address)
     {
         var existing = _couchContext.Addresses.Where(a => a.Id == address.Id).FirstOrDefault();
@@ -54,7 +69,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
         {
 
             existing.Id = address.Id;
-            existing.ParentAddressId = address.ParentAddressId;
+            existing.ParentAddressId = address.ParentAddressId?.ToString() ?? "null";
             existing.NameAm = address.AddressName?.Value<string>("am");
             existing.NameOr = address.AddressName?.Value<string>("or");
             var res = await _couchContext.Addresses.AddOrUpdateAsync(existing);
