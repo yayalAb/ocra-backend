@@ -111,6 +111,18 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
+        [HttpPost("CheckDuplicateEmail")]
+         public async Task<ActionResult> CheckDuplicateEmail([FromBody] CheckEmailDuplicateCommand command)
+        {
+            try
+            {
+                return Ok(await Mediator.Send(command));
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
 
     }
 }

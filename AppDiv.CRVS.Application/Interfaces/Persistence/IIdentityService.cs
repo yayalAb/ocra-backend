@@ -30,6 +30,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task<Result> UnlockUserAsync(string userName);
         public Task<Result> VerifyOtp(string userName, string otp);
         public  Task<(Result result,string? email , string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry);
+         Task<bool> Exists(string arg ,bool isEmail);
         // string GetUserGroupId(string userId);
     }
 }

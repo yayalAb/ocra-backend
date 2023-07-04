@@ -327,6 +327,13 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
+        public async Task<bool> Exists(string arg ,bool isEmail){
+            if(isEmail){
+                return (await _userManager.FindByEmailAsync(arg)) != null;
+            }
+            return (await _userManager.FindByNameAsync(arg)) != null;
+        }
+
         private string GeneratePassword()
         {
             var options = _userManager.Options.Password;
