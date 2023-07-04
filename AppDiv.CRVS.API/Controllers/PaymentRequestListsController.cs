@@ -14,10 +14,10 @@ namespace AppDiv.CRVS.API.Controllers
     public class PaymentRequestListsController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<ActionResult<PaginatedList<PaymentRequestListDTO>>> GetAll()
+        public async Task<ActionResult<PaginatedList<PaymentRequestListDTO>>> GetAll([FromQuery] PaymentRequestListQuery query)
         {
 
-            return Ok(await Mediator.Send(new PaymentRequestListQuery()));
+            return Ok(await Mediator.Send(query));
         }
     }
 }
