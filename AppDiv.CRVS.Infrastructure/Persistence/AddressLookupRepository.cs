@@ -3,13 +3,13 @@ using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Infrastructure.Context;
-using Microsoft.EntityFrameworkCore;
 using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -82,7 +82,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             var empty = await addressLookupCouchRepo.IsEmpty();
             if (empty)
             {
-                await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses.ToList());
+                await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
+                .Include(a => a.AdminTypeLookup)
+                );
+           
+                
             }
         }
     }

@@ -34,30 +34,20 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
         }
         return true;
     }
-    public async Task<bool> BulkInsertAsync(List<Address> addresses)
+    public async Task<bool> BulkInsertAsync(IQueryable<Address> addresses)
     {
-        var c = addresses.Where(a => a.Id.ToString() == "3af12870-adc3-431f-b3cb-ae67d3b98c8f");
-        var d = c.First().ParentAddressId?.ToString();
-        var e = string.IsNullOrEmpty(c.First().ParentAddressId?.ToString());
-        var res = await _couchContext.Addresses.AddOrUpdateRangeAsync(addresses.Where(a => a.ParentAddressId != null).Select(
-         address => new AddressLookupCouch
-         {
-             Id = address.Id,
-             ParentAddressId = string.IsNullOrEmpty(address.ParentAddressId?.ToString())
-                    ? "country" : address.ParentAddressId?.ToString()!,
-             NameAm = address.AddressName?.Value<string>("am"),
-             NameOr = address.AddressName?.Value<string>("or")
-         }
-        ).ToList());
+        var selected = addresses.GroupBy(a => a.ParentAddressId).Select(g  =>  new AddressCouch{
+                            Id = g.Key,
+                            addresses = g.Select(ca => new SingleAddressCouch{
+                                Id = ca.Id ,
+                                NameAm = ca.AddressName == null?null: ca.AddressName.Value<string>("am"),
+                                NameOr =  ca.AddressName == null?null:ca.AddressName.Value<string>("or"),
+                                AdminLevel = ca.AdminLevel,
+                                AdminTypeAm =  ca.AdminTypeLookup == null?null:ca.AdminTypeLookup.Value.Value<string>("am"),
+                                AdminTypeOr =  ca.AdminTypeLookup == null?null:ca.AdminTypeLookup.Value.Value<string>("or")
+                            }).ToList()});
 
-        var res2 = await _couchContext.Countries.AddOrUpdateRangeAsync(addresses.Where(a => a.ParentAddressId == null).Select(
-            address => new CountryCouch
-            {
-                Id = address.Id,
-                NameAm = address.AddressName?.Value<string>("am"),
-                NameOr = address.AddressName?.Value<string>("or")
-            }
-            ).ToList());
+         var res = await _couchContext.AddressCouches.AddOrUpdateRangeAsync(selected.ToList());
         return true;
     }
 
@@ -92,7 +82,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
     public async Task<bool> IsEmpty()
     {
         // return !(await _couchContext.);
-        var count = _couchContext.Client.GetDatabase<AddressLookupCouch>().ToList().Count;
+        var count = _couchContext.Client.GetDatabase<AddressCouch>().ToList().Count;
         return count == 0;
     }
 }
