@@ -45,6 +45,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IMergeAndSplitAddressService, MergeAndSplitAddressService>();
 
             services.AddScoped<IContentValidator, ContentValidator>();
+            services.AddScoped<IWorkHistoryTracker, WorkHistoryTracker>();
             services.AddScoped<HelperService>();
 
 
