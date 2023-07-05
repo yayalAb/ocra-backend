@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Domain
         public virtual Guid? ModifiedBy { get; set; }
         public string? PasswordResetOtp {get; set ;} 
         public DateTime? PasswordResetOtpExpiredDate {get; set ;}
+        public int SelectedAdminType {get; set;}=0;
         
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual Address Address { get; set; }
