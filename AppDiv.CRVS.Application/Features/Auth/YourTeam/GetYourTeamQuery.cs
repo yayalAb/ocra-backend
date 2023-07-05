@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
         public string UserName { get; set; }
         public int? PageCount { get; set; }
         public int? PageSize { get; set; }
+        public string? SearchString { get; set; }
     }
 
     public class GetYourTeamQueryHandler : IRequestHandler<GetYourTeamQuery, PaginatedList<YourTeamDTO>>
@@ -97,6 +98,14 @@ namespace AppDiv.CRVS.Application.Features.Auth.YourTeam
             {
                 throw new NotFoundException("the requested user have not team member");
 
+            }
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                response2 = response2.Where(
+                    u => EF.Functions.Like(u.UserName, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.UserGroups.Select(g => g.GroupName).FirstOrDefault()!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Address.AddressNameStr, "%" + request.SearchString + "%")
+                         );
             }
             var result = response2.Where(x => x.Id != response.Id).Select(x => new YourTeamDTO
             {

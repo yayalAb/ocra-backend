@@ -11,6 +11,7 @@ using System.Text;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Enums;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -264,6 +265,8 @@ namespace AppDiv.CRVS.Application.Service
             existingUser.Email = user.Email;
             existingUser.PersonalInfo = user.PersonalInfo;
             existingUser.UserGroups = user.UserGroups;
+            existingUser.SelectedAdminType = user.SelectedAdminType;
+            existingUser.PreferedLanguage =user.PreferedLanguage;
             //if the user was locked and status is updated to true
             if (user.Status && existingUser.LockoutEnd > DateTime.Now && !existingUser.Status && existingUser.LockoutEnabled)
             {
@@ -300,10 +303,12 @@ namespace AppDiv.CRVS.Application.Service
         public async Task<Result> VerifyOtp(string userName, string otp)
         {
             var user = await _userManager.Users.Where(x => x.UserName == userName).FirstOrDefaultAsync();
-            if(user == null){
+            if (user == null)
+            {
                 throw new NotFoundException($"user with username {userName} is not found");
             }
-            if(user.Otp != otp){
+            if (user.Otp != otp)
+            {
                 throw new AuthenticationException("invalid otp");
             }
             user.Otp = null;
@@ -327,28 +332,46 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<bool> Exists(string arg ,bool isEmail){
-            if(isEmail){
+        public async Task<bool> Exists(string arg, bool isEmail)
+        {
+            if (isEmail)
+            {
                 return (await _userManager.FindByEmailAsync(arg)) != null;
             }
             return (await _userManager.FindByNameAsync(arg)) != null;
         }
 
-        private string GeneratePassword()
+        public string GeneratePassword()
         {
+            var policySetting = _helperService.getPasswordPolicySetting();
             var options = _userManager.Options.Password;
+            int max = 0;
+            bool digit;
+            bool nonAlphanumeric = false; 
+            bool lowerCase = false;
+            bool upperCase = false;
+            if (policySetting != null)
+            {
+                max = policySetting.Max;
+                digit = policySetting.Number;
+                nonAlphanumeric = !(policySetting.Number && (policySetting.LowerCase || policySetting.UpperCase || policySetting.OtherChar));
+                lowerCase = policySetting.LowerCase;
+                upperCase = policySetting.UpperCase;
+            }
+            else
+            {
+                max = options.RequiredLength;
+                nonAlphanumeric = options.RequireNonAlphanumeric;
+                digit = options.RequireDigit;
+                lowerCase = options.RequireLowercase;
+                upperCase = options.RequireUppercase;
 
-            int length = options.RequiredLength;
-
-            bool nonAlphanumeric = options.RequireNonAlphanumeric;
-            bool digit = options.RequireDigit;
-            bool lowercase = options.RequireLowercase;
-            bool uppercase = options.RequireUppercase;
+            }
 
             StringBuilder password = new StringBuilder();
             Random random = new Random();
 
-            while (password.Length < length)
+            while (password.Length < max)
             {
                 char c = (char)random.Next(32, 126);
 
@@ -357,9 +380,9 @@ namespace AppDiv.CRVS.Application.Service
                 if (char.IsDigit(c))
                     digit = false;
                 else if (char.IsLower(c))
-                    lowercase = false;
+                    lowerCase = false;
                 else if (char.IsUpper(c))
-                    uppercase = false;
+                    upperCase = false;
                 else if (!char.IsLetterOrDigit(c))
                     nonAlphanumeric = false;
             }
@@ -368,9 +391,9 @@ namespace AppDiv.CRVS.Application.Service
                 password.Append((char)random.Next(33, 48));
             if (digit)
                 password.Append((char)random.Next(48, 58));
-            if (lowercase)
+            if (lowerCase)
                 password.Append((char)random.Next(97, 123));
-            if (uppercase)
+            if (upperCase)
                 password.Append((char)random.Next(65, 91));
 
 

@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
         public Guid CivilRegOfficerId { get; set; }
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllCorrectionRequestHandler : IRequestHandler<GetAllCorrectionRequest, PaginatedList<CorrectionRequestListDTO>>
@@ -38,7 +39,18 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             .Include(x => x.Request)
             .Include(x => x.Event)
             .ThenInclude(x => x.CivilRegOfficer)
-            .Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId).Select(x => new CorrectionRequestListDTO
+            .Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                CorrectionRequest = CorrectionRequest.Where(
+                    u => EF.Functions.Like(u.Request.CivilRegOfficer.FirstNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Request.CivilRegOfficer.MiddleNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Request.CivilRegOfficer.LastNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Request.RequestType, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Event.EventType, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%"));
+            }
+            var correctionRequestDto = CorrectionRequest.Select(x => new CorrectionRequestListDTO
             {
                 Id = x.Id,
                 Requestedby = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,
@@ -50,7 +62,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             });
             return await PaginatedList<CorrectionRequestListDTO>
                            .CreateAsync(
-                                CorrectionRequest
+                                correctionRequestDto
                                , request.PageCount ?? 1, request.PageSize ?? 10);
 
 

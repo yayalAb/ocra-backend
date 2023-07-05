@@ -40,7 +40,13 @@ namespace AppDiv.CRVS.Infrastructure.Services
         public Guid GetUserPersonalId()
         {
             var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+            if (string.IsNullOrEmpty(tokenstring))
+            {
+                return Guid.Empty;
+                
+            }
             var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
             var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
             if (personId == null)
             {

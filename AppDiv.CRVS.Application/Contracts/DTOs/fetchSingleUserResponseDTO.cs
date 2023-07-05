@@ -21,6 +21,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public DateTime? OtpExpiredDate {get; set;}
         public Guid? CreatedBy {get; set; }
         public ICollection<Guid> UserGroups { get; set; }
+        public int SelectedAdminType {get; set;}=0;
+
         // public Guid PersonalInfoId { get; set; }
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
         // public ContactInfoDTO ContactInfo {get; set; }

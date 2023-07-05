@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         public bool IsYourRequestList { get; set; } = false;
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
 
 
     }
@@ -70,7 +71,18 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
-              .Where(wf => wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
+              .Where(wf => wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                RequestList = RequestList.Where(
+                    u => EF.Functions.Like(u.CivilRegOfficer.FirstNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.CivilRegOfficer.MiddleNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.CivilRegOfficer.LastNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.RequestType!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.currentStep.ToString(), "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.NextStep.ToString()!, "%" + request.SearchString + "%"));
+            }
+            var RequestListDto = RequestList
              .Select(w => new AuthenticationRequestListDTO
              {
                  Id = w.Id,
@@ -95,16 +107,16 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
 
             if (!request.IsYourRequestList)
             {
-                RequestList = RequestList.Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
+                RequestListDto = RequestListDto.Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
             }
             else
             {
-                RequestList = RequestList.Where(rg => rg.OfficerId == userGroup.PersonalInfoId);
+                RequestListDto = RequestListDto.Where(rg => rg.OfficerId == userGroup.PersonalInfoId);
             }
-
+            
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
-                                  RequestList
+                                  RequestListDto
                                  , request.PageCount ?? 1, request.PageSize ?? 10);
             if (RequestList == null)
             {

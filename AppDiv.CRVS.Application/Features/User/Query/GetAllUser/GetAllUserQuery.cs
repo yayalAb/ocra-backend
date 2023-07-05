@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllUserQueryHandler : IRequestHandler<GetAllUserQuery, PaginatedList<UserResponseDTO>>
@@ -113,7 +114,12 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
 
 
 
-
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                response2 = response2.Where(u => EF.Functions.Like(u.UserName, "%" + request.SearchString + "%") 
+                                            || EF.Functions.Like(u.Email, "%" + request.SearchString + "%") 
+                                            || EF.Functions.Like(u.PhoneNumber, "%" + request.SearchString + "%"));
+            }
 
             return await PaginatedList<UserResponseDTO>
              .CreateAsync(
