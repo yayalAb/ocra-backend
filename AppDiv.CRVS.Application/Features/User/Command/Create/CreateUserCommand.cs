@@ -13,6 +13,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         public List<Guid> UserGroups { get; init; }
         public bool Status {get; set; }
         public string PreferedLanguage {get; set; }= "oro";
+        public int SelectedAdminType {get; set;}=0;
+
         // public string Password { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }
 

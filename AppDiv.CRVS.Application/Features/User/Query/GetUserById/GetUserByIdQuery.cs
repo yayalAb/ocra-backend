@@ -54,6 +54,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 Email = u.Email,
                 Otp = u.Otp,
                 OtpExpiredDate = u.OtpExpiredDate,
+                SelectedAdminType = u.SelectedAdminType,
                 Status = u.Status &&(!u.LockoutEnabled || u.LockoutEnd==null || u.LockoutEnd <= DateTime.Now),
                 UserGroups = u.UserGroups.Select(u => u.Id).ToList(),
                 PersonalInfo = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(u.PersonalInfo),

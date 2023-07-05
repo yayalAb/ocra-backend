@@ -20,6 +20,7 @@ public class AfroMessageService : ISmsService
     }
     public async Task<string> SendOtpAsync(string to, string prefix, string postfix, int expiration, int codeLength, int codeType)
     {
+        //codeType =  {0 : numberOnly , 1: alphabetOnly , 2:alphanumeric }
         string? otpCode;
         using (var client = new HttpClient())
         {
