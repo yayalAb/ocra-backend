@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public Guid AddressId {get; set; }
         public string? UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
-        public int SelectedAdminType {get; set;}=0;
+        public int SelectedAdminType {get; set;}
 
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
     }

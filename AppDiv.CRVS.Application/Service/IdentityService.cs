@@ -265,6 +265,8 @@ namespace AppDiv.CRVS.Application.Service
             existingUser.Email = user.Email;
             existingUser.PersonalInfo = user.PersonalInfo;
             existingUser.UserGroups = user.UserGroups;
+            existingUser.SelectedAdminType = user.SelectedAdminType;
+            existingUser.PreferedLanguage =user.PreferedLanguage;
             //if the user was locked and status is updated to true
             if (user.Status && existingUser.LockoutEnd > DateTime.Now && !existingUser.Status && existingUser.LockoutEnabled)
             {
