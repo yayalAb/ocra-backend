@@ -88,7 +88,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                         if (CreateMarriageEventCommandResponse.Success)
                         {
 
-
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
 
                             marriageEvent.Event.EventType = "Marriage";
@@ -96,12 +95,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
 
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
-                            //TODO: //
+                            // //TODO: //
                             var personIds = new PersonIdObj
                             {
                                 WifeId = marriageEvent.BrideInfo.Id,
                                 HusbandId = marriageEvent.Event.EventOwener.Id,
-                                WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
+                                // WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
                             };
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
@@ -132,7 +131,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                     await _smsService.SendBulkSMS(msgRecepients, message);
                                 }
                             }
-                            if (amount != 0 || marriageEvent.Event.IsExampted)
+                            else if (amount != 0 || marriageEvent.Event.IsExampted)
                             {
                                 CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
                             }
@@ -141,11 +140,12 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                         }
                         return CreateMarriageEventCommandResponse;
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        logger.LogCritical($"ccccccccccc{e.Message}");
                         await transaction.RollbackAsync();
                         throw;
-                    }
+                    }  
                 }
 
             });

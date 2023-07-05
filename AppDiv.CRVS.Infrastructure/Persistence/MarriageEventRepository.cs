@@ -23,8 +23,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public IQueryable<MarriageEvent> GetAllQueryableAsync()
         {
-
+        
             return dbContext.MarriageEvents.AsQueryable();
+        }
+        public void DisposeDbContext(){
+            // dbContext.Dispose();
+            dbContext.Dispose();
         }
         public async Task EFUpdateAsync(MarriageEvent marriageEvent)
         {
@@ -159,7 +163,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"ReligionLookupId" ,entity.Event.EventOwener.ReligionLookupId},
                     {"EducationalStatusLookupId" ,entity.Event.EventOwener.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId" ,entity.Event.EventOwener.TypeOfWorkLookupId},
-                    // {"MarriageStatusLookupId" ,entity.Event.EventOwener.MarriageStatusLookupId},
+                    {"MarriageStatusLookupId" ,entity.Event.EventOwener.MarriageStatusLookupId},
                     {"ResidentAddressId" ,entity.Event.EventOwener.ResidentAddressId},
                     {"NationalId", entity.Event.EventOwener.NationalId},
                     {"PhoneNumber", entity.Event.EventOwener.PhoneNumber}
@@ -178,7 +182,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"ReligionLookupId", entity.BrideInfo.ReligionLookupId},
                     {"EducationalStatusLookupId", entity.BrideInfo.EducationalStatusLookupId},
                     {"TypeOfWorkLookupId", entity.BrideInfo.TypeOfWorkLookupId},
-                    // {"MarriageStatusLookupId", entity.BrideInfo.MarriageStatusLookupId},
+                    {"MarriageStatusLookupId", entity.BrideInfo.MarriageStatusLookupId},
                     {"ResidentAddressId", entity.BrideInfo.ResidentAddressId},
                     {"PhoneNumber", entity.BrideInfo.PhoneNumber}
 
@@ -188,21 +192,38 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 entity.BrideInfo = null!;
 
             }
+            var witnessIds  = new List<Guid>();
+            witnessIds = entity.Witnesses
+                    .Where(wi => wi.WitnessPersonalInfo.Id != null && wi.WitnessPersonalInfo.Id != Guid.Empty)
+                    .Select(wi => wi.WitnessPersonalInfo.Id).ToList();
+            var existingWitnesses = dbContext.PersonalInfos.Where(w =>witnessIds.Contains(w.Id) ).ToList();
+            existingWitnesses.ForEach(ew =>{
+                var newWitness = entity.Witnesses
+                                    .Where(w => w.WitnessPersonalInfo.Id == ew.Id)
+                                    .Select(w => w.WitnessPersonalInfo).FirstOrDefault();
+                ew.SexLookupId = newWitness.SexLookupId;
+                ew.NationalId = newWitness.NationalId;
+                ew.ResidentAddressId = newWitness.ResidentAddressId;
+                ew.PhoneNumber = newWitness.PhoneNumber;
+
+            });
+            dbContext.PersonalInfos.UpdateRange(existingWitnesses);
 
             entity.Witnesses?.ToList().ForEach(async witness =>
             {
                 
                 if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
                 {
-                    var keyValuePair = new Dictionary<string, object>{
-                        {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
-                        {"NationalId",witness.WitnessPersonalInfo.NationalId},
-                        {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId},
-                        {"PhoneNumber", witness.WitnessPersonalInfo.PhoneNumber}
+                    // var keyValuePair = new Dictionary<string, object>{
+                    //     {"SexLookupId",witness.WitnessPersonalInfo.SexLookupId},
+                    //     {"NationalId",witness.WitnessPersonalInfo.NationalId},
+                    //     {"ResidentAddressId",witness.WitnessPersonalInfo.ResidentAddressId},
+                    //     {"PhoneNumber", witness.WitnessPersonalInfo.PhoneNumber}
 
 
-                    };
-                    await updatePersonalInfo(keyValuePair, witness.WitnessPersonalInfo.Id, "witness");
+                    // };
+                    
+                    // await updatePersonalInfo(keyValuePair, witness.WitnessPersonalInfo.Id, "witness");
                     witness.WitnessPersonalInfoId = witness.WitnessPersonalInfo.Id;
                     witness.WitnessPersonalInfo = null!;
 
@@ -241,8 +262,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             existing = HelperService.UpdateObjectFeilds<PersonalInfo>(existing, keyValuePair);
             dbContext.PersonalInfos.Update(existing);
+            // await dbContext.SaveChangesAsync();
 
         }
+
 
     }
 
