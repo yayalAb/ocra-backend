@@ -15,4 +15,5 @@ public class SearchCertificateResponseDTO
     public string? CertificateId { get; set; }
     public string? EventType { get; set; }
     public string? CertificateSerialNumber { get; set; }
+    public bool? CanViewDetail { get; set; }
 }

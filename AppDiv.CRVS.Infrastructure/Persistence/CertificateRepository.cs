@@ -19,11 +19,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
     {
         private readonly CRVSDbContext _dbContext;
         private readonly IElasticClient _elasticClient;
+        private readonly IUserResolverService _userResolverService;
 
-        public CertificateRepository(CRVSDbContext dbContext, IElasticClient elasticClient) : base(dbContext)
+
+        public CertificateRepository(CRVSDbContext dbContext, IElasticClient elasticClient , IUserResolverService userResolverService) : base(dbContext)
         {
             this._dbContext = dbContext;
             _elasticClient = elasticClient;
+            _userResolverService = userResolverService;
         }
         async Task<Certificate> ICertificateRepository.GetByIdAsync(Guid id)
         {
@@ -75,7 +78,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             f => f.MotherMiddleNameAm,
                             f => f.MotherMiddleNameOr,
                             f => f.MotherLastNameAm,
-                            f => f.MotherLastNameOr
+                            f => f.MotherLastNameOr,
+                            f => f.EventRegisteredAddressId
                         )
                     ))
                     .Query(q =>
@@ -112,7 +116,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 NationalId = d.NationalId,
                 CertificateId = d.CertificateId,
                 EventType = d.EventType,
-                CertificateSerialNumber = d.CertificateSerialNumber
+                CertificateSerialNumber = d.CertificateSerialNumber,
+                CanViewDetail = d.EventRegisteredAddressId == _userResolverService.GetWorkingAddressId()
             }).ToList();
         }
 
@@ -185,7 +190,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                        LastNameOr = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or"),
                                        LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
                                        EventAddressAm = c.Event.EventAddress.AddressName.Value<string>("am"),
-                                       EventAddressOr = c.Event.EventAddress.AddressName.Value<string>("or")
+                                       EventAddressOr = c.Event.EventAddress.AddressName.Value<string>("or"),
+                                       EventRegisteredAddressId = c.Event.EventRegisteredAddressId
 
                                    }), "certificate");
         }
