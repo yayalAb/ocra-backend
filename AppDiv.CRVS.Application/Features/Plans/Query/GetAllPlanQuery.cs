@@ -1,11 +1,13 @@
 ﻿using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Extensions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AutoMapper.QueryableExtensions;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllPlanHandler : IRequestHandler<GetAllPlanQuery, PaginatedList<PlanDTO>>
@@ -31,11 +34,16 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
         }
         public async Task<PaginatedList<PlanDTO>> Handle(GetAllPlanQuery request, CancellationToken cancellationToken)
         {
-
-            return await PaginatedList<PlanDTO>
-                            .CreateAsync(
-                                _planRepository.GetAll().ProjectTo<PlanDTO>(CustomMapper.Mapper.ConfigurationProvider)
-                                , request.PageCount ?? 1, request.PageSize ?? 10);
+            var plans = _planRepository.GetAll();
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                plans = plans.Where(
+                    u => EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.BudgetYear.ToString(), "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.TargetAmount.ToString(), "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.PlannedDateEt, "%" + request.SearchString + "%"));
+            }
+            return await plans.PaginateAsync<Plan, PlanDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

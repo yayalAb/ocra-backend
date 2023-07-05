@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public Guid CivilRegOfficerId { get; set; }
+        public string? SearchString { get; set; }
     }
 
     public class EventDraftListQueryHandler : IRequestHandler<EventDraftListQuery, PaginatedList<PaidCertificateDTO>>
@@ -28,14 +29,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         }
         public Task<PaginatedList<PaidCertificateDTO>> Handle(EventDraftListQuery request, CancellationToken cancellationToken)
         {
-            // var correctionRequestList = _correctionRequestRepo.GetAll().Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId);
-            // List<Event> CorrectionRequestList = new List<Event>();
-            // var eventList = correctionRequestList.Select(x => x.Content);//.FirstOrDefault();
-            // foreach (JObject evn in eventList)
-            // {
-            //     Event EventList = evn.Value<JObject>("event").ToObject<Event>();
-            //     CorrectionRequestList.Add(EventList);
-            // }
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(e => e.EventOwener)
                               .Include(x => x.BirthEvent)
@@ -44,7 +37,16 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                               .Include(x => x.DivorceEvent)
                               .Include(x => x.DeathEventNavigation)
                               .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId && !e.IsCertified);
-
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                eventByCivilReg = eventByCivilReg.Where(
+                    u => EF.Functions.Like(u.EventOwener.FirstNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventOwener.MiddleNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventOwener.LastNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventDateEt!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventRegDateEt, "%" + request.SearchString + "%"));
+            }
             return PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
                                eventByCivilReg

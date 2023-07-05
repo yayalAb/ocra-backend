@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllGroupQueryHandler : IRequestHandler<GetAllGroupQuery, PaginatedList<FetchGroupDTO>>
@@ -32,9 +34,16 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup
         public async Task<PaginatedList<FetchGroupDTO>> Handle(GetAllGroupQuery request, CancellationToken cancellationToken)
         {
             var grouplist = _groupRepository.GetAll();
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                grouplist = grouplist.Where(u => EF.Functions.Like(u.GroupName, "%" + request.SearchString + "%") 
+                                            || EF.Functions.Like(u.DescriptionStr!, "%" + request.SearchString + "%") 
+                                            || EF.Functions.Like(u.RolesStr, "%" + request.SearchString + "%"));
+            }
+
             return await PaginatedList<FetchGroupDTO>
                             .CreateAsync(
-                                _groupRepository.GetAll().Select(g => new FetchGroupDTO
+                                grouplist.Select(g => new FetchGroupDTO
                                 {
                                     Id = g.Id,
                                     GroupName = g.GroupName,

@@ -15,6 +15,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public Guid CivilRegOfficerId { get; set; }
+        public string? SearchString { get; set; }
     }
 
     public class OnWaitingCertificateQueryHandler : IRequestHandler<OnWaitingCertificateQuery, PaginatedList<PaidCertificateDTO>>
@@ -43,6 +44,17 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                               .Where(e => (e.CivilRegOfficerId == request.CivilRegOfficerId
                               && e.IsCertified) && (e.EventCertificates.FirstOrDefault().CreatedAt > DateTime.Now.AddHours(-editWaitingTime)));
 
+            eventByCivilReg = eventByCivilReg.Include(e => e.EventOwener);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                eventByCivilReg = eventByCivilReg.Where(
+                    u => EF.Functions.Like(u.EventOwener.FirstNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventOwener.MiddleNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventOwener.LastNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventDateEt, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventRegDateEt, "%" + request.SearchString + "%"));
+            }
             return await PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
                                eventByCivilReg.Include(e => e.EventOwener)

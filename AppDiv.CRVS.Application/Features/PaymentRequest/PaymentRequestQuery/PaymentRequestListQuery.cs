@@ -22,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetListOfLookupQueryHandler : IRequestHandler<PaymentRequestListQuery, PaginatedList<PaymentRequestListDTO>>
@@ -38,19 +39,28 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
             .Include(x => x.Request)
             .Include(x => x.Request.CivilRegOfficer)
             .Include(x => x.Event)
-            .Where(x => x.status == false)
-            .Select(x => new PaymentRequestListDTO
+            .Where(x => x.status == false);
+            if (!string.IsNullOrEmpty(request.SearchString))
             {
-                Id = x.Id,
-                RequestType = x.Reason.Value<string>("en"),
-                Amount = x.Amount,
-                RequestedBy = x.Event.EventOwener.FirstNameLang + " " + x.Event.EventOwener.MiddleNameLang + " " + x.Event.EventOwener.LastNameLang,
-                RequestedDate = x.CreatedAt,
-            });
+                paymentRequestList = paymentRequestList.Where(
+                    u => EF.Functions.Like(u.ReasonStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Event.EventOwener.FirstNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Event.EventOwener.MiddleNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Event.EventOwener.LastNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%"));
+            }
             return
             await PaginatedList<PaymentRequestListDTO>
                            .CreateAsync(
                                 paymentRequestList
+                                    .Select(x => new PaymentRequestListDTO
+                                    {
+                                        Id = x.Id,
+                                        RequestType = x.Reason.Value<string>("en"),
+                                        Amount = x.Amount,
+                                        RequestedBy = x.Event.EventOwener.FirstNameLang + " " + x.Event.EventOwener.MiddleNameLang + " " + x.Event.EventOwener.LastNameLang,
+                                        RequestedDate = x.CreatedAt,
+                                    })
                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

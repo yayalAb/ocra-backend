@@ -16,6 +16,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         public int? PageSize { get; set; } = 10!;
         public Guid CivilRegOfficerId { get; set; }
         public bool isVerification { get; set; } = false;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllPaidCertificateByCivilRegistrarQueryHandler : IRequestHandler<GetAllPaidCertificateByCivilRegistrarQuery, PaginatedList<PaidCertificateDTO>>
@@ -49,6 +50,18 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             else
             {
                 eventsQueriable = eventByCivilReg.Where(e => (!e.IsCertified && (e.IsPaid || e.IsExampted) || (e.ReprintWaiting)));
+            }
+            eventsQueriable = eventsQueriable.Include(e => e.EventOwener);
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                eventsQueriable = eventsQueriable.Where(
+                    u => EF.Functions.Like(u.CertificateId, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventDateEt!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventRegDateEt, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventOwener.FirstNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventOwener.MiddleNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventOwener.LastNameStr!, "%" + request.SearchString + "%"));
             }
 
             return await PaginatedList<PaidCertificateDTO>

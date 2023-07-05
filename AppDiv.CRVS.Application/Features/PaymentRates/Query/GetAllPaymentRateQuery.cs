@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 
     public class GetAllPaymentRateHandler : IRequestHandler<GetAllPaymentRateQuery, PaginatedList<FetchPaymentRateDTO>>
@@ -30,20 +32,18 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
         }
         public async Task<PaginatedList<FetchPaymentRateDTO>> Handle(GetAllPaymentRateQuery request, CancellationToken cancellationToken)
         {
-            // var formatedLookup = lookups.Select(lo => new LookupForGridDTO
-            // {
-            //     id = lo.Id,
-            //     Key = lo.Key,
-            //     Value = lo?.Value["en"]?.ToString(),
-            //     StatisticCode = lo?.StatisticCode,
-            //     Code = lo?.Code
-
-
-            // });
-            // var paymentRateList = await _paymentRateRepository.GetAll(new string[] { "PaymentTypeLookup", "EventLookup", "Address" });
+            var paymentRates = _paymentRateRepository.GetAll();
+            if (!string.IsNullOrEmpty(request.SearchString))
+            {
+                paymentRates = paymentRates.Where(
+                    u => EF.Functions.Like(u.PaymentTypeLookup.ValueStr, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.EventLookup.ValueStr, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Amount.ToString(), "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Backlog.ToString(), "%" + request.SearchString + "%"));
+            }
             return await PaginatedList<FetchPaymentRateDTO>
                             .CreateAsync(
-                                _paymentRateRepository.GetAll().Select(pr => new FetchPaymentRateDTO
+                                paymentRates.Select(pr => new FetchPaymentRateDTO
                                 {
                                     Id = pr.Id,
                                     PaymentTypeId = pr.PaymentTypeLookupId,
@@ -59,8 +59,6 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Query
                                     // Description = g.Description.Value<string>("eng")
                                 })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
-            // var paymentRateResponse = CustomMapper.Mapper.Map<List<PaymentRateDTO>>(paymentRateList);
-            // return paymentRateResponse;
         }
     }
 }
