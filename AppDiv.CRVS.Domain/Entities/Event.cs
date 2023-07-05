@@ -19,7 +19,6 @@ namespace AppDiv.CRVS.Domain.Entities
 
         public Guid? EventAddressId { get; set; }
         public Guid? EventRegisteredAddressId { get; set; }
-
         public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;

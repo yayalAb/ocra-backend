@@ -56,6 +56,17 @@ namespace AppDiv.CRVS.Domain.Entities
                 return AddressName.Value<string>(lang);
             }
         }
+        public void SetCode()
+        {
+            if (ParentAddress != null)
+            {
+                Code = ParentAddress.Code + "_" + CodePostfix;
+            }
+            else
+            {
+                Code = CodePostfix;
+            }
+        }
 
     }
 }
