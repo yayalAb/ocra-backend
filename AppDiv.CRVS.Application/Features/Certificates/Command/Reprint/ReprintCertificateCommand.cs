@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
 {
@@ -68,30 +69,23 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
             }
             string certId = "";
             var cert = _EventRepository.GetAll()
-            .Include(c => c.EventCertificates.OrderByDescending(c => c.CreatedAt))
+            .Include(c => c.EventCertificates)
             .Where(e => e.Id == request.Id).FirstOrDefault();
-
-            var certificate = _certificateRepository.GetAll()
-            .Include(x => x.Event)
-            .Where(x => x.Id == cert.EventCertificates.FirstOrDefault().Id).FirstOrDefault();
+            if (cert == null || cert.EventCertificates.FirstOrDefault() == null)
+            {
+                throw new NotFoundException("To Reperint Certificate With This Id Not Found");
+            }
+            var certificate = cert.EventCertificates.FirstOrDefault();
+            var certificateTemplateId = _ICertificateTemplateRepository.GetAll()
+            .Where(c => c.CertificateType == cert.EventType)
+            .FirstOrDefault();
             if (certificate == null)
             {
-                throw new Exception("Certificate With This Id Not Found");
+                throw new NotFoundException("Certificate Templet Not Found");
             }
-            var certificateTemplateId = _ICertificateTemplateRepository.GetAll()
-            .Where(c => c.CertificateType == certificate.Event.EventType)
-            .FirstOrDefault();
             certId = certificateTemplateId.Id.ToString();
             if (request.IsPrint && !string.IsNullOrEmpty(request.serialNo))
             {
-                var findPerCertificates = _certificateRepository.GetAll()
-                .Where(x => x.EventId == request.Id && x.Status).ToList();
-                foreach (var item in findPerCertificates)
-                {
-                    item.Status = false;
-                    await _certificateRepository.UpdateAsync(item, x => x.Id);
-                }
-
                 var AddHistory = new AddCertificateHistoryRequest
                 {
                     CerteficateId = cert.EventCertificates.FirstOrDefault().Id,
@@ -117,7 +111,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                 }
                 catch (Exception exp)
                 {
-                    throw new ApplicationException(exp.Message);
+                    throw new NotFoundException("an error occered ");
                 }
             }
             var modifiedCertificate = await _certificateRepository.GetAsync(cert?.EventCertificates?.FirstOrDefault()?.Id);
