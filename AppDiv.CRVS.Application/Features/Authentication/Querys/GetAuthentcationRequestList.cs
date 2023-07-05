@@ -80,6 +80,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                          EF.Functions.Like(u.CivilRegOfficer.LastNameStr!, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.RequestType!, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.currentStep.ToString(), "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.NextStep.ToString()!, "%" + request.SearchString + "%"));
             }
             var RequestListDto = RequestList
