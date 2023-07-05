@@ -47,6 +47,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
                          EF.Functions.Like(u.Event.EventOwener.FirstNameStr!, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.Event.EventOwener.MiddleNameStr!, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.Event.EventOwener.LastNameStr!, "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Amount.ToString()!, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%"));
             }
             return
