@@ -6,6 +6,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
+
     public class Address : BaseAuditableEntity
     {
         public string AddressNameStr { get; set; }
@@ -36,6 +37,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup AdminTypeLookup { get; set; }
         public virtual Address ParentAddress { get; set; }
         public virtual ICollection<Event> EventAddresses { get; set; }
+        public virtual ICollection<Event> EventRegisteredAddress { get; set; }
         public virtual ICollection<Address> ChildAddresses { get; set; }
         public virtual ICollection<PersonalInfo> PersonalInfoBirthAddresses { get; }
         public virtual ICollection<PersonalInfo> PersonalInfoResidentAddresses { get; }
@@ -52,6 +54,17 @@ namespace AppDiv.CRVS.Domain.Entities
             get
             {
                 return AddressName.Value<string>(lang);
+            }
+        }
+        public void SetCode()
+        {
+            if (ParentAddress != null)
+            {
+                Code = ParentAddress.Code + "_" + CodePostfix;
+            }
+            else
+            {
+                Code = CodePostfix;
             }
         }
 

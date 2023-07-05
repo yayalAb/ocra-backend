@@ -37,6 +37,30 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
+        public AddressResponseDTO FormatedAddress(Guid? id)
+        {
+            string addessSt = "";
+            var Address = _AddresslookupRepository.GetAll()
+                                   .Where(a => a.Id == id).FirstOrDefault();
+            addessSt = Address?.Id.ToString();
+            while (Address?.ParentAddressId != null)
+            {
+                Address = _AddresslookupRepository.GetAll()
+                                    .Where(a => a.Id == Address.ParentAddressId).FirstOrDefault();
+                addessSt = Address?.Id.ToString() + "/" + addessSt;
+
+            };
+            string[] address = addessSt.Split("/");
+            var FormatAddress = new AddressResponseDTO
+            {
+                Country = address.ElementAtOrDefault(0),
+                Region = address.ElementAtOrDefault(1),
+                Zone = address.ElementAtOrDefault(2),
+                Woreda = address.ElementAtOrDefault(3),
+                Kebele = address.ElementAtOrDefault(4),
+            };
+            throw new NotImplementedException();
+        }
 
         public (string[]?, string[]?)? SplitedAddress(string? am, string? or)
         {
@@ -88,6 +112,9 @@ namespace AppDiv.CRVS.Application.Service
             var lookup = _lookupRepository.GetSingle(id);
             return lookup?.Value?.Value<string>("am");
         }
+
+
+
     }
 }
 

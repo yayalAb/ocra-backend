@@ -8,6 +8,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Application.Common;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -20,7 +21,7 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
-        public async Task<string> MergeAndSplitAddress(List<AddAddressRequest> AddressList, CancellationToken cancellationToken)
+        public async Task<BaseResponse> MergeAndSplitAddress(List<AddAddressRequest> AddressList, CancellationToken cancellationToken)
         {
             Guid? Id;
             foreach (var add in AddressList)
@@ -37,6 +38,9 @@ namespace AppDiv.CRVS.Application.Service
                     AdminTypeLookupId = add.AdminTypeLookupId,
                     OldAddressId = add.Id
                 };
+                Guid ParentAddressId = Address.Id;
+                string Code = Address.Code;
+
                 await _AddressRepository.InsertAsync(Address, cancellationToken);
                 var selectAddress = _AddressRepository.GetAll().Where(x => x.Id == add.Id).FirstOrDefault();
                 selectAddress.Status = true;
@@ -76,15 +80,22 @@ namespace AppDiv.CRVS.Application.Service
                         totalChilders = totalChilders.Where(x =>
                              (x.ParentAddress.Id == add.Id)).OrderBy(x => x.CreatedAt);
                     }
-                    foreach (var address in totalChilders)
-                    {
-                        address.Status = true;
-                        await _AddressRepository.UpdateAsync(address, x => x.Id);
-                    }
+
+
+
+
+
+
+                    // totalChilders.BatchUpdateAsync(a => new Address { Status = "Active" });
+                    // foreach (var address in totalChilders)
+                    // {
+                    //     address.Status = true;
+                    //     await _AddressRepository.UpdateAsync(address, x => x.Id);
+                    // }
                     Console.WriteLine("total childes {0} ", totalChilders.Count());
                 }
             }
-            return "Address Migrated Sucessfully";
+            return new BaseResponse { Message = "Address Migrated Sucessfully" };
         }
     }
 }

@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string EventRegDateEt { get; set; }
 
         public Guid? EventAddressId { get; set; }
+        public Guid? EventRegisteredAddressId { get; set; }
         public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
@@ -27,6 +28,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool OnReprintPaymentRequest { get; set; } = false;
         public bool ReprintWaiting { get; set; } = false;
         public virtual Address EventAddress { get; set; }
+        public virtual Address EventRegisteredAddress { get; set; }
 
         public virtual PersonalInfo EventOwener { get; set; }
         public virtual PersonalInfo CivilRegOfficer { get; set; }

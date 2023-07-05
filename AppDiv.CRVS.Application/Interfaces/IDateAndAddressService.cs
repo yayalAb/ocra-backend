@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Domain.Entities;
 namespace AppDiv.CRVS.Application.Interfaces
 {
@@ -7,6 +8,10 @@ namespace AppDiv.CRVS.Application.Interfaces
 
         public (string[]?, string[]?)? SplitedAddress(string? am, string? or);
         public string[] SplitedAddressByLang(Guid? id);
+        public AddressResponseDTO FormatedAddress(Guid? id);
+
+
+
     }
     public interface ILookupFromId
     {

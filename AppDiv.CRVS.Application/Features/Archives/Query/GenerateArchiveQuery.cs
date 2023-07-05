@@ -18,6 +18,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
+using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.Archives.Query
 {
@@ -41,6 +43,8 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
     {
         private readonly ICertificateRepository _certificateRepository;
         private readonly IEventRepository _eventRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IUserResolverService _userResolverService;
         private readonly IBirthEventRepository _IBirthEventRepository;
         private readonly IMediator _mediator;
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
@@ -58,7 +62,9 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                                         IMediator mediato,
                                         IEventRepository eventRepository,
                                         IFileService fileService,
-                                        ISupportingDocumentRepository supportingDocumentRepository)
+                                        ISupportingDocumentRepository supportingDocumentRepository,
+                                        IUserRepository userRepository,
+                                        IUserResolverService userResolverService)
         {
             _certificateRepository = CertificateRepository;
             _eventRepository = eventRepository;
@@ -68,12 +74,35 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             _ILogger = ILogger;
             _fileService = fileService;
             _supportingDocumentRepository = supportingDocumentRepository;
+            _userRepository = userRepository;
+            _userResolverService = userResolverService;
         }
         public async Task<object> Handle(GenerateArchiveQuery request, CancellationToken cancellationToken)
         {
 
 
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
+            if (selectedEvent == null)
+            {
+                throw new NotFoundException("Event with the given Id  Does not Found");
+            }
+            Guid PersonalInfoId = _userResolverService.GetUserPersonalId();
+            if (PersonalInfoId == null || PersonalInfoId == Guid.Empty)
+            {
+                throw new NotFoundException("User Not Found Please Logout and Login Once");
+            }
+            var userInfo = _userRepository.GetAll()
+            .Include(x => x.Address)
+            .Where(x => x.PersonalInfoId == PersonalInfoId).FirstOrDefault();
+            if (userInfo == null)
+            {
+                throw new NotFoundException("User Not Found Please Logout and Login Once");
+
+            }
+            if (userInfo.AddressId != selectedEvent.EventRegisteredAddressId)
+            {
+                throw new NotFoundException("You Are Not Allowed to See This Event Detail");
+            }
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _eventRepository.GetArchive(request.Id);
             var certificate = _archiveGenerator.GetArchive(request, content, birthCertificateNo?.Event?.CertificateId);
