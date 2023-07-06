@@ -13,9 +13,9 @@ namespace AppDiv.CRVS.Application.Service
     {
         private readonly IUserRepository _user;
         private readonly IGroupRepository _group;
-        private readonly IWorkerHistoryRepository _workerHistory;
+        private readonly IWorkHistoryRepository _workerHistory;
 
-        public WorkHistoryTracker(IUserRepository user, IGroupRepository group, IWorkerHistoryRepository workerHistory)
+        public WorkHistoryTracker(IUserRepository user, IGroupRepository group, IWorkHistoryRepository workerHistory)
         {
             this._group = group;
             this._workerHistory = workerHistory;
@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Application.Service
             {
                 var user = _user.GetSingle(userId);
                 var oldHistory = _workerHistory.GetAll().OrderByDescending(h => h.CreatedAt).FirstOrDefault(h => h.UserId == userId);
-                var history = new WorkerHistory
+                var history = new WorkHistory
                 {
                     UserId = userId,
                     StartDate = oldHistory != null ? oldHistory.CreatedAt : user.CreatedAt,

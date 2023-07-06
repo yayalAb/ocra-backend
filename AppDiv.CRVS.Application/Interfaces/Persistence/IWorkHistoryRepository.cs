@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
-    public interface IWorkerHistoryRepository : IBaseRepository<WorkerHistory>
+    public interface IWorkHistoryRepository : IBaseRepository<WorkHistory>
     {
         public DatabaseFacade Database { get; }
         // Task<WorkerHistory> GetWithIncludedAsync(Guid id);

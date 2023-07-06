@@ -176,6 +176,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<ILoginHistoryRepository, LoginHistoryRepository>();
             services.AddTransient<IAuditLogRepository, AuditLogRepository>();
             services.AddTransient<IVerficationRequestRepository, VerficationRequestRepository>();
+            services.AddScoped<IWorkHistoryRepository, WorkHistoryRepository>();
 
             // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
             #endregion Repositories DI
