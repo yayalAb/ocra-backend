@@ -68,7 +68,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                     {
                         throw new BadRequestException("user Image is invalid base64String");
                     }
-
+                    await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
                     // var contact = new ContactInfo
                     // {
                     //     Id = request.PersonalInfo.ContactInfo.Id,
@@ -128,7 +128,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                     try
                     {
                         await _identityService.UpdateUserAsync(user);
-                        await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
+                        
                         if (request.UserImage != null)
                         {
 
