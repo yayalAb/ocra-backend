@@ -32,12 +32,14 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
         private readonly IIdentityService _identityService;
         private readonly IUserRepository _userRepository;
         private readonly IUserResolverService _userResolverService;
+        private readonly IDateAndAddressService _AddressService;
 
-        public GetUserByIdQueryHandler(IIdentityService identityService, IUserRepository userRepository, IUserResolverService userResolverService)
+        public GetUserByIdQueryHandler(IDateAndAddressService AddressService, IIdentityService identityService, IUserRepository userRepository, IUserResolverService userResolverService)
         {
             _identityService = identityService;
             _userRepository = userRepository;
             _userResolverService = userResolverService;
+            _AddressService = AddressService;
         }
         public async Task<FetchSingleUserResponseDTO> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
         {
@@ -55,7 +57,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 Otp = u.Otp,
                 OtpExpiredDate = u.OtpExpiredDate,
                 SelectedAdminType = u.SelectedAdminType,
-                Status = u.Status &&(!u.LockoutEnabled || u.LockoutEnd==null || u.LockoutEnd <= DateTime.Now),
+                Status = u.Status && (!u.LockoutEnabled || u.LockoutEnd == null || u.LockoutEnd <= DateTime.Now),
                 UserGroups = u.UserGroups.Select(u => u.Id).ToList(),
                 PersonalInfo = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(u.PersonalInfo),
                 PreferedLanguage = u.PreferedLanguage,
@@ -66,6 +68,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
             {
                 throw new NotFoundException($"user with id = {request.Id} is not found");
             }
+            userData.Address = await _AddressService.FormatedAddress(userData.AddressId);
 
             return userData;
 
