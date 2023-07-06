@@ -99,7 +99,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                            AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
                            DeathStatus = p.DeathStatus,
                            HasCivilMarriage = p.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
-                                // &&  (EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%Seera Siivilii%")|| EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%በመዘጋጃ የተመዘገቡ%"))
+                                &&  (EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr.ToLower(), "%seera siivilii%")|| EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%በመዘጋጃ የተመዘገቡ%"))
                                 ).Any()  
                                 
 
