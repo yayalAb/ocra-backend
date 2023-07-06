@@ -1,4 +1,5 @@
 
+using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
@@ -20,6 +21,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid ResidentAddressId { get; set; }
         public Guid NationLookupId { get; set; }
         public string? PhoneNumber { get; set; }
-        public string BirthDateEt {get; set; }
+        public string BirthDateEt { get; set; }
+        public AddressResponseDTOE? BirthAddressResponseDTO { get; set; }
+        public AddressResponseDTOE? ResidentAddressResponseDTO { get; set; }
+
     }
 }
