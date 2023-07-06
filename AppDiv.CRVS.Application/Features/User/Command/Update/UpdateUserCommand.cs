@@ -40,19 +40,19 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         private readonly IGroupRepository _groupRepository;
         private readonly IFileService _fileService;
         private readonly ILogger<UpdateUserCommandHandler> logger;
-        // private readonly IWorkHistoryTracker _tracker;
+        private readonly IWorkHistoryTracker _tracker;
 
         public UpdateUserCommandHandler(
             IIdentityService identityService,
             IGroupRepository groupRepository,
             IFileService fileService,
-            ILogger<UpdateUserCommandHandler> logger
-            // IWorkHistoryTracker tracker
+            ILogger<UpdateUserCommandHandler> logger,
+            IWorkHistoryTracker tracker
             )
         {
             this._fileService = fileService;
             this.logger = logger;
-            // this._tracker = tracker;
+            this._tracker = tracker;
             this._groupRepository = groupRepository;
             _identityService = identityService;
         }
@@ -61,106 +61,106 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             var executionStrategy = _groupRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-            using (var transaction = _groupRepository.Database.BeginTransaction())
-            {
-                try
+                using (var transaction = _groupRepository.Database.BeginTransaction())
                 {
-                    if (!isValidBase64String(request.UserImage))
-                    {
-                        throw new BadRequestException("user Image is invalid base64String");
-                    }
-
-                    // var contact = new ContactInfo
-                    // {
-                    //     Id = request.PersonalInfo.ContactInfo.Id,
-                    //     Email = request.Email,
-                    //     Phone = request.PersonalInfo.ContactInfo.Phone,
-                    //     HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
-                    //     Website = request.PersonalInfo.ContactInfo.Website,
-                    //     Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
-                    //     ModifiedAt = DateTime.Now
-                    // };
-
-                    // 2e946713-6676-49ff-8a64-5b43772a6574 group
-                    // 15911d9e-2196-47b0-845d-bd99ca25467f addres
-                    // 16f8409c-1bbc-4d5e-a530-30aec3076772 lookup
-
-                    var person = new PersonalInfo
-                    {
-                        Id = request.PersonalInfo.Id,
-                        FirstName = request.PersonalInfo.FirstName,
-                        MiddleName = request.PersonalInfo.MiddleName,
-                        LastName = request.PersonalInfo.LastName,
-                        BirthDateEt = request.PersonalInfo.BirthDateEt,
-                        NationalId = request.PersonalInfo.NationalId,
-                        NationalityLookupId = request.PersonalInfo.NationalityLookupId,
-                        SexLookupId = request.PersonalInfo.SexLookupId,
-                        PlaceOfBirthLookupId = request.PersonalInfo.PlaceOfBirthLookupId,
-                        EducationalStatusLookupId = request.PersonalInfo.EducationalStatusLookupId,
-                        TypeOfWorkLookupId = request.PersonalInfo.TypeOfWorkLookupId,
-                        MarriageStatusLookupId = request.PersonalInfo?.MarriageStatusLookupId,
-                        BirthAddressId = request.PersonalInfo?.BirthAddressId,
-                        ResidentAddressId = request.PersonalInfo?.ResidentAddressId,
-                        NationLookupId = request.PersonalInfo?.NationLookupId,
-                        TitleLookupId = request.PersonalInfo?.TitleLookupId,
-                        ReligionLookupId = request.PersonalInfo?.ReligionLookupId,
-                        ModifiedAt = DateTime.Now,
-                        ContactInfo = CustomMapper.Mapper.Map<ContactInfo>(request.PersonalInfo?.ContactInfo)
-
-                    };
-                    var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
-
-                    // request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
-                    //can use this instead of automapper
-                    var user = new ApplicationUser
-                    {
-                        Id = request.Id,
-                        UserName = request.UserName,
-                        Email = request.Email,
-                        AddressId = request.AddressId,
-                        UserGroups = listGroup,
-                        PersonalInfo = person,
-                        Status = request.Status,
-                        PreferedLanguage = request.PreferedLanguage,
-                        SelectedAdminType = request.SelectedAdminType,
-
-                    };
-
                     try
                     {
-                        await _identityService.UpdateUserAsync(user);
-                        await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
-                        if (request.UserImage != null)
+                        if (!isValidBase64String(request.UserImage))
+                        {
+                            throw new BadRequestException("user Image is invalid base64String");
+                        }
+
+                        // var contact = new ContactInfo
+                        // {
+                        //     Id = request.PersonalInfo.ContactInfo.Id,
+                        //     Email = request.Email,
+                        //     Phone = request.PersonalInfo.ContactInfo.Phone,
+                        //     HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
+                        //     Website = request.PersonalInfo.ContactInfo.Website,
+                        //     Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
+                        //     ModifiedAt = DateTime.Now
+                        // };
+
+                        // 2e946713-6676-49ff-8a64-5b43772a6574 group
+                        // 15911d9e-2196-47b0-845d-bd99ca25467f addres
+                        // 16f8409c-1bbc-4d5e-a530-30aec3076772 lookup
+
+                        var person = new PersonalInfo
+                        {
+                            Id = request.PersonalInfo.Id,
+                            FirstName = request.PersonalInfo.FirstName,
+                            MiddleName = request.PersonalInfo.MiddleName,
+                            LastName = request.PersonalInfo.LastName,
+                            BirthDateEt = request.PersonalInfo.BirthDateEt,
+                            NationalId = request.PersonalInfo.NationalId,
+                            NationalityLookupId = request.PersonalInfo.NationalityLookupId,
+                            SexLookupId = request.PersonalInfo.SexLookupId,
+                            PlaceOfBirthLookupId = request.PersonalInfo.PlaceOfBirthLookupId,
+                            EducationalStatusLookupId = request.PersonalInfo.EducationalStatusLookupId,
+                            TypeOfWorkLookupId = request.PersonalInfo.TypeOfWorkLookupId,
+                            MarriageStatusLookupId = request.PersonalInfo?.MarriageStatusLookupId,
+                            BirthAddressId = request.PersonalInfo?.BirthAddressId,
+                            ResidentAddressId = request.PersonalInfo?.ResidentAddressId,
+                            NationLookupId = request.PersonalInfo?.NationLookupId,
+                            TitleLookupId = request.PersonalInfo?.TitleLookupId,
+                            ReligionLookupId = request.PersonalInfo?.ReligionLookupId,
+                            ModifiedAt = DateTime.Now,
+                            ContactInfo = CustomMapper.Mapper.Map<ContactInfo>(request.PersonalInfo?.ContactInfo)
+
+                        };
+                        var listGroup = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
+
+                        // request.UserGroups.ForEach(async g => listGroup.Add(await _groupRepository.GetByIdAsync(g)));
+                        //can use this instead of automapper
+                        var user = new ApplicationUser
+                        {
+                            Id = request.Id,
+                            UserName = request.UserName,
+                            Email = request.Email,
+                            AddressId = request.AddressId,
+                            UserGroups = listGroup,
+                            PersonalInfo = person,
+                            Status = request.Status,
+                            PreferedLanguage = request.PreferedLanguage,
+                            SelectedAdminType = request.SelectedAdminType,
+
+                        };
+
+                        try
+                        {
+                            await _identityService.UpdateUserAsync(user);
+                            await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
+                            if (request.UserImage != null)
+                            {
+
+                                var file = request.UserImage;
+                                var folderName = Path.Combine("Resources", "UserProfiles");
+                                var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                                var fileName = request.Id;
+                                await _fileService.UploadBase64FileAsync(file, fileName, pathToSave, FileMode.Create);
+                            }
+                        }
+                        catch (Exception exp)
+                        {
+                            throw new System.ApplicationException(exp.Message);
+                        }
+
+                        var modifiedUser = await _identityService.GetUserByIdAsync(request.Id);
+
+                        // var userResponse = CustomMapper.Mapper.Map<UserResponseDTO>(modifiedUser);
+                        var userResponse = new UserResponseDTO
                         {
 
-                            var file = request.UserImage;
-                            var folderName = Path.Combine("Resources", "UserProfiles");
-                            var pathToSave = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                            var fileName = request.Id;
-                            await _fileService.UploadBase64FileAsync(file, fileName, pathToSave, FileMode.Create);
-                        }
+                        };
+                        await transaction.CommitAsync();
+                        return userResponse;
                     }
-                    catch (Exception exp)
+                    catch (Exception ex)
                     {
-                        throw new System.ApplicationException(exp.Message);
+                        await transaction.RollbackAsync();
+                        throw new System.ApplicationException(ex.Message);
                     }
-
-                    var modifiedUser = await _identityService.GetUserByIdAsync(request.Id);
-
-                    // var userResponse = CustomMapper.Mapper.Map<UserResponseDTO>(modifiedUser);
-                    var userResponse = new UserResponseDTO
-                    {
-
-                    };
-                    await transaction.CommitAsync();
-                    return userResponse;
                 }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    throw new System.ApplicationException(ex.Message);
-                }
-            }
             });
         }
         private bool isValidBase64String(string? base64String)
