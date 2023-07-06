@@ -10,12 +10,12 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
-    public class WorkerHistoryRepository : BaseRepository<WorkerHistory>, IWorkerHistoryRepository
+    public class WorkHistoryRepository : BaseRepository<WorkHistory>, IWorkHistoryRepository
     {
         public DatabaseFacade Database => _dbContext.Database;
         private readonly CRVSDbContext _dbContext;
 
-        public WorkerHistoryRepository(CRVSDbContext dbContext) : base(dbContext)
+        public WorkHistoryRepository(CRVSDbContext dbContext) : base(dbContext)
         {
             this._dbContext = dbContext;
         }
