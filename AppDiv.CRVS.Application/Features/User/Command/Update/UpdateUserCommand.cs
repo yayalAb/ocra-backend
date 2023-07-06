@@ -61,25 +61,25 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             var executionStrategy = _groupRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                using (var transaction = _groupRepository.Database.BeginTransaction())
+            using (var transaction = _groupRepository.Database.BeginTransaction())
+            {
+                try
                 {
-                    try
+                    if (!isValidBase64String(request.UserImage))
                     {
-                        if (!isValidBase64String(request.UserImage))
-                        {
-                            throw new BadRequestException("user Image is invalid base64String");
-                        }
-
-                        // var contact = new ContactInfo
-                        // {
-                        //     Id = request.PersonalInfo.ContactInfo.Id,
-                        //     Email = request.Email,
-                        //     Phone = request.PersonalInfo.ContactInfo.Phone,
-                        //     HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
-                        //     Website = request.PersonalInfo.ContactInfo.Website,
-                        //     Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
-                        //     ModifiedAt = DateTime.Now
-                        // };
+                        throw new BadRequestException("user Image is invalid base64String");
+                    }
+                    await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
+                    // var contact = new ContactInfo
+                    // {
+                    //     Id = request.PersonalInfo.ContactInfo.Id,
+                    //     Email = request.Email,
+                    //     Phone = request.PersonalInfo.ContactInfo.Phone,
+                    //     HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
+                    //     Website = request.PersonalInfo.ContactInfo.Website,
+                    //     Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
+                    //     ModifiedAt = DateTime.Now
+                    // };
 
                         // 2e946713-6676-49ff-8a64-5b43772a6574 group
                         // 15911d9e-2196-47b0-845d-bd99ca25467f addres
@@ -126,12 +126,12 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
 
                         };
 
-                        try
+                    try
+                    {
+                        await _identityService.UpdateUserAsync(user);
+                        
+                        if (request.UserImage != null)
                         {
-                            await _identityService.UpdateUserAsync(user);
-                            await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
-                            if (request.UserImage != null)
-                            {
 
                                 var file = request.UserImage;
                                 var folderName = Path.Combine("Resources", "UserProfiles");

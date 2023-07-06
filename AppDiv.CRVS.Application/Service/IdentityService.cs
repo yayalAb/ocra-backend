@@ -438,6 +438,17 @@ namespace AppDiv.CRVS.Application.Service
                                     .Include(u => u.PersonalInfo)
                                     .ThenInclude(p => p.ContactInfo).SingleOrDefaultAsync();
         }
+        public async Task<ApplicationUser> GetSingleUserAsync(string userId)
+        {
+            return await _userManager.Users
+                                .Include(u => u.UserGroups)
+                                .FirstOrDefaultAsync(u => u.Id == userId);
+        }
+        public async Task<bool> CheckPhoneNumber(string phoneNumber)
+        {
+            return await _userManager.Users
+                                .AnyAsync(u => u.PhoneNumber == phoneNumber);
+        }
 
     }
 }

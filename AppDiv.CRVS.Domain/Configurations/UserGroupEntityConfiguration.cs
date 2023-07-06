@@ -10,6 +10,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasMany(m => m.ApplicationUsers)
                .WithMany(n => n.UserGroups);
+            // builder.HasMany(m => m.WorkHistories)
+            //    .WithMany(n => n.UserGroups);
 
             builder.HasMany(m => m.Steps)
                .WithOne(n => n.UserGroup).HasForeignKey(n => n.UserGroupId);
