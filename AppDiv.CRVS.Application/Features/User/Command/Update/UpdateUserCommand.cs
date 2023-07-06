@@ -39,18 +39,19 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         private readonly IGroupRepository _groupRepository;
         private readonly IFileService _fileService;
         private readonly ILogger<UpdateUserCommandHandler> logger;
-        private readonly IWorkHistoryTracker _tracker;
+        // private readonly IWorkHistoryTracker _tracker;
 
         public UpdateUserCommandHandler(
             IIdentityService identityService,
             IGroupRepository groupRepository,
             IFileService fileService,
-            ILogger<UpdateUserCommandHandler> logger,
-            IWorkHistoryTracker tracker)
+            ILogger<UpdateUserCommandHandler> logger
+            // IWorkHistoryTracker tracker
+            )
         {
             this._fileService = fileService;
             this.logger = logger;
-            this._tracker = tracker;
+            // this._tracker = tracker;
             this._groupRepository = groupRepository;
             _identityService = identityService;
         }

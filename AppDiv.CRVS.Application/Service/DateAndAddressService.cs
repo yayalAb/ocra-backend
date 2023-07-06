@@ -46,6 +46,10 @@ namespace AppDiv.CRVS.Application.Service
             string addessSt = "";
             var Address = _AddresslookupRepository.GetAll()
                                    .Where(a => a.Id == id).FirstOrDefault();
+            if (Address == null)
+            {
+                return null;
+            }
             addessSt = Address?.Id.ToString();
             while (Address?.ParentAddressId != null)
             {
@@ -54,7 +58,12 @@ namespace AppDiv.CRVS.Application.Service
                 addessSt = Address?.Id.ToString() + "/" + addessSt;
 
             };
+            if (string.IsNullOrEmpty(addessSt))
+            {
+                return null;
+            }
             string[] address = addessSt.Split("/");
+
             var FormatAddress = new AddressResponseDTOE
             {
                 Country = address.ElementAtOrDefault(0),
