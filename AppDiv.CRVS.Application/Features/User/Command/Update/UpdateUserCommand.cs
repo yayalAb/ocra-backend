@@ -14,6 +14,7 @@ using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace AppDiv.CRVS.Application.Features.User.Command.Update
@@ -56,7 +57,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         }
         public async Task<UserResponseDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            using (TransactionScope scope = new TransactionScope())
+            var executionStrategy = _groupRepository.Database.CreateExecutionStrategy();
+            return await executionStrategy.ExecuteAsync(async () =>
+            {
+            using (var transaction = _groupRepository.Database.BeginTransaction())
             {
                 try
                 {
@@ -123,8 +127,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
 
                     try
                     {
-                        // await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
                         await _identityService.UpdateUserAsync(user);
+                        await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
                         if (request.UserImage != null)
                         {
 
@@ -147,14 +151,16 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                     {
 
                     };
-                    scope.Complete();
+                    await transaction.CommitAsync();
                     return userResponse;
                 }
                 catch (Exception ex)
                 {
+                    await transaction.RollbackAsync();
                     throw new System.ApplicationException(ex.Message);
                 }
             }
+            });
         }
         private bool isValidBase64String(string? base64String)
         {

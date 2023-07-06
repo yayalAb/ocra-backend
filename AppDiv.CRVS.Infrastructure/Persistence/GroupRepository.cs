@@ -1,12 +1,14 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class GroupRepository : BaseRepository<UserGroup>, IGroupRepository
     {
         private readonly CRVSDbContext dbContext;
+        public DatabaseFacade Database => dbContext.Database;
 
         public GroupRepository(CRVSDbContext dbContext) : base(dbContext)
         {
