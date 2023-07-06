@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 
         // public Guid PersonalInfoId { get; set; }
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
-        public AddressResponseDTO? Address { get; set; }
+        public AddressResponseDTOE? Address { get; set; }
 
 
         // public ContactInfoDTO ContactInfo {get; set; }

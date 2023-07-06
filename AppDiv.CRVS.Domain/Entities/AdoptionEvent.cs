@@ -3,12 +3,15 @@ using AppDiv.CRVS.Domain.Base;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
+
 namespace AppDiv.CRVS.Domain.Entities
 {
     public class AdoptionEvent : BaseAuditableEntity
     {
         public Guid BeforeAdoptionAddressId { get; set; }
         public string? BirthCertificateId { get; set; }
+        [NotMapped]
+        public AddressResponseDTOE? BeforeAdoptionAddressResponsDTO { get; set; }
 
         public Guid? AdoptiveMotherId { get; set; }
         public Guid? AdoptiveFatherId { get; set; }

@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
-        public async Task<AddressResponseDTO> FormatedAddress(Guid? id)
+        public async Task<AddressResponseDTOE> FormatedAddress(Guid? id)
         {
             string addessSt = "";
             var Address = _AddresslookupRepository.GetAll()
@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Service
 
             };
             string[] address = addessSt.Split("/");
-            var FormatAddress = new AddressResponseDTO
+            var FormatAddress = new AddressResponseDTOE
             {
                 Country = address.ElementAtOrDefault(0),
                 Region = address.ElementAtOrDefault(1),

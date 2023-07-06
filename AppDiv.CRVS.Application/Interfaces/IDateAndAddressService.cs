@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 
         public (string[]?, string[]?)? SplitedAddress(string? am, string? or);
         public string[] SplitedAddressByLang(Guid? id);
-        public Task<AddressResponseDTO> FormatedAddress(Guid? id);
+        public Task<AddressResponseDTOE> FormatedAddress(Guid? id);
 
 
 
