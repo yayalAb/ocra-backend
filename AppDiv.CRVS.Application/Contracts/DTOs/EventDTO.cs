@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         // public DateTime EventRegDate { get; set; }
         public string EventRegDateEt { get; set; }
         public Guid EventAddressId { get; set; }
+        public AddressResponseDTOE? EventAddress { get; set; }
         public RegistrarDTO EventRegistrar { get; set; }
         public PaymentExamptionDTO PaymentExamption { get; set; }
         public string? InformantType { get; set; }

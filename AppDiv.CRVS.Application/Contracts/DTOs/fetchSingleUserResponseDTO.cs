@@ -16,15 +16,18 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string UserName { get; set; }
         public string Email { get; set; }
         public bool Status { get; set; }
-        public string PreferedLanguage {get; set; }
-        public string? Otp {get; set; }
-        public DateTime? OtpExpiredDate {get; set;}
-        public Guid? CreatedBy {get; set; }
+        public string PreferedLanguage { get; set; }
+        public string? Otp { get; set; }
+        public DateTime? OtpExpiredDate { get; set; }
+        public Guid? CreatedBy { get; set; }
         public ICollection<Guid> UserGroups { get; set; }
-        public int SelectedAdminType {get; set;}=0;
+        public int SelectedAdminType { get; set; } = 0;
 
         // public Guid PersonalInfoId { get; set; }
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
+        public AddressResponseDTOE? Address { get; set; }
+
+
         // public ContactInfoDTO ContactInfo {get; set; }
 
     }

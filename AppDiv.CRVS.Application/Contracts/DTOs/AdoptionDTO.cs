@@ -1,4 +1,5 @@
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
@@ -13,6 +14,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public AdoptionEventPersonalInfoDTO AdoptiveFather { get; set; }
         public virtual CourtCaseDTO CourtCase { get; set; }
         public virtual AdoptionEventDTO Event { get; set; }
+        public AddressResponseDTOE? BeforeAdoptionAddressResponsDTO { get; set; }
+
 
 
     }
