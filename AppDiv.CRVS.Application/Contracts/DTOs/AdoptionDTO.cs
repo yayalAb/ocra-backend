@@ -13,5 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public AdoptionEventPersonalInfoDTO AdoptiveFather { get; set; }
         public virtual CourtCaseDTO CourtCase { get; set; }
         public virtual AdoptionEventDTO Event { get; set; }
+
+
     }
 }

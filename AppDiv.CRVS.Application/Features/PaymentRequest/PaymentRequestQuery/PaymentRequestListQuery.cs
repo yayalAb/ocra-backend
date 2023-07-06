@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Domain.Repositories;
 
 namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
 {
@@ -28,18 +29,27 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
     public class GetListOfLookupQueryHandler : IRequestHandler<PaymentRequestListQuery, PaginatedList<PaymentRequestListDTO>>
     {
         private readonly IPaymentRequestRepository _PaymentRequestRepository;
+        private readonly IUserResolverService _userResolverService;
+        private readonly IUserRepository _userRepository;
 
-        public GetListOfLookupQueryHandler(IPaymentRequestRepository PaymentRequestRepository)
+        public GetListOfLookupQueryHandler(IPaymentRequestRepository PaymentRequestRepository, IUserRepository userRepository, IUserResolverService userResolverService)
         {
             _PaymentRequestRepository = PaymentRequestRepository;
+            _userRepository = userRepository;
+            _userResolverService = userResolverService;
         }
         public async Task<PaginatedList<PaymentRequestListDTO>> Handle(PaymentRequestListQuery request, CancellationToken cancellationToken)
         {
+            var user = _userRepository.GetAll().Where(x => x.PersonalInfoId == _userResolverService.GetUserPersonalId()).FirstOrDefault();
+            if (user == null)
+            {
+                throw NotFoundException("User Not Found");
+            }
             var paymentRequestList = _PaymentRequestRepository.GetAll()
             .Include(x => x.Request)
             .Include(x => x.Request.CivilRegOfficer)
             .Include(x => x.Event)
-            .Where(x => x.status == false);
+            .Where(x => x.status == false && x.Event.EventRegisteredAddressId == user.AddressId);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 paymentRequestList = paymentRequestList.Where(
@@ -63,6 +73,11 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
                                         RequestedDate = x.CreatedAt,
                                     })
                                , request.PageCount ?? 1, request.PageSize ?? 10);
+        }
+
+        private Exception NotFoundException(string v)
+        {
+            throw new NotImplementedException();
         }
     }
 }
