@@ -56,7 +56,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
               .Entries()
               .Where(e => e.Entity is Address &&
                       (e.State == EntityState.Added
-                      || e.State == EntityState.Modified));
+                      || e.State == EntityState.Modified 
+                      || e.State == EntityState.Deleted));
             foreach (var entry in entries)
             {
                 switch (entry.State)
@@ -64,11 +65,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     case EntityState.Added:
                         await addressLookupCouchRepo.InserAsync((Address)entry.Entity);
                         break;
-                    case EntityState.Modified:
-                        await addressLookupCouchRepo.UpdateAsync((Address)entry.Entity);
-                        break;
                     case EntityState.Deleted:
                         await addressLookupCouchRepo.RemoveAsync((Address)entry.Entity);
+                        break;
+                    case EntityState.Modified:
+                        await addressLookupCouchRepo.UpdateAsync((Address)entry.Entity);
                         break;
                     default: break;
 
