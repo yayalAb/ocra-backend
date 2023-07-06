@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
-        public AddressResponseDTO FormatedAddress(Guid? id)
+        public async Task<AddressResponseDTO> FormatedAddress(Guid? id)
         {
             string addessSt = "";
             var Address = _AddresslookupRepository.GetAll()
