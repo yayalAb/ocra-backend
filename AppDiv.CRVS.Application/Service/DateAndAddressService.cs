@@ -59,7 +59,7 @@ namespace AppDiv.CRVS.Application.Service
                 Woreda = address.ElementAtOrDefault(3),
                 Kebele = address.ElementAtOrDefault(4),
             };
-            throw new NotImplementedException();
+            return FormatAddress;
         }
 
         public (string[]?, string[]?)? SplitedAddress(string? am, string? or)

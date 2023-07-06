@@ -37,13 +37,47 @@ namespace AppDiv.CRVS.Infrastructure.Services
             return httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
         }
+        public Guid GetWorkingAddressId()
+        {
+            var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+            if (string.IsNullOrEmpty(tokenstring))
+            {
+                return Guid.Empty;
+
+            }
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+            var addressId = token.Claims.FirstOrDefault(c => c.Type == "addressId")?.Value;
+            if (addressId == null)
+            {
+                return Guid.Empty;
+            }
+            return new Guid(addressId);
+        }
+        public int GetAdminLevel()
+        {
+            var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+            if (string.IsNullOrEmpty(tokenstring))
+            {
+                return -1;
+
+            }
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+            var adminLevel = token.Claims.FirstOrDefault(c => c.Type == "adminLevel")?.Value;
+            if (int.TryParse(adminLevel, out int level))
+            {
+                return level;
+            }
+            return -1;
+        }
         public Guid GetUserPersonalId()
         {
             var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
             if (string.IsNullOrEmpty(tokenstring))
             {
                 return Guid.Empty;
-                
+
             }
             var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
 

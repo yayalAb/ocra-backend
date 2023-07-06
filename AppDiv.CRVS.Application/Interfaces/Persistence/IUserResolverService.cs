@@ -6,5 +6,8 @@
         string? GetUserId();
         string GetLocale();
         public Guid GetUserPersonalId();
+        public int GetAdminLevel();
+        public Guid GetWorkingAddressId();
+
     }
 }

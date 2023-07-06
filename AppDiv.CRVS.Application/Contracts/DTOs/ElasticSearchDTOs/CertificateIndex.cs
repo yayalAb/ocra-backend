@@ -33,6 +33,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
         public string? CivilRegOfficerNameOr {get; set; }
         public string? EventAddressAm {get; set; }
         public string? EventAddressOr {get; set; }
+        public Guid? EventRegisteredAddressId {get; set; }
 
 
         
