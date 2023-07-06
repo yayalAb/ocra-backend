@@ -444,6 +444,11 @@ namespace AppDiv.CRVS.Application.Service
                                 .Include(u => u.UserGroups)
                                 .FirstOrDefaultAsync(u => u.Id == userId);
         }
+        public async Task<bool> CheckPhoneNumber(string phoneNumber)
+        {
+            return await _userManager.Users
+                                .AnyAsync(u => u.PhoneNumber == phoneNumber);
+        }
 
     }
 }

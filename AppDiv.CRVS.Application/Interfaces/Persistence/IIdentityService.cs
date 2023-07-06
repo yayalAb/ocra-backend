@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         IQueryable<ApplicationUser> AllUsersDetail();
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<ApplicationUser> GetSingleUserAsync(string userId);
+        Task<bool> CheckPhoneNumber(string phoneNumber);
         Task<Result> DeleteUser(string userId);
         public Task<Result> UnlockUserAsync(string userName);
         public Task<Result> VerifyOtp(string userName, string otp);
