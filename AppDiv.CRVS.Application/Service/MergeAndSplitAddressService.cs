@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Mapper;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -20,10 +21,8 @@ namespace AppDiv.CRVS.Application.Service
             _AddressRepository = AddressRepository;
 
         }
-
         public async Task<BaseResponse> MergeAndSplitAddress(List<AddAddressRequest> AddressList, CancellationToken cancellationToken)
         {
-            Guid? Id;
             foreach (var add in AddressList)
             {
                 var Address = new Address
@@ -45,13 +44,13 @@ namespace AppDiv.CRVS.Application.Service
                 var selectAddress = _AddressRepository.GetAll().Where(x => x.Id == add.Id).FirstOrDefault();
                 selectAddress.Status = true;
                 await _AddressRepository.UpdateAsync(selectAddress, x => x.Id);
-
                 if (add.AdminLevel != 5)
                 {
                     IQueryable<Address> totalChilders = _AddressRepository.GetAll()
                                        .Include(x => x.ParentAddress)
                                        .ThenInclude(x => x.ParentAddress)
                                        .ThenInclude(x => x.ParentAddress);
+
 
                     if (add.AdminLevel == 1)
                     {
@@ -80,22 +79,83 @@ namespace AppDiv.CRVS.Application.Service
                         totalChilders = totalChilders.Where(x =>
                              (x.ParentAddress.Id == add.Id)).OrderBy(x => x.CreatedAt);
                     }
-
-
-
-
-
-
-                    // totalChilders.BatchUpdateAsync(a => new Address { Status = "Active" });
-                    // foreach (var address in totalChilders)
-                    // {
-                    //     address.Status = true;
-                    //     await _AddressRepository.UpdateAsync(address, x => x.Id);
-                    // }
-                    Console.WriteLine("total childes {0} ", totalChilders.Count());
                 }
             }
+
+
+
             return new BaseResponse { Message = "Address Migrated Sucessfully" };
         }
+
+
+        public async Task<bool> UpdateAddress(Address add, CancellationToken cancellationToken)
+        {
+            var Address = new Address
+            {
+                Id = Guid.NewGuid(),
+                AddressName = add.AddressName,
+                StatisticCode = add.StatisticCode,
+                Code = add.Code,
+                AdminLevel = add.AdminLevel,
+                AreaTypeLookupId = add.AreaTypeLookupId,
+                ParentAddressId = add.ParentAddressId,
+                AdminTypeLookupId = add.AdminTypeLookupId,
+                OldAddressId = add.Id
+            };
+            Guid ParentAddressId = Address.Id;
+            string Code = Address.Code;
+
+            await _AddressRepository.InsertAsync(Address, cancellationToken);
+            var selectAddress = _AddressRepository.GetAll().Where(x => x.Id == add.Id).FirstOrDefault();
+            selectAddress.Status = true;
+            await _AddressRepository.UpdateAsync(selectAddress, x => x.Id);
+            await _AddressRepository.SaveChangesAsync(cancellationToken);
+            var Chlds = _AddressRepository.GetAll().Where(x => x.ParentAddressId == add.Id && !x.Status).FirstOrDefault();
+            if (Chlds != null)
+            {
+                var update = _AddressRepository.GetAll().Where(x => x.ParentAddressId == add.Id && !x.Status);
+                // Chlds.Code = Code + Chlds.CodePostfix;
+                // Chlds.ParentAddressId = ParentAddressId;
+                await UpdateAddress(Chlds, cancellationToken);
+            }
+            else
+            {
+                var Parent = _AddressRepository.GetAll()
+                .Where(x => x.Id == add.Id && !x.Status).FirstOrDefault();
+
+                var Parent1 = _AddressRepository.GetAll()
+                .Where(x => x.ParentAddressId == Parent.ParentAddressId && !x.Status).FirstOrDefault();
+                if (Parent != null)
+                {
+                    Chlds.Code = Code + Chlds.CodePostfix;
+                    Chlds.ParentAddressId = ParentAddressId;
+                    await UpdateAddress(Parent, cancellationToken);
+                }
+            }
+
+            return true;
+        }
+
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+// totalChilders.BatchUpdateAsync(a => new Address { Status = "Active" });
+// foreach (var address in totalChilders)
+// {
+//     address.Status = true;
+//     await _AddressRepository.UpdateAsync(address, x => x.Id);
+// }
+// Console.WriteLine("total childes {0} ", totalChilders.Count());
+//     }
+// }
