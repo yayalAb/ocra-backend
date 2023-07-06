@@ -30,7 +30,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid? ResidentAddressId { get; set; }
         public Guid? NationLookupId { get; set; }
         public string? PhoneNumber { get; set; }
-
+        public AddressResponseDTO? BirthAddress { get; set; }
+        public AddressResponseDTO? ResidentAddress { get; set; }
         public UpdateContactInfoRequest? ContactInfo { get; set; }
     }
 }

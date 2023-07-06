@@ -69,6 +69,8 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 throw new NotFoundException($"user with id = {request.Id} is not found");
             }
             userData.Address = await _AddressService.FormatedAddress(userData.AddressId);
+            userData.PersonalInfo.BirthAddress = await _AddressService.FormatedAddress(userData.PersonalInfo.BirthAddressId);
+            userData.PersonalInfo.ResidentAddress = await _AddressService.FormatedAddress(userData.PersonalInfo.ResidentAddressId);
 
             return userData;
 
