@@ -30,6 +30,7 @@ namespace AppDiv.CRVS.Domain
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Transaction> CivilRegOfficerTransactions { get; set; }
         public virtual ICollection<LoginHistory> LoginHistorys { get; set; }
+        public virtual ICollection<WorkerHistory> WorkerHistories { get; set; }
 
 
 

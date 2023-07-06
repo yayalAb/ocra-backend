@@ -118,7 +118,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
 
 
-            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, response.roles));
+            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, response.roles , userData.AddressId, userData.Address.AdminLevel));
 
 
             var userRoles = userData.UserGroups.SelectMany(ug => ug.Roles
