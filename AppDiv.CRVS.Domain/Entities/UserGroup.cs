@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
-        // public virtual ICollection<WorkHistory> WorkHistories { get; set; }
+        public virtual ICollection<WorkHistory> WorkHistories { get; set; }
         public virtual ICollection<Step> Steps { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
     }

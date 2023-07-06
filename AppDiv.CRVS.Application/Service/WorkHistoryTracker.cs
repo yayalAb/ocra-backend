@@ -39,6 +39,7 @@ namespace AppDiv.CRVS.Application.Service
                 var history = new WorkHistory
                 {
                     UserId = userId,
+                    AddressId = user.AddressId,
                     StartDate = oldHistory != null ? oldHistory.CreatedAt : user.CreatedAt,
                     UserGroups = await _group.GetMultipleUserGroups(groups)
                 };

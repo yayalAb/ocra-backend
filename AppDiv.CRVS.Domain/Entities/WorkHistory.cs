@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid AddressId { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
         public virtual Address Address { get; set; }
+        public virtual ApplicationUser User { get; set; }
 
         
     }
