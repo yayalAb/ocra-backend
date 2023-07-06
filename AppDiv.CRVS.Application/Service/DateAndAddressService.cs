@@ -37,8 +37,12 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
-        public async Task<AddressResponseDTOE> FormatedAddress(Guid? id)
+        public async Task<AddressResponseDTOE>? FormatedAddress(Guid? id)
         {
+            if (id == null || id == Guid.Empty)
+            {
+                return null;
+            }
             string addessSt = "";
             var Address = _AddresslookupRepository.GetAll()
                                    .Where(a => a.Id == id).FirstOrDefault();
