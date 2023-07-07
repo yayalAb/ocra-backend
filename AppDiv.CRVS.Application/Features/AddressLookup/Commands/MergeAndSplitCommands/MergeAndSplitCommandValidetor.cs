@@ -17,9 +17,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitC
             _repo = repo;
             RuleFor(p => p.Address[0].AddressName)
                 .NotEmpty().WithMessage("{PropertyName} is required.");
-            RuleFor(p => p.Address[0].Code)
-                .MustAsync(ValidateStatisticCode)
-                .WithMessage("{PropertyName} is must be unique.");
+            // RuleFor(p => p.Address[0].Code)
+            //     .MustAsync(ValidateStatisticCode)
+            //     .WithMessage("{PropertyName} is must be unique.");
         }
         private async Task<bool> ValidateStatisticCode(string code, CancellationToken token)
         {
