@@ -7,7 +7,9 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Domain.Repositories;
+using AppDiv.CRVS.Utility.Services;
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -37,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
         private readonly IDateAndAddressService _addressService;
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContext;
-
+        private readonly CustomDateConverter _convertor = new();
         // private readonly IMapper _mapper;
 
         public GetAllUserQueryHandler(
@@ -45,7 +47,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
             IUserRepository userRepository,
             IIdentityService identityService,
             IUserResolverService UserResolver,
-            IDateAndAddressService addressService)
+            IDateAndAddressService addressService
+            )
         {
             _identityService = identityService;
             _UserResolver = UserResolver;
@@ -139,6 +142,10 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     Status = user.Status && (!user.LockoutEnabled || user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now),
                     AddressId = user.AddressId,
                     AddressString = _addressService.GetFullAddress(user.Address),
+                    GroupName = string.Join(",", user.UserGroups.Select(g => g.GroupName)),
+                    FullName = (string)user.PersonalInfo.FullName(true),
+                    CreatedDate = _convertor.GregorianToEthiopic(user.CreatedAt),
+                    AdminLevel = ((AdminLevel)user.Address.AdminLevel).ToString(),
                     PersonalInfo = new PersonalInfoDTO
                     {
                         Id = user.PersonalInfo.Id,

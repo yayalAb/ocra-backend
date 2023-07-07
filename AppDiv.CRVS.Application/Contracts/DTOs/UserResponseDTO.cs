@@ -19,6 +19,11 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         // public Guid PersonalInfoId { get; set; }
         public PersonalInfoDTO PersonalInfo { get; set; }
         public string? AddressString { get; set; }
+        public string CreatedDate { get; set; } = "";
+        public string FullName { get; set; } = "";
+        public string GroupName { get; set; } = "";
+        public string AdminLevel { get; set; }
+
 
 
     }
