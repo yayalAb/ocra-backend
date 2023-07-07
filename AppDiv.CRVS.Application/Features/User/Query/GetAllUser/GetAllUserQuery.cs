@@ -65,12 +65,12 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                 throw new NotFoundException("User Does not Found");
             }
             var response = _userRepository
-            .GetAll()
+            .GetAll().OrderByDescending(e => e.CreatedAt)
             .Include(x => x.Address)
             .Include(x => x.PersonalInfo)
             .Where(x => x.PersonalInfoId == userId).FirstOrDefault();
             var response2 = _userRepository
-                               .GetAll()
+                               .GetAll().OrderByDescending(e => e.CreatedAt)
                                .Include(x => x.Address)
                                    .ThenInclude(x => x.ParentAddress)
                                        .ThenInclude(x => x.ParentAddress)

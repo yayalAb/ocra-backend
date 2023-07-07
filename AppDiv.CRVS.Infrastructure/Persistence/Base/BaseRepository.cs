@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public virtual IQueryable<T> GetAll()
         {
-            return _dbContext.Set<T>().AsQueryable();
+            return _dbContext.Set<T>().AsNoTracking().AsQueryable();
         }
 
         // public virtual IQueryable<T> GetAllIN(string key, string[] keys)
