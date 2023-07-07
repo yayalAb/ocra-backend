@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     u => EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.BudgetYear.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.TargetAmount.ToString(), "%" + request.SearchString + "%") ||
-                         EF.Functions.Like(u.PlannedDateEt, "%" + request.SearchString + "%"));
+                         EF.Functions.Like(u.PlannedDateEt, "%" + request.SearchString + "%")).OrderByDescending(p => p.CreatedAt);
             }
             return await plans.PaginateAsync<Plan, PlanDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }

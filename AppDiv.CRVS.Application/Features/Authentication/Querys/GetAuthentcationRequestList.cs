@@ -84,6 +84,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                          EF.Functions.Like(u.NextStep.ToString()!, "%" + request.SearchString + "%"));
             }
             var RequestListDto = RequestList
+             .OrderByDescending(w => w.CreatedAt)
              .Select(w => new AuthenticationRequestListDTO
              {
                  Id = w.Id,

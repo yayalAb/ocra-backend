@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using AppDiv.CRVS.Application.Features.User.Command.CheckDuplication;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -111,8 +112,8 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
-        [HttpPost("CheckDuplicateEmail")]
-         public async Task<ActionResult> CheckDuplicateEmail([FromBody] CheckEmailDuplicateCommand command)
+        [HttpPost("CheckDuplication")]
+         public async Task<ActionResult> CheckDuplicateEmail([FromBody] CheckDuplicationCommand command)
         {
             try
             {

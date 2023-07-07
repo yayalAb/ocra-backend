@@ -40,6 +40,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
                             .CreateAsync(
                                 _certificateStoreRepository.GetAll()
                                     .Where(c => c.RecieverId == _userResolver.GetUserId())
+                                    .OrderByDescending(c => c.CreatedAt)
                                     .Select(sn => new CertificateTransferDTO
                                     {
                                         Id = sn.Id,
