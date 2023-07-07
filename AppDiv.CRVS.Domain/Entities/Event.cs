@@ -1,11 +1,24 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using System.IdentityModel.Tokens.Jwt;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Utility.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
     public class Event : BaseAuditableEntity
     {
+        Event()
+        {
+            var httpContext = new HttpContextAccessor().HttpContext;
+            var tokenstring = httpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+            if (!string.IsNullOrEmpty(tokenstring))
+            {
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+                EventRegisteredAddressId = new Guid(token.Claims.FirstOrDefault(c => c.Type == "addressId")?.Value);
+            }
+        }
+
         public string EventType { get; set; }
         public string? RegBookNo { get; set; }
         public string? CivilRegOfficeCode { get; set; }
@@ -69,5 +82,6 @@ namespace AppDiv.CRVS.Domain.Entities
                 EventRegDate = new CustomDateConverter(EventRegDateEt).gorgorianDate;
             }
         }
+
     }
 }
