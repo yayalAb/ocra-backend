@@ -40,11 +40,15 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         {
 
             var selectedBirthEvent = await _BirthEventRepository.GetWithIncludedAsync(request.Id);
+
             if (selectedBirthEvent == null)
             {
                 throw new NotFoundException("Birth Event with the Given Id Is Not Found");
             }
             var BirthEvent = CustomMapper.Mapper.Map<BirthEventDTO>(selectedBirthEvent);
+            BirthEvent.Event.EventSupportingDocuments = (BirthEvent?.Event?.EventSupportingDocuments?.Count == 0) ? null : BirthEvent?.Event?.EventSupportingDocuments;
+            if (BirthEvent.Event.PaymentExamption != null)
+                BirthEvent.Event.PaymentExamption.SupportingDocuments = (BirthEvent?.Event?.PaymentExamption?.SupportingDocuments?.Count == 0) ? null : BirthEvent?.Event?.PaymentExamption?.SupportingDocuments;
             BirthEvent.Father.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Father?.BirthAddressId);
             BirthEvent.Father.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Father?.ResidentAddressId);
             BirthEvent.Mother.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Mother?.BirthAddressId);

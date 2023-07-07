@@ -42,6 +42,9 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
 
             var selectedDeathEvent = await _deathEventRepository.GetIncludedAsync(request.Id);
             var DeathEvent = CustomMapper.Mapper.Map<DeathEventDTO>(selectedDeathEvent);
+            DeathEvent.Event.EventSupportingDocuments = (DeathEvent?.Event?.EventSupportingDocuments?.Count == 0) ? null : DeathEvent?.Event?.EventSupportingDocuments;
+            if (DeathEvent.Event.PaymentExamption != null)
+                DeathEvent.Event.PaymentExamption.SupportingDocuments = (DeathEvent?.Event?.PaymentExamption?.SupportingDocuments?.Count == 0) ? null : DeathEvent?.Event?.PaymentExamption?.SupportingDocuments;
             DeathEvent.Event.EventAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventAddressId);
             DeathEvent.Event.EventOwener.BirthAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.BirthAddressId);
             DeathEvent.Event.EventOwener.ResidentAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.ResidentAddressId);

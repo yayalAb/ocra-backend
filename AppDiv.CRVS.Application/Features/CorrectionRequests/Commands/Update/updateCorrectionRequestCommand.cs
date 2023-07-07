@@ -53,12 +53,14 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
                 {
                     return validationResponse;
                 }
-                await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
-                await _CorrectionRequestRepostory.SaveChangesAsync(cancellationToken);
-                // var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
                 var supportingDocuments = GetSupportingDocuments(request.Content, "eventSupportingDocuments", out JObject newContent);
                 var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
                 _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
+                correctionRequestData.Content = finalContent;
+                
+                await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
+                await _CorrectionRequestRepostory.SaveChangesAsync(cancellationToken);
+                // var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
 
             }
             catch (Exception exp)
