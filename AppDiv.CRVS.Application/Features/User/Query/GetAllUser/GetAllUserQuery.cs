@@ -116,8 +116,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
 
             if (!string.IsNullOrEmpty(request.SearchString))
             {
-                response2 = response2.Where(u => EF.Functions.Like(u.UserName, "%" + request.SearchString + "%") 
-                                            || EF.Functions.Like(u.Email, "%" + request.SearchString + "%") 
+                response2 = response2.Where(u => EF.Functions.Like(u.UserName, "%" + request.SearchString + "%")
+                                            || EF.Functions.Like(u.Email, "%" + request.SearchString + "%")
                                             || EF.Functions.Like(u.PhoneNumber, "%" + request.SearchString + "%"));
             }
 
@@ -131,6 +131,16 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     Email = user.Email,
                     Status = user.Status && (!user.LockoutEnabled || user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now),
                     AddressId = user.AddressId,
+                    AddressString = user.Address.AddressNameLang + "/" +
+                                    user.Address != null && user.Address.ParentAddress != null ? user.Address.ParentAddress.AddressNameLang + "/" +
+                                   (user.Address != null && user.Address.ParentAddress != null && user.Address.ParentAddress.ParentAddress != null ?
+                                    user.Address.ParentAddress.ParentAddress.AddressNameLang : "")
+                                   + (user.Address != null && user.Address.ParentAddress != null && user.Address.ParentAddress.ParentAddress.ParentAddress != null ? "/"
+                                   + user.Address.ParentAddress.ParentAddress.ParentAddress.AddressNameLang : "")
+                                   + (user.Address != null && user.Address.ParentAddress != null && user.Address.ParentAddress.ParentAddress != null &&
+                                   user.Address.ParentAddress.ParentAddress.ParentAddress != null && user.Address.ParentAddress.ParentAddress.ParentAddress.ParentAddress != null ?
+                                    user.Address.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressNameLang + "/" : "")
+                                    : "",
                     PersonalInfo = new PersonalInfoDTO
                     {
                         Id = user.PersonalInfo.Id,

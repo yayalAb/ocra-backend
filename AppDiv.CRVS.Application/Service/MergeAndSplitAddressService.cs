@@ -113,9 +113,9 @@ namespace AppDiv.CRVS.Application.Service
             var Chlds = _AddressRepository.GetAll().Where(x => x.ParentAddressId == add.Id && !x.Status).FirstOrDefault();
             if (Chlds != null)
             {
-                var update = _AddressRepository.GetAll().Where(x => x.ParentAddressId == add.Id && !x.Status);
-                // Chlds.Code = Code + Chlds.CodePostfix;
-                // Chlds.ParentAddressId = ParentAddressId;
+                // var update = _AddressRepository.GetAll().Where(x => x.ParentAddressId == add.Id && !x.Status);
+                Chlds.Code = Code + Chlds.CodePostfix;
+                Chlds.ParentAddressId = ParentAddressId;
                 await UpdateAddress(Chlds, cancellationToken);
             }
             else
