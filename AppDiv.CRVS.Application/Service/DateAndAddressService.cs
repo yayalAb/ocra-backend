@@ -82,6 +82,32 @@ namespace AppDiv.CRVS.Application.Service
             return (addressAm, addressOr);
         }
 
+        public string GetFullAddress(Address address)
+        {
+            string addressString = "";
+            if (address != null)
+            {
+                addressString += address.AddressNameLang;
+                if (address.ParentAddress != null)
+                {
+                    addressString = address.ParentAddress.AddressNameLang + "/" + addressString;
+                    if (address.ParentAddress.ParentAddress != null)
+                    {
+                        addressString = address.ParentAddress.ParentAddress.AddressNameLang + "/" + addressString;
+                        if (address.ParentAddress.ParentAddress.ParentAddress != null)
+                        {
+                            addressString = address.ParentAddress.ParentAddress.ParentAddress.AddressNameLang + "/" + addressString;
+                            if (address.ParentAddress.ParentAddress.ParentAddress.ParentAddress != null)
+                            {
+                                addressString = address.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressNameLang + "/" + addressString;
+                            }
+                        }
+                    }
+                }
+            }
+            return addressString.TrimEnd('/');
+        }
+
 
         public string[] SplitedAddressByLang(Guid? id)
         {
