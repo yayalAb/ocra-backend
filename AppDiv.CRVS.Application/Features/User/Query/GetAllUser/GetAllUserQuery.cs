@@ -69,6 +69,10 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
             .Include(x => x.Address)
             .Include(x => x.PersonalInfo)
             .Where(x => x.PersonalInfoId == userId).FirstOrDefault();
+            if (response == null)
+            {
+                throw new NotFoundException("User Does not Found, Please Logout And Login");
+            }
             var response2 = _userRepository
                                .GetAll()
                                .Include(x => x.Address)
