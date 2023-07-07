@@ -8,6 +8,8 @@ using AppDiv.CRVS.Application.Features.Auth.ChangePassword;
 using AppDiv.CRVS.Application.Features.Auth.UnlockUser;
 using AppDiv.CRVS.Application.Features.Auth.YourTeam;
 using AppDiv.CRVS.Domain;
+using AppDiv.CRVS.Application.Features.Auth.VerifyOtp;
+
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -88,6 +90,11 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return Ok(await Mediator.Send(command));
 
+        }
+        [HttpPost("VerifyOtp")]
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpCommand command)
+        {
+            return Ok(await Mediator.Send(command));
         }
     }
 }

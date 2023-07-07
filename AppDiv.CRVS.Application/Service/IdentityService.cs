@@ -333,11 +333,18 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<bool> Exists(string arg, bool isEmail)
+        public async Task<bool> Exists(string arg, string searchBy)
         {
-            if (isEmail)
+            switch (searchBy.ToLower())
             {
+                case "email":
                 return (await _userManager.FindByEmailAsync(arg)) != null;
+                case "username":
+                return (await _userManager.FindByNameAsync(arg)) != null;
+                case "phone":
+                return await _userManager.Users.Where(u => u.PhoneNumber == arg).AnyAsync();
+                default:
+                throw new Exception("invalid search by string");
             }
             return (await _userManager.FindByNameAsync(arg)) != null;
         }
