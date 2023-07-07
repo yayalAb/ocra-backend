@@ -34,15 +34,22 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
     {
         private readonly IIdentityService _identityService;
         private readonly IUserResolverService _UserResolver;
+        private readonly IDateAndAddressService _addressService;
         private readonly IUserRepository _userRepository;
         private readonly IHttpContextAccessor _httpContext;
 
         // private readonly IMapper _mapper;
 
-        public GetAllUserQueryHandler(IHttpContextAccessor httpContext, IUserRepository userRepository, IIdentityService identityService, IUserResolverService UserResolver)
+        public GetAllUserQueryHandler(
+            IHttpContextAccessor httpContext,
+            IUserRepository userRepository,
+            IIdentityService identityService,
+            IUserResolverService UserResolver,
+            IDateAndAddressService addressService)
         {
             _identityService = identityService;
             _UserResolver = UserResolver;
+            this._addressService = addressService;
             _userRepository = userRepository;
             _httpContext = httpContext;
             // _mapper = mapper;
@@ -131,16 +138,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     Email = user.Email,
                     Status = user.Status && (!user.LockoutEnabled || user.LockoutEnd == null || user.LockoutEnd <= DateTime.Now),
                     AddressId = user.AddressId,
-                    AddressString = user.Address.AddressNameLang + "/" +
-                                    user.Address != null && user.Address.ParentAddress != null ? user.Address.ParentAddress.AddressNameLang + "/" +
-                                   (user.Address != null && user.Address.ParentAddress != null && user.Address.ParentAddress.ParentAddress != null ?
-                                    user.Address.ParentAddress.ParentAddress.AddressNameLang : "")
-                                   + (user.Address != null && user.Address.ParentAddress != null && user.Address.ParentAddress.ParentAddress.ParentAddress != null ? "/"
-                                   + user.Address.ParentAddress.ParentAddress.ParentAddress.AddressNameLang : "")
-                                   + (user.Address != null && user.Address.ParentAddress != null && user.Address.ParentAddress.ParentAddress != null &&
-                                   user.Address.ParentAddress.ParentAddress.ParentAddress != null && user.Address.ParentAddress.ParentAddress.ParentAddress.ParentAddress != null ?
-                                    user.Address.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressNameLang + "/" : "")
-                                    : "",
+                    AddressString = _addressService.GetFullAddress(user.Address),
                     PersonalInfo = new PersonalInfoDTO
                     {
                         Id = user.PersonalInfo.Id,
