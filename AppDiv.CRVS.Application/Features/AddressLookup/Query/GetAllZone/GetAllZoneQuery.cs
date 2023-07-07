@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -35,6 +36,10 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
         {
             var query = _AddresslookupRepository.GetAll()
                     .Where(a => a.AdminLevel == 3 && !a.Status);
+            if (query.FirstOrDefault() == null)
+            {
+                throw new NotFoundException("No Zone Data ");
+            }
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 query = query.Where(a =>

@@ -314,6 +314,8 @@ namespace AppDiv.CRVS.Application.Service
             }
             user.Otp = null;
             user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
+            await _userManager.UpdateAsync(user);
+
             return Result.Success();
         }
         public async Task<Result> DeleteUser(string userId)
