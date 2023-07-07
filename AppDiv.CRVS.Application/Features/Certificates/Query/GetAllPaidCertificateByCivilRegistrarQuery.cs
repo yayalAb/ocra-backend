@@ -67,6 +67,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             return await PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
                                eventsQueriable.Include(e => e.EventOwener)
+                             .Include(e => e.EventPaymentRequest)
+                                .ThenInclude(e => e.Payment)
                               .Select(e => new PaidCertificateDTO
                               {
                                   EventId = e.Id,
@@ -76,8 +78,13 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   EventDate = e.EventDateEt,
                                   EventRegDate = e.EventRegDateEt,
                                   IsCertified = e.IsCertified,
-                                  IsReprint = e.ReprintWaiting
-                              })
+                                  IsReprint = e.ReprintWaiting,
+                                  PaymentDate = e.EventPaymentRequest
+                                        .Where(r => r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("certificategeneration")
+                                        || r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("reprint"))
+                                        .FirstOrDefault().Payment.CreatedAt
+
+                              }).OrderByDescending(e => e.PaymentDate)
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

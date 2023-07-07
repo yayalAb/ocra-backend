@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
                          EF.Functions.Like(u.Event.EventType, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%"));
             }
-            var correctionRequestDto = CorrectionRequest.Select(x => new CorrectionRequestListDTO
+            var correctionRequestDto = CorrectionRequest.OrderByDescending(x => x.CreatedAt).Select(x => new CorrectionRequestListDTO
             {
                 Id = x.Id,
                 Requestedby = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,

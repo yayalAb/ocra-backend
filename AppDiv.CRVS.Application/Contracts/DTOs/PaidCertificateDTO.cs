@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public bool IsCertified { get; set; } = false;
         public bool IsReprint { get; set; } = false;
         public DateTime? CertifiedAt { get; set; }
+        public DateTime? PaymentDate {get; set; }
 
 
     }

@@ -50,6 +50,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             return PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
                                eventByCivilReg
+                               .OrderByDescending(e => e.CreatedAt)
                               .Select(e => new PaidCertificateDTO
                               {
                                   EventId = e.BirthEvent == null ? e.DeathEventNavigation == null ? e.AdoptionEvent == null ?
