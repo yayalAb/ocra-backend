@@ -31,7 +31,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.VerifyOtp
 
         public async Task<BaseResponse> Handle(VerifyOtpCommand request, CancellationToken cancellationToken)
         {
-            var res = _identityService.VerifyOtp(request.UserName, request.Otp);
+            var res = await _identityService.VerifyOtp(request.UserName, request.Otp);
             
             return new BaseResponse();
         }
