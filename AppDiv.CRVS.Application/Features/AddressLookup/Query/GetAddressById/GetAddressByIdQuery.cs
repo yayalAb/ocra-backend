@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
 {
@@ -36,8 +37,12 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressById
         public async Task<object> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
         {
             var LookupList = await _AddresslookupRepository.GetAllAsync();
-            var lookups = CustomMapper.Mapper.Map<List<AddressDTO>>(LookupList.Where(x => x.Id == request.Id));
-            return lookups[0];
+            var lookup = CustomMapper.Mapper.Map<List<AddressDTO>>(LookupList.Where(x => x.Id == request.Id)).FirstOrDefault();
+            if (lookup == null)
+            {
+                throw new NotFoundException($"address with ID {request.Id} is not found");
+            }
+            return lookup;
             // return selectedCustomer;
         }
     }

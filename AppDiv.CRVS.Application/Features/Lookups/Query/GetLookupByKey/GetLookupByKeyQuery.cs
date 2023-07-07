@@ -49,7 +49,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
                 {
                     result = result.Where(l => EF.Functions.Like(l.B.ValueStr, "%" + request.SearchString + "%"));
                 }
-                lookups = result
+                lookups = result.OrderByDescending(l => l.B.CreatedAt)
                    .Select(lo => new LookupByKeyDTO
                    {
                        id = lo.B.Id,
@@ -64,7 +64,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey
                 {
                     results = results.Where(l => EF.Functions.Like(l.ValueStr, "%" + request.SearchString + "%"));
                 }
-                lookups = results.Select(l => new LookupByKeyDTO
+                lookups = results.OrderByDescending(l => l.CreatedAt).Select(l => new LookupByKeyDTO
                 {
                     id = l.Id,
                     Key = l.Key,

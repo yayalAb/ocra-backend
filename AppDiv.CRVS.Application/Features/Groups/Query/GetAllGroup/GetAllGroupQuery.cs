@@ -36,9 +36,10 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup
             var grouplist = _groupRepository.GetAll();
             if (!string.IsNullOrEmpty(request.SearchString))
             {
-                grouplist = grouplist.Where(u => EF.Functions.Like(u.GroupName, "%" + request.SearchString + "%") 
-                                            || EF.Functions.Like(u.DescriptionStr!, "%" + request.SearchString + "%") 
-                                            || EF.Functions.Like(u.RolesStr, "%" + request.SearchString + "%"));
+                grouplist = grouplist.Where(u => EF.Functions.Like(u.GroupName, "%" + request.SearchString + "%")
+                                            || EF.Functions.Like(u.DescriptionStr!, "%" + request.SearchString + "%")
+                                            || EF.Functions.Like(u.RolesStr, "%" + request.SearchString + "%"))
+                                            .OrderByDescending(g => g.CreatedAt);
             }
 
             return await PaginatedList<FetchGroupDTO>

@@ -70,7 +70,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   EventRegDate = e.EventRegDateEt,
                                   IsCertified = e.IsCertified,
                                   CertifiedAt = e.EventCertificates.OrderByDescending(x => x.CreatedAt).FirstOrDefault().CreatedAt
-                              })
+                              }).OrderByDescending(x => x.CertifiedAt)
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

@@ -64,6 +64,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
             await PaginatedList<PaymentRequestListDTO>
                            .CreateAsync(
                                 paymentRequestList
+                                    .OrderByDescending(x =>x.CreatedAt)
                                     .Select(x => new PaymentRequestListDTO
                                     {
                                         Id = x.Id,
