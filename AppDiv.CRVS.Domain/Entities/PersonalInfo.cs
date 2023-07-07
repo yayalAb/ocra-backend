@@ -112,6 +112,24 @@ namespace AppDiv.CRVS.Domain.Entities
             }
         }
 
+        public object FullName(bool langSpecific = false)
+        {
+            if (langSpecific)
+            {
+                return FirstNameLang + " " + MiddleNameLang + " " + LastNameLang;
+            }
+            else 
+            {
+                return new
+                {
+                    Or = FirstName?.Value<string>("or") + " " + MiddleName?.Value<string>("or") + " " + LastName?.Value<string>("or"),
+                    Am = FirstName?.Value<string>("am") + " " + MiddleName?.Value<string>("am") + " " + LastName?.Value<string>("am"),
+                    En = FirstName?.Value<string>("en") + " " + MiddleName?.Value<string>("en") + " " + LastName?.Value<string>("en")
+                };
+            }
+
+        }
+
         public virtual Address BirthAddress { get; set; }
         public virtual Address ResidentAddress { get; set; }
         public virtual Lookup SexLookup { get; set; }
