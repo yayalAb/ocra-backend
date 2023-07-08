@@ -84,10 +84,10 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
             }
             else
             {
-                var existingChild = parentAddress.addresses.Where(ca => ca.Id == address.Id).FirstOrDefault();
+                var existingChild = parentAddress.addresses?.Where(ca => ca.Id == address.Id).FirstOrDefault();
                 if (existingChild == null)
                 {
-                    parentAddress.addresses.Add(new SingleAddressCouch
+                    parentAddress.addresses?.Add(new SingleAddressCouch
                     {
                         Id = address.Id,
                         ParentAddressId = address.ParentAddressId ?? Guid.Empty,
@@ -127,7 +127,10 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
                                     Id = a.Id,
                                     NameAm = a.AddressName == null ? null : a.AddressName.Value<string>("am"),
                                     NameOr = a.AddressName == null ? null : a.AddressName.Value<string>("or")
+                                    NameAm = a.AddressName == null ? null : a.AddressName.Value<string>("am"),
+                                    NameOr = a.AddressName == null ? null : a.AddressName.Value<string>("or")
                                 }).ToList();
+        await _couchContext.Countries.AddOrUpdateRangeAsync(countries);
         await _couchContext.Countries.AddOrUpdateRangeAsync(countries);
         var selected = addresses.GroupBy(a => a.ParentAddressId).Select(g => new AddressCouch
         {
@@ -182,6 +185,8 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
                 }
 
 
+
+                }
 
             }
         }
