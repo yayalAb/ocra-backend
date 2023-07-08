@@ -49,28 +49,28 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         // {
         //     return _DbContext.Addresses.Where(p => p.Id == id).Any();
         // }
-          public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+        public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
         {
 
             var entries = _DbContext.ChangeTracker
               .Entries()
               .Where(e => e.Entity is Address &&
                       (e.State == EntityState.Added
-                      || e.State == EntityState.Modified 
+                      || e.State == EntityState.Modified
                       || e.State == EntityState.Deleted));
             foreach (var entry in entries)
             {
                 switch (entry.State)
                 {
-                    case EntityState.Added:
-                        await addressLookupCouchRepo.InserAsync((Address)entry.Entity);
-                        break;
+                    // case EntityState.Added:
+                    //     await addressLookupCouchRepo.InserAsync((Address)entry.Entity);
+                    //     break;
                     case EntityState.Deleted:
                         await addressLookupCouchRepo.RemoveAsync((Address)entry.Entity);
                         break;
-                    case EntityState.Modified:
-                        await addressLookupCouchRepo.UpdateAsync((Address)entry.Entity);
-                        break;
+                    // case EntityState.Modified:
+                    //     await addressLookupCouchRepo.UpdateAsync((Address)entry.Entity);
+                    //     break;
                     default: break;
 
                 }
@@ -86,10 +86,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
                 .Include(a => a.AdminTypeLookup)
                 );
-           
-                
+
+
             }
         }
     }
 }
-    
+

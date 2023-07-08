@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.Search
                 MarriageStatusLookupId = an.MarriageStatusLookupId,
                 BirthAddressId = an.BirthAddressId,
                 ResidentAddressId = an.ResidentAddressId,
-                NationLookupId = an.NationalityLookupId,
+                NationLookupId = an.NationLookupId,
                 ContactInfoId = an.ContactInfoId,
             });
 

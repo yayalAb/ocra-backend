@@ -19,7 +19,8 @@ public class LookupCouchRepository : ILookupCouchRepository
             Id = lookup.Id,
             Key = lookup.Key,
             ValueAm = lookup.Value?.Value<string>("am"),
-            ValueOr = lookup.Value?.Value<string>("or")
+            ValueOr = lookup.Value?.Value<string>("or"),
+            status = true,
         };
         try
         {
@@ -42,7 +43,8 @@ public class LookupCouchRepository : ILookupCouchRepository
              Id = l.Id,
              Key = l.Key,
              ValueAm = l.Value.Value<string>("am"),
-             ValueOr = l.Value.Value<string>("or")
+             ValueOr = l.Value.Value<string>("or"),
+             status = true
          }
         ).ToList());
         return true;
@@ -57,6 +59,7 @@ public class LookupCouchRepository : ILookupCouchRepository
             existing.Key = lookup.Key;
             existing.ValueAm = lookup.Value?.Value<string>("am");
             existing.ValueOr = lookup.Value?.Value<string>("or");
+
             var res = await _couchContext.Lookups.AddOrUpdateAsync(existing);
         }
 
@@ -68,8 +71,9 @@ public class LookupCouchRepository : ILookupCouchRepository
         var existing = _couchContext.Lookups.Where(l => l.Id == lookup.Id).FirstOrDefault();
         if (existing != null)
         {
-
-            await _couchContext.Lookups.RemoveAsync(existing);
+            existing.status = false;
+            await _couchContext.Lookups.AddOrUpdateAsync(existing);
+            // await _couchContext.Lookups.RemoveAsync(existing);
         }
         // await _couchContext.Lookups.DeleteIndexAsync(deletedLookup, "")
         return true;
