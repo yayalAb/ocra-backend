@@ -37,6 +37,14 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
             }
             Guid defualtCountryId = new Guid(defualtAddress.Value.Value<JObject>("defaults").Value<string>("default_country"));
             Guid defualtRegionId = new Guid(defualtAddress.Value.Value<JObject>("defaults").Value<string>("default_region"));
+            if (defualtCountryId == null || defualtCountryId == Guid.Empty)
+            {
+                throw new NotFoundException("Invalid Defualt Country  Id");
+            }
+            if (defualtRegionId == null || defualtRegionId == Guid.Empty)
+            {
+                throw new NotFoundException("Invalid Defualt Region  Id");
+            }
 
 
             Guid parentId = Guid.Empty;
