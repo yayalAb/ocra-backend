@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
+    // Response for update birth command.
     public class UpdateBirthEventCommandResponse : BaseResponse
     {
         public UpdateBirthEventCommandResponse() : base()
         {
 
         }
-        //  public CustomerResponseDTO Customer { get; set; }  
     }
 }

@@ -1,17 +1,15 @@
-﻿
-using AppDiv.CRVS.Application.Mapper;
+﻿using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
-
+    // Birth event command handler
     public class CreateBirthEventCommandHandler : IRequestHandler<CreateBirthEventCommand, CreateBirthEventCommandResponse>
     {
         private readonly IBirthEventRepository _birthEventRepository;
@@ -19,124 +17,127 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly ISmsService _smsService;
-        private readonly ILogger<CreateBirthEventCommandHandler> _logger;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
                                               IEventPaymentRequestService paymentRequestService,
-                                              ISmsService smsService,
-                                              ILogger<CreateBirthEventCommandHandler> logger)
+                                              ISmsService smsService)
         {
             _eventDocumentService = eventDocumentService;
             _eventRepository = eventRepository;
             _birthEventRepository = birthEventRepository;
             _paymentRequestService = paymentRequestService;
             _smsService = smsService;
-            _logger = logger;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
+            // payment amount for birth event.
             float amount = 0;
+            // Create an execution strategy for the current database.
             var executionStrategy = _birthEventRepository.Database.CreateExecutionStrategy();
+
             return await executionStrategy.ExecuteAsync(async () =>
             {
+                // Begin new transaction.
+                using var transaction = _birthEventRepository.Database.BeginTransaction();
 
-                using (var transaction = _birthEventRepository.Database.BeginTransaction())
+                try
                 {
+                    // Create new response for birth event.
+                    var response = new CreateBirthEventCommandResponse();
+                    // Validate the inputs.
+                    var validator = new CreateBirthEventCommandValidator(_eventRepository);
+                    var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
-                    try
-
+                    //Check and log validation errors
+                    if (validationResult.Errors.Count > 0)
                     {
-                        var createBirthEventCommandResponse = new CreateBirthEventCommandResponse();
-
-                        var validator = new CreateBirthEventCommandValidator(_eventRepository);
-                        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-                        //Check and log validation errors
-                        if (validationResult.Errors.Count > 0)
+                        response.Success = false;
+                        response.Status = 400;
+                        response.ValidationErrors = new List<string>();
+                        foreach (var error in validationResult.Errors)
+                            response.ValidationErrors.Add(error.ErrorMessage);
+                        response.Message = response.ValidationErrors[0];
+                    }
+                    else if (response.Success)
+                    {
+                        try
                         {
-                            createBirthEventCommandResponse.Success = false;
-                            createBirthEventCommandResponse.Status = 400;
-                            createBirthEventCommandResponse.ValidationErrors = new List<string>();
-                            foreach (var error in validationResult.Errors)
-                                createBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                            createBirthEventCommandResponse.Message = createBirthEventCommandResponse.ValidationErrors[0];
-                        }
-                        if (createBirthEventCommandResponse.Success)
-                        {
-                            // var docs = await _groupRepository.GetMultipleUserGroups(request.UserGroups);
-
-                            try
+                            // Map the request to the model entity.
+                            var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                            // Insert to the database.
+                            await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
+                            await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                            // store the persons id from the request
+                            var personIds = new PersonIdObj
                             {
-                                var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
-
-                                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
-                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                // var supportingDocuments = birthEvent.Event?.EventSupportingDocuments;
-                                var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
-                                var personIds = new PersonIdObj
+                                MotherId = birthEvent.Mother.Id,
+                                FatherId = birthEvent.Father.Id,
+                                ChildId = birthEvent.Event.EventOwener.Id,
+                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                            };
+                            // Separate profile photos from supporting documents.
+                            var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
+                            // Save the profile photos.
+                            _eventDocumentService.savePhotos(userPhotos);
+                            // Save Other supporting documents and payment exemption documents.
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                            // For non exempted documents 
+                            if (!birthEvent.Event.IsExampted)
+                            {
+                                // Create payment request.
+                                (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
+                                amount = payment.amount;
+                                if (payment.amount == 0)
                                 {
-                                    MotherId = birthEvent.Mother.Id,
-                                    FatherId = birthEvent.Father.Id,
-                                    ChildId = birthEvent.Event.EventOwener.Id,
-                                    RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
-                                };
-                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
-                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Birth");
-                                if (!birthEvent.Event.IsExampted)
+                                    response.BadRequest("Payment Rate Does't Found, Please Create Payment Rate First");
+                                    amount = 0;
+                                }
+                                else
                                 {
-                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
-                                    amount = response.amount;
-                                    if (response.amount == 0)
+                                    string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {payment.amount} ETB to finance office using code {payment.code}.\n OCRA";
+                                    List<string> msgRecepients = new();
+                                    // Add phone number to the list for SMS.
+                                    if (birthEvent.Mother?.PhoneNumber != null)
                                     {
-                                        createBirthEventCommandResponse.Success = false;
-                                        createBirthEventCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
-                                        amount = 0;
+                                        msgRecepients.Add(birthEvent?.Mother?.PhoneNumber!);
                                     }
-                                    else
+                                    if (birthEvent?.Father?.PhoneNumber != null)
                                     {
-                                        string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
-                                        List<string> msgRecepients = new List<string>();
-                                        if (birthEvent.Mother?.PhoneNumber != null)
-                                        {
-                                            msgRecepients.Add(birthEvent.Mother?.PhoneNumber);
-                                        }
-                                        if (birthEvent.Father?.PhoneNumber != null)
-                                        {
-                                            msgRecepients.Add(birthEvent.Father?.PhoneNumber);
-                                        }
-                                        if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
-                                        {
-                                            msgRecepients.Add(birthEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber);
-                                        }
-                                        await _smsService.SendBulkSMS(msgRecepients, message);
+                                        msgRecepients.Add(birthEvent?.Father?.PhoneNumber!);
                                     }
+                                    if (birthEvent?.Event?.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
+                                    {
+                                        msgRecepients.Add(birthEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber);
+                                    }
+                                    // Send SMS via phone.
+                                    await _smsService.SendBulkSMS(msgRecepients, message);
                                 }
                             }
-                            catch (System.Exception ex)
-                            {
-                                createBirthEventCommandResponse.Success = false;
-                                createBirthEventCommandResponse.Status = 400;
-                                throw;
-                            }
-                            if (amount != 0 || request.BirthEvent.Event.IsExampted)
-                            {
-                                createBirthEventCommandResponse.Message = "Birth Event created Successfully";
-                                createBirthEventCommandResponse.Status = 200;
-                                await transaction.CommitAsync();
-                            }
-
                         }
-                        return createBirthEventCommandResponse;
+                        catch (System.Exception ex)
+                        {
+                            response.BadRequest(ex.Message);
+                            throw new ApplicationException(ex.Message);
+                        }
+                        if (amount != 0 || request.BirthEvent.Event.IsExampted)
+                        {
+                            // Set the response to Created.
+                            response.Created("Birth Event");
+                            // Commint the transaction.
+                            await transaction.CommitAsync();
+                        }
 
                     }
-                    catch (Exception)
-                    {
-                        await transaction.RollbackAsync();
-                        throw;
-                    }
+                    return response;
+
+                }
+                catch (Exception)
+                {
+                    // Rollback the transaction on exception.
+                    await transaction.RollbackAsync();
+                    throw;
                 }
 
             });

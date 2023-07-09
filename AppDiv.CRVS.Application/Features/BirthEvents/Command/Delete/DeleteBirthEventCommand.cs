@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Delete
 {
-    // Customer create command with string response
+    // Birth Delete command with string response
     public class DeleteBirthEventCommand : IRequest<String>
     {
         public Guid Id { get; private set; }
@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Delete
         }
     }
 
-    // Customer delete command handler with string response as output
+    // Birth delete command handler with string response as output
     public class DeleteBirthEventCommmandHandler : IRequestHandler<DeleteBirthEventCommand, String>
     {
         private readonly IBirthEventRepository _birthEventRepository;

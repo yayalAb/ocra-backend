@@ -1,22 +1,18 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Customers.Query;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Delete;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
-using AppDiv.CRVS.Application.Features.BirthEvents.Query;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppDiv.CRVS.API.Controllers
 {
+    // Birth event controller
     [ApiController]
     [Route("api/[controller]")]
     public class BirthEventController : ApiControllerBase
     {
+        // Create birth event
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateBirthEvent(CreateBirthEventCommand command)
@@ -39,13 +35,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
-        [HttpGet("GetAll")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<BirthEventDTO>> Get([FromQuery] GetAllBirthEventQuery query)
-        {
-            return await Mediator.Send(query);
-        }
-
+        // Get birth event by id
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<BirthEventDTO> Get(Guid id)
@@ -53,7 +43,7 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(new GetBirthEventByIdQuery(id));
         }
 
-
+        // Edit birth event
         [HttpPut("Edit/{id}")]
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateBirthEventCommand command)
         {
@@ -83,6 +73,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
+        // Delete birth event
         [HttpDelete("Delete/{id}")]
         public async Task<ActionResult> DeleteBirthEvent(Guid id)
         {

@@ -1,48 +1,33 @@
-﻿using System.Net.Cache;
-using AppDiv.CRVS.Application.Interfaces.Persistence;
-using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
+﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Application.Validators;
-using AppDiv.CRVS.Domain.Base;
-using AppDiv.CRVS.Domain.Repositories;
 using FluentValidation;
 using AppDiv.CRVS.Utility.Services;
-using MediatR;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
+    // Validator for birth event create.
     public class CreateBirthEventCommandValidator : AbstractValidator<CreateBirthEventCommand>
     {
         public CreateBirthEventCommandValidator(IEventRepository eventRepo)
         {
+            // Date converter from Ethiopian date to Gregorian date and vice versa.
             var dateConverter = new CustomDateConverter();
-
+            // Validate the inputs.
             RuleFor(p => p.BirthEvent).SetValidator(new BirthEventValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Father).SetValidator(new FatherValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Mother).SetValidator(new MotherValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(eventRepo, "Event.CertificateId");
-            // RuleFor(p => p.BirthEvent.Event.EventOwener.BirthDateEt).NotValidChildDate()
-            // .When(p => (dateConverter.EthiopicToGregorian(p.BirthEvent.Father.BirthDateEt).Year <= dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year)
-            // || (dateConverter.EthiopicToGregorian(p.BirthEvent.Mother.BirthDateEt).Year <= dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year));
-            // .When(p => dateConverter.EthiopicToGregorian(p.BirthEvent.Event.EventOwener.BirthDateEt).Year >= dateConverter.EthiopicToGregorian(p.BirthEvent.Father.BirthDateEt).Year);
-            RuleFor(p => p.BirthEvent.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo))
+            RuleFor(p => p.BirthEvent.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo)!)
                     .When(p => p.BirthEvent.BirthNotification != null);
-            RuleFor(p => p.BirthEvent.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator(eventRepo))
+            RuleFor(p => p.BirthEvent.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator(eventRepo)!)
                     .When(p => (p.BirthEvent.Event.EventRegistrar != null
-                                || p.BirthEvent.Event.InformantType.ToLower() == "legal guardian"
-                                || p.BirthEvent.Event.InformantType.ToLower() == "police officer"));
-            RuleFor(p => p.BirthEvent.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator())
+                                || p.BirthEvent.Event.InformantType?.ToLower() == "legal guardian"
+                                || p.BirthEvent.Event.InformantType?.ToLower() == "police officer"));
+            RuleFor(p => p.BirthEvent.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator()!)
                     .When(p => (p.BirthEvent.Event.EventSupportingDocuments != null));
-            RuleFor(p => p.BirthEvent.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo))
+            RuleFor(p => p.BirthEvent.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo)!)
                 .When(p => (p.BirthEvent.Event.IsExampted));
         }
 

@@ -1,16 +1,10 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
-    // Customer create command with CustomerResponse
+    // Birth update command with Birth update response
     public class UpdateBirthEventCommand : IRequest<UpdateBirthEventCommandResponse>
     {
         public Guid Id { get; set; }
