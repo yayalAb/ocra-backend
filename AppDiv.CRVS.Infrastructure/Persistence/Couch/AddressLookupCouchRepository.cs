@@ -186,10 +186,8 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
                 }
 
             }
-        }
-
         return true;
-    }
+        }
     public async Task<bool> RemoveAsync(Address address)
     {
         _logger.LogCritical($"adminLevel --- {address.AdminLevel}");
