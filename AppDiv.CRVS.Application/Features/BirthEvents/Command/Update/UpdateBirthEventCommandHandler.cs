@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     {
                         if (request.ValidateFirst == true)
                         {
-                            response.Created(entity: "Birth", message: "Valid Input.");
+                            response.Updated(entity: "Birth", message: "Valid Input.");
                             return response;
                         }
                         try
@@ -109,7 +109,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             throw new ApplicationException(ex.Message);
                         }
                         // Set response to created.
-                        response.Created("Birth Event");
+                        response.Updated("Birth Event");
                     }
 
                     return response;

@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 {
+    // Update death command response
     public class UpdateDeathEventCommandResponse : BaseResponse
     {
         public UpdateDeathEventCommandResponse() : base()
         {
 
         }
-        //  public CustomerResponseDTO Customer { get; set; }  
     }
 }
