@@ -3,6 +3,8 @@ using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Infrastructure.Context;
+using AppDiv.CRVS.Application.Mapper;
+
 using Org.BouncyCastle.Math.EC.Rfc7748;
 using System;
 using System.Collections.Generic;
@@ -10,6 +12,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Infrastructure.CouchModels;
+using AutoMapper.QueryableExtensions;
+
+
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -17,11 +25,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
     {
         private readonly CRVSDbContext _DbContext;
         private readonly IAddressLookupCouchRepository addressLookupCouchRepo;
+        private readonly ILogger<AddressLookupRepository> _logger;
 
-        public AddressLookupRepository(CRVSDbContext dbContext, IAddressLookupCouchRepository addressLookupCouchRepo) : base(dbContext)
+
+        public AddressLookupRepository(CRVSDbContext dbContext, IAddressLookupCouchRepository addressLookupCouchRepo , ILogger<AddressLookupRepository> logger ) : base(dbContext)
         {
             _DbContext = dbContext;
             this.addressLookupCouchRepo = addressLookupCouchRepo;
+            _logger = logger;
         }
 
         // Task<Address> IAddressLookupRepository.DeleteAsync(Address entities)
@@ -58,25 +69,40 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                       (e.State == EntityState.Added
                       || e.State == EntityState.Modified
                       || e.State == EntityState.Deleted));
-            foreach (var entry in entries)
-            {
-                switch (entry.State)
-                {
-                    // case EntityState.Added:
-                    //     await addressLookupCouchRepo.InserAsync((Address)entry.Entity);
-                    //     break;
-                    case EntityState.Deleted:
-                        await addressLookupCouchRepo.RemoveAsync((Address)entry.Entity);
-                        break;
-                    // case EntityState.Modified:
-                    //     await addressLookupCouchRepo.UpdateAsync((Address)entry.Entity);
-                    //     break;
-                    default: break;
 
+            List<AddressEntry> addressEntries = entries.Select(e =>new AddressEntry{
+                State = e.State,
+                Address = CustomMapper.Mapper.Map<AddressCouchDTO>( (Address)e.Entity)
+            }).ToList();   
+                
+
+            var saveChangeRes = await base.SaveChangesAsync(cancellationToken);
+            
+
+            if (saveChangeRes)
+            {
+
+
+                foreach (var entry in addressEntries)
+                {
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            await addressLookupCouchRepo.InserAsync(entry.Address);
+                            break;
+                        case EntityState.Deleted:
+                            await addressLookupCouchRepo.RemoveAsync(entry.Address);
+                            break;
+                        case EntityState.Modified:
+                            await addressLookupCouchRepo.UpdateAsync(entry.Address);
+                            break;
+                        default: break;
+
+                    }
                 }
             }
 
-            return await base.SaveChangesAsync(cancellationToken);
+            return saveChangeRes;
         }
         public async Task InitializeAddressLookupCouch()
         {
@@ -85,6 +111,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
                 .Include(a => a.AdminTypeLookup)
+                .ProjectTo<AddressCouchDTO>(CustomMapper.Mapper.ConfigurationProvider)
                 );
 
 

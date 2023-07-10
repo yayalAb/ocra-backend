@@ -77,6 +77,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Customer, EditCustomerCommand>().ReverseMap();
 
             CreateMap<Lookup, LookupDTO>().ReverseMap();
+            CreateMap<Lookup, LookupCouchDTO>();
             CreateMap<Lookup, CreateLookupCommand>().ReverseMap();
             CreateMap<Lookup, UpdateLookupCommand>().ReverseMap();
 
@@ -86,6 +87,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Address, CreateAdderssCommand>().ReverseMap();
             CreateMap<Address, UpdateaddressCommand>().ReverseMap();
             CreateMap<Address, AddAddressRequest>().ReverseMap();
+            CreateMap<Address, AddressCouchDTO>();
+
 
             CreateMap<Setting, SettingDTO>().ReverseMap();
             CreateMap<Setting, createSettingCommand>().ReverseMap();

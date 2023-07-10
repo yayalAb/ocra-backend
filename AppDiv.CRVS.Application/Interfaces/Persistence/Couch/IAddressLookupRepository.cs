@@ -1,12 +1,13 @@
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Persistence.Couch;
 public interface IAddressLookupCouchRepository
 {
-    public Task<bool> InserAsync(Address address);
-    public Task<bool> UpdateAsync(Address Address);
-    public Task<bool> RemoveAsync(Address Address);
-    public Task<bool> BulkInsertAsync(IQueryable<Address> Address);
+    public Task<bool> InserAsync(AddressCouchDTO address);
+    public Task<bool> UpdateAsync(AddressCouchDTO Address);
+    public Task<bool> RemoveAsync(AddressCouchDTO Address);
+    public Task<bool> BulkInsertAsync(IQueryable<AddressCouchDTO> Address);
     public Task<bool> IsEmpty();
 
 
