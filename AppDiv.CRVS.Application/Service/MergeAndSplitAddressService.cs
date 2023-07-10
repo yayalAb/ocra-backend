@@ -47,15 +47,22 @@ namespace AppDiv.CRVS.Application.Service
                 if (add.AdminLevel != 5)
                 {
                     var ChildAddress = _addressRepository.GetAll().Where(x => x.ParentAddressId == add.OldAddressId);
-                    var pushToList = new ToUpdateList
+                    if (ChildAddress.FirstOrDefault() != null)
                     {
-                        AddressList = ChildAddress.ToList(),
-                        ParentAddress = add
-                    };
-                    ListOfAdress1.Add(pushToList);
+                        var pushToList = new ToUpdateList
+                        {
+                            AddressList = ChildAddress.ToList(),
+                            ParentAddress = add
+                        };
+                        ListOfAdress1.Add(pushToList);
+                    }
                 }
             }
-            await UpdateAddress(ListOfAdress1, cancellationToken);
+            if (ListOfAdress1?.FirstOrDefault()?.AddressList?.FirstOrDefault() != null)
+            {
+                await UpdateAddress(ListOfAdress1, cancellationToken);
+
+            }
             await _addressRepository.SaveChangesAsync(cancellationToken);
 
             return new BaseResponse { Message = "Address Migrated Sucessfully" };
@@ -63,6 +70,8 @@ namespace AppDiv.CRVS.Application.Service
         public async Task<bool> UpdateAddress(List<ToUpdateList> AddressList, CancellationToken cancellationToken)
         {
             List<ToUpdateList> ListOfAdress = new List<ToUpdateList>();
+            List<Address> ListAddress = new List<Address>();
+
             foreach (var la in AddressList)
             {
                 var NewAddressList = la.AddressList.Select(x => new Address
@@ -71,7 +80,7 @@ namespace AppDiv.CRVS.Application.Service
                     AddressName = x.AddressName,
                     StatisticCode = x.StatisticCode,
                     Code = la.ParentAddress.Code + x.CodePostfix,
-                    AdminLevel = x.AdminLevel,
+                    AdminLevel = la.ParentAddress.AdminLevel + 1,
                     AreaTypeLookupId = x.AreaTypeLookupId,
                     ParentAddressId = la.ParentAddress.Id,
                     AdminTypeLookupId = x.AdminTypeLookupId,
@@ -82,10 +91,15 @@ namespace AppDiv.CRVS.Application.Service
                 updateAddress1.ForEach(x => x.Status = true);
                 await _addressRepository.UpdateAsync(updateAddress1, x => x.Id);
                 await _addressRepository.InsertAsync(address1, cancellationToken);
-                await _addressRepository.SaveChangesAsync(cancellationToken);
-                foreach (var chil in NewAddressList)
+                ListAddress.AddRange(address1);
+            }
+            await _addressRepository.SaveChangesAsync(cancellationToken);
+
+            foreach (var chil in ListAddress)
+            {
+                var ChildAddress = _addressRepository.GetAll().Where(x => x.ParentAddressId == chil.OldAddressId);
+                if (ChildAddress?.FirstOrDefault() != null)
                 {
-                    var ChildAddress = _addressRepository.GetAll().Where(x => x.ParentAddressId == chil.OldAddressId);
                     var pushToList = new ToUpdateList
                     {
                         AddressList = ChildAddress.ToList(),

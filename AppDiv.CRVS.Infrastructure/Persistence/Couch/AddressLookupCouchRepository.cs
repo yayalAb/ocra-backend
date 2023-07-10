@@ -84,10 +84,10 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
             }
             else
             {
-                var existingChild = parentAddress.addresses.Where(ca => ca.Id == address.Id).FirstOrDefault();
+                var existingChild = parentAddress.addresses?.Where(ca => ca.Id == address.Id).FirstOrDefault();
                 if (existingChild == null)
                 {
-                    parentAddress.addresses.Add(new SingleAddressCouch
+                    parentAddress.addresses?.Add(new SingleAddressCouch
                     {
                         Id = address.Id,
                         ParentAddressId = address.ParentAddressId ?? Guid.Empty,
@@ -125,10 +125,10 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
                                 .Select(a => new CountryCouch
                                 {
                                     Id = a.Id,
-                                    NameAm =a.AddressName == null?null: a.AddressName.Value<string>("am"),
-                                    NameOr =a.AddressName == null?null: a.AddressName.Value<string>("or")
+                                    NameAm = a.AddressName == null ? null : a.AddressName.Value<string>("am"),
+                                    NameOr = a.AddressName == null ? null : a.AddressName.Value<string>("or")
                                 }).ToList();
-         await _couchContext.Countries.AddOrUpdateRangeAsync(countries);
+        await _couchContext.Countries.AddOrUpdateRangeAsync(countries);
         var selected = addresses.GroupBy(a => a.ParentAddressId).Select(g => new AddressCouch
         {
             Id = g.Key,
@@ -170,21 +170,24 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
             if (existingParent != null)
             {
                 var child = existingParent.addresses.Where(a => a.Id == address.Id).FirstOrDefault();
+                if (child != null)
+                {
+                    child.ParentAddressId = address?.ParentAddressId ?? Guid.Empty;
+                    child.NameAm = address?.AddressName?.Value<string>("am");
+                    child.NameOr = address?.AddressName?.Value<string>("or");
+                    child.AdminLevel = address?.AdminLevel;
+                    child.AdminTypeAm = address?.AdminTypeLookup == null ? null : address?.AdminTypeLookup?.Value?.Value<string>("am");
+                    child.AdminTypeOr = address?.AdminTypeLookup == null ? null : address?.AdminTypeLookup?.Value?.Value<string>("or");
+                    var res = await _couchContext.AddressCouches.AddOrUpdateAsync(existingParent);
+                }
 
-                child.ParentAddressId = address.ParentAddressId ?? Guid.Empty;
-                child.NameAm = address.AddressName?.Value<string>("am");
-                child.NameOr = address.AddressName?.Value<string>("or");
-                child.AdminLevel = address.AdminLevel;
-                child.AdminTypeAm = address.AdminTypeLookup == null ? null : address.AdminTypeLookup.Value.Value<string>("am");
-                child.AdminTypeOr = address.AdminTypeLookup == null ? null : address.AdminTypeLookup.Value.Value<string>("or");
 
-                var res = await _couchContext.AddressCouches.AddOrUpdateAsync(existingParent);
+
+                }
 
             }
-        }
-
         return true;
-    }
+        }
     public async Task<bool> RemoveAsync(Address address)
     {
         _logger.LogCritical($"adminLevel --- {address.AdminLevel}");
