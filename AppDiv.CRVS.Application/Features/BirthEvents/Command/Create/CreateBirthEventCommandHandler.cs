@@ -91,9 +91,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                     amount = response.amount;
                                     if (response.amount == 0)
                                     {
-                                        createBirthEventCommandResponse.Success = false;
-                                        createBirthEventCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
-                                        amount = 0;
+                                        birthEvent.Event.IsPaid = true;
                                     }
                                     else
                                     {
@@ -121,12 +119,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 createBirthEventCommandResponse.Status = 400;
                                 throw;
                             }
-                            if (amount != 0 || request.BirthEvent.Event.IsExampted)
-                            {
-                                createBirthEventCommandResponse.Message = "Birth Event created Successfully";
-                                createBirthEventCommandResponse.Status = 200;
-                                await transaction.CommitAsync();
-                            }
+                            // if (amount != 0 || request.BirthEvent.Event.IsExampted)
+                            // {
+                            createBirthEventCommandResponse.Message = "Birth Event created Successfully";
+                            createBirthEventCommandResponse.Status = 200;
+                            await transaction.CommitAsync();
+                            // }
 
                         }
                         return createBirthEventCommandResponse;

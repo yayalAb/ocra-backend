@@ -176,12 +176,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     amount = response.amount;
                                     if (response.amount == 0)
                                     {
-                                        CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
-                                        {
-                                            Success = false,
-                                            Message = "Payment Rate Does't Found, Please Create Payment Rate First"
-                                        };
-                                        amount = 0;
+                                        adoptionEvent.Event.IsPaid = true;
                                     }
                                     else
                                     {
@@ -202,15 +197,15 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     //
 
                                 }
-                                if (amount != 0 || adoptionEvent.Event.IsExampted)
+                                // if (amount != 0 || adoptionEvent.Event.IsExampted)
+                                // {
+                                await transaction.CommitAsync();
+                                CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
-                                    await transaction.CommitAsync();
-                                    CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
-                                    {
-                                        Success = true,
-                                        Message = "Adoption Event created Successfully"
-                                    };
-                                }
+                                    Success = true,
+                                    Message = "Adoption Event created Successfully"
+                                };
+                                // }
 
                             }
                             catch (Exception ex)

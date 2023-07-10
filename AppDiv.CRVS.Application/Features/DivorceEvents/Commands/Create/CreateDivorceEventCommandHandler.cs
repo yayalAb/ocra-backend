@@ -92,9 +92,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 amount = response.amount;
                                 if (response.amount == 0)
                                 {
-                                    createDivorceEventCommandResponse.Success = false;
-                                    createDivorceEventCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
-                                    amount = 0;
+                                    divorceEvent.Event.IsPaid = true;
                                 }
                                 else
                                 {
@@ -113,11 +111,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 }
 
                             }
-                            if (amount != 0 || divorceEvent.Event.IsExampted)
-                            {
-                                createDivorceEventCommandResponse.Message = "Divorce event created successfully";
-                                await transaction.CommitAsync();
-                            }
+                            // if (amount != 0 || divorceEvent.Event.IsExampted)
+                            // {
+                            createDivorceEventCommandResponse.Message = "Divorce event created successfully";
+                            await transaction.CommitAsync();
+                            // }
                         }
                         return createDivorceEventCommandResponse;
                     }

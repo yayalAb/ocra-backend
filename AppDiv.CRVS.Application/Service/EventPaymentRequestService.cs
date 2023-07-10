@@ -42,15 +42,17 @@ namespace AppDiv.CRVS.Application.Service
                 .FirstOrDefault();
             if (paymentRate == null)
             {
-                if (RequestId == null || RequestId == Guid.Empty)
-                {
+                throw new NotFoundException("Payment Rate Does't Found, Please Create Payment Rate First");
 
-                    return (0, "payment rate not found");
-                }
-                else
-                {
-                    return (0, "payment rate not found");
-                }
+                // if (RequestId == null || RequestId == Guid.Empty)
+                // {
+
+                //     return (0, "payment rate not found");
+                // }
+                // else
+                // {
+                //     return (0, "payment rate not found");
+                // }
             }
             string paymentCode = "";
             do

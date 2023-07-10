@@ -183,10 +183,10 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
 
 
-                }
-
             }
+
         }
+
 
         return true;
     }
