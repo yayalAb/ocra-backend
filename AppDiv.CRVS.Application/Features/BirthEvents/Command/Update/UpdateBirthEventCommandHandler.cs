@@ -12,118 +12,113 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
     {
         private readonly IBirthEventRepository _birthEventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IEventRepository _eventRepository;
-        private readonly ILookupRepository _lookupRepository;
 
 
         public UpdateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
-                                              IEventDocumentService eventDocumentService,
-                                              IEventPaymentRequestService paymentRequestService,
-                                              ILookupRepository lookupRepository)
+                                              IEventDocumentService eventDocumentService)
         {
             this._eventDocumentService = eventDocumentService;
             this._eventRepository = eventRepository;
             this._birthEventRepository = birthEventRepository;
-            this._paymentRequestService = paymentRequestService;
-            _lookupRepository = lookupRepository;
         }
         public async Task<UpdateBirthEventCommandResponse> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
         {
             var executionStrategy = _birthEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                using (var transaction = request.IsFromCommand ? null : _birthEventRepository.Database.BeginTransaction())
+                using var transaction = request.IsFromCommand ? null : _birthEventRepository.Database.BeginTransaction();
+                try
                 {
-                    try
+                    // Create response.
+                    var response = new UpdateBirthEventCommandResponse();
+                    // Validate the inputs.
+                    var validator = new UpdateBirthEventCommandValidator(_eventRepository);
+                    var validationResult = await validator.ValidateAsync(request, cancellationToken);
+                    //Check and log validation errors
+                    if (validationResult.Errors.Count > 0)
                     {
-                        var updateBirthEventCommandResponse = new UpdateBirthEventCommandResponse();
-                        // var birth = await _birthEventRepository.GetWithIncludedAsync(request.Id);
-                        var validator = new UpdateBirthEventCommandValidator(_eventRepository);
-                        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-                        //Check and log validation errors
-                        if (validationResult.Errors.Count > 0)
+                        response.Success = false;
+                        response.Status = 400;
+                        response.ValidationErrors = new List<string>();
+                        foreach (var error in validationResult.Errors)
+                            response.ValidationErrors.Add(error.ErrorMessage);
+                        response.Message = response.ValidationErrors[0];
+
+                    }
+                    if (response.Success)
+                    {
+                        if (request.ValidateFirst == true)
                         {
-                            updateBirthEventCommandResponse.Success = false;
-                            updateBirthEventCommandResponse.Status = 400;
-                            updateBirthEventCommandResponse.ValidationErrors = new List<string>();
-                            foreach (var error in validationResult.Errors)
-                                updateBirthEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                            updateBirthEventCommandResponse.Message = updateBirthEventCommandResponse.ValidationErrors[0];
-                            
+                            response.Created(entity: "Birth", message: "Valid Input.");
+                            return response;
                         }
-                        if (updateBirthEventCommandResponse.Success)
-                        { 
-                            if (request.ValidateFirst == true)
+                        try
+                        {
+                            // Get newly added supporting documents and examption documents.
+                            var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
+                            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
+                            // Get old supporting documents and examption documents.
+                            var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
+                            var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
+                            // Map the reques to the model entity.
+                            var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
+                            birthEvent.Event.EventType = "Birth";
+                            // person ids
+                            var personIds = new PersonIdObj
                             {
-                                updateBirthEventCommandResponse.Created(entity: "Birth", message: "Valid Input.");
-                                return updateBirthEventCommandResponse;
-                            }
-                            try
+                                MotherId = birthEvent.Mother.Id,
+                                FatherId = birthEvent.Father.Id,
+                                ChildId = birthEvent.Event.EventOwener.Id,
+                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                            };
+                            // Set the supporting documents and exemption documents null
+                            birthEvent.Event.EventSupportingDocuments = null!;
+                            if (birthEvent.Event.PaymentExamption != null)
                             {
-                                //supporting docs cant be updated only new (one without id) are created
-                                var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
-                                var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
-                                var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
-                                var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
-
-                                var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
-                                birthEvent.Event.EventType = "Birth";
-
-                                var personIds = new PersonIdObj
-                                {
-                                    MotherId = birthEvent.Mother.Id,
-                                    FatherId = birthEvent.Father.Id,
-                                    ChildId = birthEvent.Event.EventOwener.Id,
-                                    RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
-                                };
-                                // var examptionDocuments = birthEvent.Event.PaymentExamption?.SupportingDocuments;
-                                birthEvent.Event.EventSupportingDocuments = null;
-                                if (birthEvent.Event.PaymentExamption != null)
-                                {
-                                    birthEvent.Event.PaymentExamption.SupportingDocuments = null;
-                                }
-                                _birthEventRepository.UpdateAll(birthEvent);
-                                if (!request.IsFromCommand)
-                                {
-                                    var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                    var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                    var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                                    _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                                    _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
-
-                                }
-                                else
-                                {
-                                    // _birthEventRepository.Update(birthEvent);
-                                    // _birthEventRepository.UpdateAll(birthEvent);
-                                    var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                    var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                    var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                                    _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
-                                    _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
-                                }
-                                // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                await transaction?.CommitAsync()!;
+                                birthEvent.Event.PaymentExamption.SupportingDocuments = null!;
                             }
-                            catch (System.Exception)
+                            // Update the birth event.
+                            _birthEventRepository.UpdateAll(birthEvent);
+                            // for requests not from correction request
+                            if (!request.IsFromCommand)
                             {
-                                updateBirthEventCommandResponse.Message = "Something went wrong.";
-                                updateBirthEventCommandResponse.Status = 400;
-                                throw;
+                                // Save the newly added supporting documents and exemption documents.
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                                _eventDocumentService.savePhotos(userPhotos);
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
                             }
-                            updateBirthEventCommandResponse.Message = "Birth Event Updated Successfully";
-                            updateBirthEventCommandResponse.Status = 200;
+                            else
+                            {
+                                // Move the supporting documents form temporary to permenant place.
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
+                                _eventDocumentService.MovePhotos(userPhotos, "Birth");
+                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+                            }
+                            // Commit the transaction.
+                            await transaction?.CommitAsync()!;
                         }
+                        catch (System.Exception ex)
+                        {
+                            response.BadRequest($"Something went wrong.");
+                            throw new ApplicationException(ex.Message);
+                        }
+                        // Set response to created.
+                        response.Created("Birth Event");
+                    }
 
-                        return updateBirthEventCommandResponse;
-                    }
-                    catch (Exception)
-                    {
-                        await transaction?.RollbackAsync()!;
-                        throw;
-                    }
+                    return response;
+                }
+                catch (Exception)
+                {
+                    // Rollback the transaction on exception.
+                    await transaction?.RollbackAsync()!;
+                    throw;
                 }
 
             });

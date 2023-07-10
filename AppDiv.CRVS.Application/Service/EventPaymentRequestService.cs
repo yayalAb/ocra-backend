@@ -82,22 +82,26 @@ namespace AppDiv.CRVS.Application.Service
                 amount = paymentRate.Amount;
                 massage = " Certificate " + paymentType;
             }
-
-            var paymentRequest = new PaymentRequest
+            if (amount != 0)
             {
-                EventId = Event?.Id,
-                Amount = amount,
-                RequestId = RequestId,
-                status = false,
-                PaymentCode = paymentCode,
-                PaymentRateId = paymentRate.Id,
-                Reason = new JObject{
+                var paymentRequest = new PaymentRequest
+                {
+                    EventId = Event?.Id,
+                    Amount = amount,
+                    RequestId = RequestId,
+                    status = false,
+                    PaymentCode = paymentCode,
+                    PaymentRateId = paymentRate.Id,
+                    Reason = new JObject{
                         {"en",$" {eventType} {massage}"},
                         { "or",$" {eventType} {massage}"},
                         { "am",$" {eventType} {massage}"}
                       }
-            };
-            await _paymentRequestRepository.InsertAsync(paymentRequest, cancellationToken);
+                };
+                await _paymentRequestRepository.InsertAsync(paymentRequest, cancellationToken);
+            }
+
+
             _paymentRequestRepository.SaveChanges();
             return (amount: paymentRate.Amount, code: paymentCode);
         }

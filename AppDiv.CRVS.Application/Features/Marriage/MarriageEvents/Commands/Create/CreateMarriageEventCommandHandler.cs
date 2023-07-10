@@ -90,11 +90,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
 
-                            marriageEvent.Event.EventType = "Marriage";
-                            await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
 
-
-                            await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                             // //TODO: //
                             var personIds = new PersonIdObj
                             {
@@ -131,6 +127,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             }
                             // else if (amount != 0 || marriageEvent.Event.IsExampted)
                             // {
+                            marriageEvent.Event.EventType = "Marriage";
+                            await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
+                            await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
                             // }
                             await transaction.CommitAsync();

@@ -69,8 +69,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
 
 
-                                await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
-                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+
 
                                 // var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
                                 var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
@@ -100,6 +99,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                     }
                                     //
                                 }
+                                await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
+                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                             }
                             catch (System.Exception ex)
                             {

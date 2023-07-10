@@ -3,7 +3,7 @@ using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
-    // Customer create command with CustomerResponse
+    // Birth Event create command
     public record CreateBirthEventCommand(AddBirthEventRequest BirthEvent) : IRequest<CreateBirthEventCommandResponse>
     {
 
