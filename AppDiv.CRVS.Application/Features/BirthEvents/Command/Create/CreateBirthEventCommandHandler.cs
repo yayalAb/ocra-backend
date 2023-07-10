@@ -67,8 +67,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             // Insert to the database.
-                            await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
-                            await _birthEventRepository.SaveChangesAsync(cancellationToken);
                             // store the persons id from the request
                             var personIds = new PersonIdObj
                             {
@@ -89,47 +87,53 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 // Create payment request.
                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                 amount = payment.amount;
+                                // if (payment.amount == 0)
+                                // {
+                                // (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
+                                // amount = response.amount;
                                 if (payment.amount == 0)
                                 {
-                                    response.BadRequest("Payment Rate Does't Found, Please Create Payment Rate First");
-                                    amount = 0;
+                                    birthEvent.Event.IsPaid = true;
                                 }
                                 else
                                 {
                                     string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {payment.amount} ETB to finance office using code {payment.code}.\n OCRA";
-                                    List<string> msgRecepients = new();
-                                    // Add phone number to the list for SMS.
+                                    List<string> msgRecepients = new List<string>();
                                     if (birthEvent.Mother?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent?.Mother?.PhoneNumber!);
+                                        msgRecepients.Add(birthEvent.Mother?.PhoneNumber);
                                     }
-                                    if (birthEvent?.Father?.PhoneNumber != null)
+                                    if (birthEvent.Father?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent?.Father?.PhoneNumber!);
+                                        msgRecepients.Add(birthEvent.Father?.PhoneNumber);
                                     }
-                                    if (birthEvent?.Event?.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
+                                    if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
                                     {
                                         msgRecepients.Add(birthEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber);
                                     }
-                                    // Send SMS via phone.
                                     await _smsService.SendBulkSMS(msgRecepients, message);
                                 }
+                                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
+                                await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                // }
                             }
                         }
                         catch (System.Exception ex)
                         {
-                            response.BadRequest(ex.Message);
-                            throw new ApplicationException(ex.Message);
+                            response.Success = false;
+                            response.Status = 400;
+                            throw;
                         }
-                        if (amount != 0 || request.BirthEvent.Event.IsExampted)
-                        {
-                            // Set the response to Created.
-                            response.Created("Birth Event");
-                            // Commint the transaction.
-                            await transaction.CommitAsync();
-                        }
+                        // if (amount != 0 || request.BirthEvent.Event.IsExampted)
+                        // {
+
+                        response.Message = "Birth Event created Successfully";
+                        response.Status = 200;
+                        await transaction.CommitAsync();
+                        // }
 
                     }
+
                     return response;
 
                 }

@@ -75,8 +75,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             divorceEvent.Event.EventType = "Divorce";
-                            await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, cancellationToken);
-                            await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
+
                             var personIds = new PersonIdObj
                             {
                                 WifeId = divorceEvent.DivorcedWife.Id,
@@ -92,9 +91,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 amount = response.amount;
                                 if (response.amount == 0)
                                 {
-                                    createDivorceEventCommandResponse.Success = false;
-                                    createDivorceEventCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
-                                    amount = 0;
+                                    divorceEvent.Event.IsPaid = true;
                                 }
                                 else
                                 {
@@ -113,11 +110,13 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 }
 
                             }
-                            if (amount != 0 || divorceEvent.Event.IsExampted)
-                            {
-                                createDivorceEventCommandResponse.Message = "Divorce event created successfully";
-                                await transaction.CommitAsync();
-                            }
+                            await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, cancellationToken);
+                            await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
+                            // if (amount != 0 || divorceEvent.Event.IsExampted)
+                            // {
+                            createDivorceEventCommandResponse.Message = "Divorce event created successfully";
+                            await transaction.CommitAsync();
+                            // }
                         }
                         return createDivorceEventCommandResponse;
                     }

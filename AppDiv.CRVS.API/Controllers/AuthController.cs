@@ -9,7 +9,7 @@ using AppDiv.CRVS.Application.Features.Auth.UnlockUser;
 using AppDiv.CRVS.Application.Features.Auth.YourTeam;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Application.Features.Auth.VerifyOtp;
-
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -22,12 +22,11 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return Ok(await Mediator.Send(command));
         }
-
         [HttpPut("Logout")]
         [ProducesDefaultResponseType(typeof(AuthResponseDTO))]
-        public async Task<IActionResult> Logout([FromBody] LogoutCommand command)
+        public async Task<IActionResult> Logout()
         {
-            return Ok(await Mediator.Send(command));
+            return Ok(await Mediator.Send(new LogoutCommand()));
         }
 
 

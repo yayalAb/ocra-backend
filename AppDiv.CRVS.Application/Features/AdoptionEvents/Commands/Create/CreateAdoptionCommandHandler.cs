@@ -158,8 +158,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     adoptionEvent.CourtCase.CourtId = adoptionEvent.CourtCase.Court.Id;
                                     adoptionEvent.CourtCase.Court = null;
                                 }
-                                await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
-                                await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
                                 var personIds = new PersonIdObj
                                 {
                                     MotherId = adoptionEvent.AdoptiveMother.Id,
@@ -174,14 +172,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     //--create payment request and send sms notification to the users
                                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                     amount = response.amount;
-                                    if (response.amount == 0)
+                                    Console.WriteLine("Amount {0}", response.amount);
+                                    if (response.amount == 0 || response.amount == 0.0)
                                     {
-                                        CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
-                                        {
-                                            Success = false,
-                                            Message = "Payment Rate Does't Found, Please Create Payment Rate First"
-                                        };
-                                        amount = 0;
+                                        adoptionEvent.Event.IsPaid = true;
                                     }
                                     else
                                     {
@@ -202,15 +196,17 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     //
 
                                 }
-                                if (amount != 0 || adoptionEvent.Event.IsExampted)
+                                await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
+                                await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
+                                // if (amount != 0 || adoptionEvent.Event.IsExampted)
+                                // {
+                                await transaction.CommitAsync();
+                                CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
-                                    await transaction.CommitAsync();
-                                    CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
-                                    {
-                                        Success = true,
-                                        Message = "Adoption Event created Successfully"
-                                    };
-                                }
+                                    Success = true,
+                                    Message = "Adoption Event created Successfully"
+                                };
+                                // }
 
                             }
                             catch (Exception ex)

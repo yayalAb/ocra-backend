@@ -69,8 +69,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
 
 
-                                await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
-                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+
 
                                 // var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
                                 var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
@@ -88,9 +87,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                     amount = response.amount;
                                     if (response.amount == 0)
                                     {
-                                        createDeathCommandResponse.Success = false;
-                                        createDeathCommandResponse.Message = "Payment Rate Does't Found, Please Create Payment Rate First";
-                                        amount = 0;
+                                        deathEvent.Event.IsPaid = true;
                                     }
                                     else
                                     {
@@ -102,6 +99,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                     }
                                     //
                                 }
+                                await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
+                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                             }
                             catch (System.Exception ex)
                             {
@@ -109,12 +108,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 createDeathCommandResponse.Status = 400;
                                 throw;
                             }
-                            if (amount != 0 || request.DeathEvent.Event.IsExampted)
-                            {
-                                createDeathCommandResponse.Message = "Death Event created Successfully";
-                                createDeathCommandResponse.Status = 200;
-                                await transaction.CommitAsync();
-                            }
+                            // if (amount != 0 || request.DeathEvent.Event.IsExampted)
+                            // {
+                            createDeathCommandResponse.Message = "Death Event created Successfully";
+                            createDeathCommandResponse.Status = 200;
+                            await transaction.CommitAsync();
+                            // }
                         }
                         return createDeathCommandResponse;
                     }
