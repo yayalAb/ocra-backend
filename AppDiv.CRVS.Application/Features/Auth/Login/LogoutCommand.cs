@@ -10,13 +10,14 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using AppDiv.CRVS.Application.Common;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
 
 {
     public class LogoutCommand : IRequest<BaseResponse>
     {
-        public string UserName { get; set; }
     }
 
     public class LogoutCommandHandler : IRequestHandler<LogoutCommand, BaseResponse>
@@ -24,18 +25,27 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
         private readonly IUserRepository _userRepository;
         private readonly ILoginHistoryRepository _loginHistoryRepository;
         private readonly IHttpContextAccessor _httpContext;
+        private readonly IUserResolverService _userResolverService;
 
-        public LogoutCommandHandler(IHttpContextAccessor httpContext, ILoginHistoryRepository loginHistoryRepository, IUserRepository userRepository)
+        public LogoutCommandHandler(IUserResolverService userResolverService, IHttpContextAccessor httpContext, ILoginHistoryRepository loginHistoryRepository, IUserRepository userRepository)
         {
             _userRepository = userRepository;
             _loginHistoryRepository = loginHistoryRepository;
             _httpContext = httpContext;
+            _userResolverService = userResolverService;
+
         }
 
         public async Task<BaseResponse> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
 
-            var response = _userRepository.GetAll().Where(x => x.UserName == request.UserName).FirstOrDefault();
+            Guid UserId = _userResolverService.GetUserPersonalId();
+            var res = new BaseResponse();
+            if (UserId == null && UserId == Guid.Empty)
+            {
+                throw new NotFoundException("User Not Found");
+            }
+            var response = _userRepository.GetAll().Where(x => x.PersonalInfoId == UserId).FirstOrDefault();
 
             var LoginHis = new LoginHistory
             {
@@ -47,9 +57,10 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Device = _httpContext.HttpContext.Request.Headers["User-Agent"].ToString()
 
             };
+            await _httpContext.HttpContext.SignOutAsync(JwtBearerDefaults.AuthenticationScheme);
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
-            var res = new BaseResponse
+            res = new BaseResponse
             {
                 Success = false,
                 Message = "Logout successfully"
