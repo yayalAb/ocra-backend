@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AddressController : ControllerBase
     {
         private readonly ISender _mediator;
@@ -166,7 +166,7 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(new GetByAdminstrativeLevelQuery());
         }
-        [Authorize]
+        // [Authorize]
         [HttpGet]
         [Route("Country")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -174,7 +174,7 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(query);
         }
-        [Authorize]
+        // [Authorize]
         [HttpGet]
         [Route("Region")]
         [ProducesResponseType(StatusCodes.Status200OK)]

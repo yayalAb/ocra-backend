@@ -27,11 +27,9 @@ namespace AppDiv.CRVS.Application.Service
             httpContext.Request.Headers.TryGetValue("Authorization", out StringValues headerValue);
             var tokenId = headerValue.FirstOrDefault();
             var expiredToken = _tokenRepository.GetAll().Where(x => x.ExpirationDate <= DateTime.Now);
-            Console.WriteLine("Checking !!");
             if (expiredToken.FirstOrDefault() != null)
             {
-                Console.WriteLine("deleted !!");
-                await _tokenRepository.DeleteAsync(expiredToken);
+                _tokenRepository.Delete(expiredToken.ToArray());
                 _tokenRepository.SaveChanges();
             }
 
