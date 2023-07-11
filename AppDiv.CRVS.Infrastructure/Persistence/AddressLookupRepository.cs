@@ -111,7 +111,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
                 .Include(a => a.AdminTypeLookup)
-                .ProjectTo<AddressCouchDTO>(CustomMapper.Mapper.ConfigurationProvider)
+                .Include(a => a.ParentAddress)
                 );
 
 
