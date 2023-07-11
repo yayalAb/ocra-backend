@@ -12,6 +12,7 @@ using System.Security.Claims;
 // using AppDiv.CRVS.Utility.Hub;
 using AppDiv.CRVS.Infrastructure.Hub;
 using System.IdentityModel.Tokens.Jwt;
+using Microsoft.AspNetCore.Cors;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -126,9 +127,14 @@ builder.Services.AddApplication(builder.Configuration)
 
 
 builder.Services.AddSignalR();
+
 builder.Services.AddCors(c =>
 {
-    c.AddPolicy("CorsPolicy", options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+    c.AddPolicy("CorsPolicy",
+     options =>
+      options.AllowAnyOrigin()
+      .AllowAnyMethod()
+      .AllowAnyHeader());
 });
 
 
@@ -196,6 +202,7 @@ app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
 app.UseCors("CorsPolicy");
+
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();

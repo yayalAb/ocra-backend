@@ -83,7 +83,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                          EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.NextStep.ToString()!, "%" + request.SearchString + "%"));
             }
-            var RequestListDto = RequestList
+            var RequestListDto = RequestList.Where(x => (x.RequestType == "change" || x.RequestType == "authentication"))
              .OrderByDescending(w => w.CreatedAt)
              .Select(w => new AuthenticationRequestListDTO
              {
@@ -115,7 +115,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             {
                 RequestListDto = RequestListDto.Where(rg => rg.OfficerId == userGroup.PersonalInfoId);
             }
-            
+
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
                                   RequestListDto
