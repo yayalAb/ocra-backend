@@ -19,6 +19,7 @@ using CouchDB.Driver.DependencyInjection;
 using AppDiv.CRVS.Infrastructure.Context;
 using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Infrastructure.Persistence.Couch;
+using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
 // using AppDiv.CRVS.Infrastructure.Extensions;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -168,6 +169,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IRequestRepostory, RequestRepostory>();
             services.AddScoped<ILookupCouchRepository, LookupCouchRepository>();
             services.AddScoped<IAddressLookupCouchRepository, AddressLookupCouchRepository>();
+            services.AddScoped<ISettingCouchRepository, SettingCouchRepository>();
+
 
 
             services.AddScoped<INotificationService, NotificationService>();

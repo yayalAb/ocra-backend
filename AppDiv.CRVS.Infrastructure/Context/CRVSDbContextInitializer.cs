@@ -20,13 +20,17 @@ namespace AppDiv.CRVS.Infrastructure
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILookupRepository _lookupRepository;
         private readonly IAddressLookupRepository _addressLookupRepository;
+        private readonly ISettingRepository _settingRepository;
+
 
         public CRVSDbContextInitializer(ILogger<CRVSDbContextInitializer> logger,
                                         CRVSDbContext context,
                                         UserManager<ApplicationUser> userManager,
                                         RoleManager<IdentityRole> roleManager,
                                         ILookupRepository lookupRepository,
-                                        IAddressLookupRepository addressLookupRepository)
+                                        IAddressLookupRepository addressLookupRepository,
+                                        ISettingRepository settingRepository
+                                        )
         {
             _logger = logger;
             _context = context;
@@ -34,6 +38,7 @@ namespace AppDiv.CRVS.Infrastructure
             _roleManager = roleManager;
             _lookupRepository = lookupRepository;
             _addressLookupRepository = addressLookupRepository;
+            _settingRepository = settingRepository;
         }
 
         public async Task InitialiseAsync()
@@ -48,7 +53,7 @@ namespace AppDiv.CRVS.Infrastructure
                 _logger.LogError(ex, "An error occurred while initialising the database.");
                 throw;
             }
-        }
+    }
 
         public async Task SeedAsync()
         {
@@ -70,6 +75,7 @@ namespace AppDiv.CRVS.Infrastructure
             await SeedSetting();
             await _lookupRepository.InitializeLookupCouch();
             await _addressLookupRepository.InitializeAddressLookupCouch();
+            await _settingRepository.InitializeSettingCouch();  
         }
         public async Task SeedSetting()
         {

@@ -1,7 +1,7 @@
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 
-namespace AppDiv.CRVS.Application.Persistence.Couch;
+namespace AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
 public interface IAddressLookupCouchRepository
 {
     public Task<bool> InserAsync(AddressCouchDTO address);
