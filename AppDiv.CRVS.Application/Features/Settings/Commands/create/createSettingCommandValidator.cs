@@ -15,22 +15,9 @@ namespace AppDiv.CRVS.Application.Features.Settings.Commands.create
         public createSettingCommandValidator(ISettingRepository repo)
         {
             _repo = repo;
-            // RuleFor(p => p.customer.FirstName)
-            //     .NotEmpty().WithMessage("{PropertyName} is required.")
-            //     .NotNull()
-            //     .MaximumLength(50).WithMessage("{PropertyName} must not exceed 50 characters.");
-            //RuleFor(e => e)
-            //   .MustAsync(phoneNumberUnique)
-            //   .WithMessage("A Customer phoneNumber already exists.");
+            // RuleFor(p => p.Setting.Key).MustAsync(async (k,c) => await repo.AnyAsync(s => s.Key == k))
+            //         .WithMessage("Setting with the same key already exists.");
         }
-
-        //private async Task<bool> phoneNumberUnique(CreateCustomerCommand request, CancellationToken token)
-        //{
-        //    var member = await _repo.GetByIdAsync(request.FirstName);
-        //    if (member == null)
-        //        return true;
-        //    else return false;
-        //}
 
     }
 }

@@ -38,7 +38,16 @@ namespace AppDiv.CRVS.Application.Features.Settings.Commands.create
                     Key = request.Setting.Key,
                     Value = request.Setting.Value,
                 };
-                await _settingRepository.InsertAsync(setting, cancellationToken);
+                var oldSetting = _settingRepository.GetAll().FirstOrDefault(s => s.Key == request.Setting.Key);
+                if (oldSetting != null)
+                {
+                    setting.Id = oldSetting.Id;
+                    await _settingRepository.UpdateAsync(setting, s => s.Id);
+                }
+                else 
+                {
+                    await _settingRepository.InsertAsync(setting, cancellationToken);                  
+                }
                 var result = await _settingRepository.SaveChangesAsync(cancellationToken);
             }
             return createSettingCommandResponse;

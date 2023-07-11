@@ -7,7 +7,8 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
-{
+{  
+    // update death event command handler
     public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, UpdateDeathEventCommandResponse>
     {
         private readonly IDeathEventRepository _deathEventRepository;
@@ -26,100 +27,89 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
             var executionStrategy = _deathEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                using (var transaction = request.IsFromCommand ? null : _deathEventRepository.Database.BeginTransaction())
+                using var transaction = request.IsFromCommand ? null : _deathEventRepository.Database.BeginTransaction();
+                try
                 {
-                    try
+
+                    var response = new UpdateDeathEventCommandResponse();
+                    // validate the request inputs.
+                    var validator = new UpdateDeathEventCommandValidator(_eventRepository);
+                    var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+                    //Check and log validation errors
+                    if (validationResult.Errors.Count > 0)
                     {
-
-                        var updateDeathEventCommandResponse = new UpdateDeathEventCommandResponse();
-
-                        var validator = new UpdateDeathEventCommandValidator(_eventRepository);
-                        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-                        //Check and log validation errors
-                        if (validationResult.Errors.Count > 0)
-                        {
-                            updateDeathEventCommandResponse.Success = false;
-                            updateDeathEventCommandResponse.Status = 400;
-                            updateDeathEventCommandResponse.ValidationErrors = new List<string>();
-                            foreach (var error in validationResult.Errors)
-                                updateDeathEventCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                            updateDeathEventCommandResponse.Message = updateDeathEventCommandResponse.ValidationErrors[0];
-                        }
-                        if (updateDeathEventCommandResponse.Success)
-                        {
-                            if (request.ValidateFirst == true)
-                            {
-                                updateDeathEventCommandResponse.Created(entity: "Death", message: "Valid Input.");
-                                return updateDeathEventCommandResponse;
-                            }
-                            //supporting docs cant be updated only new (one without id) are created
-                            var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
-                            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
-                            var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
-                            var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
-
-                            var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
-                            deathEvent.Event.EventType = "Death";
-                            // _deathEventRepository.Update(deathEvent);
-
-                            // if (!request.IsFromCommand)
-                            // {
-                            //     var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
-                            // }
-                            // var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
-                            // var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
-                            // var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
-
-                            var personIds = new PersonIdObj
-                            {
-                                DeceasedId = deathEvent.Event.EventOwener.Id,
-                                RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
-                            };
-                            deathEvent.Event.EventSupportingDocuments = null;
-                            if (deathEvent.Event.PaymentExamption != null)
-                            {
-                                deathEvent.Event.PaymentExamption.SupportingDocuments = null;
-                            }
-                            deathEvent.Event.EventOwener.DeathStatus = true;
-                            _deathEventRepository.UpdateWithNested(deathEvent);
-                            if (!request.IsFromCommand)
-                            {
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
-                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
-
-                            }
-                            else
-                            {
-                                // _deathEventRepository.Update(deathEvent);
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
-                                var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Death");
-                                _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
-                            }
-                            // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                            // _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                            // _eventDocumentService.saveSupportingDocuments(supportingDocuments, examptionDocuments, "Death");
-                            await transaction?.CommitAsync()!;
-                            updateDeathEventCommandResponse.Success = true;
-                            updateDeathEventCommandResponse.Status = 200;
-                            updateDeathEventCommandResponse.Message = "Death Event Updated Succesfully.";
-                        }
-                        return updateDeathEventCommandResponse;
-
-                        // var modifiedDeathEvent = await _deathEventRepository.GetIncludedAsync(request.Id);
-                        // var paymentRateResponse = CustomMapper.Mapper.Map<DeathEventDTO>(modifiedDeathEvent);
-
+                        response.Success = false;
+                        response.Status = 400;
+                        response.ValidationErrors = new List<string>();
+                        foreach (var error in validationResult.Errors)
+                            response.ValidationErrors.Add(error.ErrorMessage);
+                        response.Message = response.ValidationErrors[0];
                     }
-                    catch (Exception)
+                    if (response.Success)
                     {
-                        await transaction?.RollbackAsync()!;
-                        throw;
+                        // Validate the inputs first for the correction request approval.
+                        if (request.ValidateFirst == true)
+                        {
+                            response.Updated(entity: "Death", message: "Valid Input.");
+                            return response;
+                        }
+                        // Identify new and old supporting documents.
+                        var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                        var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
+                        var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
+                        var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
+                        // Map the reques to model eintity.
+                        var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
+                        deathEvent.Event.EventType = "Death";
+                        // persons id.
+                        var personIds = new PersonIdObj
+                        {
+                            DeceasedId = deathEvent.Event.EventOwener.Id,
+                            RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                        };
+                        // Set the supporting documents to null.
+                        deathEvent.Event.EventSupportingDocuments = null!;
+                        if (deathEvent.Event.PaymentExamption != null)
+                        {
+                            deathEvent.Event.PaymentExamption.SupportingDocuments = null!;
+                        }
+                        // Set the daeth status of the person to true.
+                        deathEvent.Event.EventOwener.DeathStatus = true;
+                        // Update the Death Event.
+                        _deathEventRepository.UpdateWithNested(deathEvent);
+                        // if the update not from the corection request.
+                        if (!request.IsFromCommand)
+                        {
+                            // Save the supporting documents.
+                            var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
+                            var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                            var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                            _eventDocumentService.savePhotos(userPhotos);
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+
+                        }
+                        else
+                        {
+                            // Move the supportin documents from temporary folder.
+                            var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
+                            var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                            var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
+                            _eventDocumentService.MovePhotos(userPhotos, "Death");
+                            _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+                        }
+                        // Set the response to Updated.
+                        response.Updated("Death Event");
+                        // Commit the transaction.
+                        await transaction?.CommitAsync()!;
                     }
+                    return response;
+                }
+                catch (Exception)
+                {
+                    // Rollback the transaction on exception.
+                    await transaction?.RollbackAsync()!;
+                    throw;
                 }
 
             });

@@ -1,20 +1,15 @@
-﻿using AppDiv.CRVS.Application.Exceptions;
-using AppDiv.CRVS.Application.Contracts.DTOs;
+﻿using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
-using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
-using System.Diagnostics;
-using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {
-
+    // create death event command handler
     public class CreateDeathEventCommandHandler : IRequestHandler<CreateDeathEventCommand, CreateDeathEventCommandResponse>
     {
         private readonly IDeathEventRepository _deathEventRepository;
@@ -37,91 +32,86 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
+            // Payment amount for death certificate
             float amount = 0;
             var executionStrategy = _deathEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
 
-                using (var transaction = _deathEventRepository.Database.BeginTransaction())
+                using var transaction = _deathEventRepository.Database.BeginTransaction();
+                try
                 {
-                    try
+                    var response = new CreateDeathEventCommandResponse();
+
+                    var validator = new CreateDeathEventCommandValidator(_eventRepository);
+                    var validationResult = await validator.ValidateAsync(request, cancellationToken);
+
+                    //Check and log validation errors
+                    if (validationResult.Errors.Count > 0)
                     {
-                        var createDeathCommandResponse = new CreateDeathEventCommandResponse();
-
-                        var validator = new CreateDeathEventCommandValidator(_eventRepository);
-                        var validationResult = await validator.ValidateAsync(request, cancellationToken);
-
-                        //Check and log validation errors
-                        if (validationResult.Errors.Count > 0)
+                        response.Success = false;
+                        response.Status = 400;
+                        response.ValidationErrors = new List<string>();
+                        foreach (var error in validationResult.Errors)
+                            response.ValidationErrors.Add(error.ErrorMessage);
+                        response.Message = response.ValidationErrors[0];
+                    }
+                    if (response.Success)
+                    {
+                        try
                         {
-                            createDeathCommandResponse.Success = false;
-                            createDeathCommandResponse.Status = 400;
-                            createDeathCommandResponse.ValidationErrors = new List<string>();
-                            foreach (var error in validationResult.Errors)
-                                createDeathCommandResponse.ValidationErrors.Add(error.ErrorMessage);
-                            createDeathCommandResponse.Message = createDeathCommandResponse.ValidationErrors[0];
-                        }
-                        if (createDeathCommandResponse.Success)
-                        {
-                            try
+                            // Map the request to the model entity.
+                            var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
+                            // Persons id
+                            var personIds = new PersonIdObj
                             {
-                                // request.DeathEvent.DuringDeath = request.DeathEvent.DuringDeath == "" ? "Null" : request.DeathEvent.DuringDeath;
-                                var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
-
-
-
-
-                                // var supportingDocuments = deathEvent.Event.EventSupportingDocuments;
-                                var examptionDocuments = deathEvent.Event.PaymentExamption?.SupportingDocuments;
-                                var personIds = new PersonIdObj
+                                DeceasedId = deathEvent.Event.EventOwener.Id,
+                                RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                            };
+                            // Save the supporting documents and payment exemption documents.
+                            var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
+                            _eventDocumentService.savePhotos(userPhotos);
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
+                            if (!deathEvent.Event.IsExampted)
+                            {
+                                // Get Payment rate for death certificate.
+                                (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
+                                amount = payment.amount;
+                                if (payment.amount == 0)
                                 {
-                                    DeceasedId = deathEvent.Event.EventOwener.Id,
-                                    RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
-                                };
-                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
-                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, examptionDocuments, "Death");
-                                if (!deathEvent.Event.IsExampted)
-                                {
-                                    (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
-                                    amount = response.amount;
-                                    if (response.amount == 0)
-                                    {
-                                        deathEvent.Event.IsPaid = true;
-                                    }
-                                    else
-                                    {
-                                        string message = $"Dear Customer,\nThis is to inform you that your request for Death certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office using code {response.code}.\n OCRA";
-                                        if (deathEvent.Event.EventRegistrar?.RegistrarInfo.PhoneNumber != null)
-                                        {
-                                            await _smsService.SendSMS(deathEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber, message);
-                                        }
-                                    }
-                                    //
+                                    deathEvent.Event.IsPaid = true;
                                 }
-                                await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
-                                var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                                else
+                                {
+                                    string message = $"Dear Customer,\nThis is to inform you that your request for Death certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {payment.amount} ETB to finance office using code {payment.code}.\n OCRA";
+                                    if (deathEvent.Event.EventRegistrar?.RegistrarInfo.PhoneNumber != null)
+                                    {
+                                        await _smsService.SendSMS(deathEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber, message);
+                                    }
+                                }
                             }
-                            catch (System.Exception ex)
-                            {
-                                createDeathCommandResponse.Success = false;
-                                createDeathCommandResponse.Status = 400;
-                                throw;
-                            }
-                            // if (amount != 0 || request.DeathEvent.Event.IsExampted)
-                            // {
-                            createDeathCommandResponse.Message = "Death Event created Successfully";
-                            createDeathCommandResponse.Status = 200;
-                            await transaction.CommitAsync();
-                            // }
+                            // Insert into the database.
+                            await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
+                            var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                         }
-                        return createDeathCommandResponse;
+                        catch (System.Exception ex)
+                        {
+                            response.BadRequest(ex.Message);
+                            throw;
+                        }
+
+                        // Set the response to created.
+                        response.Created("Death Event");
+                        // Commit the transaction.
+                        await transaction.CommitAsync();
                     }
-                    catch (Exception)
-                    {
-                        await transaction.RollbackAsync();
-                        throw;
-                    }
+                    return response;
+                }
+                catch (Exception)
+                {
+                    // Roleback the transaction on exception.
+                    await transaction.RollbackAsync();
+                    throw;
                 }
 
             });

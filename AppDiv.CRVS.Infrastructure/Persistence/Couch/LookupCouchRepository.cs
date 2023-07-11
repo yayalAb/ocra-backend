@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.Context;
 using AppDiv.CRVS.Infrastructure.CouchModels;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence.Couch;
 public class LookupCouchRepository : ILookupCouchRepository
@@ -12,7 +13,7 @@ public class LookupCouchRepository : ILookupCouchRepository
     {
         _couchContext = couchContext;
     }
-    public async Task<bool> InsertLookupAsync(Lookup lookup)
+    public async Task<bool> InsertLookupAsync(LookupCouchDTO lookup)
     {
         var newLookup = new LookupCouch
         {
@@ -35,9 +36,9 @@ public class LookupCouchRepository : ILookupCouchRepository
         }
         return true;
     }
-    public async Task<bool> BulkInsertAsync(List<Lookup> lookup)
+    public async Task<bool> BulkInsertAsync(List<Lookup> lookups)
     {
-        var res = await _couchContext.Lookups.AddOrUpdateRangeAsync(lookup.Select(
+        var res = await _couchContext.Lookups.AddOrUpdateRangeAsync(lookups.Select(
          l => new LookupCouch
          {
              Id = l.Id,
@@ -49,7 +50,7 @@ public class LookupCouchRepository : ILookupCouchRepository
         ).ToList());
         return true;
     }
-    public async Task<bool> UpdateLookupAsync(Lookup lookup)
+    public async Task<bool> UpdateLookupAsync(LookupCouchDTO lookup)
     {
         var existing = _couchContext.Lookups.Where(l => l.Id == lookup.Id).FirstOrDefault();
         if (existing != null)
@@ -66,7 +67,7 @@ public class LookupCouchRepository : ILookupCouchRepository
 
         return true;
     }
-    public async Task<bool> RemoveLookupAsync(Lookup lookup)
+    public async Task<bool> RemoveLookupAsync(LookupCouchDTO lookup)
     {
         var existing = _couchContext.Lookups.Where(l => l.Id == lookup.Id).FirstOrDefault();
         if (existing != null)
