@@ -16,6 +16,8 @@ using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllWoreda;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 namespace AppDiv.CRVS.API.Controllers
@@ -24,7 +26,7 @@ namespace AppDiv.CRVS.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class AddressController : ControllerBase
     {
         private readonly ISender _mediator;
@@ -164,7 +166,7 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(new GetByAdminstrativeLevelQuery());
         }
-
+        [Authorize]
         [HttpGet]
         [Route("Country")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -172,7 +174,7 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(query);
         }
-
+        [Authorize]
         [HttpGet]
         [Route("Region")]
         [ProducesResponseType(StatusCodes.Status200OK)]

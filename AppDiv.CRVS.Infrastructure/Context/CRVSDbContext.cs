@@ -65,6 +65,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<LoginHistory> LoginHistorys { get; set; }
         public DbSet<VerficationRequest> VerficationRequests { get; set; }
         public DbSet<WorkHistory> WorkHistories { get; set; }
+        public DbSet<RevocationToken> RevocationTokens { get; set; }
 
 
 

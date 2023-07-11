@@ -11,6 +11,7 @@ using AppDiv.CRVS.Api.Middleware;
 using System.Security.Claims;
 // using AppDiv.CRVS.Utility.Hub;
 using AppDiv.CRVS.Infrastructure.Hub;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,11 +45,24 @@ builder.Services.AddAuthentication(x =>
         ValidAudience = _audience,
         ValidIssuer = _issuer,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key)),
-        ClockSkew = TimeSpan.FromMinutes(Convert.ToDouble(_expirtyMinutes))
+        ClockSkew = TimeSpan.FromMinutes(Convert.ToDouble(_expirtyMinutes)),
 
     };
     x.Events = new JwtBearerEvents
     {
+        OnTokenValidated = async context =>
+        {
+            // Check if the token is still valid
+            var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
+            var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
+
+            if (!isValid)
+            {
+                context.Fail("Unauthorized Access");
+            }
+
+            return;
+        },
         OnMessageReceived = context =>
         {
             var accessToken = context.Request.Query["access_token"];
@@ -56,9 +70,18 @@ builder.Services.AddAuthentication(x =>
             {
                 context.Token = accessToken;
             }
+
             return Task.CompletedTask;
         }
+
     };
+
+
+
+
+
+
+
     // x.Events = new JwtBearerEvents
     // {
     //     OnTokenValidated = context =>

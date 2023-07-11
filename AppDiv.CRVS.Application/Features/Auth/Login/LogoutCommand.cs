@@ -12,6 +12,15 @@ using Microsoft.AspNetCore.Http;
 using AppDiv.CRVS.Application.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Text;
+using Microsoft.Extensions.Primitives;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
 
@@ -26,19 +35,23 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
         private readonly ILoginHistoryRepository _loginHistoryRepository;
         private readonly IHttpContextAccessor _httpContext;
         private readonly IUserResolverService _userResolverService;
+        private readonly HttpClient _httpClient;
+        private readonly IRevocationTokenRepository _tokenRepository;
 
-        public LogoutCommandHandler(IUserResolverService userResolverService, IHttpContextAccessor httpContext, ILoginHistoryRepository loginHistoryRepository, IUserRepository userRepository)
+
+        public LogoutCommandHandler(IRevocationTokenRepository tokenRepository, HttpClient httpClient, IUserResolverService userResolverService, IHttpContextAccessor httpContext, ILoginHistoryRepository loginHistoryRepository, IUserRepository userRepository)
         {
             _userRepository = userRepository;
             _loginHistoryRepository = loginHistoryRepository;
             _httpContext = httpContext;
             _userResolverService = userResolverService;
+            _httpClient = httpClient;
+            _tokenRepository = tokenRepository;
 
         }
-
         public async Task<BaseResponse> Handle(LogoutCommand request, CancellationToken cancellationToken)
         {
-
+            _httpContext.HttpContext.Request.Headers.TryGetValue("Authorization", out StringValues headerValue);
             Guid UserId = _userResolverService.GetUserPersonalId();
             var res = new BaseResponse();
             if (UserId == null && UserId == Guid.Empty)
@@ -46,6 +59,13 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 throw new NotFoundException("User Not Found");
             }
             var response = _userRepository.GetAll().Where(x => x.PersonalInfoId == UserId).FirstOrDefault();
+            var tokenLogout = new RevocationToken
+            {
+                Id = Guid.NewGuid(),
+                Token = headerValue.FirstOrDefault(),
+                ExpirationDate = DateTime.Now.AddMonths(3)
+
+            };
 
             var LoginHis = new LoginHistory
             {
@@ -57,7 +77,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Device = _httpContext.HttpContext.Request.Headers["User-Agent"].ToString()
 
             };
-            await _httpContext.HttpContext.SignOutAsync(JwtBearerDefaults.AuthenticationScheme);
+            await _tokenRepository.InsertAsync(tokenLogout, cancellationToken);
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
             res = new BaseResponse
@@ -65,7 +85,6 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Success = false,
                 Message = "Logout successfully"
             };
-
             return res;
         }
     }
