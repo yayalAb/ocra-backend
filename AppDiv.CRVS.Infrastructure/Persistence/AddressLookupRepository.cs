@@ -1,5 +1,5 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
-using AppDiv.CRVS.Application.Persistence.Couch;
+using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Infrastructure.Context;

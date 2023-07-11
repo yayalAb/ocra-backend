@@ -1,4 +1,4 @@
-using AppDiv.CRVS.Application.Persistence.Couch;
+using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.Context;
 using AppDiv.CRVS.Infrastructure.CouchModels;

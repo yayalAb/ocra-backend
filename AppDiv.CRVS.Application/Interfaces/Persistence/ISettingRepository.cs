@@ -8,6 +8,9 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<IEnumerable<Setting>> GetAllAsync();
         Task<Setting> GetByIdAsync(Guid id);
         Task<Setting> GetSettingByKey(string key);
+         Task InitializeSettingCouch();
+
+
     }
 }
 
