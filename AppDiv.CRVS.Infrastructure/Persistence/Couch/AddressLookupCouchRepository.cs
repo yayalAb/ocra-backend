@@ -254,7 +254,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
         
         return true;
     }
-    public async Task<bool> RemoveAsync(Address address)
+    public async Task<bool> RemoveAsync(AddressCouchDTO address)
     {
 
         if (address.AdminLevel == 1)

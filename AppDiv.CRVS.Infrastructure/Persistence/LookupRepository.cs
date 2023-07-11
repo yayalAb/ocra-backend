@@ -11,6 +11,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Infrastructure.CouchModels;
+using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -51,26 +54,39 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
               .Entries()
               .Where(e => e.Entity is Lookup &&
                       (e.State == EntityState.Added
-                      || e.State == EntityState.Modified));
-            foreach (var entry in entries)
+                      || e.State == EntityState.Modified || e.State == EntityState.Deleted));
+            List<LookupEntry> lookupEntries = entries.Select(e => new LookupEntry
             {
-                switch (entry.State)
+                State = e.State,
+                Lookup = CustomMapper.Mapper.Map<LookupCouchDTO>((Lookup)e.Entity)
+            }).ToList();
+
+            bool saveRes = await base.SaveChangesAsync(cancellationToken);
+
+            if (saveRes)
+            {
+                foreach (var entry in lookupEntries)
                 {
-                    case EntityState.Added:
-                        await lookupCouchRepo.InsertLookupAsync((Lookup)entry.Entity);
-                        break;
-                    case EntityState.Modified:
-                        await lookupCouchRepo.UpdateLookupAsync((Lookup)entry.Entity);
-                        break;
-                    case EntityState.Deleted:
-                        await lookupCouchRepo.RemoveLookupAsync((Lookup)entry.Entity);
-                        break;
-                    default: break;
+                    switch (entry.State)
+                    {
+                        case EntityState.Added:
+                            await lookupCouchRepo.InsertLookupAsync(entry.Lookup);
+                            break;
+                        case EntityState.Modified:
+                            await lookupCouchRepo.UpdateLookupAsync(entry.Lookup);
+                            break;
+                        case EntityState.Deleted:
+                            await lookupCouchRepo.RemoveLookupAsync(entry.Lookup);
+                            break;
+                        default: break;
 
+                    }
                 }
-            }
 
-            return await base.SaveChangesAsync(cancellationToken);
+            }
+            return saveRes;
+
+
         }
         public async Task InitializeLookupCouch()
         {

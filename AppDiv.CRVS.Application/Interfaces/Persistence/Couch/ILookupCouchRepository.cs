@@ -1,11 +1,12 @@
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 namespace AppDiv.CRVS.Application.Persistence.Couch;
 public interface ILookupCouchRepository
 {
-    public Task<bool> InsertLookupAsync(Lookup lookup);
-    public Task<bool> UpdateLookupAsync(Lookup lookup);
-    public Task<bool> RemoveLookupAsync(Lookup lookup);
+    public Task<bool> InsertLookupAsync(LookupCouchDTO lookup);
+    public Task<bool> UpdateLookupAsync(LookupCouchDTO lookup);
+    public Task<bool> RemoveLookupAsync(LookupCouchDTO lookup);
     public Task<bool> BulkInsertAsync(List<Lookup> lookup);
     public Task<bool> IsEmpty();
 
