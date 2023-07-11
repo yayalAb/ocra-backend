@@ -76,52 +76,11 @@ builder.Services.AddAuthentication(x =>
         }
 
     };
-
-
-
-
-
-
-
-    // x.Events = new JwtBearerEvents
-    // {
-    //     OnTokenValidated = context =>
-    //     {
-    //         // Map additional claims to the ClaimsIdentity object
-    //         var identity = context?.Principal?.Identity as ClaimsIdentity;
-    //         if (identity != null)
-    //         {
-    //             var userId = context?.Principal?.FindFirst("userId")?.Value;
-
-    //             if (userId != null)
-    //             {
-    //                 identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, userId));
-    //             }
-    //             var personId = context?.Principal?.FindFirst("personId")?.Value;
-    //             if (personId != null)
-    //             {
-    //                 identity.AddClaim(new Claim(ClaimTypes.PrimarySid, personId));
-    //             }
-
-    //             var roles = context?.Principal?.FindFirst("roles")?.Value;
-    //             if (roles != null)
-    //             {
-    //                 var roleClaims = roles.Split(',').Select(r => new Claim(ClaimTypes.Role, r));
-    //                 identity.AddClaims(roleClaims);
-    //             }
-    //         }
-
-    //         return Task.CompletedTask;
-    //     }
-    // };
-
 });
 
 
-// Dependency injection with key
 builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(_key, _issuer, _audience, _expirtyMinutes));
 
-// Include Infrastructur/Application Dependency
 builder.Services.AddApplication(builder.Configuration)
                 .AddInfrastructure(builder.Configuration);
 

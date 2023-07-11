@@ -36,7 +36,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         private readonly INotificationService _notificationService;
         private readonly IUserRepository _userRepository;
         private readonly IWorkflowRepository _WorkflowRepository;
-        public AuthenticationRequestCommadHandler(IWorkflowRepository WorkflowRepository, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService, ITransactionService transactionService, INotificationService notificationService, IUserRepository userRepository)
+        private readonly ICertificateRepository _certificateRepository;
+        private readonly IEventPaymentRequestService _eventPayment;
+        public AuthenticationRequestCommadHandler(IEventPaymentRequestService eventPayment, ICertificateRepository certificateRepository, IWorkflowRepository WorkflowRepository, IAuthenticationRepository AuthenticationRepository, IWorkflowService WorkflowService, ITransactionService transactionService, INotificationService notificationService, IUserRepository userRepository)
         {
             _AuthenticationRepository = AuthenticationRepository;
             _WorkflowService = WorkflowService;
@@ -44,6 +46,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             _notificationService = notificationService;
             _userRepository = userRepository;
             _WorkflowRepository = WorkflowRepository;
+            _certificateRepository = certificateRepository;
+            _eventPayment = eventPayment;
         }
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
@@ -52,9 +56,31 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             .Where(wf => wf.workflowName == "authentication").Select(x => x.Id).FirstOrDefault();
             if (WorkflowId == null || WorkflowId == Guid.Empty)
             {
-                response.Message = "authentication Work Flow Does not exist Pleace Create Workflow First";
-                response.Success = false;
-                return response;
+                var certificate = _certificateRepository.GetAll()
+                .Include(x => x.Event)
+                .Where(x => x.Id == request.CertificateId).FirstOrDefault();
+                if (certificate == null)
+                {
+                    throw new NotFoundException("Certificate With the given Id Does't Found");
+                }
+                (float amount, string code) respons = await _eventPayment.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "authentication",
+                    null, false, false, cancellationToken);
+                if (respons.amount == 0)
+                {
+                    certificate.AuthenticationStatus = true;
+                    await _certificateRepository.UpdateAsync(certificate, x => x.Id);
+                    await _certificateRepository.SaveChangesAsync(cancellationToken);
+                    response.Message = "Requested Certificate  authenticated";
+                    response.Success = true;
+                    return response;
+                }
+                else
+                {
+                    response.Message = "Payment Request Sent";
+                    response.Success = true;
+                    return response;
+                }
+
 
             }
             var next = _WorkflowService.GetNextStep("authentication", 0, true);

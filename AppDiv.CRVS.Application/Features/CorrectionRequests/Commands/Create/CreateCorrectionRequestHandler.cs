@@ -77,7 +77,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
                         CorrectionRequest.Request.WorkflowId = WorkflowId;
                         CorrectionRequest.Request.NextStep = _WorkflowService.GetNextStep("change", 0, true);
-                        
+
                         var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
                         var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content);
                         if (validationResponse.Status != 200)
