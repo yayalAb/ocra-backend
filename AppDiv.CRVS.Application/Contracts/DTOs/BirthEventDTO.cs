@@ -11,10 +11,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid Id { get; set; }
         // public Guid FatherId { get; set; }
         // public Guid MotherId { get; set; }
-        public Guid FacilityTypeLookupId { get; set; }
-        public Guid FacilityLookupId { get; set; }
-        public Guid BirthPlaceId { get; set; }
-        public Guid TypeOfBirthLookupId { get; set; }
+        public Guid? FacilityTypeLookupId { get; set; }
+        public Guid? FacilityLookupId { get; set; }
+        public Guid? BirthPlaceId { get; set; }
+        public Guid? TypeOfBirthLookupId { get; set; }
         // public Guid EventId { get; set; }
         public virtual UpdatePersonalInfoRequest Father { get; set; }
         public virtual UpdatePersonalInfoRequest Mother { get; set; }

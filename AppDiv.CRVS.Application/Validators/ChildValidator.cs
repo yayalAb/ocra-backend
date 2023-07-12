@@ -24,13 +24,16 @@ namespace AppDiv.CRVS.Application.Validators
             // RuleFor(p => p.MiddleName.am).Must(f => f == father.FirstName.am).WithMessage("The child's father's name and his father's first name do not match.").NotEmpty().NotNull();
             // RuleFor(p => p.LastName.or).Must(f => f == father.MiddleName.or).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
             // RuleFor(p => p.LastName.am).Must(f => f == father.MiddleName.am).WithMessage("The child's grandfather's name and his father's father's name do not match.").NotEmpty().NotNull();
-            RuleFor(p => p.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "SexLookupId");
+            RuleFor(p => p.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "SexLookupId")
+            .When(p => p.SexLookupId != null);
             // RuleFor(p => p.BirthDateEt).NotEmpty().NotNull().IsValidDate("Child Birth Date");
             RuleFor(p => p.PhoneNumber).NotEmpty()
                         .Matches(new Regex(@"^(\+251)?\d{9}$")).WithMessage("Invalid phone number format.")
                         .When(p => p.PhoneNumber != null);
             RuleFor(p => p.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "NationalityLookupId");
-            RuleFor(p => p.BirthAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "BirthAddressId");
+            // .When(p => p.NationalityLookupId != null);
+            RuleFor(p => p.BirthAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "BirthAddressId")
+            .When(p => p.BirthAddressId != null);
         }
     }
 

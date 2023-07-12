@@ -85,7 +85,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             if (!request.IsFromCommand)
                             {
                                 // Save the newly added supporting documents and exemption documents.
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(userPhotos);
@@ -94,7 +94,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             else
                             {
                                 // Move the supporting documents form temporary to permenant place.
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(userPhotos, "Birth");

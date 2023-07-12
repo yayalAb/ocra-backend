@@ -13,9 +13,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public LanguageModel FirstName { get; set; }
         public LanguageModel MiddleName { get; set; }
         public LanguageModel LastName { get; set; }
-        public Guid SexLookupId { get; set; }
-        public string NationalId { get; set; }
-        public Guid ResidentAddressId { get; set; }
+        public Guid? SexLookupId { get; set; }
+        public string? NationalId { get; set; }
+        public Guid? ResidentAddressId { get; set; }
         public string? PhoneNumber { get; set; }
     }
 }

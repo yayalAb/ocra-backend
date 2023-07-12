@@ -39,34 +39,30 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         public async Task<BirthEventDTO> Handle(GetBirthEventByIdQuery request, CancellationToken cancellationToken)
         {
 
-            var selectedBirthEvent = await _BirthEventRepository.GetWithIncludedAsync(request.Id);
+            var selectedBirthEvent = await _BirthEventRepository.GetWithIncludedAsync(request.Id) 
+                                        ?? throw new NotFoundException("Birth Event with the Given Id Is Not Found");
 
-            if (selectedBirthEvent == null)
-            {
-                throw new NotFoundException("Birth Event with the Given Id Is Not Found");
-            }
             var BirthEvent = CustomMapper.Mapper.Map<BirthEventDTO>(selectedBirthEvent);
-            BirthEvent.Event.EventSupportingDocuments = (BirthEvent?.Event?.EventSupportingDocuments?.Count == 0) ? null : BirthEvent?.Event?.EventSupportingDocuments;
-            if (BirthEvent.Event.PaymentExamption != null)
-                BirthEvent.Event.PaymentExamption.SupportingDocuments = (BirthEvent?.Event?.PaymentExamption?.SupportingDocuments?.Count == 0) ? null : BirthEvent?.Event?.PaymentExamption?.SupportingDocuments;
-            BirthEvent.Father.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Father?.BirthAddressId);
-            BirthEvent.Father.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Father?.ResidentAddressId);
-            BirthEvent.Mother.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Mother?.BirthAddressId);
-            BirthEvent.Mother.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Mother?.ResidentAddressId);
-            BirthEvent.Event.EventAddress = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventAddressId);
-            BirthEvent.Event.EventOwener.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Event.EventOwener?.BirthAddressId);
+            BirthEvent.Event.EventSupportingDocuments = (BirthEvent?.Event?.EventSupportingDocuments?.Count == 0 ? null : BirthEvent?.Event?.EventSupportingDocuments)!;
+            if (BirthEvent?.Event.PaymentExamption != null)
+                BirthEvent.Event.PaymentExamption.SupportingDocuments = (BirthEvent?.Event?.PaymentExamption?.SupportingDocuments?.Count == 0 ? null : BirthEvent?.Event?.PaymentExamption?.SupportingDocuments)!;
+            BirthEvent!.Father.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Father?.BirthAddressId)!;
+            BirthEvent!.Father.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Father?.ResidentAddressId)!;
+            BirthEvent!.Mother.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Mother?.BirthAddressId)!;
+            BirthEvent!.Mother.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Mother?.ResidentAddressId)!;
+            BirthEvent!.Event.EventAddress = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventAddressId)!;
+            BirthEvent!.Event.EventOwener.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Event.EventOwener?.BirthAddressId)!;
             if (BirthEvent?.Event.EventOwener?.ResidentAddressId != null)
             {
-                BirthEvent.Event.EventOwener.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Event.EventOwener?.ResidentAddressId);
+                BirthEvent.Event.EventOwener.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Event.EventOwener?.ResidentAddressId)!;
             }
-            if (BirthEvent.Event.EventRegistrar != null)
+            if (BirthEvent?.Event.EventRegistrar != null)
             {
-
-                BirthEvent.Event.EventRegistrar.RegistrarInfo.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventRegistrar?.RegistrarInfo?.BirthAddressId);
-                BirthEvent.Event.EventRegistrar.RegistrarInfo.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventRegistrar?.RegistrarInfo?.ResidentAddressId);
+                BirthEvent!.Event.EventRegistrar.RegistrarInfo.BirthAddress = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventRegistrar?.RegistrarInfo?.BirthAddressId)!;
+                BirthEvent!.Event.EventRegistrar.RegistrarInfo.ResidentAddress = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventRegistrar?.RegistrarInfo?.ResidentAddressId)!;
             }
 
-            return BirthEvent;
+            return BirthEvent!;
         }
     }
 }

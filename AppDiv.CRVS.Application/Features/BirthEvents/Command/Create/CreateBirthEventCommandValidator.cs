@@ -18,7 +18,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             RuleFor(p => p.BirthEvent.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Father).SetValidator(new FatherValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Mother).SetValidator(new MotherValidator(eventRepo));
-            RuleFor(p => p.BirthEvent.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(eventRepo, "Event.CertificateId");
+            RuleFor(p => p.BirthEvent.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(eventRepo, "Event.CertificateId")
+            .When(p => p.BirthEvent.Event.CertificateId != null);
             RuleFor(p => p.BirthEvent.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo)!)
                     .When(p => p.BirthEvent.BirthNotification != null);
             RuleFor(p => p.BirthEvent.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator(eventRepo)!)

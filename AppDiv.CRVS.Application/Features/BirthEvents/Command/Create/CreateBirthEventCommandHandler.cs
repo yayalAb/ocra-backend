@@ -67,6 +67,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             // Insert to the database.
+                            await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                             // store the persons id from the request
                             var personIds = new PersonIdObj
                             {
@@ -98,22 +99,22 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 else
                                 {
                                     string message = $"Dear Customer,\nThis is to inform you that your request for Birth certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {payment.amount} ETB to finance office using code {payment.code}.\n OCRA";
-                                    List<string> msgRecepients = new List<string>();
-                                    if (birthEvent.Mother?.PhoneNumber != null)
+                                    List<string> msgRecepients = new();
+                                    if (birthEvent?.Mother?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent.Mother?.PhoneNumber);
+                                        msgRecepients.Add(birthEvent?.Mother?.PhoneNumber!);
                                     }
-                                    if (birthEvent.Father?.PhoneNumber != null)
+                                    if (birthEvent?.Father?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent.Father?.PhoneNumber);
+                                        msgRecepients.Add(birthEvent?.Father?.PhoneNumber!);
                                     }
-                                    if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
+                                    if (birthEvent?.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
                                     {
                                         msgRecepients.Add(birthEvent.Event.EventRegistrar.RegistrarInfo.PhoneNumber);
                                     }
                                     await _smsService.SendBulkSMS(msgRecepients, message);
                                 }
-                                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
+                                // Save Changes. 
                                 await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 // }
                             }

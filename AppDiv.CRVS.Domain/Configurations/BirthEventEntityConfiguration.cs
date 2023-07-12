@@ -13,11 +13,13 @@ namespace AppDiv.CRVS.Domain.Configurations
 
             builder.HasOne(m => m.FacilityLookup)
                  .WithMany(n => n.BirthFacilityNavigation)
-                 .HasForeignKey(m => m.FacilityLookupId);
+                 .HasForeignKey(m => m.FacilityLookupId)
+                 .IsRequired(false);
 
             builder.HasOne(m => m.FacilityTypeLookup)
                 .WithMany(n => n.BirthFacilityTypeNavigation)
-                .HasForeignKey(m => m.FacilityTypeLookupId);
+                .HasForeignKey(m => m.FacilityTypeLookupId)
+                .IsRequired(false);
 
             builder.HasOne(m => m.Father)
                 .WithMany(n => n.BirthFatherNavigation)
@@ -29,11 +31,13 @@ namespace AppDiv.CRVS.Domain.Configurations
 
             builder.HasOne(m => m.BirthPlace)
                 .WithMany(n => n.BirthPlaceOfBirthNavigation)
-                .HasForeignKey(m => m.BirthPlaceId);
+                .HasForeignKey(m => m.BirthPlaceId)
+                .IsRequired(false);
 
             builder.HasOne(m => m.TypeOfBirthLookup)
                 .WithMany(n => n.BirthTypeOfBirthNavigation)
-                .HasForeignKey(m => m.TypeOfBirthLookupId);
+                .HasForeignKey(m => m.TypeOfBirthLookupId)
+                .IsRequired(false);
 
             builder.HasOne(m => m.Event)
                 .WithOne(n => n.BirthEvent)

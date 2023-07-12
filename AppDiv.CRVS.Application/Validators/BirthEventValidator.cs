@@ -11,10 +11,14 @@ namespace AppDiv.CRVS.Application.Validators
         public BirthEventValidator(IEventRepository repo)
         {
             _repo = repo;
-            RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityLookupId");
-            RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityTypeLookupId");
-            RuleFor(p => p.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "BirthPlaceId");
-            RuleFor(p => p.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "TypeOfBirthLookupId");
+            RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityLookupId")
+            .When(p => p.FacilityLookupId != null);
+            RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityTypeLookupId")
+            .When(p => p.FacilityTypeLookupId != null);
+            RuleFor(p => p.BirthPlaceId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "BirthPlaceId")
+            .When(p => p.BirthPlaceId != null);
+            RuleFor(p => p.TypeOfBirthLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "TypeOfBirthLookupId")
+            .When(p => p.TypeOfBirthLookupId != null);
             RuleFor(p => p.Event.EventRegDateEt).NotEmpty().NotNull().IsValidRegistrationDate("Event EventRegDateEt");
             // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
             // RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(repo, "Event.CertificateId");
