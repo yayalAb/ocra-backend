@@ -68,6 +68,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 DeceasedId = deathEvent.Event.EventOwener.Id,
                                 RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };
+                            await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
+
                             // Save the supporting documents and payment exemption documents.
                             var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(userPhotos);
@@ -91,7 +93,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 }
                             }
                             // Insert into the database.
-                            await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                             var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                         }
                         catch (System.Exception ex)

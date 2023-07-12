@@ -98,6 +98,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                 HusbandId = marriageEvent.Event.EventOwener.Id,
                                 // WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
                             };
+                            marriageEvent.Event.EventType = "Marriage";
+                            await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
@@ -127,9 +129,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             }
                             // else if (amount != 0 || marriageEvent.Event.IsExampted)
                             // {
-                            marriageEvent.Event.EventType = "Marriage";
-                            await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
+
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
                             // }
                             await transaction.CommitAsync();
