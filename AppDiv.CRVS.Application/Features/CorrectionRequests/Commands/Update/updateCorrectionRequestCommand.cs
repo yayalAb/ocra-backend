@@ -7,6 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
 {
@@ -40,7 +41,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             .Include(x => x.Request).Where(x => x.Id == request.Id).FirstOrDefault();
             if (correctionRequestData.Request.currentStep != 0)
             {
-                throw new Exception("you can not edit this request it is Approved");
+                throw new NotFoundException("you can not edit this request it is Approved");
             }
             correctionRequestData.Description = request.Description;
             correctionRequestData.Content = request.Content;
@@ -49,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             {
                 var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
                 var validationResponse = await _contentValidator.ValidateAsync(events.EventType, correctionRequestData.Content);
-                if(validationResponse.Status != 200)
+                if (validationResponse.Status != 200)
                 {
                     return validationResponse;
                 }
@@ -57,7 +58,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
                 var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
                 _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
                 correctionRequestData.Content = finalContent;
-                
+
                 await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
                 await _CorrectionRequestRepostory.SaveChangesAsync(cancellationToken);
                 // var events = await _eventRepository.GetAsync(correctionRequestData.EventId);

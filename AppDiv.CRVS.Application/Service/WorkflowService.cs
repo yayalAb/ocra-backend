@@ -100,7 +100,7 @@ namespace AppDiv.CRVS.Application.Service
             ).FirstOrDefault();
             if (groupId == null)
             {
-                throw new Exception("user group not found");
+                throw new NotFoundException("user group not found");
             }
             return (Guid)groupId;
         }
@@ -115,7 +115,7 @@ namespace AppDiv.CRVS.Application.Service
             .Where(x => x.Id == RequestId).FirstOrDefault();
             if (request == null)
             {
-                throw new Exception("Request Does not Found");
+                throw new NotFoundException("Request Does not Found");
             }
             Guid ReturnId = Guid.Empty;
             if (request.RequestType == "verification")
@@ -182,7 +182,7 @@ namespace AppDiv.CRVS.Application.Service
                     }
                     catch (Exception exp)
                     {
-                        throw new Exception(exp.Message);
+                        throw new NotFoundException(exp.Message);
                     }
                 }
             }
@@ -241,12 +241,12 @@ namespace AppDiv.CRVS.Application.Service
                     (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, false, false, cancellationToken);
                     if (response.amount == 0)
                     {
-                        throw new Exception("Payment Rate not Found");
+                        throw new NotFoundException("Payment Rate not Found");
                     }
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Payment Rate Not found Please Add Payment Rate");
+                    throw new NotFoundException("Payment Rate Not found Please Add Payment Rate");
                 }
 
             }

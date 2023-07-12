@@ -16,12 +16,13 @@ namespace AppDiv.CRVS.Application.Service
 {
     public class ContentValidator : IContentValidator
     {
+
         private readonly IMediator _mediator;
         public ContentValidator(IMediator mediator)
         {
             this._mediator = mediator;
         }
-        public async Task<BaseResponse> ValidateAsync(string eventType, JObject content)
+        public async Task<BaseResponse> ValidateAsync(string eventType, JObject content, bool IsUpdate = true)
         {
             var response = new BaseResponse();
             try
@@ -31,31 +32,31 @@ namespace AppDiv.CRVS.Application.Service
                     case "Adoption":
                         UpdateAdoptionCommand adoptionCommand = content.ToObject<UpdateAdoptionCommand>();
                         adoptionCommand.IsFromCommand = true;
-                        adoptionCommand.ValidateFirst = true;
+                        adoptionCommand.ValidateFirst = IsUpdate;
                         response = await _mediator.Send(adoptionCommand);
                         break;
                     case "Birth":
                         UpdateBirthEventCommand birthCommand = content.ToObject<UpdateBirthEventCommand>();
                         birthCommand.IsFromCommand = true;
-                        birthCommand.ValidateFirst = true;
+                        birthCommand.ValidateFirst = IsUpdate;
                         response = await _mediator.Send(birthCommand);
                         break;
                     case "Death":
                         UpdateDeathEventCommand deathCommand = content.ToObject<UpdateDeathEventCommand>();
                         deathCommand.IsFromCommand = true;
-                        deathCommand.ValidateFirst = true;
+                        deathCommand.ValidateFirst = IsUpdate;
                         response = await _mediator.Send(deathCommand);
                         break;
                     case "Divorce":
                         UpdateDivorceEventCommand divorceCommand = content.ToObject<UpdateDivorceEventCommand>();
                         divorceCommand.IsFromCommand = true;
-                        divorceCommand.ValidateFirst = true;
+                        divorceCommand.ValidateFirst = IsUpdate;
                         response = await _mediator.Send(divorceCommand);
                         break;
                     case "Marriage":
                         UpdateMarriageEventCommand marriageCommand = content.ToObject<UpdateMarriageEventCommand>();
                         marriageCommand.IsFromCommand = true;
-                        marriageCommand.ValidateFirst = true;
+                        marriageCommand.ValidateFirst = IsUpdate;
                         response = await _mediator.Send(marriageCommand);
                         break;
                     default:

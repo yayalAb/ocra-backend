@@ -9,6 +9,6 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface IContentValidator
     {
-        Task<BaseResponse> ValidateAsync(string eventType, JObject content);
+        Task<BaseResponse> ValidateAsync(string eventType, JObject content, bool IsUpdate = true);
     }
 }

@@ -59,7 +59,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Verify
                 }
                 catch (Exception exp)
                 {
-                    throw new Exception(exp.Message);
+                    throw new NotFoundException(exp.Message);
                 }
             }
             return new BaseResponse

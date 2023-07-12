@@ -17,6 +17,7 @@ using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.Authentication.Querys
 {
@@ -52,14 +53,14 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         {
             if (request.UserId == null || request.UserId == Guid.Empty)
             {
-                throw new Exception("Please provide User Id");
+                throw new NotFoundException("Please provide User Id");
             }
             var userGroup = _UserRepo.GetAll()
             .Include(g => g.UserGroups)
             .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
             if (userGroup == null)
             {
-                throw new Exception("user does not found");
+                throw new NotFoundException("user does not found");
             }
             var RequestList = _RequestRepostory.GetAll()
                  .Include(x => x.CivilRegOfficer)
@@ -122,7 +123,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                                  , request.PageCount ?? 1, request.PageSize ?? 10);
             if (RequestList == null)
             {
-                throw new Exception(" Request does not Exist");
+                throw new NotFoundException(" Request does not Exist");
             }
             return List;
         }

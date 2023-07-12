@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
         private readonly IEventRepository _EventRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
+
         private readonly ISmsService _smsService;
 
         public CreateAdoptionCommandHandler(

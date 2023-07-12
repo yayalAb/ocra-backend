@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.Request;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
@@ -27,6 +28,7 @@ namespace AppDiv.CRVS.Application.Service
         private readonly ICorrectionRequestRepostory _CorrectionRequestRepostory;
         private readonly IAuthenticationRepository _AuthenticationRequestRepostory;
         private readonly ICertificateRepository _CertificateRepository;
+        private readonly IWorkflowRepository _WorkflowRepo;
         public UpdateEventPaymetnService(ICertificateRepository CertificateRepository,
                                          IAuthenticationRepository AuthenticationRequestRepostory,
                                          IEventRepository eventRepostory,
@@ -35,7 +37,9 @@ namespace AppDiv.CRVS.Application.Service
                                          IWorkflowService WorkflowService,
                                          IPaymentRequestRepository PaymentRequestRepository,
                                          IPaymentRepository paymentRepository,
-                                         IContentValidator contentValidator)
+                                         IContentValidator contentValidator,
+                                         IWorkflowRepository WorkflowRepo
+                                         )
         {
             _PaymentRequestRepository = PaymentRequestRepository;
             _paymentRepository = paymentRepository;
@@ -46,6 +50,7 @@ namespace AppDiv.CRVS.Application.Service
             _eventRepostory = eventRepostory;
             _AuthenticationRequestRepostory = AuthenticationRequestRepostory;
             _CertificateRepository = CertificateRepository;
+            _WorkflowRepo = WorkflowRepo;
 
         }
 
@@ -61,27 +66,30 @@ namespace AppDiv.CRVS.Application.Service
               .Where(x => x.Id == paymentRequestId).FirstOrDefault();
             if (requst == null)
             {
-                throw new Exception("Payment Request does't found");
+                throw new NotFoundException("Payment Request does't found");
             }
             try
             {
                 requst.status = true;
                 await _PaymentRequestRepository.UpdateAsync(requst, x => x.Id);
             }
-            catch (Exception ex)
+            catch (NotFoundException ex)
             {
-                throw new Exception(ex.Message);
+                throw new NotFoundException(ex.Message);
             }
 
             if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change" || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")
             {
                 if (requst.Request == null)
                 {
-                    throw new Exception("Request Does't Found");
+                    throw new NotFoundException("Request Does't Found");
                 }
+                var workflow = _WorkflowRepo.GetAll()
+                .Include(x => x.Steps)
+                .Where(x => x.workflowName == requst.Request.RequestType).FirstOrDefault();
 
                 var response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, true, cancellationToken);
-                if (response.Item1)
+                if (response.Item1 || workflow?.Steps?.FirstOrDefault() == null)
                 {
                     if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")
                     {
@@ -98,41 +106,13 @@ namespace AppDiv.CRVS.Application.Service
                                         .Where(x => x.RequestId == requst.Request.Id)
                                         .Include(x => x.Request).FirstOrDefault();
                         var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
-                        _ = await _contentValidator.ValidateAsync(modifiedEvent.Event.EventType, CorrectionRequestResponse.Content);
-                        // if (modifiedEvent.Event.EventType == "Adoption")
-                        // {
-                        //     UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
-                        //     AdoptionCommand.IsFromCommand = true;
-                        //     var response1 = await _mediator.Send(AdoptionCommand);
-                        // }
-                        // else if (modifiedEvent.Event.EventType == "Birth")
-                        // {
-                        //     UpdateBirthEventCommand BirthCommand = CorrectionRequestResponse.Content.ToObject<UpdateBirthEventCommand>();
-                        //     BirthCommand.IsFromCommand = true;
-                        //     var response1 = await _mediator.Send(BirthCommand);
-                        // }
-                        // else if (modifiedEvent.Event.EventType == "Death")
-                        // {
-                        //     UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
-                        //     DeathCommand.IsFromCommand = true;
-                        //     var response1 = await _mediator.Send(DeathCommand);
-                        // }
-                        // else if (modifiedEvent.Event.EventType == "Divorce")
-                        // {
-                        //     UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
-                        //     DivorceCommand.IsFromCommand = true;
-                        //     var response1 = await _mediator.Send(DivorceCommand);
-                        // }
-                        // else if (modifiedEvent.Event.EventType == "Marriage")
-                        // {
-                        //     UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
-                        //     MarriageCommand.IsFromCommand = true;
-                        //     var response1 = await _mediator.Send(MarriageCommand);
-                        // }
+                        await _contentValidator.ValidateAsync(modifiedEvent.Event.EventType, CorrectionRequestResponse.Content, false);
                     }
                     else if (requst?.Request?.RequestType == "verfication")
                     {
-
+                        var selectedEvent = await _eventRepostory.GetAsync(requst.EventId);
+                        selectedEvent.IsVerified = true;
+                        await _eventRepostory.UpdateAsync(selectedEvent, x => x.Id);
                     }
                     // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
@@ -145,7 +125,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             else
             {
-                throw new Exception("Unkown Payment Added");
+                throw new NotFoundException("Unkown Payment Added");
             }
         }
     }

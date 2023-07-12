@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
@@ -29,7 +30,7 @@ namespace AppDiv.CRVS.Application.Service
            .Where(x => x.PersonalInfoId == CivilRegOfficerId).FirstOrDefault();
             if (applicationuser == null)
             {
-                throw new Exception("user does not exist");
+                throw new NotFoundException("user does not exist");
             }
             //      && (e.VerficationRequestNavigation.Request.Workflow.Steps
             //    .Where(s => s.step == e.VerficationRequestNavigation.Request.NextStep)

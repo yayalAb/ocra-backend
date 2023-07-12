@@ -1,5 +1,6 @@
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -55,7 +56,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             .FirstOrDefault();
             if (selectedPaymentExamptionRequest == null)
             {
-                throw new Exception("Payment Examption Request With A given Id Does Not Found, or an error occured on geting Detail");
+                throw new NotFoundException("Payment Examption Request With A given Id Does Not Found, or an error occured on geting Detail");
             }
             return selectedPaymentExamptionRequest;
         }

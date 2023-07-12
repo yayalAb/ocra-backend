@@ -49,7 +49,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
           .Where(wf => wf.workflowName == "payment exemption").Select(x => x.Id).FirstOrDefault();
             if (WorkflowId == null || WorkflowId == Guid.Empty)
             {
-                throw new Exception("payment Exemption Work Flow Does not exist Pleace Create Workflow First");
+                throw new NotFoundException("payment Exemption Work Flow Does not exist Pleace Create Workflow First");
             }
 
             //Check and log validation errors
@@ -90,7 +90,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
                 };
 
                 await _transactionService.CreateTransaction(NewTranscation);
-                await _notificationService.CreateNotification(PaymentExamptionRequest.Request.Id,PaymentExamptionRequest.Request.RequestType, "payment Exemption Request",
+                await _notificationService.CreateNotification(PaymentExamptionRequest.Request.Id, PaymentExamptionRequest.Request.RequestType, "payment Exemption Request",
                                    _WorkflowService.GetReceiverGroupId("payment exemption", (int)PaymentExamptionRequest.Request.NextStep), PaymentExamptionRequest.Request.Id,
                                  userId);
 

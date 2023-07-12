@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -41,14 +42,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
             try
             {
                 var user = _user.GetSingle(request.UserId);
-                // if (user?.Id == "134b4daa-bfac-445d-bd45-a83048eada3b")
-                // {
-                //     user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
-                // }
-                // var user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
                 if (user != null)
                 {
-                    // user = _user.GetAll().FirstOrDefault(u => u.UserName.ToLower() == "admin");
                     var inRange = _certificateRange.GetAll().FirstOrDefault(r => r.AddressId == user.AddressId
                                                                     && request.CertificateSerialNumber.CompareTo(r.From) >= 0
                                                                     && request.CertificateSerialNumber.CompareTo(r.To) <= 0);
@@ -63,7 +58,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
                 }
                 else
                 {
-                    throw new Exception();
+                    throw new NotFoundException();
                 }
 
             }
@@ -72,7 +67,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
                 response.Status = 400;
                 response.Message = "Unable to get the user!";
                 return Task.FromResult(response);
-                // throw new ApplicationException(exp.Message);
             }
             return Task.FromResult(response);
         }

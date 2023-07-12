@@ -20,6 +20,8 @@ using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
+using AppDiv.CRVS.Application.Exceptions;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Query
 {
@@ -64,6 +66,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly IVerficationRequestRepository _VerficationRequestRepository;
         private readonly IWorkflowRepository _WorkflowRepository;
         private readonly IWorkflowService _WorkflowService;
+        private readonly IEventPaymentRequestService _paymentRequestService;
+
         // private readonly IMediator _mediator;
         private readonly ISupportingDocumentRepository _supportingDocumentRepository;
 
@@ -80,6 +84,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                         IVerficationRequestRepository VerficationRequestRepository,
                                         IWorkflowRepository WorkflowRepository,
                                         IWorkflowService WorkflowService,
+                                        IEventPaymentRequestService paymentRequestService,
                                         // IMediator mediator,
                                         ISupportingDocumentRepository supportingDocumentRepository)
         {
@@ -96,6 +101,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             _VerficationRequestRepository = VerficationRequestRepository;
             _WorkflowRepository = WorkflowRepository;
             _WorkflowService = WorkflowService;
+            _paymentRequestService = paymentRequestService;
         }
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
@@ -112,7 +118,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             if (selectedEvent.ReprintWaiting)
             {
-                throw new Exception("please request it on reprint");
+                throw new NotFoundException("please request it on reprint");
             }
 
 
@@ -128,29 +134,38 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                     item.Status = false;
                     await _certificateRepository.UpdateAsync(item, x => x.Id);
                 }
-                Guid WorkflowId = _WorkflowRepository.GetAll()
-                .Where(wf => wf.workflowName == "verification").Select(x => x.Id).FirstOrDefault();
-                if (WorkflowId == null || WorkflowId == Guid.Empty)
+                var Workflow = _WorkflowRepository.GetAll()
+                .Include(x => x.Steps)
+                .Where(wf => wf.workflowName == "verification").FirstOrDefault();
+                if ((Workflow.Id == null || Workflow.Id == Guid.Empty) || (Workflow.Steps.FirstOrDefault() == null))
                 {
-                    errorResponse.Message = "verification Work Flow Does not exist Pleace Create Workflow First";
-                    errorResponse.Success = false;
-                    return errorResponse;
+                    (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, "verification", null, false, false, cancellationToken);
+                    if (payment.amount == 0 || payment.amount == 0.0)
+                    {
+
+                        selectedEvent.IsVerified = true;
+                        await _eventRepository.UpdateAsync(selectedEvent, x => x.Id);
+                    }
+                }
+                else
+                {
+                    var next = _WorkflowService.GetNextStep("verification", 0, true);
+                    var verficationRequest = new VerficationRequest
+                    {
+                        EventId = selectedEvent.Id,
+                        Request = new Request
+                        {
+                            RequestType = "verification",
+                            CivilRegOfficerId = selectedEvent.CivilRegOfficerId,
+                            currentStep = 0,
+                            NextStep = next,
+                            WorkflowId = Workflow.Id,
+                        }
+                    };
+                    await _VerficationRequestRepository.InsertAsync(verficationRequest, cancellationToken);
 
                 }
-                var next = _WorkflowService.GetNextStep("verification", 0, true);
-                var verficationRequest = new VerficationRequest
-                {
-                    EventId = selectedEvent.Id,
-                    Request = new Request
-                    {
-                        RequestType = "verification",
-                        CivilRegOfficerId = selectedEvent.CivilRegOfficerId,
-                        currentStep = 0,
-                        NextStep = next,
-                        WorkflowId = WorkflowId,
-                    }
-                };
-                await _VerficationRequestRepository.InsertAsync(verficationRequest, cancellationToken);
+
                 selectedEvent.IsCertified = true;
                 selectedEvent.OnReprintPaymentRequest = false;
                 selectedEvent.ReprintWaiting = false;
