@@ -52,6 +52,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.Plans.Command.Update;
 using AppDiv.CRVS.Domain.Entities.Audit;
+using  AppDiv.CRVS.Application.Features.Messages.Command.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -266,6 +267,10 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
             CreateMap<Transaction, TransactionRequestDTO>().ReverseMap();
             CreateMap<AuditLog, AuditLogDTO>().ReverseMap();
+
+
+
+            CreateMap<CreateMessageCommand , Message>().ReverseMap();   
 
 
 

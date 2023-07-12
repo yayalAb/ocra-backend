@@ -170,6 +170,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ILookupCouchRepository, LookupCouchRepository>();
             services.AddScoped<IAddressLookupCouchRepository, AddressLookupCouchRepository>();
             services.AddScoped<ISettingCouchRepository, SettingCouchRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            
 
 
 
@@ -182,6 +184,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IVerficationRequestRepository, VerficationRequestRepository>();
             services.AddScoped<IWorkHistoryRepository, WorkHistoryRepository>();
             services.AddScoped<ITokenValidatorService, TokenValidatorService>();
+
 
 
             // services.AddScoped<IReturnAdoptionCertfcate, ReturnAdoptionCertfcate>();
