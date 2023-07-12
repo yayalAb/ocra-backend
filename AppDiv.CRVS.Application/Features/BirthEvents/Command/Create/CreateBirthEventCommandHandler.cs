@@ -66,6 +66,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                         {
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                            await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                             // Insert to the database.
                             // store the persons id from the request
                             var personIds = new PersonIdObj
@@ -84,13 +85,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             // For non exempted documents 
                             if (!birthEvent.Event.IsExampted)
                             {
-                                // Create payment request.
                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
-                                amount = payment.amount;
-                                // if (payment.amount == 0)
-                                // {
-                                // (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
-                                // amount = response.amount;
                                 if (payment.amount == 0)
                                 {
                                     birthEvent.Event.IsPaid = true;
@@ -101,11 +96,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                     List<string> msgRecepients = new List<string>();
                                     if (birthEvent.Mother?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent.Mother?.PhoneNumber);
+                                        msgRecepients.Add(birthEvent?.Mother?.PhoneNumber);
                                     }
                                     if (birthEvent.Father?.PhoneNumber != null)
                                     {
-                                        msgRecepients.Add(birthEvent.Father?.PhoneNumber);
+                                        msgRecepients.Add(birthEvent?.Father?.PhoneNumber);
                                     }
                                     if (birthEvent.Event.EventRegistrar?.RegistrarInfo?.PhoneNumber != null)
                                     {
@@ -113,7 +108,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                     }
                                     await _smsService.SendBulkSMS(msgRecepients, message);
                                 }
-                                await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                                 await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 // }
                             }
@@ -124,13 +118,9 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             response.Status = 400;
                             throw;
                         }
-                        // if (amount != 0 || request.BirthEvent.Event.IsExampted)
-                        // {
-
                         response.Message = "Birth Event created Successfully";
                         response.Status = 200;
                         await transaction.CommitAsync();
-                        // }
 
                     }
 
