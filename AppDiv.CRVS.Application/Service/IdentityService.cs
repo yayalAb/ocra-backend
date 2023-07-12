@@ -192,7 +192,7 @@ namespace AppDiv.CRVS.Application.Service
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(e => e.Description);
-                throw new Exception($"password reset failed! \n {string.Join(",", errors)}\n {token}");
+                throw new NotFoundException($"password reset failed! \n {string.Join(",", errors)}\n {token}");
             }
             if (isLoginOtp)//login otp
             {
@@ -218,7 +218,7 @@ namespace AppDiv.CRVS.Application.Service
             var response = await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
             if (!response.Succeeded)
             {
-                throw new Exception($"Change password failed! ");
+                throw new NotFoundException($"Change password failed! ");
             }
             user.Otp = null;
             user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
@@ -241,7 +241,7 @@ namespace AppDiv.CRVS.Application.Service
 
             if (!response.Succeeded)
             {
-                throw new Exception($"User Updating failed! \n {response.Errors}");
+                throw new NotFoundException($"User Updating failed! \n {response.Errors}");
             }
 
             return Result.Success();
@@ -266,7 +266,7 @@ namespace AppDiv.CRVS.Application.Service
             existingUser.PersonalInfo = user.PersonalInfo;
             existingUser.UserGroups = user.UserGroups;
             existingUser.SelectedAdminType = user.SelectedAdminType;
-            existingUser.PreferedLanguage =user.PreferedLanguage;
+            existingUser.PreferedLanguage = user.PreferedLanguage;
             existingUser.AddressId = user.AddressId;
             //if the user was locked and status is updated to true
             if (user.Status && existingUser.LockoutEnd > DateTime.Now && !existingUser.Status && existingUser.LockoutEnabled)
@@ -281,7 +281,7 @@ namespace AppDiv.CRVS.Application.Service
 
             if (!response.Succeeded)
             {
-                throw new Exception($"User Updating failed! \n {response.Errors}");
+                throw new NotFoundException($"User Updating failed! \n {response.Errors}");
             }
 
 
@@ -329,7 +329,7 @@ namespace AppDiv.CRVS.Application.Service
 
             if (!response.Succeeded)
             {
-                throw new Exception($"User Deleting failed! \n {response.Errors}");
+                throw new NotFoundException($"User Deleting failed! \n {response.Errors}");
             }
 
             return Result.Success();
@@ -340,13 +340,13 @@ namespace AppDiv.CRVS.Application.Service
             switch (searchBy.ToLower())
             {
                 case "email":
-                return (await _userManager.FindByEmailAsync(arg)) != null;
+                    return (await _userManager.FindByEmailAsync(arg)) != null;
                 case "username":
-                return (await _userManager.FindByNameAsync(arg)) != null;
+                    return (await _userManager.FindByNameAsync(arg)) != null;
                 case "phone":
-                return await _userManager.Users.Where(u => u.PhoneNumber == arg).AnyAsync();
+                    return await _userManager.Users.Where(u => u.PhoneNumber == arg).AnyAsync();
                 default:
-                throw new Exception("invalid search by string");
+                    throw new NotFoundException("invalid search by string");
             }
             return (await _userManager.FindByNameAsync(arg)) != null;
         }
@@ -357,7 +357,7 @@ namespace AppDiv.CRVS.Application.Service
             var options = _userManager.Options.Password;
             int max = 0;
             bool digit;
-            bool nonAlphanumeric = false; 
+            bool nonAlphanumeric = false;
             bool lowerCase = false;
             bool upperCase = false;
             if (policySetting != null)

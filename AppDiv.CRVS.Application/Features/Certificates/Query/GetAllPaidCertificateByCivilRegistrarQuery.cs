@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
@@ -38,7 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             .Where(x => x.PersonalInfoId == request.CivilRegOfficerId).FirstOrDefault();
             if (applicationuser == null)
             {
-                throw new Exception("user does not exist");
+                throw new NotFoundException("user does not exist");
             }
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId || e.ReprintWaiting);

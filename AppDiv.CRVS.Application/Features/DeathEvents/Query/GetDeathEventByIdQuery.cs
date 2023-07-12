@@ -40,13 +40,13 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             if (DeathEvent?.Event.PaymentExamption != null)
                 DeathEvent.Event.PaymentExamption.SupportingDocuments = (DeathEvent?.Event?.PaymentExamption?.SupportingDocuments?.Count == 0 ? null : DeathEvent?.Event?.PaymentExamption?.SupportingDocuments)!;
             // Get the formated addresses
-            DeathEvent!.Event.EventAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventAddressId)!;
-            DeathEvent!.Event.EventOwener.BirthAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.BirthAddressId)!;
-            DeathEvent!.Event.EventOwener.ResidentAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.ResidentAddressId)!;
+            DeathEvent!.Event.EventAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventAddressId)!;
+            DeathEvent!.Event.EventOwener.BirthAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.BirthAddressId)!;
+            DeathEvent!.Event.EventOwener.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.ResidentAddressId)!;
             if (DeathEvent?.Event.EventRegistrar.RegistrarInfo != null)
             {
-                DeathEvent!.Event.EventRegistrar.RegistrarInfo.BirthAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.BirthAddressId)!;
-                DeathEvent!.Event.EventRegistrar.RegistrarInfo.ResidentAddress = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.ResidentAddressId)!;
+                DeathEvent!.Event.EventRegistrar.RegistrarInfo.BirthAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.BirthAddressId)!;
+                DeathEvent!.Event.EventRegistrar.RegistrarInfo.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.ResidentAddressId)!;
             }
             return DeathEvent!;
         }

@@ -28,6 +28,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
         private readonly IUserRepository _userRepository;
         private readonly INotificationService _notificationService;
         private readonly IContentValidator _contentValidator;
+        private readonly IEventPaymentRequestService _paymentRequestService;
+
 
         public CreateCorrectionRequestHandler(ICorrectionRequestRepostory CorrectionRepository,
                                               IWorkflowService WorkflowService,
@@ -37,7 +39,9 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                                               ITransactionService transactionService,
                                               IUserRepository userRepository,
                                               INotificationService notificationService,
-                                              IContentValidator contentValidator)
+                                              IContentValidator contentValidator,
+                                              IEventPaymentRequestService paymentRequestService
+                                              )
         {
             if (contentValidator is null)
             {
@@ -53,10 +57,12 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             _userRepository = userRepository;
             _notificationService = notificationService;
             this._contentValidator = contentValidator;
+            _paymentRequestService = paymentRequestService;
         }
 
         public async Task<BaseResponse> Handle(CreateCorrectionRequest request, CancellationToken cancellationToken)
         {
+            bool hasWorkflow = false;
             var executionStrategy = _CorrectionRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -65,24 +71,38 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                     try
 
                     {
-                        Guid WorkflowId = _WorkflowRepository.GetAll()
-                                  .Where(wf => wf.workflowName == "change").Select(x => x.Id).FirstOrDefault();
-                        if (WorkflowId == null || WorkflowId == Guid.Empty)
-                        {
-                            throw new Exception("change Work Flow Does not exist Pleace Create Workflow First");
-                        }
                         var response = new BaseResponse();
                         request.CorrectionRequest.Request.RequestType = "change";
                         request.CorrectionRequest.Request.currentStep = 0;
                         var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
-                        CorrectionRequest.Request.WorkflowId = WorkflowId;
-                        CorrectionRequest.Request.NextStep = _WorkflowService.GetNextStep("change", 0, true);
-
                         var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
-                        var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content);
+                        var Workflow = _WorkflowRepository.GetAll()
+                        .Include(x => x.Steps)
+                           .Where(wf => wf.workflowName == "change").FirstOrDefault();
+                        if ((Workflow?.Id != null && Workflow?.Id != Guid.Empty) && (Workflow?.Steps?.FirstOrDefault() != null))
+                        {
+                            hasWorkflow = true;
+                            CorrectionRequest.Request.WorkflowId = Workflow.Id;
+                            CorrectionRequest.Request.NextStep = _WorkflowService.GetNextStep("change", 0, true);
+                        }
+                        else
+                        {
+                            (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest(events.EventType, events, "change", null, false, false, cancellationToken);
+                            if (payment.amount == 0 || payment.amount == 0.0)
+                            {
+                                hasWorkflow = false;
+                            }
+                        }
+                        var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
                         if (validationResponse.Status != 200)
                         {
                             return validationResponse;
+                        }
+                        if (!hasWorkflow)
+                        {
+                            await transaction.CommitAsync();
+
+                            return response;
                         }
                         var supportingDocuments = GetSupportingDocuments(CorrectionRequest.Content, "eventSupportingDocuments", out JObject newContent);
                         var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
@@ -102,7 +122,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         {
                             CurrentStep = 0,
                             ApprovalStatus = true,
-                            WorkflowId = WorkflowId,
+                            WorkflowId = Workflow.Id,
                             RequestId = CorrectionRequest.RequestId,
                             CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
                             Remark = "Correction Request"

@@ -66,12 +66,12 @@ namespace AppDiv.CRVS.Application.Features.Auth.ResetPassword
                 var forgotPasswordRes = await _identityService.ForgotPassword(email: null, user.UserName);
                 if (!forgotPasswordRes.result.Succeeded)
                 {
-                    throw new Exception(forgotPasswordRes.result.Errors.ToString());
+                    throw new NotFoundException(forgotPasswordRes.result.Errors.ToString());
                 }
                 var resetPasswordRes = await _identityService.ResetPassword(email: null, user.UserName, request.resetPassword.Password, forgotPasswordRes.resetToken);
                 if (!resetPasswordRes.Succeeded)
                 {
-                    throw new Exception();
+                    throw new NotFoundException();
                 }
                 resetPasswordResponse.Message = "password reset successful";
                 resetPasswordResponse.Status = 200;

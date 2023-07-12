@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
         private readonly IEventRepository _EventRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
+
         private readonly ISmsService _smsService;
 
         public CreateAdoptionCommandHandler(
@@ -164,6 +165,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     FatherId = adoptionEvent.AdoptiveFather.Id,
                                     ChildId = adoptionEvent.Event.EventOwener.Id
                                 };
+                                await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
@@ -196,7 +198,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     //
 
                                 }
-                                await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
+
                                 await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
                                 // if (amount != 0 || adoptionEvent.Event.IsExampted)
                                 // {

@@ -1,6 +1,7 @@
 
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -52,7 +53,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             }).FirstOrDefault();
             if (selectedEvent == null)
             {
-                throw new Exception("Certificate with given Id not Found or Certificate Event Not Found");
+                throw new NotFoundException("Certificate with given Id not Found or Certificate Event Not Found");
             }
             var events = _EventRepository.GetAll()
             .Include(x => x.CivilRegOfficer)
@@ -70,7 +71,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             }).FirstOrDefault();
             if (events == null)
             {
-                throw new Exception("The  Certificate Event Is not Exist");
+                throw new NotFoundException("The  Certificate Event Is not Exist");
             }
 
             var listofHistory = _CertificateHistoryRepository.GetAll()
@@ -101,7 +102,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 };
                 if (history == null)
                 {
-                    throw new Exception("An Error occered on history generatin");
+                    throw new NotFoundException("An Error occered on history generatin");
                 }
                 selectedEvent.Historys.Add(history);
             }
@@ -118,7 +119,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 };
                 if (history == null)
                 {
-                    throw new Exception("An Error occered on history generatin");
+                    throw new NotFoundException("An Error occered on history generatin");
                 }
                 selectedEvent.Historys.Add(history);
             }
@@ -136,7 +137,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 };
                 if (history == null)
                 {
-                    throw new Exception("An Error occered on history generatin");
+                    throw new NotFoundException("An Error occered on history generatin");
                 }
                 selectedEvent.Historys.Add(history);
             }

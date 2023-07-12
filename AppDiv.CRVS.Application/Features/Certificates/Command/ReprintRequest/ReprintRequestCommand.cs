@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -47,7 +48,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.ReprintRequest
             .Where(x => x.Id == request.Id).FirstOrDefault();
             if (certificate == null)
             {
-                throw new Exception("Certificate not Found!");
+                throw new NotFoundException("Certificate not Found!");
             }
 
             try
@@ -65,7 +66,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.ReprintRequest
                 catch (Exception exp)
                 {
 
-                    throw new Exception(exp.Message);
+                    throw new NotFoundException(exp.Message);
 
                 }
 
@@ -76,7 +77,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.ReprintRequest
             }
             catch (Exception exp)
             {
-                throw new ApplicationException(exp.Message);
+                throw new NotFoundException(exp.Message);
             }
 
             // var modifiedCertificate = await _certificateRepository.GetAsync(request.Id);
