@@ -23,18 +23,23 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
             _addressRepo = addressRepo;
             _eventRepo = eventRepo;
             _courtRepo = courtRepo;
-            var fieldNames = new List<string>{"DivorcedWife","DivorcedWife.Id","DateOfMarriageEt", "DivorceReason", "CourtCase","NumberOfChildren","Event",
-            "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId",
-            "DivorcedWife.BirthAddressId","DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
-            "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
-            "CourtCase","CourtCase.Id","CourtCase.CourtCaseNumber","CourtCase.ConfirmedDateEt",
-            "Event.Id","Event.CertificateId", "Event.EventDateEt",
-            "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
-            "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName",
-            "Event.EventOwener.NationalId",
-            "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
-            "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-            "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
+            var fieldNames = new List<string>{"DivorcedWife","DivorcedWife.Id","DateOfMarriageEt", 
+            // "DivorceReason", "NumberOfChildren",
+            "Event","CourtCase",
+            "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalityLookupId",
+            // "DivorcedWife.NationalId",
+            // "DivorcedWife.BirthAddressId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
+            // "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
+            "CourtCase","CourtCase.Id",
+            // "CourtCase.CourtCaseNumber","Event.CertificateId","Event.EventAddressId",
+            "CourtCase.ConfirmedDateEt",
+            "Event.Id", "Event.EventDateEt",
+            "Event.EventRegDateEt","Event.CivilRegOfficerId","Event.IsExampted",
+            "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.NationalityLookupId",
+            // "Event.EventOwener.NationalId",
+            // "Event.EventOwener.ReligionLookupId",
+            // "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+            // "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
             };
             foreach (var fieldName in fieldNames)
             {
@@ -49,12 +54,14 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
             }
             var lookupFeilds = new List<string>{
 
-                "DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId",
-                "DivorcedWife.EducationalStatusLookupId","DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId",
-                "DivorcedWife.NationLookupId",
-                "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
-                "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                "Event.EventOwener.NationLookupId"
+                "DivorcedWife.NationalityLookupId",
+                // "DivorcedWife.ReligionLookupId",
+                // "DivorcedWife.EducationalStatusLookupId","DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId",
+                // "DivorcedWife.NationLookupId",
+                "Event.EventOwener.NationalityLookupId",
+                // "Event.EventOwener.ReligionLookupId",
+                // "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+                // "Event.EventOwener.NationLookupId"
             };
             foreach (var lookupFeild in lookupFeilds)
             {

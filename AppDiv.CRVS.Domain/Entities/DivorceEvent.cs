@@ -13,15 +13,15 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? HusbandBirthCertificate { get; set; }
         public DateTime? DateOfMarriage { get; set; }
         public string? DateOfMarriageEt {get;set ;}
-        public string DivorceReasonStr { get; set; }
+        public string? DivorceReasonStr { get; set; }
         public Guid CourtCaseId { get; set; }
-        public int NumberOfChildren { get; set; }
+        public int? NumberOfChildren { get; set; }
         public Guid EventId { get; set; }
         public virtual PersonalInfo DivorcedWife { get; set; }
         public virtual CourtCase CourtCase { get; set; }
         public virtual Event Event { get; set; }
         [NotMapped]
-        public JObject DivorceReason
+        public JObject? DivorceReason
         {
             get
             {

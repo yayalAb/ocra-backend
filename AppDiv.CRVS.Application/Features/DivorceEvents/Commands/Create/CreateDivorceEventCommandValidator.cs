@@ -25,18 +25,21 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _addressRepo = addressRepo;
             _courtRepo = courtRepo;
             _eventRepo = eventRepo;
-            var fieldNames = new List<string>{"DivorcedWife","DateOfMarriageEt", "DivorceReason", "CourtCase","NumberOfChildren","Event",
-            "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalId",
-            "DivorcedWife.BirthAddressId","DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
-            "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
-            "CourtCase.CourtCaseNumber","CourtCase.ConfirmedDateEt",
-            "Event.CertificateId", "Event.EventDateEt",
-            "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
-            "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName",
-            "Event.EventOwener.NationalId",
-            "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
-            "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-            "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
+            var fieldNames = new List<string>{"DivorcedWife","DateOfMarriageEt", 
+            // "DivorceReason", "NumberOfChildren",
+            "CourtCase","Event",
+            "DivorcedWife.FirstName","DivorcedWife.MiddleName","DivorcedWife.LastName","DivorcedWife.NationalityLookupId",
+            // "DivorcedWife.NationalId","DivorcedWife.BirthAddressId","DivorcedWife.ReligionLookupId","DivorcedWife.EducationalStatusLookupId",
+            // "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
+            // "CourtCase.CourtCaseNumber","Event.CertificateId","Event.EventAddressId",
+            "CourtCase.ConfirmedDateEt",
+             "Event.EventDateEt",
+            "Event.EventRegDateEt","Event.CivilRegOfficerId","Event.IsExampted",
+            "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.NationalityLookupId",
+            // "Event.EventOwener.NationalId",
+            // "Event.EventOwener.ReligionLookupId",
+            // "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+            // "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
             };
             foreach (var fieldName in fieldNames)
             {
@@ -50,12 +53,14 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                 // add more validation rules for the field here, if needed
             }
             var lookupFeilds = new List<string>{
-                "DivorcedWife.NationalityLookupId","DivorcedWife.ReligionLookupId",
-                "DivorcedWife.EducationalStatusLookupId","DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId",
-                "DivorcedWife.NationLookupId",
-                "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
-                "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                "Event.EventOwener.NationLookupId"
+                "DivorcedWife.NationalityLookupId",
+                // "DivorcedWife.ReligionLookupId",
+                // "DivorcedWife.EducationalStatusLookupId","DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId",
+                // "DivorcedWife.NationLookupId",
+                "Event.EventOwener.NationalityLookupId",
+                // "Event.EventOwener.ReligionLookupId",
+                // "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+                // "Event.EventOwener.NationLookupId"
             };
             foreach (var lookupFeild in lookupFeilds)
             {
@@ -67,8 +72,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                 // add more validation rules for the field here, if needed
             }
             var addressFeilds = new List<string>{
-                "DivorcedWife.BirthAddressId","DivorcedWife.ResidentAddressId","Event.EventAddressId",
-                "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
+                // "DivorcedWife.BirthAddressId","DivorcedWife.ResidentAddressId","Event.EventAddressId",
+                // "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
             foreach (var addressFeild in addressFeilds)
             {
@@ -110,7 +115,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             });
             RuleFor(e => e.Event.CertificateId)
                 .MustAsync(ValidateCertifcateId)
-                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.");
+                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.")
+                .When(e => e.Event.CertificateId != null);
         }
 
         private async Task<bool> ValidateCertifcateId(string CertId, CancellationToken token)
