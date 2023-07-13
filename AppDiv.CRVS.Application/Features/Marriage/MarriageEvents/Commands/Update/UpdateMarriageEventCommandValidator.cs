@@ -1,5 +1,4 @@
-﻿
-using AppDiv.CRVS.Application.Interfaces.Persistence;
+﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Utility.Services;
@@ -37,26 +36,32 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
                 "Id","MarriageTypeId","BrideInfo","BrideInfo.Id","Event.Id","Event.EventOwener.Id",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDateEt",
-                    "BrideInfo.NationalId",
-                    "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
-                    "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", "Event.EventDateEt",
-                    "Event.EventRegDateEt","Event.EventAddressId","Event.CivilRegOfficerId","Event.IsExampted",
+                    // "BrideInfo.NationalId",
+                    "BrideInfo.NationalityLookupId",
+                    // "BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
+                    // "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
+                    // "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", 
+                    "Event.EventDateEt",
+                    "Event.EventRegDateEt",
+                    // "Event.EventAddressId",
+                    "Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDateEt",
-                    "Event.EventOwener.NationalId",
-                    "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
-                    "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
+                    // "Event.EventOwener.NationalId",
+                    "Event.EventOwener.NationalityLookupId",
+                    // "Event.EventOwener.ReligionLookupId","Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+                    // "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
 
             };
             var lookupFeilds = new List<string>{
                "MarriageTypeId",
-                    "BrideInfo.NationalityLookupId","BrideInfo.ReligionLookupId",
-                    "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    "BrideInfo.NationLookupId",
-                    "Event.EventOwener.NationalityLookupId","Event.EventOwener.ReligionLookupId",
-                    "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    "Event.EventOwener.NationLookupId"
+                    "BrideInfo.NationalityLookupId",
+                    // "BrideInfo.ReligionLookupId",
+                    // "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
+                    // "BrideInfo.NationLookupId",
+                    "Event.EventOwener.NationalityLookupId",
+                    // "Event.EventOwener.ReligionLookupId",
+                    // "Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
+                    // "Event.EventOwener.NationLookupId"
             };
             foreach (var lookupFeild in lookupFeilds)
             {
@@ -79,8 +84,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
             }
             var addressFeilds = new List<string>{
-                "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
-                "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
+                // "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
+                // "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
             foreach (var addressFeild in addressFeilds)
             {
@@ -228,8 +233,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             return _personalInfoRepo.GetById(guid) != null;
         }
 
-        private async Task<bool> BeFoundInLookupTable(object lookupId)
+        private async Task<bool> BeFoundInLookupTable(object? lookupId)
         {
+            if (lookupId == null)
+                return true;
             var l = lookupId;
             // return false;
 
@@ -311,9 +318,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         }
 
 
-        private async Task<bool> isDivorcee(Guid marriageStatusLookupId)
+        private async Task<bool> isDivorcee(Guid? marriageStatusLookupId)
         {
-            var marriageStatus = await _lookupRepo.GetLookupById(marriageStatusLookupId);
+            if (marriageStatusLookupId == null)
+                return false;
+            var marriageStatus = await _lookupRepo.GetLookupById((Guid)marriageStatusLookupId);
             if (marriageStatus == null)
             {
                 return false;
@@ -325,9 +334,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedMan].or!.ToLower()
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.divorcedWoman].or!.ToLower();
         }
-        private async Task<bool> isWidowed(Guid marriageStatusLookupId)
+        private async Task<bool> isWidowed(Guid? marriageStatusLookupId)
         {
-            var marriageStatus = await  _lookupRepo.GetLookupById(marriageStatusLookupId);
+            if (marriageStatusLookupId == null)
+                return false;
+            var marriageStatus = await  _lookupRepo.GetLookupById((Guid)marriageStatusLookupId);
             if (marriageStatus == null)
             {
                 return false;
