@@ -11,30 +11,30 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
     public static class ReturnPerson
     {
-        private static CustomDateConverter convertor = new CustomDateConverter();
-        public static EventInfoArchive GetEventInfo(Event events, IDateAndAddressService dateAndAddressService)
+        private static readonly CustomDateConverter convertor = new();
+        public static EventInfoArchive GetEventInfo(Event? events, IDateAndAddressService dateAndAddressService)
         {
-            (string am, string or)? address = (events.EventAddressId == Guid.Empty
+            (string am, string or)? address = (events?.EventAddressId == Guid.Empty
                || events?.EventAddressId == null) ? null :
-               dateAndAddressService.addressFormat(events.EventAddressId);
+               dateAndAddressService.addressFormat(events?.EventAddressId);
 
-            (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or)!;
             // var convertor = new CustomDateConverter();
             return new EventInfoArchive
             {
                 CertificateId = events?.CertificateId,
                 RegistrationBookNumber = events?.RegBookNo,
-                RegistrationOfficeId = events?.CertificateId.Substring(0, events.CertificateId.Length - 8),
+                RegistrationOfficeId = events?.CertificateId?[..((events?.CertificateId?.Length ?? 0) - 8)],
                 EventType = events?.EventType,
-                EventMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "or")?.month,
-                EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt).month, "Am")?.month,
-                EventDay = convertor.getSplitted(events?.EventDateEt).day.ToString(),
-                EventYear = convertor.getSplitted(events?.EventDateEt).year.ToString(),
+                EventMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt!).month, "or")?.month,
+                EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt!).month, "Am")?.month,
+                EventDay = convertor.getSplitted(events?.EventDateEt!).day.ToString(),
+                EventYear = convertor.getSplitted(events?.EventDateEt!).year.ToString(),
 
-                RegistrationMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt).month, "or")?.month,
-                RegistrationMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt).month, "Am")?.month,
-                RegistrationDay = convertor.getSplitted(events?.EventRegDateEt).day.ToString(),
-                RegistrationYear = convertor.getSplitted(events?.EventRegDateEt).year.ToString(),
+                RegistrationMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt!).month, "or")?.month,
+                RegistrationMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt!).month, "Am")?.month,
+                RegistrationDay = convertor.getSplitted(events?.EventRegDateEt!).day.ToString(),
+                RegistrationYear = convertor.getSplitted(events?.EventRegDateEt!).year.ToString(),
 
                 EventCountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
                 EventCountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
@@ -48,8 +48,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 EventCityKetemaAm = splitedAddress?.am?.ElementAtOrDefault(4),
                 EventKebeleOr = splitedAddress?.or?.ElementAtOrDefault(5),
                 EventKebeleAm = splitedAddress?.am?.ElementAtOrDefault(5),
-
-
             };
         }
         public static Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService //)
@@ -57,10 +55,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         {
             // return Fill.Filler<Person, PersonalInfo>(new Person(), person);
             // var convertor = new CustomDateConverter();
-            var personName = person?.FirstName?.Value<string>("or");
-            var personSexLookupId = person?.SexLookup?.Value?.Value<string>("or") ?? lookupService.GetLookupOr(person?.SexLookupId);
+            // var personName = person?.FirstName?.Value<string>("or");
+            // var personSexLookupId = person?.SexLookup?.Value?.Value<string>("or") ?? lookupService.GetLookupOr(person?.SexLookupId);
 
-            var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
+            // var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
             (string am, string or)? birthAddress = (person?.BirthAddressId == Guid.Empty
                || person?.BirthAddress == null) ? null :
                dateAndAddressService.addressFormat(person.BirthAddressId);
@@ -140,10 +138,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             };
             if (!string.IsNullOrEmpty(person?.BirthDateEt))
             {
-                personInfo.BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt).month, "or")?.month;
-                personInfo.BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt).month, "am")?.month;
-                personInfo.BirthDay = convertor.getSplitted(person?.BirthDateEt).day.ToString();
-                personInfo.BirthYear = convertor.getSplitted(person?.BirthDateEt).year.ToString();
+                personInfo.BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt!).month, "or")?.month;
+                personInfo.BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt!).month, "am")?.month;
+                personInfo.BirthDay = convertor.getSplitted(person?.BirthDateEt!).day.ToString();
+                personInfo.BirthYear = convertor.getSplitted(person?.BirthDateEt!).year.ToString();
             }
             return personInfo;
         }
