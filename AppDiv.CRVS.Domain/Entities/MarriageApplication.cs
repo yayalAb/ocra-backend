@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public DateTime ApplicationDate { get; set; }
         public string? ApplicationDateEt {get; set; }
-        public Guid ApplicationAddressId { get; set; }
+        public Guid? ApplicationAddressId { get; set; }
         public Guid BrideInfoId { get; set; }
         public Guid GroomInfoId { get; set;}
         public Guid CivilRegOfficerId { get; set; }

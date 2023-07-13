@@ -17,10 +17,15 @@ namespace AppDiv.CRVS.API.Controllers
             _messageHub = messageHub;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> GetNotification([FromBody] GetNotificationByGroupIdQuery query)
+        [HttpGet]
+        public async Task<string> GetNotification([FromQuery] GetNotificationByGroupIdQuery query)
         {
-            return Ok(await Mediator.Send(query));
+            var res =  await Mediator.Send(query);
+        //   Console.WriteLine($"Notification:----- {id}");    
+          await _messageHub.Clients.All.SendNotification(res);
+          
+        //   await _messageHub.Clients.User(id).SendNotification(res);
+            return "message sent ";
         }
 
         [HttpPost("changeSeenStatus/{id}")]

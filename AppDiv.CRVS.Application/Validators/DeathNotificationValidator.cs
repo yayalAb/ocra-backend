@@ -11,11 +11,15 @@ namespace AppDiv.CRVS.Application.Validators
         public DeathNotificationValidator(IEventRepository repo)
         {
             _repo = repo;
-            RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId");
+            RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId")
+            .When(p => p.CauseOfDeathInfoTypeLookupId != null);
             // RuleFor(p => p.DeathNotification.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo);
-            RuleFor(p => p.CauseOfDeathArray).NotEmpty().NotNull();
-            RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId");
-            RuleFor(p => p.DeathNotificationSerialNumber).NotEmpty().NotNull();
+            RuleFor(p => p.CauseOfDeathArray).NotEmpty().NotNull()
+            .When(p => p.CauseOfDeathArray != null);
+            RuleFor(p => p.CauseOfDeathInfoTypeLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "CauseOfDeathInfoTypeLookupId")
+            .When(p => p.CauseOfDeathInfoTypeLookupId != null);
+            RuleFor(p => p.DeathNotificationSerialNumber).NotEmpty().NotNull()
+            .When(p => p.DeathNotificationSerialNumber != null);
         }
     }
 

@@ -108,7 +108,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
                                     // selectedperson.SexLookupId = adoptionEvent.AdoptiveFather.SexLookupId;
                                     selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
-                                    selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
+                                    selectedperson.NationalityLookupId = (Guid)adoptionEvent.AdoptiveFather?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
                                     selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveFather?.EducationalStatusLookupId;
                                     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveFather?.TypeOfWorkLookupId;
@@ -125,7 +125,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveMother.Id);
                                     // selectedperson.SexLookupId = adoptionEvent.AdoptiveMother.SexLookupId;
                                     selectedperson.NationalId = adoptionEvent.AdoptiveMother?.NationalId;
-                                    selectedperson.NationalityLookupId = adoptionEvent.AdoptiveMother?.NationalityLookupId;
+                                    selectedperson.NationalityLookupId = (Guid)adoptionEvent.AdoptiveMother?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveMother?.ReligionLookupId;
                                     selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveMother?.EducationalStatusLookupId;
                                     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveMother?.TypeOfWorkLookupId;
@@ -141,7 +141,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.Event.EventOwener.Id);
                                     selectedperson.NationalId = adoptionEvent.Event?.EventOwener?.NationalId;
-                                    selectedperson.NationalityLookupId = adoptionEvent.Event?.EventOwener?.NationalityLookupId;
+                                    selectedperson.NationalityLookupId = (Guid)adoptionEvent.Event?.EventOwener?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.Event?.EventOwener?.ReligionLookupId;
                                     selectedperson.EducationalStatusLookupId = adoptionEvent.Event?.EventOwener?.EducationalStatusLookupId;
                                     selectedperson.TypeOfWorkLookupId = adoptionEvent.Event?.EventOwener?.TypeOfWorkLookupId;

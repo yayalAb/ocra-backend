@@ -18,7 +18,7 @@ namespace AppDiv.CRVS.Application.Service
         {
             (string am, string or)? address = (birth.Event?.EventAddressId == Guid.Empty
                || birth.Event?.EventAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(birth.Event.EventAddressId);
+               _DateAndAddressService.addressFormat(birth?.Event?.EventAddressId);
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(birth.Event.CreatedAt);
 

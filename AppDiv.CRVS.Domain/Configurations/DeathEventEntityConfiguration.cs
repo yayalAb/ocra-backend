@@ -18,11 +18,13 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.FacilityTypeLookup)
                .WithMany(n => n.DeathFacilityTypeNavigation)
-               .HasForeignKey(m => m.FacilityTypeLookupId);
+               .HasForeignKey(m => m.FacilityTypeLookupId)
+               .IsRequired(false);
 
             builder.HasOne(m => m.FacilityLookup)
                .WithMany(n => n.DeathFacilityNavigation)
-               .HasForeignKey(m => m.FacilityLookupId);
+               .HasForeignKey(m => m.FacilityLookupId)
+               .IsRequired(false);
 
             builder.HasOne(m => m.DuringDeathLookup)
                .WithMany(n => n.DuringDeathNavigation)
@@ -31,7 +33,8 @@ namespace AppDiv.CRVS.Domain.Configurations
 
             builder.HasOne(m => m.DeathPlace)
                 .WithMany(n => n.DeathPlaceOfDeathNavigation)
-                .HasForeignKey(m => m.DeathPlaceId);
+                .HasForeignKey(m => m.DeathPlaceId)
+                .IsRequired(false);
 
             builder.HasOne(d => d.Event)
             .WithOne(n => n.DeathEventNavigation)

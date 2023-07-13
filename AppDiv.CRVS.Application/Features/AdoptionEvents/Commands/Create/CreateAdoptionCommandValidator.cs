@@ -88,16 +88,19 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .NotNull()
                 .WithMessage("{PropertyName} is required.")
                 .NotEmpty()
-                .WithMessage("{PropertyName} must not be empty.");
+                .WithMessage("{PropertyName} must not be empty.")
+                .When(p => p.Adoption.Event.EventSupportingDocuments != null);
             RuleFor(e => e.Adoption.BeforeAdoptionAddressId)
                 .MustAsync(ValidateForignkeyAddress)
-                .WithMessage("A {PropertyName} does not  exists.");
+                .WithMessage("A {PropertyName} does not  exists.")
+                .When(e => e.Adoption.BeforeAdoptionAddressId != null);
             RuleFor(e => e.Adoption.Event.CivilRegOfficerId)
                 .MustAsync(ValidateForignkeyPersonalInfo)
                 .WithMessage("A {PropertyName} does not  exists.");
             RuleFor(e => e.Adoption.Event.CertificateId)
                 .MustAsync(ValidateCertifcateId)
-                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.");
+                .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.")
+                .When(e => e.Adoption.Event.CertificateId != null);
             RuleFor(p => p.Adoption.Event.EventOwener.BirthDateEt)
             .MustAsync(ValidateDateEt)
                .WithMessage("{PropertyName} is invalid date.");
@@ -130,9 +133,11 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .MustAsync(CheckIdOnCeate)
                 .WithMessage("{PropertyName} is must be null on Create.");
         }
-        private async Task<bool> ValidateForignkeyAddress(Guid request, CancellationToken token)
+        private async Task<bool> ValidateForignkeyAddress(Guid? request, CancellationToken token)
         {
-            var address = await _address.GetByIdAsync(request);
+            if (request == null)
+                return false;
+            var address = await _address.GetByIdAsync((Guid)request);
             if (address == null)
             {
                 return false;
@@ -206,8 +211,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             }
         }
 
-        private async Task<bool> ValidateCertifcateId(string CertId, CancellationToken token)
+        private async Task<bool> ValidateCertifcateId(string? CertId, CancellationToken token)
         {
+            if (CertId == null)
+                return false;
             var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
             if (valid)
             {

@@ -143,11 +143,15 @@ namespace AppDiv.CRVS.Application.Service
         }
         public string? GetLookupOr(Guid? id)
         {
+            if (id == null)
+                return null;
             var lookup = _lookupRepository.GetSingle(id);
             return lookup?.Value?.Value<string>("or");
         }
         public string? GetLookupAm(Guid? id)
         {
+            if (id == null)
+                return null;
             var lookup = _lookupRepository.GetSingle(id);
             return lookup?.Value?.Value<string>("am");
         }

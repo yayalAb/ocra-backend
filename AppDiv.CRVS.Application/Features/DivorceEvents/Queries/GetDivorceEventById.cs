@@ -43,7 +43,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
                     .Include(m => m.Event.EventSupportingDocuments.Where(s => s.Type.ToLower() != "webcam"))
                     .Include(m => m.Event.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
                     .ProjectTo<UpdateDivorceEventCommand>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync();
+                    .FirstOrDefaultAsync(cancellationToken);
             if (DivorceEvent == null)
             {
                 throw new NotFoundException($"divorce Event with id {request.Id} not found");

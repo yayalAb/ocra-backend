@@ -7,12 +7,12 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class AdoptionDTO
     {
         public Guid Id { get; set; }
-        public Guid BeforeAdoptionAddressId { get; set; }
+        public Guid? BeforeAdoptionAddressId { get; set; }
         public JObject ApprovedName { get; set; }
-        public JObject Reason { get; set; }
+        public JObject? Reason { get; set; }
         public virtual AdoptionEventPersonalInfoDTO AdoptiveMother { get; set; }
         public AdoptionEventPersonalInfoDTO AdoptiveFather { get; set; }
-        public virtual CourtCaseDTO CourtCase { get; set; }
+        public virtual CourtCaseDTO? CourtCase { get; set; }
         public virtual AdoptionEventDTO Event { get; set; }
         public AddressResponseDTOE? BeforeAdoptionAddressResponsDTO { get; set; }
 
