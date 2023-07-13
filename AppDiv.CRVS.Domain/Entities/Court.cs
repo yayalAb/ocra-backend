@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class Court : BaseAuditableEntity
     {
-        public String NameStr { get; set; }
+        public String? NameStr { get; set; }
         public Guid? AddressId { get; set; }
         public string? DescriptionStr { get; set; }
 

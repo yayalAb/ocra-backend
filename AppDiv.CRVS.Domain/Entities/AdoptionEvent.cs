@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class AdoptionEvent : BaseAuditableEntity
     {
-        public Guid BeforeAdoptionAddressId { get; set; }
+        public Guid? BeforeAdoptionAddressId { get; set; }
         public string? BirthCertificateId { get; set; }
         [NotMapped]
         public AddressResponseDTOE? BeforeAdoptionAddressResponsDTO { get; set; }
@@ -18,9 +18,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid CourtCaseId { get; set; }
         public Guid EventId { get; set; }
         public string ApprovedNameStr { get; set; }
-        public string ReasonStr { get; set; }
+        public string? ReasonStr { get; set; }
         [NotMapped]
-        public JObject Reason
+        public JObject? Reason
         {
             get
             {
@@ -28,7 +28,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                ReasonStr = value.ToString();
+                ReasonStr = value?.ToString();
             }
         }
         [NotMapped]
@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get
             {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(ApprovedNameStr) ? "{}" : ApprovedNameStr);
+                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(ApprovedNameStr) ? "{}" : ApprovedNameStr)!;
             }
             set
             {

@@ -11,7 +11,8 @@ namespace AppDiv.CRVS.Domain.Configurations
 
             builder.HasOne(m => m.BeforeAdoptionAddress)
                  .WithMany(n => n.BeforeAdoptionAddressNavigation)
-                 .HasForeignKey(m => m.BeforeAdoptionAddressId);
+                 .HasForeignKey(m => m.BeforeAdoptionAddressId)
+                 .IsRequired(false);
 
             builder.HasOne(m => m.AdoptiveMother)
                  .WithMany(n => n.AdoptiveMotherNavigation)
@@ -24,7 +25,8 @@ namespace AppDiv.CRVS.Domain.Configurations
                  .IsRequired(false);
             builder.HasOne(m => m.CourtCase)
                  .WithOne(n => n.AdoptionEventCourtCase)
-                 .HasForeignKey<AdoptionEvent>(m => m.CourtCaseId);
+                 .HasForeignKey<AdoptionEvent>(m => m.CourtCaseId)
+                 .IsRequired(false);
 
             builder.HasOne(m => m.Event)
             .WithOne(n => n.AdoptionEvent)

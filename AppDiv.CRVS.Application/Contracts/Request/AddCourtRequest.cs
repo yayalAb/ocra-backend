@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public virtual Guid? AddressId { get; set; }
         public AddressResponseDTOE? AddressResponseDTO { get; set; }
 
-        public JObject Name { get; set; }
+        public JObject? Name { get; set; }
         public JObject? Description { get; set; }
     }
 }
