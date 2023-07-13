@@ -150,6 +150,7 @@ namespace AppDiv.CRVS.Infrastructure
 
             services.AddTransient<IEventRepository, EventRepository>();
             services.AddTransient<IPlanRepository, PlanRepository>();
+            services.AddTransient<IReportRepostory, ReportRepostory>();
 
 
             services.AddScoped<CRVSDbContextInitializer>();
@@ -172,6 +173,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ISettingCouchRepository, SettingCouchRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             
+
 
 
 

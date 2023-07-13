@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Application.Features.Payments.Command.Create
     public record CreatePaymentCommand : IRequest<CreatePaymentCommandResponse>
     {
         public Guid PaymentRequestId { get; set; }
-        public Guid PaymentWayLookupId { get; set;}
-        public string BillNumber {get; set; }
+        public Guid PaymentWayLookupId { get; set; }
+        public string BillNumber { get; set; }
     }
 }
