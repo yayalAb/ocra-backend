@@ -15,15 +15,18 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.RegistrarInfo.Id.ToString())
                     .ForeignKeyWithPerson(repo, "EventRegistrar.RegistrarInfo.Id")
                     .When(p => (!string.IsNullOrEmpty(p.RegistrarInfo.Id.ToString()) && p.RegistrarInfo.Id != Guid.Empty));
-            RuleFor(p => p.RelationshipLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "Registrar.RelationshipLookupId");
+            RuleFor(p => p.RelationshipLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "Registrar.RelationshipLookupId")
+            .When(p => p.RelationshipLookupId != null);
             RuleFor(p => p.RegistrarInfo.FirstName.or).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.FirstName.am).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.MiddleName.or).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.MiddleName.am).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.LastName.or).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.LastName.am).NotEmpty().NotNull();
-            RuleFor(p => p.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "RegistrarInfo.SexLookupId");
-            RuleFor(p => p.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "RegistrarInfo.ResidentAddressId");
+            RuleFor(p => p.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "RegistrarInfo.SexLookupId")
+            .When(p => p.RegistrarInfo.SexLookupId != null);
+            RuleFor(p => p.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "RegistrarInfo.ResidentAddressId")
+            .When(p => p.RegistrarInfo.ResidentAddressId != null);
             RuleFor(p => p.RegistrarInfo.PhoneNumber).NotEmpty()
                         .Matches(new Regex(@"^(\+251)?\d{9}$")).WithMessage("Invalid phone number format.")
                         .When(p => p.RegistrarInfo.PhoneNumber != null);

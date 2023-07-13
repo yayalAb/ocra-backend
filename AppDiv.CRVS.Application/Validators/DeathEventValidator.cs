@@ -11,12 +11,15 @@ namespace AppDiv.CRVS.Application.Validators
         public DeathEventValidator(IEventRepository repo)
         {
             _repo = repo;
-            RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityLookupId");
-            RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityTypeLookupId");
+            RuleFor(p => p.FacilityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityLookupId")
+            .When(p => p.FacilityLookupId != null);
+            RuleFor(p => p.FacilityTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "FacilityTypeLookupId")
+            .When(p => p.FacilityTypeLookupId != null);
             // RuleFor(p => p.BirthCertificateId).NotEmpty().NotNull();
             RuleFor(p => p.DuringDeathId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "DuringDeathId")
                     .When(p => p.DuringDeathId != null);
-            RuleFor(p => p.PlaceOfFuneral).NotEmpty().NotNull();
+            RuleFor(p => p.PlaceOfFuneral).NotEmpty().NotNull()
+            .When(p => p.PlaceOfFuneral != null);
             // RuleFor(p => p.Event.RegBookNo).NotEmpty().NotNull();
             // RuleFor(p => p.Event.CivilRegOfficeCode).NotEmpty().NotNull();
             // RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(repo, "Event.CertificateId");
