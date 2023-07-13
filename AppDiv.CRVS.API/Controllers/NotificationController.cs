@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.API.Controllers
     {
         private readonly IHubContext<MessageHub, IMessageHubClient> _messageHub;
 
-        public NotificationController(IHubContext < MessageHub, IMessageHubClient > messageHub)
+        public NotificationController(IHubContext<MessageHub, IMessageHubClient> messageHub)
         {
             _messageHub = messageHub;
         }
@@ -27,8 +27,8 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<IActionResult> changeSeenStatus(Guid id)
         {
 
-            return Ok(await Mediator.Send(new UpdateSeenStatusCommand{Id = id}));
-        }                                                                                                                                                                                                                                                                                                                                                                                                            
-     
+            return Ok(await Mediator.Send(new UpdateSeenStatusCommand { Id = id }));
+        }
+
     }
 }

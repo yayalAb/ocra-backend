@@ -42,6 +42,7 @@ namespace AppDiv.CRVS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<List<AddressDTO>> Get([FromQuery] GetAllAddressQuery query)
         {
+
             return await _mediator.Send(query);
         }
 
