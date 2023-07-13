@@ -67,6 +67,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<WorkHistory> WorkHistories { get; set; }
         public DbSet<RevocationToken> RevocationTokens { get; set; }
 
+        public DbSet<Message> Messages {get;set; }
 
 
 
@@ -129,6 +130,8 @@ namespace AppDiv.CRVS.Infrastructure
                 modelBuilder.ApplyConfiguration(new CertificateSerialTransferEntityConfiguration());
                 modelBuilder.ApplyConfiguration(new AuthenticationRequestConfiguration());
                 modelBuilder.ApplyConfiguration(new PlanEntityConfiguration());
+                modelBuilder.ApplyConfiguration(new MessageEntityConfiguration());
+
 
 
 

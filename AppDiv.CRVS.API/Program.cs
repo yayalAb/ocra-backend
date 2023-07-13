@@ -9,7 +9,6 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Infrastructure;
 using AppDiv.CRVS.Api.Middleware;
 using System.Security.Claims;
-// using AppDiv.CRVS.Utility.Hub;
 using AppDiv.CRVS.Infrastructure.Hub;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Cors;
@@ -47,23 +46,25 @@ builder.Services.AddAuthentication(x =>
         ValidIssuer = _issuer,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_key)),
         ClockSkew = TimeSpan.FromMinutes(Convert.ToDouble(_expirtyMinutes)),
+        NameClaimType = ClaimTypes.NameIdentifier
 
     };
     x.Events = new JwtBearerEvents
     {
-        OnTokenValidated = async context =>
-        {
-            // Check if the token is still valid
-            var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
-            var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
+        // OnTokenValidated = async context =>
+        // {
+        //     // Check if the token is still valid
+        //     var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
+        //     var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
 
-            if (!isValid)
-            {
-                context.Fail("Unauthorized Access");
-            }
+        //     if (!isValid)
+        //     {
+        //         context.Fail("Unauthorized Access");
+        //     }
 
-            return;
-        },
+        //     return;
+        // },
+
         OnMessageReceived = context =>
         {
             var accessToken = context.Request.Query["access_token"];
@@ -71,10 +72,8 @@ builder.Services.AddAuthentication(x =>
             {
                 context.Token = accessToken;
             }
-
             return Task.CompletedTask;
         }
-
     };
 });
 
@@ -130,6 +129,15 @@ builder.Services.AddSwaggerGen(c =>
                 });
 
 });
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(JwtBearerDefaults.AuthenticationScheme, policy =>
+    {
+        policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme);
+        policy.RequireClaim(ClaimTypes.NameIdentifier);
+    });
+});
+
 
 var app = builder.Build();
 
@@ -149,7 +157,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.ConfigureExceptionMiddleware();
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 // Must be betwwen app.UseRouting() and app.UseEndPoints()
 // maintain middleware order
@@ -160,6 +168,7 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
+
 app.UseCors("CorsPolicy");
 
 app.UseEndpoints(endpoints =>

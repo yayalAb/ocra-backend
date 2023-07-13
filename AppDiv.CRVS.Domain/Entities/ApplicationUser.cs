@@ -32,7 +32,8 @@ namespace AppDiv.CRVS.Domain
         public virtual ICollection<LoginHistory> LoginHistorys { get; set; }
         // public virtual ICollection<WorkHistory> WorkerHistories { get; set; }
 
-
+        public virtual ICollection<Message> SentMessages {get; set; }
+        public virtual ICollection<Message> ReceivedMessages {get; set; }
 
     }
 }
