@@ -7,6 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
     public class MessageDTO
     {
+        public Guid Id { get; set; }    
         public string Type { get; set; }
         public string SenderId { get; set; }
         public string ReceiverId { get; set; }
