@@ -26,6 +26,8 @@ var _issuer = builder.Configuration["Jwt:Issuer"];
 var _audience = builder.Configuration["Jwt:Audience"];
 var _expirtyMinutes = builder.Configuration["Jwt:ExpiryMinutes"];
 
+builder.Services.AddApplication(builder.Configuration)
+                .AddInfrastructure(builder.Configuration);
 
 // Configuration for token
 builder.Services.AddAuthentication(x =>
@@ -81,20 +83,34 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(_key, _issuer, _audience, _expirtyMinutes));
 
-builder.Services.AddApplication(builder.Configuration)
-                .AddInfrastructure(builder.Configuration);
 
 
-builder.Services.AddSignalR();
-
+builder.Services.AddSignalR(o => {
+    o.EnableDetailedErrors = true;
+});
+// var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";  
 builder.Services.AddCors(c =>
 {
     c.AddPolicy("CorsPolicy",
      options =>
-      options.WithOrigins("http://localhost:4200")
-      .AllowAnyOrigin()
+      options
+    //   .WithOrigins("http://192.168.1.17:4200")
+      .SetIsOriginAllowed((host)=>true)
+    //   .AllowAnyOrigin()
       .AllowAnyMethod()
-      .AllowAnyHeader());
+      .AllowAnyHeader()
+      .AllowCredentials()
+      );
+// c.AddPolicy("specificPolicy",  
+//                       policy  =>  
+//                       {  
+//                           policy.WithOrigins("http://localhost:4200",  
+//                                               "http://192.168.1.32:4200" , "http://192.168.1.30:4200")
+//                                                   .AllowAnyMethod()
+//       .AllowAnyHeader()
+//       .AllowCredentials(); // add the allowed origins  
+//                       });  
+
 });
 
 
@@ -159,7 +175,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.ConfigureExceptionMiddleware();
-// app.UseHttpsRedirection();
 
 // Must be betwwen app.UseRouting() and app.UseEndPoints()
 // maintain middleware order
@@ -167,11 +182,12 @@ app.ConfigureExceptionMiddleware();
 
 // Added for authentication
 // Maintain middleware order
-app.UseAuthentication();
 app.UseRouting();
+app.UseCors("CorsPolicy");
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseCors("CorsPolicy");
+
 
 app.UseEndpoints(endpoints =>
 {
@@ -179,6 +195,7 @@ app.UseEndpoints(endpoints =>
     endpoints.MapHub<MessageHub>("/Notification");
     endpoints.MapHub<ChatHub>("/Chat");
 });
+// app.UseHttpsRedirection();
 
 app.MapControllers();
 
