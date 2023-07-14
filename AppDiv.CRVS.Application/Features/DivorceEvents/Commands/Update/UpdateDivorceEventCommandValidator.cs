@@ -73,8 +73,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                 // add more validation rules for the field here, if needed
             }
             var addressFeilds = new List<string>{
-                "DivorcedWife.BirthAddressId","DivorcedWife.ResidentAddressId","Event.EventAddressId",
-                "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
+                // "DivorcedWife.BirthAddressId","DivorcedWife.ResidentAddressId","Event.EventAddressId",
+                // "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
             foreach (var addressFeild in addressFeilds)
             {

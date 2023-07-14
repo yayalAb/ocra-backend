@@ -1,12 +1,12 @@
 using AppDiv.CRVS.Application.Common;
-using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 
 
 namespace AppDiv.CRVS.Application.Features.Messages.Command.Create
 {
     public class CreateMessageCommadResponse : BaseResponse
     {
-        public  Message CreatedMessage {get; set; }
+        public  MessageDTO CreatedMessage {get; set; }
         public CreateMessageCommadResponse() : base()
         {
         }

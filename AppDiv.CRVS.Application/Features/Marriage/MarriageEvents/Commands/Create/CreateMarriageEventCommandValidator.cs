@@ -413,7 +413,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private async Task<bool> isDivorcee(Guid? marriageStatusLookupId)
         {
             if (marriageStatusLookupId == null)
-                return true;
+                return false;
             var marriageStatus = await _lookupRepo.GetLookupById((Guid)marriageStatusLookupId);
             if (marriageStatus == null)
             {

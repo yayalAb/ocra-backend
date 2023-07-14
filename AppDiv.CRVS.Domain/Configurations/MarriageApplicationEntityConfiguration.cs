@@ -11,7 +11,8 @@ namespace AppDiv.CRVS.Domain.Configuration
         {
             builder.HasOne(m =>m.ApplicationAddress)
             .WithMany(n => n.MarriageApplications )
-            .HasForeignKey(m => m.ApplicationAddressId);
+            .HasForeignKey(m => m.ApplicationAddressId)
+            .IsRequired(false);
             //with personalInfo table
             builder.HasOne(m =>m.BrideInfo)
             .WithMany(n => n.MarriageApplicationBrideInfo )

@@ -21,7 +21,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
             RuleFor(e => e.ApplicationAddressId)
                 .NotEmpty()
                 .NotNull()
-                .MustAsync(BefoundInAddressDb);
+                .MustAsync(BefoundInAddressDb)
+                .When(e => e.ApplicationAddressId != null);
             RuleFor(e => e.CivilRegOfficerId)
                 .NotEmpty()
                 .NotNull()
@@ -33,8 +34,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
             return (await _personalInfoRepo.GetAsync(guid)!= null);
         }
 
-        private async Task<bool> BefoundInAddressDb(Guid guid, CancellationToken token)
+        private async Task<bool> BefoundInAddressDb(Guid? guid, CancellationToken token)
         {
+            if (guid == null)
+                return true;
             return (await _repo.GetAsync(guid)) != null;
 
         }

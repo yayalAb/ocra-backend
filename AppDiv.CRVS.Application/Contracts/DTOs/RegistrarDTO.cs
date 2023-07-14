@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class RegistrarDTO
     {
         public Guid Id { get; set; }
-        public Guid RelationshipLookupId { get; set; }
+        public Guid? RelationshipLookupId { get; set; }
         public Guid RegistrarInfoId { get; set; }
 
         public virtual LookupDTO Relationship { get; set; }

@@ -33,8 +33,21 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         public string? GetUserId()
         {
+            Console.WriteLine($"userrrr=============== {httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)}");
+            var userId = httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null)
+            {
+                var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+                if (!string.IsNullOrEmpty(tokenstring))
+                {
 
-            return httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+                    userId = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                }
+
+            }
+                return userId;
 
         }
         public Guid GetWorkingAddressId()

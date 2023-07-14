@@ -33,23 +33,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
             var fieldNames =
             new List<string>{
-
-                "Id","MarriageTypeId","BrideInfo","BrideInfo.Id","Event.Id","Event.EventOwener.Id",
+                "Id","MarriageTypeId","BrideInfo",
+                "BrideInfo.Id","Event.Id","Event.EventOwener.Id",
                     "BrideInfo.FirstName","BrideInfo.MiddleName","BrideInfo.LastName","BrideInfo.BirthDateEt",
-                    // "BrideInfo.NationalId",
                     "BrideInfo.NationalityLookupId",
-                    // "BrideInfo.ReligionLookupId","BrideInfo.ResidentAddressId",
-                    // "BrideInfo.EducationalStatusLookupId","BrideInfo.TypeOfWorkLookupId","BrideInfo.MarriageStatusLookupId",
-                    // "BrideInfo.BirthAddressId","BrideInfo.NationLookupId","Event.CertificateId", 
                     "Event.EventDateEt",
                     "Event.EventRegDateEt",
-                    // "Event.EventAddressId",
                     "Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDateEt",
-                    // "Event.EventOwener.NationalId",
-                    "Event.EventOwener.NationalityLookupId",
-                    // "Event.EventOwener.ReligionLookupId","Event.EventOwener.EducationalStatusLookupId","Event.EventOwener.TypeOfWorkLookupId","Event.EventOwener.MarriageStatusLookupId",
-                    // "Event.EventOwener.ResidentAddressId","Event.EventOwener.BirthAddressId","Event.EventOwener.NationLookupId",
+                    "Event.EventOwener.NationalityLookupId"
 
             };
             var lookupFeilds = new List<string>{
@@ -112,17 +104,17 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.MiddleName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
-            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.SexLookupId))
-            .ForEach(lookupId => lookupId
-                    .NotEmpty()
-                    .NotNull()
-                    .MustAsync(async (lookupId , _) => await BeFoundInLookupTable(lookupId)).WithMessage("witness sexLookup with the provided id is not found"));
+            // RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.SexLookupId))
+            // .ForEach(lookupId => lookupId
+            //         .NotEmpty()
+            //         .NotNull()
+            //         .MustAsync(async (lookupId , _) => await BeFoundInLookupTable(lookupId)).WithMessage("witness sexLookup with the provided id is not found"));
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.Id))
                     .Must(NotHaveDuplicateWitness)
                     .WithMessage("duplicate witness personal info data: one person can only be registered as a witness once for a single marriage event");
 
             //only resident address is required
-            RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
+            // RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
             .Must(BeAbove18YearsOld).WithMessage("the bride cannot be below 18 years old");
