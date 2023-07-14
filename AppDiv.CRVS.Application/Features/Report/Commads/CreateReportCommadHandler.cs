@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
             }
             if (CreateReportCommadResponse.Success)
             {
-                await _ReportRepository.CreateReportAsync(request.ReportName, request.Query);
+                await _ReportRepository.CreateReportAsync(request.ReportName, request.Query, request?.Description, request?.DefualtColumns, request?.ReportTitle, cancellationToken);
                 CreateReportCommadResponse.Message = "Report created successfully";
 
             }

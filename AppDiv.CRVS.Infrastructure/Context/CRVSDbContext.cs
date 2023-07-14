@@ -67,7 +67,9 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<WorkHistory> WorkHistories { get; set; }
         public DbSet<RevocationToken> RevocationTokens { get; set; }
 
-        public DbSet<Message> Messages {get;set; }
+        public DbSet<Message> Messages { get; set; }
+        public DbSet<ReportStore> ReportStores { get; set; }
+
 
 
 

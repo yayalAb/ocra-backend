@@ -11,9 +11,8 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IReportRepostory
     {
-        public string GetOperator(SqlOperator? sqlOper, object value, object value2);
-        public Task<BaseResponse> CreateReportAsync(string reportName, string query);
-        public Task<JObject> GetReportData(string reportName, List<string>? columns = null, List<Filter>? filters = null, List<Aggregate>? aggregates = null);
+        public Task<BaseResponse> CreateReportAsync(string reportName, string query, string Description, string[]? Colums, string? ReportTitle, CancellationToken cancellationToken);
+        public Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String? filters = "", List<Aggregate>? aggregates = null);
         public Task<JObject> GetReports();
     }
 }
