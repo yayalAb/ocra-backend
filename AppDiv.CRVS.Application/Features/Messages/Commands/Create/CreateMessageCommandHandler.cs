@@ -3,6 +3,11 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Utility.Services;
+using Microsoft.EntityFrameworkCore;
+
+
 
 namespace AppDiv.CRVS.Application.Features.Messages.Command.Create
 {
@@ -35,9 +40,26 @@ namespace AppDiv.CRVS.Application.Features.Messages.Command.Create
             {
                 var newMessage = CustomMapper.Mapper.Map<Message>(request);
                 await _MessageRepository.InsertAsync(newMessage, cancellationToken);
-                 await _MessageRepository.SaveChangesAsync(cancellationToken);
-                 CreateMessageCommadResponse.CreatedMessage = newMessage;
-                 CreateMessageCommadResponse.Message = "message created successful";
+                await _MessageRepository.SaveChangesAsync(cancellationToken);
+                var message = await _MessageRepository.GetAll()
+                        .Include(m => m.Sender)
+                        .Include(m => m.Receiver)
+                        .Where(m => m.Id == newMessage.Id).FirstOrDefaultAsync();
+                CreateMessageCommadResponse.CreatedMessage = new MessageDTO
+                {
+                    Id = message.Id,
+                    Type = message.Type,
+                    SenderId = message.SenderId,
+                    ReceiverId = message.ReceiverId,
+                    TextMessage = message.TextMessage,
+                    ParentMessageId = message.ParentMessageId,
+                    SenderName = message.Sender.UserName,
+                    ReceiverName = message.Receiver.UserName,
+                    CreatedAt = message.CreatedAt,
+                    CreatedAtEt = message.CreatedAt == null ? "" : new CustomDateConverter(message.CreatedAt).ethiopianDate
+
+                };
+                CreateMessageCommadResponse.Message = "message created successful";
             }
             return CreateMessageCommadResponse;
         }

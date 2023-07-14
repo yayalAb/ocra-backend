@@ -12,6 +12,7 @@ using System.Security.Claims;
 using AppDiv.CRVS.Infrastructure.Hub;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Cors;
+using AppDiv.CRVS.Infrastructure.Hub.ChatHub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -90,7 +91,8 @@ builder.Services.AddCors(c =>
 {
     c.AddPolicy("CorsPolicy",
      options =>
-      options.AllowAnyOrigin()
+      options.WithOrigins("http://localhost:4200")
+      .AllowAnyOrigin()
       .AllowAnyMethod()
       .AllowAnyHeader());
 });
@@ -175,6 +177,7 @@ app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
     endpoints.MapHub<MessageHub>("/Notification");
+    endpoints.MapHub<ChatHub>("/Chat");
 });
 
 app.MapControllers();
