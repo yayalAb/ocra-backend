@@ -174,7 +174,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IAddressLookupCouchRepository, AddressLookupCouchRepository>();
             services.AddScoped<ISettingCouchRepository, SettingCouchRepository>();
             services.AddScoped<IMessageRepository, MessageRepository>();
-
+            services.AddScoped<IOnlineUserRepository , OnlineUserRepository>();
+            
 
 
 

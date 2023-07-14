@@ -8,11 +8,15 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using AppDiv.CRVS.Domain.Entities;
+using Microsoft.AspNetCore.Cors;
+
 
 
 
 namespace AppDiv.CRVS.Infrastructure.Hub.ChatHub;
+[EnableCors("CorsPolicy")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
 public class ChatHub : Hub<IChatHubClient>
 {
     private readonly ILogger<ChatHub> logger;
@@ -28,16 +32,21 @@ public class ChatHub : Hub<IChatHubClient>
     }
     public override async Task<Task> OnConnectedAsync()
     {
-        // Console.WriteLine($"connected list ------ {Users}");
+        Console.WriteLine($"connected ");
         var userId = _userResolverService.GetUserId();
+        Console.WriteLine($"connected {userId}");
+
         var userAddressId = _userResolverService.GetWorkingAddressId().ToString();
         await Groups.AddToGroupAsync(Context.ConnectionId, userAddressId);
         await Clients.Group(userAddressId).UserConnected(userId);
-        // _dbContext.OnlineUsers.Add(new OnlineUser
-        // {
-        //     UserId = userId,
-        // });
-        // await _dbContext.SaveChangesAsync();
+        if(string.IsNullOrEmpty(userId)){
+        _dbContext.OnlineUsers.Add(new OnlineUser
+        {
+            UserId = userId,
+        });
+        await _dbContext.SaveChangesAsync();
+        }
+       
         return base.OnConnectedAsync();
     }
     public override async Task<Task> OnDisconnectedAsync(Exception? exception)
@@ -46,7 +55,12 @@ public class ChatHub : Hub<IChatHubClient>
         var userAddressId = _userResolverService.GetWorkingAddressId().ToString();
         await Groups.AddToGroupAsync(Context.ConnectionId, userAddressId);
         await Clients.Group(userAddressId).UserDisconnected(userId);
-        // _dbContext.OnlineUsers.FindAsync();
+         var onlineUser = await _dbContext.OnlineUsers.Where(u => u.UserId == userId).FirstOrDefaultAsync();
+         if(onlineUser !=null){
+            _dbContext.OnlineUsers.Remove(onlineUser);
+            await _dbContext.SaveChangesAsync();
+         }
+
         return base.OnDisconnectedAsync(exception);
     }
 
