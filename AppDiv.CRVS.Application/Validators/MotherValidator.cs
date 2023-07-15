@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.MiddleName.or).NotEmpty().NotNull();
             RuleFor(p => p.LastName.am).NotEmpty().NotNull();
             RuleFor(p => p.LastName.or).NotEmpty().NotNull();
-            RuleFor(p => p.NationalId).NotGuidEmpty()
+            RuleFor(p => p.NationalId).NotEmpty().NotNull()
             .When(p => p.NationalId != null);
             RuleFor(p => p.BirthDateEt).NotEmpty().NotNull()
                 .IsValidDate("Mother Birth date");//.IsAbove18("Mother age");

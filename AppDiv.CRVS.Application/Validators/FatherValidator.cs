@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.LastName.am).NotEmpty().NotNull();
             RuleFor(p => p.LastName.or).NotEmpty().NotNull();
 
-            RuleFor(p => p.NationalId).NotGuidEmpty()
+            RuleFor(p => p.NationalId).NotEmpty().NotNull()
             .When(p => p.NationalId != null);
             RuleFor(p => p.NationalityLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "Father.NationalityLookupId");
             // .When(p => p.NationalityLookupId != null);

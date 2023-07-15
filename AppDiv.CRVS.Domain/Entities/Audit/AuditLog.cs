@@ -28,5 +28,14 @@ namespace AppDiv.CRVS.Domain.Entities.Audit
             }
         }
 
+        [NotMapped]
+        public JObject EnviromentJson
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(Enviroment) ? "{}" : Enviroment);
+            }
+        }
+
     }
 }

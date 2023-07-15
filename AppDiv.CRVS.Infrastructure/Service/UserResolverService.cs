@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
                  httpContext?.HttpContext?.Request?.Headers["Authorization"].ToString().Split(" ").Last();
             Console.WriteLine($"userrrr=============== {tokenstring}");
 
-                if (!string.IsNullOrEmpty(tokenstring) && tokenstring.ToLower() != "undefined")
+                if (!string.IsNullOrEmpty(tokenstring) && tokenstring.ToLower() != "undefined" && tokenstring.ToLower() != "null")
                 {
 // TODO: readtoken exception handling
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);

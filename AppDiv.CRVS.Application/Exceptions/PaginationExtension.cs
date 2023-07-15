@@ -15,8 +15,10 @@ namespace AppDiv.CRVS.Application.Extensions
         {
             var count = await source.CountAsync();
             var items = await source.Skip((pageCount - 1) * pageSize).Take(pageSize).ToListAsync();
+            Type typeT = typeof(T);
+
             return new PaginatedList<TDto>(
-                        CustomMapper.Mapper.Map<List<TDto>>(items), 
+                        (!typeT.Equals(typeof(TDto)) ? CustomMapper.Mapper.Map<List<TDto>>(items) : (List<TDto>)(object)items), 
                         count,
                         pageCount, pageSize);
         }
