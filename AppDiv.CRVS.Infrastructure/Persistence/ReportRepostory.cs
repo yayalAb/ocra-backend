@@ -76,6 +76,29 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return new BaseResponse();
         }
 
+
+        public async Task<BaseResponse> UpdateReportQuery(string Viewname, string query)
+        {
+
+            var sql = $"ALTER VIEW {Viewname} As {query}";
+            var reader = await ConnectDatabase(sql);
+            reader.Item2.Close();
+
+            return new BaseResponse();
+        }
+
+        public async Task<BaseResponse> DeleteReport(string Viewname)
+        {
+
+            var sql = $"DROP VIEW {Viewname}";
+            var reader = await ConnectDatabase(sql);
+            reader.Item2.Close();
+
+            return new BaseResponse();
+        }
+
+
+
         public async Task<IEnumerable<JObject>> GetReportColums(string viewName)
         {
             var properties = new List<JObject>();
@@ -113,8 +136,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 groupBySql = response.Group;
                 aggregateSql = response.Aggregate;
             }
+
             var sql = $"SELECT {SelectedColumns} {aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
-            Console.WriteLine("Sql : {0} ", sql);
             var reader = await ConnectDatabase(sql);
             List<Dictionary<string, object>> resultList = new List<Dictionary<string, object>>();
             while (await reader.Item1.ReadAsync())

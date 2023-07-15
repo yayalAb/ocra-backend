@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Features.Report.Commads;
+using AppDiv.CRVS.Application.Features.Report.Commads.Delete;
+using AppDiv.CRVS.Application.Features.Report.Commads.Update;
 using AppDiv.CRVS.Application.Features.Report.Query;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
@@ -52,7 +54,29 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(result);
 
         }
+        [HttpPut("UpdateReport")]
+        public async Task<ActionResult> UpdateReport([FromBody] UpdateReportCommand query)
+        {
+            var result = await _mediator.Send(query);
 
+            return Ok(result);
+
+        }
+        [HttpGet("GetByName")]
+        public async Task<ActionResult> GetByName([FromQuery] GetReportDetailQuery query)
+        {
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+
+        }
+        [HttpGet("Delete")]
+        public async Task<ActionResult> Delete([FromQuery] DeleteReportCommand query)
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+
+        }
 
 
     }
