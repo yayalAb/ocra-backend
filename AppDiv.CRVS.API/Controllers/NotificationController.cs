@@ -17,8 +17,8 @@ namespace AppDiv.CRVS.API.Controllers
             _messageHub = messageHub;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetNotification([FromQuery] GetNotificationByGroupIdQuery query)
+        [HttpPost]
+        public async Task<IActionResult> GetNotification([FromBody] GetNotificationByGroupIdQuery query)
         {
             var res =  await Mediator.Send(query);
             return Ok(res);
@@ -29,6 +29,15 @@ namespace AppDiv.CRVS.API.Controllers
         {
 
             return Ok(await Mediator.Send(new UpdateSeenStatusCommand { Id = id }));
+        }
+        [HttpPost("test")]
+        public async Task<IActionResult> test([FromBody] GetNotificationByGroupIdQuery query)
+        {
+              var res =  await Mediator.Send(query);
+             await _messageHub.Clients.Group(res.FirstOrDefault().GroupId.ToString()).NewNotification(res.First());
+
+
+            return Ok("notification sent");
         }
 
     }

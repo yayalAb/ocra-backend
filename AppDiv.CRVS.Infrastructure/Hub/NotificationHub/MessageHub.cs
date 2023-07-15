@@ -7,11 +7,14 @@ using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Cors;
 
 
 
 namespace AppDiv.CRVS.Infrastructure.Hub;
-[Authorize (AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+[EnableCors("CorsPolicy")]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
 public class MessageHub : Hub<IMessageHubClient>
 {
     private readonly ILogger<MessageHub> logger;
