@@ -22,7 +22,7 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 namespace AppDiv.CRVS.API.Controllers
 {
-    [EnableCors("CorsPolicy")]
+    // [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]

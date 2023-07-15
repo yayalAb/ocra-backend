@@ -15,13 +15,13 @@ using AppDiv.CRVS.Utility.Services;
 namespace AppDiv.CRVS.Application.Features.Messages.Query.GetMessagesByUserId
 {
     // Customer GetMessagesByUserIdQuery with  response
-    public class GetMessagesByUserIdQuery : IRequest<List<ChatDTO>>
+    public class GetMessagesByUserIdQuery : IRequest<object>
     {
         public string UserId { get; set; }
 
     }
 
-    public class GetMessagesByUserIdQueryHandler : IRequestHandler<GetMessagesByUserIdQuery, List<ChatDTO>>
+    public class GetMessagesByUserIdQueryHandler : IRequestHandler<GetMessagesByUserIdQuery, object>
     {
 
         private readonly IMessageRepository _MessageRepository;
@@ -30,13 +30,14 @@ namespace AppDiv.CRVS.Application.Features.Messages.Query.GetMessagesByUserId
         {
             _MessageRepository = MessageQueryRepository;
         }
-        public async Task<List<ChatDTO>> Handle(GetMessagesByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<object> Handle(GetMessagesByUserIdQuery request, CancellationToken cancellationToken)
         {
 
-            return await _MessageRepository.GetAll()
+            return  _MessageRepository.GetAll()
             .Include(m => m.Sender)
             .Include(m => m.Receiver)
             .Where(m => m.SenderId == request.UserId || m.ReceiverId == request.UserId)
+            .OrderBy(m => m.CreatedAt)
             .GroupBy(m => new { senderId = m.SenderId, receiverId = m.ReceiverId })
             .Select(g => new ChatDTO
             {
@@ -53,9 +54,13 @@ namespace AppDiv.CRVS.Application.Features.Messages.Query.GetMessagesByUserId
                     ReceiverName = m.Receiver.UserName,
                     CreatedAt = m.CreatedAt,
                     CreatedAtEt = m.CreatedAt == null ? "" : new CustomDateConverter(m.CreatedAt).ethiopianDate
-                }).ToList()
-            })
-            .ToListAsync();
+                })  .OrderBy(m => m.CreatedAt).ToList()
+            }).ToList().GroupBy(c => c.With)
+            .Select(g => new ChatDTO{
+                With = g.Key,
+                Chats = g.SelectMany(ch => ch.Chats).OrderBy(m => m.CreatedAt).ToList(),
+            });
+            // .ToListAsync();
         }
     }
 }

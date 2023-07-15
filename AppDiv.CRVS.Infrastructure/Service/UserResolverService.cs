@@ -33,14 +33,17 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         public string? GetUserId()
         {
-            Console.WriteLine($"userrrr=============== {httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)}");
+            // Console.WriteLine($"userrrr=============== {httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)}");
             var userId = httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
-                if (!string.IsNullOrEmpty(tokenstring))
-                {
+                var tokenstring = httpContext?.HttpContext?.Request == null?null:
+                 httpContext?.HttpContext?.Request?.Headers["Authorization"].ToString().Split(" ").Last();
+            Console.WriteLine($"userrrr=============== {tokenstring}");
 
+                if (!string.IsNullOrEmpty(tokenstring) && tokenstring.ToLower() != "undefined")
+                {
+// TODO: readtoken exception handling
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
 
                     userId = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
