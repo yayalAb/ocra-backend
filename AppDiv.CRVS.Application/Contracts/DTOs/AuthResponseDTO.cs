@@ -19,6 +19,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public bool isOtpUnverified { get; set; } = false;
         public int? AdminLevel { get; set; }
         public Guid? AddressId { get; set; }
+        public string? AddressCode {get; set; }
         public string? PreferedLanguage { get; set; }
     }
 }
