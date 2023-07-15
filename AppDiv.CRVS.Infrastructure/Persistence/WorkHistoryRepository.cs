@@ -19,5 +19,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             this._dbContext = dbContext;
         }
+
+        public IQueryable<WorkHistory> GetAll(string userId)
+        {
+            return _dbContext.WorkHistories
+                            .AsNoTracking()
+                            .Include(w => w.UserGroups)
+                            .Include(w => w.User)
+                            .AsQueryable();
+        }
     }
 }

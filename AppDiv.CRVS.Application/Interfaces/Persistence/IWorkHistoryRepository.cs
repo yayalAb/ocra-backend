@@ -11,8 +11,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface IWorkHistoryRepository : IBaseRepository<WorkHistory>
     {
         public DatabaseFacade Database { get; }
-        // Task<WorkerHistory> GetWithIncludedAsync(Guid id);
-        // Task InsertOrUpdateAsync(WorkerHistory entity, CancellationToken cancellationToken);
-        // public void UpdateAll(WorkerHistory entity);
+        IQueryable<WorkHistory> GetAll(string userId);
     }
 }
