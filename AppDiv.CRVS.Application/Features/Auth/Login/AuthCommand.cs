@@ -160,6 +160,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Name = userData.UserName,
                 AdminLevel = userData?.Address?.AdminLevel,
                 AddressId = userData?.AddressId,
+                AddressCode = userData?.Address?.Code,
                 Token = token,
                 PreferedLanguage = userData?.PreferedLanguage,
                 PersonalInfoId = userData.PersonalInfoId,

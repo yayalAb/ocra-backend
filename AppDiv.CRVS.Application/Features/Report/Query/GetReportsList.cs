@@ -1,6 +1,7 @@
 
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -16,24 +17,29 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Report.Query
 {
     // Customer query with List<Customer> response
-    public record GetReportsList : IRequest<object>
+    public record GetReportsList : IRequest<PaginatedList<ReportStore>>
     {
+        public int? PageCount { get; set; } = 1;
+        public int? PageSize { get; set; } = 10;
 
     }
 
-    public class GetReportsListHandler : IRequestHandler<GetReportsList, object>
+    public class GetReportsListHandler : IRequestHandler<GetReportsList, PaginatedList<ReportStore>>
     {
-        private readonly IReportRepostory _reportRepository;
+        private readonly IReportStoreRepostory _reportRepository;
 
-        public GetReportsListHandler(IReportRepostory reportRepository)
+        public GetReportsListHandler(IReportStoreRepostory reportRepository)
         {
             _reportRepository = reportRepository;
         }
-        public async Task<object> Handle(GetReportsList request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ReportStore>> Handle(GetReportsList request, CancellationToken cancellationToken)
         {
-            var Report = await _reportRepository.GetReports();
+            var Report = _reportRepository.GetAll();
 
-            return Report;
+            return await PaginatedList<ReportStore>
+                            .CreateAsync(
+                                 Report
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Domain.Enums
         Max,
         Min,
         Average,
-        Sum
+        Sum,
+        OrderByDesc
     }
 }

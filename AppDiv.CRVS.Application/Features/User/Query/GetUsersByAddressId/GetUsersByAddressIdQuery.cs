@@ -28,12 +28,14 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUsersByAddressId
     public class GetUsersByAddressIdQueryHandler : IRequestHandler<GetUsersByAddressIdQuery, object>
     {
         private readonly IUserRepository _userRepository;
+        private readonly IOnlineUserRepository _onlineUserRepository;
 
 
-        public GetUsersByAddressIdQueryHandler(IUserRepository userRepository)
+
+        public GetUsersByAddressIdQueryHandler(IUserRepository userRepository , IOnlineUserRepository onlineUserRepository)
         {
             _userRepository = userRepository;
-
+            _onlineUserRepository = onlineUserRepository;   
         }
         public async Task<object> Handle(GetUsersByAddressIdQuery request, CancellationToken cancellationToken)
         {
@@ -48,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUsersByAddressId
                 FullName = u.PersonalInfo.FirstNameLang + " " + u.PersonalInfo.MiddleNameLang + " " + u.PersonalInfo.LastNameLang,
                 AddressName = u.Address.AddressNameLang,
                 Email = u.Email,
-                Online = !request.AddOnlineFlag ?false : false 
+                Online = !request.AddOnlineFlag ?false : _onlineUserRepository.GetAll().Where(ou => ou.UserId == u.Id).Any() 
             }).ToListAsync();
 
 

@@ -24,20 +24,20 @@ public class MessageHub : Hub<IMessageHubClient>
         _userResolverService = userResolverService;
         _dbContext = dbContext;
     }
-    public async Task SendNotification(List<NotificationResponseDTO> notifications)
-    {
+    // public async Task SendNotification(List<NotificationResponseDTO> notifications)
+    // {
 
-        await Clients.All.SendNotification(notifications);
+    //     await Clients.All.SendNotification(notifications);
 
-    }
-    public async Task SendSingleNotification(NotificationResponseDTO notification)
-    {
+    // }
+    // public async Task SendSingleNotification(NotificationResponseDTO notification)
+    // {
 
-        // // await Clients.All.SendSingleNotification(notification);
-        logger.LogCritical("sending to group....");
-        logger.LogCritical(notification.GroupId.ToString());
-        await Clients.Group(notification.GroupId.ToString()).SendSingleNotification(notification);
-    }
+    //     // // await Clients.All.SendSingleNotification(notification);
+    //     logger.LogCritical("sending to group....");
+    //     logger.LogCritical(notification.GroupId.ToString());
+    //     await Clients.Group(notification.GroupId.ToString()).SendSingleNotification(notification);
+    // }
     public override async Task<Task> OnConnectedAsync()
     {
         var userGroupIds = GetUserGroups();

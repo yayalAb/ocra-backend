@@ -68,7 +68,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<RevocationToken> RevocationTokens { get; set; }
 
         public DbSet<Message> Messages { get; set; }
-        // public DbSet<OnlineUser> OnlineUsers { get; set; }
+        public DbSet<OnlineUser> OnlineUsers { get; set; }
 
 
 
