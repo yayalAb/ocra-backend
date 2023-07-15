@@ -136,8 +136,19 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 groupBySql = response.Group;
                 aggregateSql = response.Aggregate;
             }
+            var sql = "";
+            Console.WriteLine("Sql statment1 {0} {1}", aggregateSql, columns);
+            if (!string.IsNullOrEmpty(aggregateSql) && aggregateSql.Length > 0)
+            {
+                Console.WriteLine("Sql statment2 {0} ", sql);
+                sql = $"SELECT {aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
+            }
+            else
+            {
+                sql = $"SELECT {SelectedColumns} FROM `{reportName}` {filters} {groupBySql}";
+            }
+            Console.WriteLine("Sql statment {0} ", sql);
 
-            var sql = $"SELECT {SelectedColumns} {aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
             var reader = await ConnectDatabase(sql);
             List<Dictionary<string, object>> resultList = new List<Dictionary<string, object>>();
             while (await reader.Item1.ReadAsync())
@@ -208,11 +219,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             string groupBySql = "";
             string aggregateSql = "";
+            int x = 0;
             if (aggregates != null && aggregates.Count > 0)
             {
+                Console.WriteLine("Agrgate test : {0}", aggregateSql);
 
                 foreach (var aggregate in aggregates)
                 {
+
                     switch (aggregate.AggregateMethod)
                     {
                         case SqlAggregate.GroupBy:
@@ -225,23 +239,28 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             groupBySql += $" ORDER BY {aggregate.PropertyName} DESC";
                             break;
                         case SqlAggregate.Count:
-                            aggregateSql += $", COUNT({aggregate.PropertyName}) AS Count_{aggregate.PropertyName}";
+                            aggregateSql += $" COUNT({aggregate.PropertyName}) AS Count_{aggregate.PropertyName}";
                             break;
                         case SqlAggregate.Max:
-                            aggregateSql += $", MAX({aggregate.PropertyName}) AS Max_{aggregate.PropertyName}";
+                            aggregateSql += $" MAX({aggregate.PropertyName}) AS Max_{aggregate.PropertyName}";
                             break;
                         case SqlAggregate.Min:
-                            aggregateSql += $", MIN({aggregate.PropertyName}) AS Min_{aggregate.PropertyName}";
+                            aggregateSql += $" MIN({aggregate.PropertyName}) AS Min_{aggregate.PropertyName}";
                             break;
                         case SqlAggregate.Average:
-                            aggregateSql += $", AVG({aggregate.PropertyName}) AS Average_{aggregate.PropertyName}";
+                            aggregateSql += $" AVG({aggregate.PropertyName}) AS Average_{aggregate.PropertyName}";
                             break;
                         case SqlAggregate.Sum:
-                            aggregateSql += $", SUM({aggregate.PropertyName}) AS Sum_Of_{aggregate.PropertyName}";
+                            aggregateSql += $" SUM({aggregate.PropertyName}) AS Sum_Of_{aggregate.PropertyName}";
                             break;
                         default:
-                            aggregateSql += $", COUNT({aggregate.PropertyName}) AS Count_{aggregate.PropertyName}";
+                            aggregateSql += $" COUNT({aggregate.PropertyName}) AS Count_{aggregate.PropertyName}";
                             break;
+                    }
+                    x++;
+                    if ((aggregates.Count() > x) && !string.IsNullOrEmpty(aggregateSql))
+                    {
+                        aggregateSql += ",";
                     }
                 }
             }
