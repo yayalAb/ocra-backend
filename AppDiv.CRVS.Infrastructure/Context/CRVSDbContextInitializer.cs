@@ -21,6 +21,8 @@ namespace AppDiv.CRVS.Infrastructure
         private readonly ILookupRepository _lookupRepository;
         private readonly IAddressLookupRepository _addressLookupRepository;
         private readonly ISettingRepository _settingRepository;
+        private readonly IPaymentRateRepository _paymentRateRepository;
+
 
 
         public CRVSDbContextInitializer(ILogger<CRVSDbContextInitializer> logger,
@@ -29,7 +31,8 @@ namespace AppDiv.CRVS.Infrastructure
                                         RoleManager<IdentityRole> roleManager,
                                         ILookupRepository lookupRepository,
                                         IAddressLookupRepository addressLookupRepository,
-                                        ISettingRepository settingRepository
+                                        ISettingRepository settingRepository,
+                                        IPaymentRateRepository paymentRateRepository
                                         )
         {
             _logger = logger;
@@ -39,6 +42,7 @@ namespace AppDiv.CRVS.Infrastructure
             _lookupRepository = lookupRepository;
             _addressLookupRepository = addressLookupRepository;
             _settingRepository = settingRepository;
+            _paymentRateRepository = paymentRateRepository;
         }
 
         public async Task InitialiseAsync()
@@ -76,6 +80,9 @@ namespace AppDiv.CRVS.Infrastructure
             await _lookupRepository.InitializeLookupCouch();
             await _addressLookupRepository.InitializeAddressLookupCouch();
             await _settingRepository.InitializeSettingCouch();  
+            await _paymentRateRepository.InitializePaymentRateCouch();  
+
+
         }
         public async Task SeedSetting()
         {

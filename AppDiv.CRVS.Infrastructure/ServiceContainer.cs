@@ -20,6 +20,9 @@ using AppDiv.CRVS.Infrastructure.Context;
 using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Infrastructure.Persistence.Couch;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
+// using Hangfire;
+// using Hangfire.MySqlStorage;
+// using Hangfire.Core;
 // using AppDiv.CRVS.Infrastructure.Extensions;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -99,6 +102,23 @@ namespace AppDiv.CRVS.Infrastructure
                });
             #endregion identity
 
+            // #region hangfire
+            //     services.AddHangfire(configuration => configuration
+            //     .UseSimpleAssemblyNameTypeSerializer()
+            //     .UseRecommendedSerializerSettings()
+            //     .UseStorage(
+            //         new MySqlStorage(
+            //             configuration.GetConnectionString("HangFireConnectionString"),
+            //             new MySqlStorageOptions
+            //             {
+            //                 TablesPrefix = "Hangfire"
+            //             }
+            //         ))
+            //     );
+            //     // Add the processing server as IHostedService
+            //     services.AddHangfireServer();
+            //                 #endregion hangfire
+
 
             // services.Configure<RabbitMQConfiguration>(configuration.GetSection(RabbitMQConfiguration.CONFIGURATION_SECTION));
             services.Configure<SMTPServerConfiguration>(configuration.GetSection(SMTPServerConfiguration.CONFIGURATION_SECTION));
@@ -173,6 +193,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ILookupCouchRepository, LookupCouchRepository>();
             services.AddScoped<IAddressLookupCouchRepository, AddressLookupCouchRepository>();
             services.AddScoped<ISettingCouchRepository, SettingCouchRepository>();
+            services.AddScoped<IPaymentRateCouchRepository, PaymentRateCouchRepository>();
+
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IOnlineUserRepository, OnlineUserRepository>();
             services.AddScoped<IMyReportRepository, MyReportRepository>();

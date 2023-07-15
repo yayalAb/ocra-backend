@@ -14,6 +14,8 @@ public class CRVSCouchDbContext : CouchContext
     public CouchDatabase<AddressCouch> AddressCouches { get; set; }
     public CouchDatabase<SettingCouch> Settings { get; set; }   
     public CouchDatabase<CountryCouch> Countries { get; set; }
+    public CouchDatabase<PaymentRateCouch> PaymentRates { get; set; }
+
 
 
     // public CRVSCouchDbContext(IOptions<CouchDbConfiguration> couchConfig)
