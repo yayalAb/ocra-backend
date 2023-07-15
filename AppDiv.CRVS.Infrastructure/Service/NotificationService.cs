@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 throw new NotFoundException("notification could not be created");
             }
             // send notification to the group
-            await _messageHub.Clients.Group(resNotification.GroupId.ToString()).SendSingleNotification(resNotification);
+            await _messageHub.Clients.Group(resNotification.GroupId.ToString()).NewNotification(resNotification);
 
         }
 
