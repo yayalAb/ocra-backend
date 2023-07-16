@@ -11,9 +11,12 @@ namespace AppDiv.CRVS.Application.Validators
         public BirthNotificationValidator(IEventRepository repo)
         {
             _repo = repo;
-            RuleFor(p => p.DeliveryTypeLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "DeliveryTypeLookupId");
-            RuleFor(p => p.SkilledProfLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "SkilledProfLookupId");
-            RuleFor(p => p.WeightAtBirth).NotEmpty().NotNull();
+            RuleFor(p => p.DeliveryTypeLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "DeliveryTypeLookupId")
+            .When(p => p.DeliveryTypeLookupId != null);
+            RuleFor(p => p.SkilledProfLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "SkilledProfLookupId")
+            .When(p => p.SkilledProfLookupId != null);
+            RuleFor(p => p.WeightAtBirth).NotEmpty().NotNull()
+            .When(p => p.WeightAtBirth != null);
         }
     }
 }

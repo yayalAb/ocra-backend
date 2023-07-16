@@ -122,7 +122,7 @@ namespace AppDiv.CRVS.Application.Service
 
         public static IRuleBuilderOptions<T, string?> NotGuidEmpty<T>(this IRuleBuilder<T, string?> ruleBuilder)
         {
-            return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("{PropertyName} must not be null.").WithMessage("'{PropertyName}' is requered");
+            return ruleBuilder.Must(m => !string.IsNullOrEmpty(m) && !m.Equals(Guid.Empty)).WithMessage("{PropertyName} must not be null.").WithMessage("'{PropertyName}' is required");
         }
 
         public static IRuleBuilderOptions<T, string> IsAbove18<T>(this IRuleBuilder<T, string> ruleBuilder, string propertyName)

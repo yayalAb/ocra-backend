@@ -15,10 +15,21 @@
       "launchBrowser": true,
       "launchUrl": "swagger",
       "applicationUrl": "http://localhost:5120",
+      "hotReloadProfile": "aspnetcore",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
+    "hotreloadprofile": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+          "ASPNETCORE_ENVIRONMENT": "Development",
+          "Key": "Value"
+      },
+      "applicationUrl": "http://localhost:7264",
+      "hotReloadProfile": "aspnetcore"
+  },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,

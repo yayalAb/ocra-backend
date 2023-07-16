@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Validators
         {
             _repo = repo;
             RuleFor(p => p).NotNull().NotEmpty().WithMessage("Payment Examption Can not be empty or null if the is exampted is true.");
-            RuleFor(p => p.ExamptionReasonLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "Event.PaymentExamption.ExamptionReasonLookupId");
+            RuleFor(p => p.ExamptionReasonLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "Event.PaymentExamption.ExamptionReasonLookupId");
             RuleFor(p => p.SupportingDocuments).NotEmpty().NotNull().SupportingDocNull("Event.PaymentExamption.EventSupportingDocuments");
         }
     }

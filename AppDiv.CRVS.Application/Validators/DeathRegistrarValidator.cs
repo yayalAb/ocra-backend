@@ -23,9 +23,9 @@ namespace AppDiv.CRVS.Application.Validators
             RuleFor(p => p.RegistrarInfo.MiddleName.am).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.LastName.or).NotEmpty().NotNull();
             RuleFor(p => p.RegistrarInfo.LastName.am).NotEmpty().NotNull();
-            RuleFor(p => p.RegistrarInfo.SexLookupId.ToString()).NotGuidEmpty().ForeignKeyWithLookup(_repo, "RegistrarInfo.SexLookupId")
+            RuleFor(p => p.RegistrarInfo.SexLookupId.ToString()).NotEmpty().NotNull().ForeignKeyWithLookup(_repo, "RegistrarInfo.SexLookupId")
             .When(p => p.RegistrarInfo.SexLookupId != null);
-            RuleFor(p => p.RegistrarInfo.ResidentAddressId.ToString()).NotGuidEmpty().ForeignKeyWithAddress(_repo, "RegistrarInfo.ResidentAddressId")
+            RuleFor(p => p.RegistrarInfo.ResidentAddressId.ToString()).NotEmpty().NotNull().ForeignKeyWithAddress(_repo, "RegistrarInfo.ResidentAddressId")
             .When(p => p.RegistrarInfo.ResidentAddressId != null);
             RuleFor(p => p.RegistrarInfo.PhoneNumber).NotEmpty()
                         .Matches(new Regex(@"^(\+251)?\d{9}$")).WithMessage("Invalid phone number format.")
