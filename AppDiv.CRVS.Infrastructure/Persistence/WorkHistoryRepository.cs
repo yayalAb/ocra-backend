@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .AsNoTracking()
                             .Include(w => w.UserGroups)
                             .Include(w => w.User)
+                            .Include(w => w.Address)
                             .AsQueryable();
         }
     }
