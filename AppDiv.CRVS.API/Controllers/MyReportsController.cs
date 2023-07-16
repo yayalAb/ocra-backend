@@ -1,0 +1,128 @@
+
+using AppDiv.CRVS.Application.Contracts.DTOs;
+
+using MediatR;
+
+using Microsoft.AspNetCore.Cors;
+using Microsoft.AspNetCore.Mvc;
+using AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup;
+using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
+using AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById;
+using AppDiv.CRVS.Application.Features.Groups.Commands.Delete;
+using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Features.SaveReports.Commands.Delete;
+using AppDiv.CRVS.Application.Features.SaveReports.Commands;
+using AppDiv.CRVS.Application.Features.SaveReports.Query;
+using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Features.SaveReports.Commands.Share;
+
+namespace AppDiv.CRVS.API.Controllers
+{
+    [EnableCors("CorsPolicy")]
+    [Route("api/[controller]")]
+    [ApiController]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
+    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public class MyReportsController : ControllerBase
+    {
+        private readonly ISender _mediator;
+        public MyReportsController(ISender mediator)
+        {
+            _mediator = mediator;
+        }
+
+        [HttpGet("MyReports")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<MyReports>> Get()
+        {
+            return await _mediator.Send(new GetMyReports());
+        }
+        [HttpGet("GetReportById")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> GetMeyReportById([FromQuery] GetMyReportById query)
+        {
+            return await _mediator.Send(query);
+        }
+
+        [HttpPost("Save")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<ActionResult> SaveMyReport([FromBody] SaveReportCommand command, CancellationToken token)
+        {
+            var result = await _mediator.Send(command, token);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            else
+            {
+                return BadRequest(result);
+            }
+        }
+
+
+
+        // [HttpPut("Edit/{id}")]
+        // public async Task<ActionResult> Edit(Guid id, [FromBody] GroupUpdateCommand command)
+        // {
+        //     try
+        //     {
+        //         if (command.group.Id == id)
+        //         {
+        //             var result = await _mediator.Send(command);
+        //             return Ok(result);
+        //         }
+        //         else
+        //         {
+        //             return BadRequest();
+        //         }
+        //     }
+        //     catch (Exception exp)
+        //     {
+        //         return BadRequest(exp.Message);
+        //     }
+        // }
+
+
+
+        [HttpPost("Share")]
+        public async Task<ActionResult> Edit([FromBody] ShareMyReportCommands command)
+        {
+            try
+            {
+
+                var result = await _mediator.Send(command);
+                return Ok(result);
+
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+
+
+        [HttpDelete("Delete/{id}")]
+        public async Task<BaseResponse> DeleteMyReport(Guid Id)
+        {
+            try
+            {
+                string result = string.Empty;
+                return await _mediator.Send(new DeleteMyReportCommand { Id = Id });
+            }
+            catch (Exception exp)
+            {
+                var res = new BaseResponse
+                {
+                    Success = false,
+                    Message = exp.Message
+                };
+                return res;
+            }
+        }
+
+
+
+
+    }
+}

@@ -22,8 +22,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
         public List<string>? columns { get; set; }
         public string? filterse { get; set; }
         public List<Aggregate>? aggregates { get; set; }
-        public int? PageCount { get; set; }
-        public int? PageSize { get; set; }
+        public int? PageCount { get; set; } = 1;
+        public int? PageSize { get; set; } = 10;
     }
 
     public class GetReportQueryHandler : IRequestHandler<GetReportQuery, object>

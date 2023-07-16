@@ -12,5 +12,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<IEnumerable<PaymentRate>> GetAllAsync();
         Task<PaymentRate> GetByIdAsync(Guid id);
         IQueryable<PaymentRate> GetAllQueryableAsync();
+        Task InitializePaymentRateCouch();
     }
 }

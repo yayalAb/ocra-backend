@@ -267,7 +267,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
             CreateMap<Transaction, TransactionRequestDTO>().ReverseMap();
             CreateMap<AuditLog, AuditLogDTO>().ReverseMap();
-
+            CreateMap<PaymentRate , PaymentRateCouchDTO>();
 
 
             CreateMap<CreateMessageCommand , Message>().ReverseMap();   
