@@ -54,19 +54,19 @@ builder.Services.AddAuthentication(x =>
     };
     x.Events = new JwtBearerEvents
     {
-        // OnTokenValidated = async context =>
-        // {
-        //     // Check if the token is still valid
-        //     var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
-        //     var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
+        OnTokenValidated = async context =>
+        {
+            // Check if the token is still valid
+            var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
+            var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
 
-        //     if (!isValid)
-        //     {
-        //         context.Fail("Unauthorized Access");
-        //     }
+            if (!isValid)
+            {
+                context.Fail("Unauthorized Access");
+            }
 
-        //     return;
-        // },
+            return;
+        },
 
         OnMessageReceived = context =>
         {
@@ -85,7 +85,8 @@ builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(
 
 
 
-builder.Services.AddSignalR(o => {
+builder.Services.AddSignalR(o =>
+{
     o.EnableDetailedErrors = true;
 });
 // var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";  
@@ -94,22 +95,22 @@ builder.Services.AddCors(c =>
     c.AddPolicy("CorsPolicy",
      options =>
       options
-    //   .WithOrigins("http://192.168.1.17:4200")
-      .SetIsOriginAllowed((host)=>true)
-    //   .AllowAnyOrigin()
+      //   .WithOrigins("http://192.168.1.17:4200")
+      .SetIsOriginAllowed((host) => true)
+      //   .AllowAnyOrigin()
       .AllowAnyMethod()
       .AllowAnyHeader()
       .AllowCredentials()
       );
-// c.AddPolicy("specificPolicy",  
-//                       policy  =>  
-//                       {  
-//                           policy.WithOrigins("http://localhost:4200",  
-//                                               "http://192.168.1.32:4200" , "http://192.168.1.30:4200")
-//                                                   .AllowAnyMethod()
-//       .AllowAnyHeader()
-//       .AllowCredentials(); // add the allowed origins  
-//                       });  
+    // c.AddPolicy("specificPolicy",  
+    //                       policy  =>  
+    //                       {  
+    //                           policy.WithOrigins("http://localhost:4200",  
+    //                                               "http://192.168.1.32:4200" , "http://192.168.1.30:4200")
+    //                                                   .AllowAnyMethod()
+    //       .AllowAnyHeader()
+    //       .AllowCredentials(); // add the allowed origins  
+    //                       });  
 
 });
 

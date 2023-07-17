@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? ReportTitle { get; set; }
         public string? Description { get; set; }
         public string? DefualtColumns { get; set; }
+        public string? Query { get; set; }
 
     }
 }

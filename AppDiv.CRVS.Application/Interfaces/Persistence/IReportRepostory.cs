@@ -16,5 +16,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public Task<JObject> GetReports();
         public Task<BaseResponse> UpdateReportQuery(string Viewname, string query);
         public Task<BaseResponse> DeleteReport(string Viewname);
+        public string SanitizeString(string StringToSanitize);
     }
 }

@@ -12,6 +12,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using System.Text.Json;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -56,6 +57,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         Description = Description,
                         DefualtColumns = defualt,
                         CreatedAt = DateTime.Now,
+                        Query = query
                     };
                     await this.CreateReportTable(Report, cancellationToken);
                     response.Message = $"Created a report {reportName} successfully.";
@@ -72,7 +74,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             await _reportStor.InsertAsync(report, cancellationToken);
             await _reportStor.SaveChangesAsync(cancellationToken);
-
             return new BaseResponse();
         }
 
@@ -268,6 +269,20 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (groupBySql, aggregateSql);
 
         }
+
+        public string SanitizeString(string StringToSanitize)
+        {
+            string output = "";
+            if (string.IsNullOrEmpty(StringToSanitize))
+            {
+                output = Regex.Replace(StringToSanitize, "[;]", "");
+
+            }
+
+
+            return output;
+        }
+
 
 
     }
