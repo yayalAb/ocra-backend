@@ -44,6 +44,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
             else
             {
+                reportName = this.SanitizeString(reportName);
+                query = RemoveSpecialChar(query);
                 sql = $" CREATE VIEW `{reportName}` AS {query}";
                 try
                 {
@@ -142,6 +144,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             if (!string.IsNullOrEmpty(aggregateSql) && aggregateSql.Length > 0)
             {
                 Console.WriteLine("Sql statment2 {0} ", sql);
+                reportName = this.SanitizeString(reportName);
                 sql = $"SELECT {aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
             }
             else
@@ -275,7 +278,19 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             string output = "";
             if (string.IsNullOrEmpty(StringToSanitize))
             {
-                output = Regex.Replace(StringToSanitize, "[;]", "");
+                output = Regex.Replace(StringToSanitize, "[^a-zA-Z0-9_]", "");
+
+            }
+
+
+            return output;
+        }
+        public string RemoveSpecialChar(string StringToSanitize)
+        {
+            string output = "";
+            if (string.IsNullOrEmpty(StringToSanitize))
+            {
+                output = Regex.Replace(StringToSanitize, "[;--]", "");
 
             }
 
