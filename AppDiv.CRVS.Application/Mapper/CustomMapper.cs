@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Application.Mapper
         {
             var config = new MapperConfiguration(cfg =>
             {
+              
                 cfg.ShouldMapProperty = p => p.GetMethod.IsPublic || p.GetMethod.IsAssembly;
                 cfg.AddProfile<CRVSMappingProfile>();
             });

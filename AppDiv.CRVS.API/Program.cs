@@ -13,6 +13,8 @@ using AppDiv.CRVS.Infrastructure.Hub;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Cors;
 using AppDiv.CRVS.Infrastructure.Hub.ChatHub;
+using Hangfire;
+using AppDiv.CRVS.Infrastructure.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -158,6 +160,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 
+
+
+
 var app = builder.Build();
 
 
@@ -188,6 +193,9 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseHangfireDashboard();
+app.MapHangfireDashboard();
+
 
 
 app.UseEndpoints(endpoints =>
@@ -195,10 +203,20 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapHub<MessageHub>("/Notification");
     endpoints.MapHub<ChatHub>("/Chat");
+
+    // endpoints.MapHangfireDashboard("/hangfire", new DashboardOptions
+    //             {
+    //                 Authorization = new[] { new HangfireAuthorizationFilter() },
+    //                 IgnoreAntiforgeryToken = true
+    //             });
 });
 // app.UseHttpsRedirection();
 
 app.MapControllers();
+
+//registering background jobs
+BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
+
 
 
 app.Run();
