@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Domain.Base;
+﻿using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using System.Linq.Expressions;
@@ -42,6 +43,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence.Base
         Task<SearchModel<T2>> GetPagedSearchResultAsync<T2>(Expression<Func<T, T2>> select, Expression<Func<T, bool>> predicate, Expression<Func<T, object>> orderBy, int page = 0, int pageSize = 15, SortingDirection sorting_direction = SortingDirection.Ascending) where T2 : class;
         Task<SearchModel<T>> GetPagedSearchResultWithAsync(Expression<Func<T, bool>> predicate = null, Expression<Func<T, object>> orderBy = null, int page = 0, int pageSize = 0, SortingDirection sorting_direction = SortingDirection.Descending, params string[] eagerLoadedProperties);
         Task<SearchModel<T2>> GetPagedSearchResultWithAsync<T2>(Expression<Func<T, T2>> select, Expression<Func<T, bool>> predicate = null, Expression<Func<T, object>> orderBy = null, int page = 0, int pageSize = 0, SortingDirection sorting_direction = SortingDirection.Descending, params string[] eagerLoadedProperties) where T2 : class;
+        Task<PaginatedList<T>> GetPaginatedResultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> orderBy, int page = 0, int pageSize = 15, SortingDirection sorting_direction = SortingDirection.Ascending);
         Task<SearchModel<T>> GetSearchResultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> orderBy, SortingDirection sorting_direction = SortingDirection.Ascending);
         Task<SearchModel<T>> GetSearchResultWithAsync(Expression<Func<T, bool>> predicate = null, Expression<Func<T, object>> orderBy = null, SortingDirection sorting_direction = SortingDirection.Descending, params string[] eagerLoadedProperties);
         Task<T> GetWithAsync(object id, Dictionary<string, NavigationPropertyType> explicitLoadedProperties);

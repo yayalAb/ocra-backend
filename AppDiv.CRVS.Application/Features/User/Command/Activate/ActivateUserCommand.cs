@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             var response = new BaseResponse();
             try
             {
-                var user = await _identityService.GetUserByIdAsync(request.Id);
+                var user = await _identityService.GetSingleUserAsync(request.Id);
                 user.Status = !user.Status;
                 if (user != null)
                 {

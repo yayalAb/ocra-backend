@@ -25,10 +25,9 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(await Mediator.Send(command));
         }
 
-        [HttpGet("MarriageApplication")]
+        [HttpGet("MarriageApplication/GetAll")]
         public async Task<IActionResult> GetAllMarriageApplications([FromQuery] GetAllMarriageApplicationsQuery query)
         {
-
             return Ok(await Mediator.Send(query));
         }
         [HttpGet("MarriageApplication/{id}")]

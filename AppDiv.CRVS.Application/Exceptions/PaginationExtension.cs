@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Mapper;
@@ -21,6 +22,12 @@ namespace AppDiv.CRVS.Application.Extensions
                         (!typeT.Equals(typeof(TDto)) ? CustomMapper.Mapper.Map<List<TDto>>(items) : (List<TDto>)(object)items), 
                         count,
                         pageCount, pageSize);
+        }
+
+        public static PaginatedList<TResult> Select<T, TResult>(this PaginatedList<T> source, Func<T, TResult> selector) where T : class where TResult : class
+        {
+            var list = source.Items.Select(selector).ToList();
+            return new PaginatedList<TResult>(list, source.TotalCount, source.PageCount, source.TotalPages);
         }
     }
 }

@@ -34,8 +34,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Query
         }
         public async Task<PaginatedList<MarriageApplicationGridDTO>> Handle(GetAllMarriageApplicationsQuery request, CancellationToken cancellationToken)
         {
-           return await _MarriageApplicationsRepository.GetAll()
-                        .PaginateAsync<MarriageApplication, MarriageApplicationGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
+           return await _MarriageApplicationsRepository.GetAllApplications().Select(a => new MarriageApplicationGridDTO(a))
+                        .PaginateAsync<MarriageApplicationGridDTO, MarriageApplicationGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

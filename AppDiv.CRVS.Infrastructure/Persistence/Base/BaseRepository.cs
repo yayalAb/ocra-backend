@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
+﻿using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Base;
@@ -613,6 +614,91 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 Entities = list,
                 TotalItems = total_items
             };
+        }
+        public virtual async Task<PaginatedList<T>> GetPaginatedResultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> orderBy, int page = 0, int pageSize = 15, SortingDirection sorting_direction = SortingDirection.Ascending)
+        {
+            IEnumerable<T> list = null;
+            long maxPage = 1;
+            long total_items = await _dbContext.Set<T>().LongCountAsync(predicate);
+
+            if (total_items > 0)
+            {
+                maxPage = Convert.ToInt64(Math.Ceiling(Convert.ToDouble(total_items) / pageSize));
+                if (page >= maxPage)
+                {
+                    page = Convert.ToInt32(maxPage);
+                }
+                var propertyExpression = orderBy.Body is UnaryExpression ? (MemberExpression)((UnaryExpression)orderBy.Body).Operand : (MemberExpression)orderBy.Body;
+
+                var parameters = orderBy.Parameters;
+
+                if (propertyExpression.Type == typeof(string))
+                {
+                    var newExpression = Expression.Lambda<Func<T, string>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type == typeof(DateTime))
+                {
+                    var newExpression = Expression.Lambda<Func<T, DateTime>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type == typeof(DateTime?))
+                {
+                    var newExpression = Expression.Lambda<Func<T, DateTime?>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type == typeof(int))
+                {
+                    var newExpression = Expression.Lambda<Func<T, int>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type == typeof(bool))
+                {
+                    var newExpression = Expression.Lambda<Func<T, bool>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type == typeof(Decimal))
+                {
+                    var newExpression = Expression.Lambda<Func<T, Decimal>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type == typeof(Double))
+                {
+                    var newExpression = Expression.Lambda<Func<T, Double>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type == typeof(long))
+                {
+                    var newExpression = Expression.Lambda<Func<T, long>>(propertyExpression, parameters);
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).OrderBy(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).OrderByDescending(newExpression).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else if (propertyExpression.Type.IsEnum)
+                {
+                    list = sorting_direction == SortingDirection.Ascending ? await _dbContext.Set<T>().Where(predicate).AsQueryable().OrderBy(q => propertyExpression.Member.Name).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync() : await _dbContext.Set<T>().Where(predicate).AsQueryable().OrderByDescending(q => propertyExpression.Member.Name).Skip((page != 0 ? (page - 1) : 0) * pageSize).Take(pageSize).ToListAsync();
+                }
+
+                else
+                {
+                    throw new Exception("Not implemented");
+                }
+            }
+            return new PaginatedList<T>(list.ToList(), (int)total_items, page, pageSize);
+            // return new PaginatedList<T>
+            // {
+            //     CurrentPage = page,
+            //     MaxPage = maxPage,
+            //     PagingSize = pageSize,
+            //     Entities = list,
+            //     TotalItems = total_items
+            // };
         }
 
         public virtual async Task<SearchModel<T>> GetSearchResultAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> orderBy, SortingDirection sorting_direction = SortingDirection.Ascending)

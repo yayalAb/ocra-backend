@@ -42,5 +42,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             await base.InsertAsync(entity, cancellationToken);
 
         }
+        public IQueryable<MarriageApplication> GetAllApplications()
+        {
+            return dbContext.MarriageApplications.AsNoTracking()
+                        .Include(a => a.BrideInfo)
+                        .Include(a => a.GroomInfo)
+                        .OrderByDescending(a => a.ApplicationDate)
+                        .AsQueryable();
+        }
     }
 }
