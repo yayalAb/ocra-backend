@@ -13,6 +13,8 @@ using AppDiv.CRVS.Infrastructure.Hub;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Cors;
 using AppDiv.CRVS.Infrastructure.Hub.ChatHub;
+using Hangfire;
+using AppDiv.CRVS.Infrastructure.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -54,19 +56,19 @@ builder.Services.AddAuthentication(x =>
     };
     x.Events = new JwtBearerEvents
     {
-        // OnTokenValidated = async context =>
-        // {
-        //     // Check if the token is still valid
-        //     var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
-        //     var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
+        OnTokenValidated = async context =>
+        {
+            // Check if the token is still valid
+            var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
+            var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
 
-        //     if (!isValid)
-        //     {
-        //         context.Fail("Unauthorized Access");
-        //     }
+            if (!isValid)
+            {
+                context.Fail("Unauthorized Access");
+            }
 
-        //     return;
-        // },
+            return;
+        },
 
         OnMessageReceived = context =>
         {
@@ -85,7 +87,8 @@ builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(
 
 
 
-builder.Services.AddSignalR(o => {
+builder.Services.AddSignalR(o =>
+{
     o.EnableDetailedErrors = true;
 });
 // var  MyAllowSpecificOrigins = "_myAllowSpecificOrigins";  
@@ -94,22 +97,22 @@ builder.Services.AddCors(c =>
     c.AddPolicy("CorsPolicy",
      options =>
       options
-    //   .WithOrigins("http://192.168.1.17:4200")
-      .SetIsOriginAllowed((host)=>true)
-    //   .AllowAnyOrigin()
+      //   .WithOrigins("http://192.168.1.17:4200")
+      .SetIsOriginAllowed((host) => true)
+      //   .AllowAnyOrigin()
       .AllowAnyMethod()
       .AllowAnyHeader()
       .AllowCredentials()
       );
-// c.AddPolicy("specificPolicy",  
-//                       policy  =>  
-//                       {  
-//                           policy.WithOrigins("http://localhost:4200",  
-//                                               "http://192.168.1.32:4200" , "http://192.168.1.30:4200")
-//                                                   .AllowAnyMethod()
-//       .AllowAnyHeader()
-//       .AllowCredentials(); // add the allowed origins  
-//                       });  
+    // c.AddPolicy("specificPolicy",  
+    //                       policy  =>  
+    //                       {  
+    //                           policy.WithOrigins("http://localhost:4200",  
+    //                                               "http://192.168.1.32:4200" , "http://192.168.1.30:4200")
+    //                                                   .AllowAnyMethod()
+    //       .AllowAnyHeader()
+    //       .AllowCredentials(); // add the allowed origins  
+    //                       });  
 
 });
 
@@ -157,6 +160,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 
+
+
+
 var app = builder.Build();
 
 
@@ -187,6 +193,9 @@ app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseHangfireDashboard();
+app.MapHangfireDashboard();
+
 
 
 app.UseEndpoints(endpoints =>
@@ -194,10 +203,23 @@ app.UseEndpoints(endpoints =>
     endpoints.MapControllers();
     endpoints.MapHub<MessageHub>("/Notification");
     endpoints.MapHub<ChatHub>("/Chat");
+
+    // endpoints.MapHangfireDashboard("/hangfire", new DashboardOptions
+    //             {
+    //                 Authorization = new[] { new HangfireAuthorizationFilter() },
+    //                 IgnoreAntiforgeryToken = true
+    //             });
 });
 // app.UseHttpsRedirection();
 
 app.MapControllers();
+
+//registering background jobs
+BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
+// BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
+
+
+
 
 
 app.Run();

@@ -8,9 +8,6 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors;
-
-
-
 namespace AppDiv.CRVS.Infrastructure.Hub;
 [EnableCors("CorsPolicy")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -62,7 +59,7 @@ public class MessageHub : Hub<IMessageHubClient>
     }
     private List<Guid> GetUserGroups()
     {
-        var personId = _userResolverService.GetUserPersonalId();
+        var personId = _userResolverService.GetUserPersonalIdFromAccessTokenParam();
         var userGroups = _dbContext.Users.Where(u => u.PersonalInfoId == personId)
                     .Include(u => u.UserGroups)
                     .Select(u => u.UserGroups.Select(ug => ug.Id).ToList()).FirstOrDefault();

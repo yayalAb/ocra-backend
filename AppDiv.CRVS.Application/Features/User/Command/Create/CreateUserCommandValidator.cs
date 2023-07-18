@@ -23,10 +23,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
             .NotEmpty()
             .NotNull()
             .EmailAddress().WithMessage("invalid email address");
-            RuleFor(u => u.PersonalInfo.ContactInfo.Phone)
-                    .MustAsync(async (p,c) => await repo.CheckPhoneNumber(p))
-                    .WithMessage("Phone number already exists")
-                    .When(p => p.PersonalInfo.ContactInfo.Phone != null);
+            // RuleFor(u => u.PersonalInfo.ContactInfo.Phone)
+            //         .MustAsync(async (p,c) => await repo.CheckPhoneNumber(p))
+            //         .WithMessage("Phone number already exists")
+            //         .When(p => p.PersonalInfo.ContactInfo.Phone != null);
         }
 
         private async Task<bool> BeUniqueUsername(string username, CancellationToken cancellationToken)

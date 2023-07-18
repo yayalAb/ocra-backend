@@ -12,6 +12,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using System.Text.Json;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -43,6 +44,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
             else
             {
+                reportName = this.SanitizeString(reportName);
+                query = RemoveSpecialChar(query);
                 sql = $" CREATE VIEW `{reportName}` AS {query}";
                 try
                 {
@@ -56,6 +59,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         Description = Description,
                         DefualtColumns = defualt,
                         CreatedAt = DateTime.Now,
+                        Query = query
                     };
                     await this.CreateReportTable(Report, cancellationToken);
                     response.Message = $"Created a report {reportName} successfully.";
@@ -72,7 +76,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             await _reportStor.InsertAsync(report, cancellationToken);
             await _reportStor.SaveChangesAsync(cancellationToken);
-
             return new BaseResponse();
         }
 
@@ -141,6 +144,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             if (!string.IsNullOrEmpty(aggregateSql) && aggregateSql.Length > 0)
             {
                 Console.WriteLine("Sql statment2 {0} ", sql);
+                reportName = this.SanitizeString(reportName);
                 sql = $"SELECT {aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
             }
             else
@@ -268,6 +272,32 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (groupBySql, aggregateSql);
 
         }
+
+        public string SanitizeString(string StringToSanitize)
+        {
+            string output = "";
+            if (string.IsNullOrEmpty(StringToSanitize))
+            {
+                output = Regex.Replace(StringToSanitize, "[^a-zA-Z0-9_]", "");
+
+            }
+
+
+            return output;
+        }
+        public string RemoveSpecialChar(string StringToSanitize)
+        {
+            string output = "";
+            if (string.IsNullOrEmpty(StringToSanitize))
+            {
+                output = Regex.Replace(StringToSanitize, "[;--]", "");
+
+            }
+
+
+            return output;
+        }
+
 
 
     }

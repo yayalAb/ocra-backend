@@ -20,9 +20,15 @@ using AppDiv.CRVS.Infrastructure.Context;
 using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Infrastructure.Persistence.Couch;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
-// using Hangfire;
+using Hangfire;
+// using Hangfire.MySql.Core;
+// using Hangfire.MySql.Core;
+using System.Data;
+using Hangfire.MySql;
+// using System.Data;
 // using Hangfire.MySqlStorage;
 // using Hangfire.Core;
+// using Hangfire.MySql.Core_MySql.Data;
 // using AppDiv.CRVS.Infrastructure.Extensions;
 
 namespace AppDiv.CRVS.Infrastructure
@@ -102,22 +108,29 @@ namespace AppDiv.CRVS.Infrastructure
                });
             #endregion identity
 
-            // #region hangfire
-            //     services.AddHangfire(configuration => configuration
-            //     .UseSimpleAssemblyNameTypeSerializer()
-            //     .UseRecommendedSerializerSettings()
-            //     .UseStorage(
-            //         new MySqlStorage(
-            //             configuration.GetConnectionString("HangFireConnectionString"),
-            //             new MySqlStorageOptions
-            //             {
-            //                 TablesPrefix = "Hangfire"
-            //             }
-            //         ))
-            //     );
-            //     // Add the processing server as IHostedService
-            //     services.AddHangfireServer();
-            //                 #endregion hangfire
+            #region hangfire
+            string hangfireConnectionString = configuration.GetConnectionString("HangFireConnectionString");
+            services.AddHangfire(configuration => configuration
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseStorage(
+                new MySqlStorage(
+                    hangfireConnectionString,
+                    new MySqlStorageOptions
+                    {
+                        TransactionIsolationLevel = (System.Transactions.IsolationLevel?)IsolationLevel.ReadCommitted,
+                        QueuePollInterval = TimeSpan.FromSeconds(15),
+                        JobExpirationCheckInterval = TimeSpan.FromHours(1),
+                        CountersAggregateInterval = TimeSpan.FromSeconds(5),//TODO: option config/
+                        PrepareSchemaIfNecessary = true,
+                        DashboardJobListLimit = 50000,
+      
+                    }
+                ))
+            );
+            // Add the processing server as IHostedService
+            services.AddHangfireServer();
+            #endregion hangfire
 
 
             // services.Configure<RabbitMQConfiguration>(configuration.GetSection(RabbitMQConfiguration.CONFIGURATION_SECTION));
@@ -212,6 +225,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IVerficationRequestRepository, VerficationRequestRepository>();
             services.AddScoped<IWorkHistoryRepository, WorkHistoryRepository>();
             services.AddScoped<ITokenValidatorService, TokenValidatorService>();
+            services.AddScoped<IBackgroundJobs , BackgroundJobs>();
 
 
 

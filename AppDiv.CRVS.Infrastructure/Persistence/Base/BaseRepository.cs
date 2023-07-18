@@ -1179,8 +1179,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 // the CreatedAt and CreatedBy properties
                 if (entityEntry.State == EntityState.Added)
                 {
-                    ((BaseAuditableEntity)entityEntry.Entity).CreatedAt = DateTime.UtcNow;
-                    ((BaseAuditableEntity)entityEntry.Entity).CreatedBy = _dbContext.GetCurrentUserId();
+                    ((BaseAuditableEntity)entityEntry.Entity).CreatedAt =((BaseAuditableEntity)entityEntry.Entity).CreatedAt != null
+                                                                    ?((BaseAuditableEntity)entityEntry.Entity).CreatedAt
+                                                                    :DateTime.UtcNow;
+                    ((BaseAuditableEntity)entityEntry.Entity).CreatedBy = ((BaseAuditableEntity)entityEntry.Entity).CreatedBy != Guid.Empty 
+                                                                        ||((BaseAuditableEntity)entityEntry.Entity).CreatedBy != null
+                                                                    ?((BaseAuditableEntity)entityEntry.Entity).CreatedBy
+                                                                    :_dbContext.GetCurrentUserId();
                 }
                 else
                 {

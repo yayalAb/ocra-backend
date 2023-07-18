@@ -62,7 +62,7 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(result);
 
         }
-        [HttpGet("GetByName")]
+        [HttpGet("GetById")]
         public async Task<ActionResult> GetByName([FromQuery] GetReportDetailQuery query)
         {
             var result = await _mediator.Send(query);

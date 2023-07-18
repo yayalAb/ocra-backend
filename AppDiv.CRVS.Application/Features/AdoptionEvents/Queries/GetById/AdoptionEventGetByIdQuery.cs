@@ -49,13 +49,13 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
             {
                 throw new NotFoundException($"Adoption Event with id {request.Id} not found");
             }
-            adoptionEvent.BeforeAdoptionAddressResponsDTO = await _AddressService.FormatedAddress(adoptionEvent.BeforeAdoptionAddressId);
-            adoptionEvent.AdoptiveFather.BirthAddressResponsDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveFather.BirthAddressId);
-            adoptionEvent.AdoptiveFather.ResidentAddressResponsDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveFather.ResidentAddressId);
-            adoptionEvent.AdoptiveMother.BirthAddressResponsDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveMother.BirthAddressId);
-            adoptionEvent.AdoptiveMother.ResidentAddressResponsDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveMother.ResidentAddressId);
-            adoptionEvent.Event.EventOwener.BirthAddressResponsDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.BirthAddressId);
-            adoptionEvent.Event.EventOwener.ResidentAddressResponsDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.ResidentAddressId);
+            adoptionEvent.BeforeAdoptionAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.BeforeAdoptionAddressId);
+            adoptionEvent.AdoptiveFather.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveFather.BirthAddressId);
+            adoptionEvent.AdoptiveFather.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveFather.ResidentAddressId);
+            adoptionEvent.AdoptiveMother.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveMother.BirthAddressId);
+            adoptionEvent.AdoptiveMother.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveMother.ResidentAddressId);
+            adoptionEvent.Event.EventOwener.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.BirthAddressId);
+            adoptionEvent.Event.EventOwener.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.ResidentAddressId);
             adoptionEvent.CourtCase.Court.CourtAddress = await _AddressService.FormatedAddress(adoptionEvent.CourtCase.Court.AddressId);
 
 

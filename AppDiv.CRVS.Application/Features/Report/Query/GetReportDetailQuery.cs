@@ -8,13 +8,13 @@ using MediatR;
 namespace AppDiv.CRVS.Application.Features.Report.Query
 {
     // Customer query with List<Customer> response
-    public record GetReportDetailQuery : IRequest<object>
+    public record GetReportDetailQuery : IRequest<ReportStore>
     {
-        public string? ReportName { get; set; }
+        public Guid? Id { get; set; }
 
     }
 
-    public class GetReportDetailQueryHandler : IRequestHandler<GetReportDetailQuery, object>
+    public class GetReportDetailQueryHandler : IRequestHandler<GetReportDetailQuery, ReportStore>
     {
         private readonly IReportStoreRepostory _reportRepository;
 
@@ -22,9 +22,9 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
         {
             _reportRepository = reportRepository;
         }
-        public async Task<object> Handle(GetReportDetailQuery request, CancellationToken cancellationToken)
+        public async Task<ReportStore> Handle(GetReportDetailQuery request, CancellationToken cancellationToken)
         {
-            var Report = _reportRepository.GetAll().Where(x => x.ReportName == request.ReportName);
+            var Report = await _reportRepository.GetAsync(request.Id);
 
             return Report;
         }

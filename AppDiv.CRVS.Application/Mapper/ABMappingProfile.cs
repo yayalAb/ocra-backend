@@ -53,6 +53,7 @@ using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.Plans.Command.Update;
 using AppDiv.CRVS.Domain.Entities.Audit;
 using  AppDiv.CRVS.Application.Features.Messages.Command.Create;
+using AppDiv.CRVS.Application.CouchModels;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -271,6 +272,36 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
             CreateMap<CreateMessageCommand , Message>().ReverseMap();   
+
+            // CreateMap<MarriageApplicationCouch , CreateMarriageApplicationCommand>()
+            // .ForPath(x => x.BrideInfo.BirthAddressResponseDTO, opt => opt.Ignore())
+            // .ForPath(x => x.BrideInfo.ResidentAddressResponseDTO, opt => opt.Ignore())
+            // .ForPath(x => x.GroomInfo.BirthAddressResponseDTO, opt => opt.Ignore())
+            // .ForPath(x => x.GroomInfo.ResidentAddressResponseDTO, opt => opt.Ignore())
+
+
+
+            // .ForSourceMember(x => x.Synced, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.Attachments, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.Conflicts, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.CreatedDate, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.Deleted, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.Rev, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.Updated, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.Id, opt => opt.DoNotValidate())
+
+
+
+
+
+
+
+
+
+
+            // ;
+            // CreateMap<MarriageApplicationCouch , UpdateMarriageApplicationCommand>();
+
 
 
 

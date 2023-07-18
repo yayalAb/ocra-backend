@@ -37,20 +37,20 @@ namespace AppDiv.CRVS.Infrastructure.Services
             var userId = httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null)
             {
-                var tokenstring = httpContext?.HttpContext?.Request == null?null:
+                var tokenstring = httpContext?.HttpContext?.Request == null ? null :
                  httpContext?.HttpContext?.Request?.Headers["Authorization"].ToString().Split(" ").Last();
-            Console.WriteLine($"userrrr=============== {tokenstring}");
+                Console.WriteLine($"userrrr=============== {tokenstring}");
 
                 if (!string.IsNullOrEmpty(tokenstring) && tokenstring.ToLower() != "undefined" && tokenstring.ToLower() != "null")
                 {
-// TODO: readtoken exception handling
+                    // TODO: readtoken exception handling
                     var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
 
                     userId = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 }
 
             }
-                return userId;
+            return userId;
 
         }
         public Guid GetWorkingAddressId()
@@ -104,6 +104,26 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
             return new Guid(personId);
         }
+        public Guid GetUserPersonalIdFromAccessTokenParam()
+        {
+        
+            var tokenstring = httpContext?.HttpContext?.Request.Query["access_token"];
+            
+            if (string.IsNullOrEmpty(tokenstring))
+            {
+                return Guid.Empty;
+
+            }
+            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+            var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
+            if (personId == null)
+            {
+                return Guid.Empty;
+            }
+            return new Guid(personId);
+        }
+
 
         public string GetLocale()
         {
