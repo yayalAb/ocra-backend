@@ -273,11 +273,11 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<CreateMessageCommand , Message>().ReverseMap();   
 
-            CreateMap<MarriageApplicationCouch , CreateMarriageApplicationCommand>()
-            .ForPath(x => x.BrideInfo.BirthAddressResponseDTO, opt => opt.Ignore())
-            .ForPath(x => x.BrideInfo.ResidentAddressResponseDTO, opt => opt.Ignore())
-            .ForPath(x => x.GroomInfo.BirthAddressResponseDTO, opt => opt.Ignore())
-            .ForPath(x => x.GroomInfo.ResidentAddressResponseDTO, opt => opt.Ignore())
+            // CreateMap<MarriageApplicationCouch , CreateMarriageApplicationCommand>()
+            // .ForPath(x => x.BrideInfo.BirthAddressResponseDTO, opt => opt.Ignore())
+            // .ForPath(x => x.BrideInfo.ResidentAddressResponseDTO, opt => opt.Ignore())
+            // .ForPath(x => x.GroomInfo.BirthAddressResponseDTO, opt => opt.Ignore())
+            // .ForPath(x => x.GroomInfo.ResidentAddressResponseDTO, opt => opt.Ignore())
 
 
 
@@ -288,6 +288,7 @@ namespace AppDiv.CRVS.Application.Mapper
             // .ForSourceMember(x => x.Deleted, opt => opt.DoNotValidate())
             // .ForSourceMember(x => x.Rev, opt => opt.DoNotValidate())
             // .ForSourceMember(x => x.Updated, opt => opt.DoNotValidate())
+            // .ForSourceMember(x => x.Id, opt => opt.DoNotValidate())
 
 
 
@@ -296,8 +297,10 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
 
-            ;
-            CreateMap<MarriageApplicationCouch , UpdateMarriageApplicationCommand>();
+
+
+            // ;
+            // CreateMap<MarriageApplicationCouch , UpdateMarriageApplicationCommand>();
 
 
 

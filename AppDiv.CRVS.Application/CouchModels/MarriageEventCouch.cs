@@ -1,14 +1,12 @@
-﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+
+
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
-using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 
-using MediatR;
-
-namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
+namespace AppDiv.CRVS.Application.CouchModels
 {
-    // Customer create command with CustomerResponse
-    public record CreateMarriageEventCommand : IRequest<CreateMarriageEventCommandResponse>
+    public class MarriageEventCouch :BaseEventCouch
     {
         public Guid? Id {get;set;}
         public Guid MarriageTypeId { get; set; }
@@ -20,5 +18,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         public virtual BrideInfoDTO BrideInfo { get; set; }
         public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
+        
     }
 }
