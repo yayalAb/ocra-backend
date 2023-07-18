@@ -24,5 +24,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public AddressResponseDTOE? ResidentAddressResponseDTO { get; set; }
         public AddressResponseDTOE? BirthAddressResponseDTO { get; set; }
 
+        public DateTime? CreatedAt {get; set; }
+        public string? CreatedBy {get; set; }
+
     }
 }

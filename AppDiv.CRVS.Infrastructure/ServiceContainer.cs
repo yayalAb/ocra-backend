@@ -121,7 +121,7 @@ namespace AppDiv.CRVS.Infrastructure
                         TransactionIsolationLevel = (System.Transactions.IsolationLevel?)IsolationLevel.ReadCommitted,
                         QueuePollInterval = TimeSpan.FromSeconds(15),
                         JobExpirationCheckInterval = TimeSpan.FromHours(1),
-                        CountersAggregateInterval = TimeSpan.FromMinutes(5),
+                        CountersAggregateInterval = TimeSpan.FromSeconds(5),//TODO: option config/
                         PrepareSchemaIfNecessary = true,
                         DashboardJobListLimit = 50000,
       

@@ -7,5 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid? Id { get; set; } = null;
         public Guid ExamptionReasonLookupId { get; set; }
         public ICollection<AddSupportingDocumentRequest>? SupportingDocuments { get; set; }
+        public DateTime? CreatedAt {get; set; }
+        public string? CreatedBy {get;set; }
     }
 }

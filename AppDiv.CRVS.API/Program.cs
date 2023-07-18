@@ -216,6 +216,9 @@ app.MapControllers();
 
 //registering background jobs
 BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
+// BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
+
+
 
 
 

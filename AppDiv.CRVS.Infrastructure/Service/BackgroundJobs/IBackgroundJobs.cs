@@ -9,5 +9,6 @@ namespace AppDiv.CRVS.Infrastructure.Service
     {
          public  Task job1();
          public Task job2();
+         public  Task GetEventJob();
     }
 }
