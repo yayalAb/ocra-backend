@@ -7,7 +7,7 @@ using Application.Common.Mappings;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
-    public class MarriageApplicationGridDTO :IMapFrom<MarriageApplication>
+    public class MarriageApplicationGridDTO : IMapFrom<MarriageApplication>
     {
         public Guid? Id { get; set; }
         // public DateTime ApplicationDate { get; set; }
@@ -16,6 +16,11 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         // public Guid ApplicationAddressId { get; set; }
         public string? BrideFullName { get; set; }
         public string? GroomFullName { get; set; }
+
+        public MarriageApplicationGridDTO()
+        {
+
+        }
         public MarriageApplicationGridDTO(MarriageApplication? application)
         {
             Id = application?.Id;
