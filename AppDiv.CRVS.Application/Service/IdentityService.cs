@@ -459,5 +459,10 @@ namespace AppDiv.CRVS.Application.Service
                                 .AnyAsync(u => u.PhoneNumber == phoneNumber);
         }
 
+        public async Task UpdateAsync(ApplicationUser user)
+        {
+            await _userManager.UpdateAsync(user);
+        }
+
     }
 }

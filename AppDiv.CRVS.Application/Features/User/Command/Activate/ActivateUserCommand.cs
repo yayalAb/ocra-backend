@@ -41,7 +41,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                 user.Status = !user.Status;
                 if (user != null)
                 {
-                    await _identityService.UpdateUserAsync(user);
+                    await _identityService.UpdateAsync(user);
                     response.Updated("User");
                 }
                 else
