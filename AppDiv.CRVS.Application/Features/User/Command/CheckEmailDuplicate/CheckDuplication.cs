@@ -24,21 +24,24 @@ namespace AppDiv.CRVS.Application.Features.User.Command.CheckDuplication
         public string? Email { get; set; }
         public string? UserName { get; set; }
         public string? PhoneNumber { get; set; }
+        public string? GroupName { get; set; }
     }
 
     public class CheckDuplicationCommandHandler : IRequestHandler<CheckDuplicationCommand, object>
     {
         private readonly IIdentityService _identityService;
+        private readonly IGroupRepository _group;
 
-        public CheckDuplicationCommandHandler(IIdentityService identityService)
+        public CheckDuplicationCommandHandler(IIdentityService identityService, IGroupRepository group)
         {
             _identityService = identityService;
+            this._group = group;
         }
         public async Task<object> Handle(CheckDuplicationCommand request, CancellationToken cancellationToken)
         {
-            if (request.Email == null && request.UserName == null && request.PhoneNumber == null) 
+            if (request.Email == null && request.UserName == null && request.PhoneNumber == null && request.GroupName == null) 
             {
-                throw new BadRequestException("Atleast one check criteria(email , username , phoneNumber) is needed to check for duplication ");
+                throw new BadRequestException("Atleast one check criteria(email , username , phoneNumber, GroupName) is needed to check for duplication ");
             }
             var res = request.Email != null
                         ? await _identityService.Exists(request.Email, "email")
@@ -46,6 +49,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.CheckDuplication
                         ? await _identityService.Exists(request.UserName, "username")
                         :request.PhoneNumber != null
                         ? await _identityService.Exists(request.PhoneNumber, "phone")
+                        :request.GroupName != null
+                        ? await _group.AnyAsync(g => g.GroupName.Replace(" ", "") == request.GroupName.Replace(" ", ""))
                         :false;
             return new { exists = res };
         }
