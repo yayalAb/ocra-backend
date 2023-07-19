@@ -269,7 +269,7 @@ namespace AppDiv.CRVS.Application.Service
             existingUser.PreferedLanguage = user.PreferedLanguage;
             existingUser.AddressId = user.AddressId;
             //if the user was locked and status is updated to true
-            if (user.Status && existingUser.LockoutEnd > DateTime.Now && !existingUser.Status && existingUser.LockoutEnabled)
+            if (user.Status && existingUser.LockoutEnd > DateTime.Now && existingUser.LockoutEnabled)
             {
                 existingUser.LockoutEnd = DateTime.Now;
             }
