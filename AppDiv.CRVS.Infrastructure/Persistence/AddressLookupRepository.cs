@@ -56,6 +56,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return await base.GetAsync(id);
         }
 
+        public async Task Import(ICollection<Address> addresses, CancellationToken cancellationToken)
+        {
+            await _DbContext.Addresses.AddRangeAsync(addresses, cancellationToken);
+        }
+
         // public bool Exists(Guid id)
         // {
         //     return _DbContext.Addresses.Where(p => p.Id == id).Any();
