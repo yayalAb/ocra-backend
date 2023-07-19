@@ -1,11 +1,14 @@
-using AppDiv.CRVS.Application.Contracts.DTOs;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Domain.Entities;
-using Newtonsoft.Json.Linq;
 using static AppDiv.CRVS.Application.Contracts.Request.AdoptionPersonalINformationRequest;
 
-namespace AppDiv.CRVS.Application.Contracts.Request
+namespace AppDiv.CRVS.Application.CouchModels
 {
-    public class AddAdoptionRequest
+    public class AdoptionEventCouch : BaseEventCouch
     {
         public Guid? Id { get; set; }
         public Guid? BeforeAdoptionAddressId { get; set; }
@@ -16,7 +19,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public AddAdoptionPersonalInfoRequest? AdoptiveFather { get; set; }
         public virtual AddCourtCaseRequest CourtCase { get; set; }
         public virtual AddAdoptionEventRequest Event { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public Guid? CreatedBy { get; set; }
+
     }
 }

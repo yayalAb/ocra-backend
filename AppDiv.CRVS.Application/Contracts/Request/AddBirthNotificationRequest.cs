@@ -12,5 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public float? WeightAtBirth { get; set; }
         public Guid? SkilledProfLookupId { get; set; }
         public string? NotficationSerialNumber { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public Guid? CreatedBy { get; set; }
     }
 }

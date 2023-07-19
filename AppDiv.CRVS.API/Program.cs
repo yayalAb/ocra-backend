@@ -206,7 +206,7 @@ app.UseEndpoints(endpoints =>
 
     // endpoints.MapHangfireDashboard("/hangfire", new DashboardOptions
     //             {
-    //                 Authorization = new[] { new HangfireAuthorizationFilter() },
+    //                 // Authorization = new[] { new HangfireAuthorizationFilter() },
     //                 IgnoreAntiforgeryToken = true
     //             });
 });
@@ -215,8 +215,9 @@ app.UseEndpoints(endpoints =>
 app.MapControllers();
 
 //registering background jobs
-BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
-// BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
+// BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
+
+BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
 
 
 

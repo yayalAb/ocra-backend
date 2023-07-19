@@ -8,6 +8,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid ExamptionReasonLookupId { get; set; }
         public ICollection<AddSupportingDocumentRequest>? SupportingDocuments { get; set; }
         public DateTime? CreatedAt {get; set; }
-        public string? CreatedBy {get;set; }
+        public Guid? CreatedBy {get;set; }
     }
 }

@@ -1,16 +1,13 @@
-﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Domain.Entities;
-using MediatR;
-using Newtonsoft.Json.Linq;
 
-
-namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
+namespace AppDiv.CRVS.Application.CouchModels
 {
-    // Customer create command with CustomerResponse
-    public record CreateDivorceEventCommand : IRequest<CreateDivorceEventCommandResponse>
+    public class DivorceEventCouch : BaseEventCouch
     {
-        public Guid? Id {get; set;}
+        public Guid? Id { get; set; }
         public virtual DivorcePartnersInfoDTO DivorcedWife { get; set; }
         public string? WifeBirthCertificateId { get; set; }
         public string? HusbandBirthCertificate { get; set; }
@@ -20,8 +17,5 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         public virtual AddCourtCaseRequest CourtCase { get; set; }
         public int? NumberOfChildren { get; set; }
         public AddEventForDivorceRequest Event { get; set; }
-        public DateTime? CreatedAt {get; set; }
-        public Guid? CreatedBy {get; set; }
-
     }
 }

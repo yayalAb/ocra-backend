@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class AddBirthEventRequest
     {
-
+        public Guid? Id { get; set; }
         public Guid? FacilityTypeLookupId { get; set; }
         public Guid? FacilityLookupId { get; set; }
         public Guid? BirthPlaceId { get; set; }
@@ -19,5 +19,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public virtual MotherInfoDTO Mother { get; set; }
         public virtual AddEventForBirthRequest Event { get; set; }
         public virtual AddBirthNotificationRequest? BirthNotification { get; set; } = null;
+        public DateTime? CreatedAt { get; set; }
+        public Guid? CreatedBy { get; set; }
     }
 }

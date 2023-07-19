@@ -21,6 +21,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
         public DateTime? CreatedAt {get; set; }
-        public string? CreatedBy {get; set; }
+        public Guid? CreatedBy {get; set; }
     }
 }
