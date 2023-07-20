@@ -42,7 +42,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
         {
             Console.WriteLine("job start ........");
         }
-        public async Task job2()
+        public async Task SyncMarriageApplicationJob()
         {
             Console.WriteLine("job started marriageApplication sync ....... .......");
             var marriageDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
@@ -96,7 +96,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             Console.WriteLine("job started event sync ....... .......");
 
             var eventDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                    .Where(n => n.StartsWith("eventcouches")).ToList();
+                                    .Where(n => n.StartsWith("eventcouchaa2b04e7-")).ToList();
             Console.WriteLine($"db count ---- {eventDbNames.Count}");
 
 
@@ -120,7 +120,21 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     {
 
                         case "marriage":
-                            MarriageEventCouch marriageEventCouch = (MarriageEventCouch)eventDoc;
+
+                            var marriageDb = _couchContext.Client.GetDatabase<MarriageEventCouch>(dbName);
+                            var marriageEventCouch = marriageDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                            Console.WriteLine($"doc --(isnull)-- ${marriageEventCouch == null}");
+                            Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
+
+
+                            if (marriageEventCouch == null)
+                            {
+                                break;
+                            }
+                            Console.WriteLine($"registering marriage event");
+
+
+                            Console.WriteLine($"doc --(_id)-- ${marriageEventCouch.Id}");
                             Console.WriteLine($"doc --Id-- ${marriageEventCouch.Event.Id}");
 
                             officerPersonalInfoId = marriageEventCouch.Event.CivilRegOfficerId;
@@ -130,7 +144,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             officerUserId = string.IsNullOrEmpty(uid) ? officerUserId : new Guid(uid);
                             var marriageEventCommand = new CreateMarriageEventCommand
                             {
-                                Id = marriageEventCouch.Id,
+                                Id = marriageEventCouch.Id2,
                                 MarriageTypeId = marriageEventCouch.MarriageTypeId,
                                 ApplicationId = marriageEventCouch.ApplicationId,
                                 BirthCertificateBrideId = marriageEventCouch.BirthCertificateBrideId,
@@ -163,24 +177,51 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 w.WitnessPersonalInfo.CreatedAt = marriageEventCouch.CreatedDate;
                                 w.WitnessPersonalInfo.CreatedBy = officerUserId;
                             });
-                            var res = await _mediator.Send(marriageEventCommand);
-                            if (res.Success)
+                            try
                             {
-                                if (marriageEventCouch.Paid && marriageEventCouch.Payment != null)
+                                var res = await _mediator.Send(marriageEventCommand);
+                                Console.WriteLine($"doc --save succeded-- ${res.Success}");
+                                Console.WriteLine($"doc --save message-- ${res.Message}");
+                                if (res.Success)
                                 {
-                                    var paymentRes = await createPayment(marriageEventCommand.Event.Id, marriageEventCouch.Payment?.PaymentWayLookupId, marriageEventCouch.Payment?.BillNumber);
-                                    //TODO:if paymentRes == false???
+                                    if (marriageEventCouch.Paid && marriageEventCouch.Payment != null)
+                                    {
+                                        var paymentRes = await createPayment(marriageEventCommand.Event.Id, marriageEventCouch.Payment?.PaymentWayLookupId, marriageEventCouch.Payment?.BillNumber);
+                                        //TODO:if paymentRes == false???
+                                        Console.WriteLine($"doc --payment created -- ${paymentRes}");
+
+
+                                    }
+                                    marriageEventCouch.Synced = true;
+                                    await eventDb.AddOrUpdateAsync(marriageEventCouch);
+                                    Console.WriteLine($"doc --synced -- ${marriageEventCouch.Synced}");
 
                                 }
-                                marriageEventCouch.Synced = true;
-                                await eventDb.AddOrUpdateAsync(marriageEventCouch);
                             }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine($"Exception {e.Message}");
+                                throw;
+                            }
+
                             break;
                         case "birth":
-                            Console.WriteLine($"doc --(_id)-- ${eventDoc.Id}");
-                            BirthEventCouch birthEventCouch = (BirthEventCouch)eventDoc;
+                            var birthDb = _couchContext.Client.GetDatabase<BirthEventCouch>(dbName);
+                            var birthEventCouch = birthDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                            Console.WriteLine($"doc --(isnull)-- ${birthEventCouch == null}");
+                            Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
 
-                            Console.WriteLine($"doc --Id-- ${birthEventCouch.Event.Id}");
+
+                            if (birthEventCouch == null)
+                            {
+                                break;
+                            }
+
+                            Console.WriteLine($"doc --(_id)-- ${birthEventCouch.Id}");
+
+
+
+                            Console.WriteLine($"doc --Id-- ${birthEventCouch.Id2}");
 
                             officerPersonalInfoId = birthEventCouch.Event.CivilRegOfficerId;
                             uid = _userRepository.GetAll()
@@ -191,7 +232,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             var birthEventCommand = new CreateBirthEventCommand
                             (new AddBirthEventRequest
                             {
-                                Id = birthEventCouch.Id,
+                                Id = birthEventCouch.Id2,
                                 FacilityTypeLookupId = birthEventCouch.FacilityTypeLookupId,
                                 FacilityLookupId = birthEventCouch.FacilityLookupId,
                                 BirthPlaceId = birthEventCouch.BirthPlaceId,
@@ -232,27 +273,55 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             {
                                 birthEventCommand.BirthEvent.BirthNotification.CreatedAt = birthEventCouch.CreatedDate;
                                 birthEventCommand.BirthEvent.BirthNotification.CreatedBy = officerUserId;
+
                             }
-
-                            var res2 = await _mediator.Send(birthEventCommand);
-
-                            if (res2.Success)
+                            try
                             {
-                                if (birthEventCouch.Paid && birthEventCouch.Payment != null)
+                                var res2 = await _mediator.Send(birthEventCommand);
+                                Console.WriteLine($"doc --save succeded-- ${res2.Success}");
+                                Console.WriteLine($"doc --save message-- ${res2.Message}");
+
+                                if (res2.Success)
                                 {
-                                    var paymentRes = await createPayment(birthEventCommand.BirthEvent.Event.Id, birthEventCouch.Payment?.PaymentWayLookupId, birthEventCouch.Payment?.BillNumber);
-                                    //TODO:if paymentRes == false???
+                                    if (birthEventCouch.Paid && birthEventCouch.Payment != null)
+                                    {
+                                        var paymentRes = await createPayment(birthEventCommand.BirthEvent.Event.Id, birthEventCouch.Payment?.PaymentWayLookupId, birthEventCouch.Payment?.BillNumber);
+                                        //TODO:if paymentRes == false???
+                                        Console.WriteLine($"doc --payment created -- ${paymentRes}");
+
+
+                                    }
+                                    birthEventCouch.Synced = true;
+                                    await eventDb.AddOrUpdateAsync(birthEventCouch);
+                                    Console.WriteLine($"doc --synced -- ${birthEventCouch.Synced}");
+
+
 
                                 }
-                                birthEventCouch.Synced = true;
-                                await eventDb.AddOrUpdateAsync(birthEventCouch);
                             }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine($"doc --exception-- ${e.Message}");
+                                throw;
 
 
+                            }
                             break;
                         case "death":
-                            DeathEventCouch deathEventCouch = (DeathEventCouch)eventDoc;
-                            Console.WriteLine($"doc --Id-- ${deathEventCouch.Event.Id}");
+                            var deathDb = _couchContext.Client.GetDatabase<DeathEventCouch>(dbName);
+                            var deathEventCouch = deathDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                            Console.WriteLine($"doc --(isnull)-- ${deathEventCouch == null}");
+                            Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
+
+
+                            if (deathEventCouch == null)
+                            {
+                                Console.WriteLine($"doc --is null ");
+                                break;
+                            }
+                            Console.WriteLine($"registering death event");
+
+                            Console.WriteLine($"doc --(_id)-- ${deathEventCouch.Id}");
 
                             officerPersonalInfoId = deathEventCouch.Event.CivilRegOfficerId;
                             uid = _userRepository.GetAll()
@@ -264,7 +333,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             var deathEventCommand = new CreateDeathEventCommand
                             (new AddDeathEventRequest
                             {
-                                Id = deathEventCouch.Id,
+                                Id = deathEventCouch.Id2,
                                 FacilityTypeLookupId = deathEventCouch.FacilityTypeLookupId,
                                 FacilityLookupId = deathEventCouch.FacilityLookupId,
                                 BirthCertificateId = deathEventCouch.BirthCertificateId,
@@ -295,26 +364,49 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedAt = deathEventCouch.CreatedDate;
                                 deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedBy = officerUserId;
                             }
-
-                            var res3 = await _mediator.Send(deathEventCommand);
-                            //TODO:payment registration
-
-                            if (res3.Success)
+                            try
                             {
-                                if (deathEventCouch.Paid && deathEventCouch.Payment != null)
-                                {
-                                    var paymentRes = await createPayment(deathEventCommand.DeathEvent.Event.Id, deathEventCouch.Payment?.PaymentWayLookupId, deathEventCouch.Payment?.BillNumber);
-                                    //TODO:if paymentRes == false???
+                                var res3 = await _mediator.Send(deathEventCommand);
+                                Console.WriteLine($"doc --save succeded-- ${res3.Success}");
+                                Console.WriteLine($"doc --save message-- ${res3.Message}");
 
+                                if (res3.Success)
+                                {
+                                    if (deathEventCouch.Paid && deathEventCouch.Payment != null)
+                                    {
+                                        var paymentRes = await createPayment(deathEventCommand.DeathEvent.Event.Id, deathEventCouch.Payment?.PaymentWayLookupId, deathEventCouch.Payment?.BillNumber);
+                                        //TODO:if paymentRes == false???
+                                        Console.WriteLine($"doc --payment created -- ${paymentRes}");
+
+
+                                    }
+                                    deathEventCouch.Synced = true;
+                                    await eventDb.AddOrUpdateAsync(deathEventCouch);
                                 }
-                                deathEventCouch.Synced = true;
-                                await eventDb.AddOrUpdateAsync(deathEventCouch);
                             }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine($"exception ----- {e.Message}");
+                                throw;
+                            }
+
 
                             break;
                         case "adoption":
-                            AdoptionEventCouch adoptionEventCouch = (AdoptionEventCouch)eventDoc;
-                            Console.WriteLine($"doc --Id-- ${adoptionEventCouch.Event.Id}");
+                            var adoptionDb = _couchContext.Client.GetDatabase<AdoptionEventCouch>(dbName);
+                            var adoptionEventCouch = adoptionDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                            Console.WriteLine($"doc --(isnull)-- ${adoptionEventCouch == null}");
+
+
+                            if (adoptionEventCouch == null)
+                            {
+                                Console.WriteLine($"doc --is null ");
+                                break;
+                            }
+                            Console.WriteLine($"registering adoption event");
+
+                            Console.WriteLine($"doc --(_id)-- ${adoptionEventCouch.Id}");
+                            Console.WriteLine($"doc --Id-- ${adoptionEventCouch.Id2}");
 
                             officerPersonalInfoId = adoptionEventCouch.Event.CivilRegOfficerId;
                             uid = _userRepository.GetAll()
@@ -326,7 +418,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             var adoptionEventCommand = new CreateAdoptionCommand
                             (new AddAdoptionRequest
                             {
-                                Id = adoptionEventCouch.Id,
+                                Id = adoptionEventCouch.Id2,
                                 BeforeAdoptionAddressId = adoptionEventCouch.BeforeAdoptionAddressId,
                                 ApprovedName = adoptionEventCouch.ApprovedName,
                                 BirthCertificateId = adoptionEventCouch.BirthCertificateId,
@@ -367,25 +459,53 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedBy = officerUserId;
 
                             }
-                            var res4 = await _mediator.Send(adoptionEventCommand);
-                            //TODO:payment registration
-
-                            if (res4.Success)
+                            
+                            try
                             {
-                                if (adoptionEventCouch.Paid && adoptionEventCouch.Payment != null)
+                                var res4 = await _mediator.Send(adoptionEventCommand);
+                                Console.WriteLine($"doc --save succeded-- ${res4.Success}");
+                                Console.WriteLine($"doc --save message-- ${res4.Message}");
+
+                                if (res4.Success)
                                 {
-                                    var paymentRes = await createPayment(adoptionEventCommand.Adoption.Event.Id, adoptionEventCouch.Payment?.PaymentWayLookupId, adoptionEventCouch.Payment?.BillNumber);
-                                    //TODO:if paymentRes == false???
+                                    if (adoptionEventCouch.Paid && adoptionEventCouch.Payment != null)
+                                    {
+                                        var paymentRes = await createPayment(adoptionEventCommand.Adoption.Event.Id, adoptionEventCouch.Payment?.PaymentWayLookupId, adoptionEventCouch.Payment?.BillNumber);
+                                        //TODO:if paymentRes == false???
+                                        Console.WriteLine($"doc --payment created -- ${paymentRes}");
+
+                                    }
+                                    adoptionEventCouch.Synced = true;
+                                    await eventDb.AddOrUpdateAsync(adoptionEventCouch);
+                                    Console.WriteLine($"doc --synced -- ${adoptionEventCouch.Synced}");
+
                                 }
-                                adoptionEventCouch.Synced = true;
-                                await eventDb.AddOrUpdateAsync(adoptionEventCouch);
                             }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine($"exception ----- {e.Message}");
+                                throw;
+                            }
+
 
 
                             break;
                         case "divorce":
-                            DivorceEventCouch divorceEventCouch = (DivorceEventCouch)eventDoc;
-                            Console.WriteLine($"doc --Id-- ${divorceEventCouch.Event.Id}");
+                            var divorceDb = _couchContext.Client.GetDatabase<DivorceEventCouch>(dbName);
+                            var divorceEventCouch = divorceDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                            Console.WriteLine($"doc --(isnull)-- ${divorceEventCouch == null}");
+                            Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
+
+
+                            if (divorceEventCouch == null)
+                            {
+                                Console.WriteLine($"doc --is null ");
+                                break;
+                            }
+                            Console.WriteLine($"registering divorce event");
+
+                            Console.WriteLine($"doc --(_id)-- ${divorceEventCouch.Id}");
+                            Console.WriteLine($"doc --Id-- ${divorceEventCouch.Id2}");
 
                             officerPersonalInfoId = divorceEventCouch.Event.CivilRegOfficerId;
                             uid = _userRepository.GetAll()
@@ -397,7 +517,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             var divorceEventCommand = new CreateDivorceEventCommand
 
                             {
-                                Id = divorceEventCouch.Id,
+                                Id = divorceEventCouch.Id2,
                                 DivorcedWife = divorceEventCouch.DivorcedWife,
                                 WifeBirthCertificateId = divorceEventCouch.WifeBirthCertificateId,
                                 HusbandBirthCertificate = divorceEventCouch.HusbandBirthCertificate,
@@ -427,19 +547,34 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 divorceEventCommand.Event.PaymentExamption.CreatedBy = officerUserId;
 
                             }
-                            var res5 = await _mediator.Send(divorceEventCommand);
-
-                            if (res5.Success)
+                            try
                             {
-                                if (divorceEventCouch.Paid && divorceEventCouch.Payment != null)
+                                var res5 = await _mediator.Send(divorceEventCommand);
+                                Console.WriteLine($"doc --save succeded-- ${res5.Success}");
+                                Console.WriteLine($"doc --save message-- ${res5.Message}");
+
+                                if (res5.Success)
                                 {
-                                    var paymentRes = await createPayment(divorceEventCommand.Event.Id, divorceEventCouch.Payment?.PaymentWayLookupId, divorceEventCouch.Payment?.BillNumber);
-                                    //TODO:if paymentRes == false???
+                                    if (divorceEventCouch.Paid && divorceEventCouch.Payment != null)
+                                    {
+                                        var paymentRes = await createPayment(divorceEventCommand.Event.Id, divorceEventCouch.Payment?.PaymentWayLookupId, divorceEventCouch.Payment?.BillNumber);
+                                        //TODO:if paymentRes == false???
+                                        Console.WriteLine($"doc --payment created -- ${paymentRes}");
+
+                                    }
+                                    divorceEventCouch.Synced = true;
+                                    await eventDb.AddOrUpdateAsync(divorceEventCouch);
+                                    Console.WriteLine($"doc --synced -- ${divorceEventCouch.Synced}");
+
                                 }
-                                divorceEventCouch.Synced = true;
-                                await eventDb.AddOrUpdateAsync(divorceEventCouch);
+                                break;
                             }
-                            break;
+                            catch (Exception e)
+                            {
+                                Console.WriteLine($"exception  ---- {e.Message}");
+                                throw;
+                            }
+
                         default: break;
                     }
                 }

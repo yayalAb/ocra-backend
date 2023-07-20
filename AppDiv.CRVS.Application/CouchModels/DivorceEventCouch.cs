@@ -7,7 +7,6 @@ namespace AppDiv.CRVS.Application.CouchModels
 {
     public class DivorceEventCouch : BaseEventCouch
     {
-        public Guid? Id { get; set; }
         public virtual DivorcePartnersInfoDTO DivorcedWife { get; set; }
         public string? WifeBirthCertificateId { get; set; }
         public string? HusbandBirthCertificate { get; set; }

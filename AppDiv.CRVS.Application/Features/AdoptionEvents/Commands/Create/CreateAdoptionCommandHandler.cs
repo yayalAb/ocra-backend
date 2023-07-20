@@ -108,7 +108,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
                                     // selectedperson.SexLookupId = adoptionEvent.AdoptiveFather.SexLookupId;
                                     selectedperson.NationalId = adoptionEvent.AdoptiveFather?.NationalId;
-                                    selectedperson.NationalityLookupId = (Guid)adoptionEvent.AdoptiveFather?.NationalityLookupId;
+                                    selectedperson.NationalityLookupId = adoptionEvent.AdoptiveFather?.NationalityLookupId;
                                     selectedperson.ReligionLookupId = adoptionEvent.AdoptiveFather?.ReligionLookupId;
                                     selectedperson.EducationalStatusLookupId = adoptionEvent.AdoptiveFather?.EducationalStatusLookupId;
                                     selectedperson.TypeOfWorkLookupId = adoptionEvent.AdoptiveFather?.TypeOfWorkLookupId;
