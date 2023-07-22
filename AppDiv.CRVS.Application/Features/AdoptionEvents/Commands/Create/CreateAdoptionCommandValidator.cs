@@ -112,9 +112,9 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .MustAsync(ValidateDateEt)
 
                 .WithMessage("{PropertyName} is invalid date.");
-            RuleFor(p => p.Adoption.Event.EventRegDateEt)
-                .MustAsync(ValidateRegDateEt)
-                .WithMessage("{PropertyName} is must be this year or last year.");
+            // RuleFor(p => p.Adoption.Event.EventRegDateEt)
+            //     .MustAsync(ValidateRegDateEt)
+            //     .WithMessage("{PropertyName} is must be this year or last year.");
             RuleFor(p => p.Adoption.CourtCase.ConfirmedDateEt)
                    .MustAsync(ValidateDateEt)
                    .WithMessage("{PropertyName} is invalid date.");
