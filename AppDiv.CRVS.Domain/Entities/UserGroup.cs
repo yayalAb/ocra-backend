@@ -16,6 +16,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string GroupName { get; set; }
         public string? DescriptionStr { get; set; }
         public string RolesStr { get; set; }
+        public string ManagedGroupsStr { get; set; }
         [NotMapped]
         public JObject Description
         {
@@ -38,6 +39,19 @@ namespace AppDiv.CRVS.Domain.Entities
             set
             {
                 RolesStr = value.ToString();
+            }
+        }
+
+        [NotMapped]
+        public JArray ManagedGroups
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<JArray>(string.IsNullOrEmpty(ManagedGroupsStr) ? "[]" : ManagedGroupsStr);
+            }
+            set
+            {
+                ManagedGroupsStr = value.ToString();
             }
         }
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }

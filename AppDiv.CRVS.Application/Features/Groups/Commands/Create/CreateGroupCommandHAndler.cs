@@ -45,11 +45,12 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Create
                     Id = Guid.NewGuid(),
                     GroupName = request.group.GroupName,
                     Description = request.group.Description,
-                    Roles = request.group.Roles
+                    Roles = request.group.Roles,
+                    ManagedGroups = request.group.ManagedGroups
                 };
                 //
                 await _groupRepository.InsertAsync(group, cancellationToken);
-                var result = await _groupRepository.SaveChangesAsync(cancellationToken);
+                await _groupRepository.SaveChangesAsync(cancellationToken);
 
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
                 // CreateGroupComandResponse.Customer = customerResponse;          
