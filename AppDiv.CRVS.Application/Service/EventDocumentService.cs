@@ -114,7 +114,7 @@ namespace AppDiv.CRVS.Application.Service
             return true;
         }
 
-        public async Task<bool> SaveSupportingDocumentsAsync(Event savedEvent, List<AddSupportingDocumentRequest> eventSupportingDocs, List<AddSupportingDocumentRequest> exapmtionSupportingDocs, Guid paymentExapmtionId, CancellationToken cancellationToken)
+        public async Task<bool> SaveSupportingDocumentsAsync(Event savedEvent, List<AddSupportingDocumentRequest>? eventSupportingDocs, List<AddSupportingDocumentRequest>? exapmtionSupportingDocs, Guid? paymentExapmtionId, CancellationToken cancellationToken)
         {
             var personIds = new PersonIdObj
             {
@@ -150,12 +150,12 @@ namespace AppDiv.CRVS.Application.Service
             await _supportingDocumentRepository.SaveChangesAsync(cancellationToken);
             var separatedDocs = extractSupportingDocs(personIds, docs.supportingDocs);
             savePhotos(separatedDocs.userPhotos);
-            saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Marriage");
+            saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, savedEvent.EventType);
 
             return true;
         }
 
-        public async Task<(IEnumerable<SupportingDocument> supportingDocs, IEnumerable<SupportingDocument> examptionDocs)> createSupportingDocumentsAsync(IEnumerable<AddSupportingDocumentRequest> supportingDocs, IEnumerable<AddSupportingDocumentRequest> examptionDocs, Guid EventId, Guid? examptionId, CancellationToken cancellationToken)
+        public async Task<(IEnumerable<SupportingDocument> supportingDocs, IEnumerable<SupportingDocument> examptionDocs)> createSupportingDocumentsAsync(IEnumerable<AddSupportingDocumentRequest>? supportingDocs, IEnumerable<AddSupportingDocumentRequest>? examptionDocs, Guid EventId, Guid? examptionId, CancellationToken cancellationToken)
         {
             IEnumerable<SupportingDocument> mappedDocs = new List<SupportingDocument>();
             IEnumerable<SupportingDocument> mappedExamptionDocs = new List<SupportingDocument>();
