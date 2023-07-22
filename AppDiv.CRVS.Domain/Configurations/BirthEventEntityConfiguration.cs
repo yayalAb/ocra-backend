@@ -23,11 +23,13 @@ namespace AppDiv.CRVS.Domain.Configurations
 
             builder.HasOne(m => m.Father)
                 .WithMany(n => n.BirthFatherNavigation)
-                .HasForeignKey(m => m.FatherId);
+                .HasForeignKey(m => m.FatherId)
+                .IsRequired(false);
 
             builder.HasOne(m => m.Mother)
                .WithMany(n => n.BirthMotherNavigation)
-               .HasForeignKey(m => m.MotherId);
+               .HasForeignKey(m => m.MotherId)
+               .IsRequired(false);
 
             builder.HasOne(m => m.BirthPlace)
                 .WithMany(n => n.BirthPlaceOfBirthNavigation)

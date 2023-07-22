@@ -71,8 +71,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             // store the persons id from the request
                             var personIds = new PersonIdObj
                             {
-                                MotherId = birthEvent.Mother.Id,
-                                FatherId = birthEvent.Father.Id,
+                                MotherId = birthEvent.Mother?.Id,
+                                FatherId = birthEvent.Father?.Id,
                                 ChildId = birthEvent.Event.EventOwener.Id,
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };

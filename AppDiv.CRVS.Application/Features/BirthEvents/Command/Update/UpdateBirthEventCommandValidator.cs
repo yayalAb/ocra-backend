@@ -16,8 +16,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
             RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo)!)
                     .When(p => p.BirthNotification != null);
             RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
-            RuleFor(p => p.Father).SetValidator(new FatherValidator(eventRepo));
-            RuleFor(p => p.Mother).SetValidator(new MotherValidator(eventRepo));
+            RuleFor(p => p.Father).SetValidator(new FatherValidator(eventRepo)!)
+            .When(p => p.Father != null);
+            RuleFor(p => p.Mother).SetValidator(new MotherValidator(eventRepo)!)
+            .When(p => p.Mother != null);
             RuleFor(p => p.Event.EventRegistrar).SetValidator(new BirthRegistrarValidator(eventRepo)!)
                     .When(p => (p.Event.EventRegistrar != null
                             || p.Event.InformantType?.ToLower() == "legal guardian"
