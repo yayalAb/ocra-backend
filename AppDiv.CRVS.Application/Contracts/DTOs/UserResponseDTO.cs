@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string FullName { get; set; } = "";
         public string GroupName { get; set; } = "";
         public string AdminLevel { get; set; }
+        public string AddressCode { get; set; }
 
 
 

@@ -150,6 +150,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     FullName = (string)user.PersonalInfo.FullName(true),
                     CreatedDate = _convertor.GregorianToEthiopic(user.CreatedAt),
                     AdminLevel = ((AdminLevel)user.Address.AdminLevel).ToString(),
+                    AddressCode = user.Address.Code,
                     PersonalInfo = new PersonalInfoDTO
                     {
                         Id = user.PersonalInfo.Id,
