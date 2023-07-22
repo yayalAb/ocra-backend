@@ -9,5 +9,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     {
         // public Guid? RegistrarInfoId { get; set; } = null;
         public BirthRegistrarPersonalInfoDTO RegistrarInfo { get; set; }
+        
     }
 }

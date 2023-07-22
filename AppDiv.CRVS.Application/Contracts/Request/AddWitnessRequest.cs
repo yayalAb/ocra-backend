@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual WitnessInfoDTO WitnessPersonalInfo { get; set; }
 
         public DateTime? CreatedAt {get; set; }
-        public string? CreatedBy {get; set; }
+        public Guid? CreatedBy {get; set; }
     
     }
 }

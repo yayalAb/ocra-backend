@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AppDiv.CRVS.Application.Contracts.Request
+using AppDiv.CRVS.Application.Contracts.Request;
+
+namespace AppDiv.CRVS.Application.CouchModels
 {
-    public class AddDeathEventRequest
+    public class DeathEventCouch : BaseEventCouch
     {
-        public Guid Id { get; set; }
+        public Guid Id2 { get; set; }
         public string? BirthCertificateId { get; set; }
         public Guid? FacilityTypeLookupId { get; set; }
         public Guid? FacilityLookupId { get; set; }
@@ -16,8 +14,5 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string? PlaceOfFuneral { get; set; }
         public AddDeathNotificationRequest? DeathNotification { get; set; } = null;
         public AddEventForDeathRequest Event { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public Guid? CreatedBy { get; set; }
-
     }
 }

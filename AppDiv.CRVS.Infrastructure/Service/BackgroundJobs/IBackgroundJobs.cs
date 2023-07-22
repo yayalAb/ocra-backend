@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
     public interface IBackgroundJobs
     {
          public  Task job1();
-         public Task job2();
+         public Task SyncMarriageApplicationJob();
          public  Task GetEventJob();
     }
 }

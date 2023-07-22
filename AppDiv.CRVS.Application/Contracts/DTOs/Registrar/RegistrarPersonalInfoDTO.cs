@@ -17,5 +17,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? NationalId { get; set; }
         public Guid? ResidentAddressId { get; set; }
         public string? PhoneNumber { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public Guid? CreatedBy { get; set; }
+        
     }
 }

@@ -12,5 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 
         public JObject? Name { get; set; }
         public JObject? Description { get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public Guid? CreatedBy { get; set; }
     }
 }

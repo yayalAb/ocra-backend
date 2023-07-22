@@ -1,6 +1,5 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
 using AppDiv.CRVS.Infrastructure.Context;
-using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.CouchModels;

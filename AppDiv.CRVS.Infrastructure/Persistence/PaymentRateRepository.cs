@@ -6,8 +6,8 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Couch;
 using Microsoft.EntityFrameworkCore;
-using  AppDiv.CRVS.Application.Contracts.DTOs;
-using  AppDiv.CRVS.Infrastructure.CouchModels;
+using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Infrastructure.CouchModels;
 using AppDiv.CRVS.Application.Mapper;
 
 
@@ -18,10 +18,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private readonly CRVSDbContext dbContext;
         private readonly IPaymentRateCouchRepository paymentRateCouchRepo;
 
-        public PaymentRateRepository(CRVSDbContext dbContext , IPaymentRateCouchRepository paymentRateCouchRepo) : base(dbContext)
+        public PaymentRateRepository(CRVSDbContext dbContext, IPaymentRateCouchRepository paymentRateCouchRepo) : base(dbContext)
         {
             this.dbContext = dbContext;
-            this.paymentRateCouchRepo=  paymentRateCouchRepo;
+            this.paymentRateCouchRepo = paymentRateCouchRepo;
         }
 
         public async Task<PaymentRate> GetByIdAsync(Guid id)
@@ -38,7 +38,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             await base.InsertAsync(paymentRate, cancellationToken);
         }
-          public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+        public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
         {
 
             var entries = dbContext.ChangeTracker
@@ -49,8 +49,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             List<PaymentRateEntry> paymentRateEntries = entries.Select(e => new PaymentRateEntry
             {
                 State = e.State,
-                PaymentRate = CustomMapper.Mapper.Map<PaymentRateCouchDTO>((PaymentRate)e.Entity)
+                PaymentRateId = ((PaymentRate)e.Entity).Id
+
             }).ToList();
+
 
             bool saveRes = await base.SaveChangesAsync(cancellationToken);
 
@@ -58,19 +60,28 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 foreach (var entry in paymentRateEntries)
                 {
-                    switch (entry.State)
+                    entry.PaymentRate = dbContext.PaymentRates
+                                       .Where(pr => pr.Id == entry.PaymentRateId)
+                                       .Include(pr => pr.EventLookup)
+                                       .Include(pr => pr.PaymentTypeLookup)
+                                       .Select(pr => CustomMapper.Mapper.Map<PaymentRateCouchDTO>(pr))
+                                       .FirstOrDefault();
+                    if (entry.PaymentRate != null)
                     {
-                        case EntityState.Added:
-                            await paymentRateCouchRepo.InsertPaymentRateAsync(entry.PaymentRate);
-                            break;
-                        case EntityState.Modified:
-                            await paymentRateCouchRepo.UpdatePaymentRateAsync(entry.PaymentRate);
-                            break;
-                        case EntityState.Deleted:
-                            await paymentRateCouchRepo.RemovePaymentRateAsync(entry.PaymentRate);
-                            break;
-                        default: break;
+                        switch (entry.State)
+                        {
+                            case EntityState.Added:
+                                await paymentRateCouchRepo.InsertPaymentRateAsync(entry.PaymentRate);
+                                break;
+                            case EntityState.Modified:
+                                await paymentRateCouchRepo.UpdatePaymentRateAsync(entry.PaymentRate);
+                                break;
+                            case EntityState.Deleted:
+                                await paymentRateCouchRepo.RemovePaymentRateAsync(entry.PaymentRate);
+                                break;
+                            default: break;
 
+                        }
                     }
                 }
 
@@ -79,7 +90,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
         }
-          public async Task InitializePaymentRateCouch()
+        public async Task InitializePaymentRateCouch()
         {
             var empty = await paymentRateCouchRepo.IsEmpty();
             if (empty)

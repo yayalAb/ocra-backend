@@ -51,18 +51,20 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
                     ParentAddressId = address.ParentAddressId,
                     Status = address.Status,
                     DeletedStatus = false,
-                    addresses = address.ChildAddresses?.Select(ca => new SingleAddressCouch
-                    {
-                        Id = ca.Id,
-                        NameAm = ca.AddressName == null ? null : ca.AddressName.Value<string>("am"),
-                        NameOr = ca.AddressName == null ? null : ca.AddressName.Value<string>("or"),
-                        AdminLevel = ca.AdminLevel,
-                        AdminTypeAm = ca.AdminTypeLookup == null ? null : ca.AdminTypeLookup.Value.Value<string>("am"),
-                        AdminTypeOr = ca.AdminTypeLookup == null ? null : ca.AdminTypeLookup.Value.Value<string>("or"),
-                        ParentAddressId = ca.ParentAddressId,
-                        Status = ca.Status
+                    addresses = address.ChildAddresses == null
+                                ? new List<SingleAddressCouch>()
+                                : address.ChildAddresses.Select(ca => new SingleAddressCouch
+                                    {
+                                        Id = ca.Id,
+                                        NameAm = ca.AddressName == null ? null : ca.AddressName.Value<string>("am"),
+                                        NameOr = ca.AddressName == null ? null : ca.AddressName.Value<string>("or"),
+                                        AdminLevel = ca.AdminLevel,
+                                        AdminTypeAm = ca.AdminTypeLookup == null ? null : ca.AdminTypeLookup.Value.Value<string>("am"),
+                                        AdminTypeOr = ca.AdminTypeLookup == null ? null : ca.AdminTypeLookup.Value.Value<string>("or"),
+                                        ParentAddressId = ca.ParentAddressId,
+                                        Status = ca.Status
 
-                    }).ToList(),
+                                    }).ToList(),
                 };
                 var res2 = await _couchContext.AddressCouches.AddAsync(newAddress);
 
@@ -222,7 +224,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
                 if (existingAddressAsParent != null)
                 {
                     existingAddressAsParent.ParentAddressId = address?.ParentAddressId ?? Guid.Empty;
-                    existingAddressAsParent.NameStr = address.AddressNameStr;
+                    existingAddressAsParent.NameStr = address?.AddressNameStr;
                     existingAddressAsParent.AdminLevel = address?.AdminLevel;
                     existingAddressAsParent.AdminTypeAm = address?.AdminTypeLookup == null ? null : address?.AdminTypeLookup?.Value?.Value<string>("am");
                     existingAddressAsParent.AdminTypeOr = address?.AdminTypeLookup == null ? null : address?.AdminTypeLookup?.Value?.Value<string>("or");
@@ -249,9 +251,9 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
 
             }
-            }
+        }
 
-        
+
         return true;
     }
     public async Task<bool> RemoveAsync(AddressCouchDTO address)
