@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? BirthAddressId { get; set; }
         public Guid? ResidentAddressId { get; set; }
         public Guid? TitleLookupId { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         public Guid? CreatedBy { get; set; }
     }
 }

@@ -21,7 +21,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
         public AddressResponseDTOE? EventAddressResponseDTO { get; set; }
 
-        public DateTime? CreatedAt {get; set; }
+        public DateTime? CreatedAt {get; set; } = DateTime.Now;
         public Guid? CreatedBy {get; set; }
 
     }

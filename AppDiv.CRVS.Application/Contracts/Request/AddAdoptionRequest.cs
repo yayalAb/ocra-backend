@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public AddAdoptionPersonalInfoRequest? AdoptiveFather { get; set; }
         public virtual AddCourtCaseRequest CourtCase { get; set; }
         public virtual AddAdoptionEventRequest Event { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         public Guid? CreatedBy { get; set; }
     }
 }

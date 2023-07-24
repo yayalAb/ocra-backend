@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? NationalityLookupId { get; set; }
         public Guid? BirthAddressId { get; set; }
         public string? PhoneNumber { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         public Guid? CreatedBy { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string? PlaceOfFuneral { get; set; }
         public AddDeathNotificationRequest? DeathNotification { get; set; } = null;
         public AddEventForDeathRequest Event { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         public Guid? CreatedBy { get; set; }
 
     }

@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public virtual MotherInfoDTO? Mother { get; set; }
         public virtual AddEventForBirthRequest Event { get; set; }
         public virtual AddBirthNotificationRequest? BirthNotification { get; set; } = null;
-        public DateTime? CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         public Guid? CreatedBy { get; set; }
     }
 }

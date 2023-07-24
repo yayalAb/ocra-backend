@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string? CourtCaseNumber { get; set; }
         // public DateTime ConfirmedDate { get; set; }
         public string? ConfirmedDateEt { get; set; }
-        public DateTime? CreatedAt { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
         public Guid? CreatedBy { get; set; }
 
 
