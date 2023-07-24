@@ -134,7 +134,7 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         DateTime converted = new CustomDateConverter(d).gorgorianDate;
                         return DateTime.Now.Year - converted.Year >= 18;
-                }
+                    }
                     catch (Exception e)
                     {
                         return false;
