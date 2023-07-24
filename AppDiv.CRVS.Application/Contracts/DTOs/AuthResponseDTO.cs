@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
@@ -21,5 +22,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? AddressId { get; set; }
         public string? AddressCode {get; set; }
         public string? PreferedLanguage { get; set; }
+        public JObject? FirstName { get; set; }
+        public JObject? MiddleName { get; set; }
+        public JObject? LastName { get; set; }
     }
 }

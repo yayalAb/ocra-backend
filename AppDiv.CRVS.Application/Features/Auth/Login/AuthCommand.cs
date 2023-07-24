@@ -112,7 +112,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {
                                                     { "UserGroups", NavigationPropertyType.COLLECTION },
-                                                    { "Address", NavigationPropertyType.REFERENCE }
+                                                    { "Address", NavigationPropertyType.REFERENCE },
+                                                    { "PersonalInfo", NavigationPropertyType.REFERENCE }
 
                                                 };
             var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
@@ -165,7 +166,10 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 PreferedLanguage = userData?.PreferedLanguage,
                 PersonalInfoId = userData.PersonalInfoId,
                 GroupIds = userData.UserGroups.Select(g => g.Id).ToList(),
-                Roles = userRoles.ToList()
+                Roles = userRoles.ToList(),
+                FirstName = userData.PersonalInfo?.FirstName,
+                MiddleName = userData.PersonalInfo?.MiddleName,
+                LastName = userData.PersonalInfo?.LastName,
             };
         }
     }
