@@ -32,6 +32,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
         private readonly HelperService _helperService;
         private readonly IMailService _mailService;
         private readonly ISmsService _smsService;
+        private readonly IDateAndAddressService _addressService;
         private readonly IIdentityService _identityService;
         private readonly ILoginHistoryRepository _loginHistoryRepository;
         private readonly IHttpContextAccessor _httpContext;
@@ -46,7 +47,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                   HelperService helperService,
                                   IMailService mailService,
                                   IOptions<SMTPServerConfiguration> config,
-                                  ISmsService smsService)
+                                  ISmsService smsService, 
+                                  IDateAndAddressService addressService)
         {
             _identityService = identityService;
             _tokenGenerator = tokenGenerator;
@@ -55,6 +57,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             _helperService = helperService;
             _mailService = mailService;
             _smsService = smsService;
+            this._addressService = addressService;
             _loginHistoryRepository = loginHistoryRepository;
             _httpContext = httpContext;
             _config = config.Value;
@@ -170,6 +173,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 FirstName = userData.PersonalInfo?.FirstName,
                 MiddleName = userData.PersonalInfo?.MiddleName,
                 LastName = userData.PersonalInfo?.LastName,
+                Address = await _addressService.FormatedAddress(userData.AddressId)!
             };
         }
     }
