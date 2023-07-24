@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
 {
     public class AddDeathEventRequest
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string? BirthCertificateId { get; set; }
         public Guid? FacilityTypeLookupId { get; set; }
         public Guid? FacilityLookupId { get; set; }
