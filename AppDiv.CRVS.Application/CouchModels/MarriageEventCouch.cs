@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.CouchModels
 {
     public class MarriageEventCouch :BaseEventCouch
     {
-        public Guid Id {get;set;}
+        public Guid Id2 {get;set;}
         public Guid MarriageTypeId { get; set; }
         public Guid? ApplicationId { get; set; }
         public string? BirthCertificateGroomId { get; set; }

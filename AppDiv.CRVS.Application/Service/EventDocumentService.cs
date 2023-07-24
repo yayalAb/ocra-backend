@@ -114,7 +114,48 @@ namespace AppDiv.CRVS.Application.Service
             return true;
         }
 
-        public async Task<(IEnumerable<SupportingDocument> supportingDocs, IEnumerable<SupportingDocument> examptionDocs)> createSupportingDocumentsAsync(IEnumerable<AddSupportingDocumentRequest> supportingDocs, IEnumerable<AddSupportingDocumentRequest> examptionDocs, Guid EventId, Guid? examptionId, CancellationToken cancellationToken)
+        public async Task<bool> SaveSupportingDocumentsAsync(Event savedEvent, List<AddSupportingDocumentRequest>? eventSupportingDocs, List<AddSupportingDocumentRequest>? exapmtionSupportingDocs, Guid? paymentExapmtionId, CancellationToken cancellationToken)
+        {
+            var personIds = new PersonIdObj
+            {
+                WifeId = savedEvent.EventType.ToLower() == "marriage"
+                                ? savedEvent.MarriageEvent?.BrideInfoId
+                                : savedEvent.EventType.ToLower() == "divorce"
+                                ? savedEvent.DivorceEvent?.DivorcedWifeId
+                                : null,
+                HusbandId = savedEvent.EventType.ToLower() == "marraige" || savedEvent.EventType.ToLower() == "divorce"
+                                ? savedEvent.EventOwenerId
+                                : null,
+                WitnessIds = savedEvent.MarriageEvent?.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList(),
+                FatherId = savedEvent.EventType.ToLower() == "birth"
+                                ? savedEvent.BirthEvent?.FatherId
+                                : savedEvent.EventType.ToLower() == "adoption"
+                                ? savedEvent.AdoptionEvent?.AdoptiveFatherId
+                                : null,
+                MotherId = savedEvent.EventType.ToLower() == "birth"
+                                ? savedEvent.BirthEvent?.MotherId
+                                : savedEvent.EventType.ToLower() == "adoption"
+                                ? savedEvent.AdoptionEvent?.AdoptiveMotherId
+                                : null,
+                ChildId = savedEvent.EventType.ToLower() == "birth" || savedEvent.EventType.ToLower() == "adoption"
+                                ? savedEvent.EventOwenerId
+                                : null,
+                DeceasedId = savedEvent.EventType.ToLower() == "death"
+                                ? savedEvent.EventOwenerId
+                                : null,
+                RegistrarId = savedEvent.EventRegisteredAddressId
+
+            };
+            var docs = await createSupportingDocumentsAsync(eventSupportingDocs, exapmtionSupportingDocs, savedEvent.Id, paymentExapmtionId, cancellationToken);
+            await _supportingDocumentRepository.SaveChangesAsync(cancellationToken);
+            var separatedDocs = extractSupportingDocs(personIds, docs.supportingDocs);
+            savePhotos(separatedDocs.userPhotos);
+            saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, savedEvent.EventType);
+
+            return true;
+        }
+
+        public async Task<(IEnumerable<SupportingDocument> supportingDocs, IEnumerable<SupportingDocument> examptionDocs)> createSupportingDocumentsAsync(IEnumerable<AddSupportingDocumentRequest>? supportingDocs, IEnumerable<AddSupportingDocumentRequest>? examptionDocs, Guid EventId, Guid? examptionId, CancellationToken cancellationToken)
         {
             IEnumerable<SupportingDocument> mappedDocs = new List<SupportingDocument>();
             IEnumerable<SupportingDocument> mappedExamptionDocs = new List<SupportingDocument>();

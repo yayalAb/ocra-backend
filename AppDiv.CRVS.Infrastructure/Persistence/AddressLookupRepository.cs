@@ -28,7 +28,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private readonly ILogger<AddressLookupRepository> _logger;
 
 
-        public AddressLookupRepository(CRVSDbContext dbContext, IAddressLookupCouchRepository addressLookupCouchRepo , ILogger<AddressLookupRepository> logger ) : base(dbContext)
+        public AddressLookupRepository(CRVSDbContext dbContext, IAddressLookupCouchRepository addressLookupCouchRepo, ILogger<AddressLookupRepository> logger) : base(dbContext)
         {
             _DbContext = dbContext;
             this.addressLookupCouchRepo = addressLookupCouchRepo;
@@ -56,6 +56,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return await base.GetAsync(id);
         }
 
+        public async Task Import(ICollection<Address> addresses, CancellationToken cancellationToken)
+        {
+            await _DbContext.Addresses.AddRangeAsync(addresses, cancellationToken);
+        }
+
         // public bool Exists(Guid id)
         // {
         //     return _DbContext.Addresses.Where(p => p.Id == id).Any();
@@ -70,34 +75,44 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                       || e.State == EntityState.Modified
                       || e.State == EntityState.Deleted));
 
-            List<AddressEntry> addressEntries = entries.Select(e =>new AddressEntry{
+            List<AddressEntry> addressEntries = entries.Select(e => new AddressEntry
+            {
                 State = e.State,
-                Address = CustomMapper.Mapper.Map<AddressCouchDTO>( (Address)e.Entity)
-            }).ToList();   
-                
+                AddressId = ((Address)e.Entity).Id
+            }).ToList();
+
 
             var saveChangeRes = await base.SaveChangesAsync(cancellationToken);
-            
+        
+
 
             if (saveChangeRes)
             {
-
-
                 foreach (var entry in addressEntries)
                 {
-                    switch (entry.State)
+                    entry.Address = _DbContext.Addresses
+                            .Include(a => a.AdminTypeLookup)
+                            .Include(a => a.ParentAddress)
+                                    .Where(a => a.Id == entry.AddressId)
+                                    .Select(a => CustomMapper.Mapper.Map<AddressCouchDTO>(a))
+                                    .FirstOrDefault();
+                    if (entry.Address != null)
                     {
-                        case EntityState.Added:
-                            await addressLookupCouchRepo.InserAsync(entry.Address);
-                            break;
-                        case EntityState.Deleted:
-                            await addressLookupCouchRepo.RemoveAsync(entry.Address);
-                            break;
-                        case EntityState.Modified:
-                            await addressLookupCouchRepo.UpdateAsync(entry.Address);
-                            break;
-                        default: break;
+                        switch (entry.State)
+                        {
+                            case EntityState.Added:
+                                
+                                await addressLookupCouchRepo.InserAsync(entry.Address);
+                                break;
+                            case EntityState.Deleted:
+                                await addressLookupCouchRepo.RemoveAsync(entry.Address);
+                                break;
+                            case EntityState.Modified:
+                                await addressLookupCouchRepo.UpdateAsync(entry.Address);
+                                break;
+                            default: break;
 
+                        }
                     }
                 }
             }

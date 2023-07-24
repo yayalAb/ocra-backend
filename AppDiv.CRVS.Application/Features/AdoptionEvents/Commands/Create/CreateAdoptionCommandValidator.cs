@@ -30,9 +30,9 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _LookupsRepo = LookupsRepo;
             _PaymentExaptionRepo = PaymentExaptionRepo;
             _EventRepository = EventRepository;
-            RuleFor(e => e.Adoption.Id)
-               .MustAsync(CheckIdOnCeate)
-               .WithMessage("A {PropertyName} must be null on create.");
+            // RuleFor(e => e.Adoption.Id)
+            //    .MustAsync(CheckIdOnCeate)
+            //    .WithMessage("A {PropertyName} must be null on create.");
             RuleFor(e => e.Adoption.AdoptiveFather)
                .Must((e, adoptiveFather) => adoptiveFather != null || e.Adoption.AdoptiveMother != null).WithMessage("both adoptive mother and father cannot be null when registering adoption");
             // When(e => e.Adoption.AdoptiveFather != null, () =>
@@ -112,9 +112,9 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .MustAsync(ValidateDateEt)
 
                 .WithMessage("{PropertyName} is invalid date.");
-            RuleFor(p => p.Adoption.Event.EventRegDateEt)
-                .MustAsync(ValidateRegDateEt)
-                .WithMessage("{PropertyName} is must be this year or last year.");
+            // RuleFor(p => p.Adoption.Event.EventRegDateEt)
+            //     .MustAsync(ValidateRegDateEt)
+            //     .WithMessage("{PropertyName} is must be this year or last year.");
             RuleFor(p => p.Adoption.CourtCase.ConfirmedDateEt)
                    .MustAsync(ValidateDateEt)
                    .WithMessage("{PropertyName} is invalid date.");
@@ -129,9 +129,9 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                .MustAsync(ValidateNulleblePersonalInfoForignkey)
                .WithMessage("{PropertyName} is must be null or Person Foreign key.");
 
-            RuleFor(e => e.Adoption.CourtCase.Id)
-                .MustAsync(CheckIdOnCeate)
-                .WithMessage("{PropertyName} is must be null on Create.");
+            // RuleFor(e => e.Adoption.CourtCase.Id)
+            //     .MustAsync(CheckIdOnCeate)
+            //     .WithMessage("{PropertyName} is must be null on Create.");
         }
         private async Task<bool> ValidateForignkeyAddress(Guid? request, CancellationToken token)
         {

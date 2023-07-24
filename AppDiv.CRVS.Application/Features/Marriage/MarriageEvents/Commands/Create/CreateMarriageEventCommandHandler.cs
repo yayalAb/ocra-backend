@@ -100,6 +100,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             };
                             marriageEvent.Event.EventType = "Marriage";
                             await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
+                            
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");

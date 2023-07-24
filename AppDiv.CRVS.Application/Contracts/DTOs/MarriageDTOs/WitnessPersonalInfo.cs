@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public AddressResponseDTOE? ResidentAddressResponseDTO { get; set; }
 
         public DateTime? CreatedAt {get; set; }
-        public string? CreatedBy {get; set; }
+        public Guid? CreatedBy {get; set; }
 
 
     }

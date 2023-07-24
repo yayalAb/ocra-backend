@@ -23,6 +23,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
             public Guid? MarriageStatusLookupId { get; set; }
             public Guid? NationLookupId { get; set; }
             public string? PhoneNumber { get; set; }
+            public DateTime? CreatedAt { get; set; } = DateTime.Now;
+            public Guid? CreatedBy { get; set; }
         }
     }
 }

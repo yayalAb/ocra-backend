@@ -71,8 +71,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                         }
                         if (createDivorceEventCommandResponse.Success)
                         {
-
-
+                            request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             divorceEvent.Event.EventType = "Divorce";
 
@@ -97,7 +96,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 else
                                 {
                                     string message = $"Dear Customer,\nThis is to inform you that your request for Divorce certificate from OCRA is currently being processed. To proceed with the issuance, kindly make a payment of {response.amount} ETB to finance office.\n OCRA";
-                                    List<string> msgRecepients = new List<string>();
+                                    List<string> msgRecepients = new();
                                     if (divorceEvent.DivorcedWife?.PhoneNumber != null)
                                     {
                                         msgRecepients.Add(divorceEvent.DivorcedWife.PhoneNumber);

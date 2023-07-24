@@ -119,15 +119,26 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                 case "Divorce":
                     preview.Content = request.Command switch
                     {
-                        "Create" => 
-                        _archiveGenerator.GetDivorceArchivePreview(
-                            CustomMapper.Mapper.Map<DivorceEvent>(
-                                ReturnArchiveFromJObject.GetArchive<CreateDivorceEventCommand>(request.Content)),
-                            ""),
-                        "Update" => _archiveGenerator.GetDivorceArchivePreview(
-                            CustomMapper.Mapper.Map<DivorceEvent>(
-                                ReturnArchiveFromJObject.GetArchive<UpdateDivorceEventCommand>(request.Content)),
-                            ""),
+                        "Create" => Call<JObject, JObject>((content) =>
+                        {
+                            var createDto = ReturnArchiveFromJObject.GetArchive<CreateDivorceEventCommand>(request.Content);
+                            createDto.Event.EventDateEt = createDto.CourtCase.ConfirmedDateEt;
+                            var divorce = CustomMapper.Mapper.Map<DivorceEvent>(createDto);
+                            divorce.Event.EventType = "Divorce";
+                            return _archiveGenerator.GetDivorceArchivePreview(divorce,"");
+                        }, request.Content),
+                        "Update" => Call<JObject, JObject>((content) =>
+                        {
+                            var updateDto = ReturnArchiveFromJObject.GetArchive<UpdateDivorceEventCommand>(request.Content);
+                            updateDto.Event.EventDateEt = updateDto.CourtCase.ConfirmedDateEt;
+                            var divorce = CustomMapper.Mapper.Map<DivorceEvent>(updateDto);
+                            divorce.Event.EventType = "Divorce";
+                            return _archiveGenerator.GetDivorceArchivePreview(divorce,"");
+                        }, request.Content),
+                        // _archiveGenerator.GetDivorceArchivePreview(
+                        //     CustomMapper.Mapper.Map<DivorceEvent>(
+                        //         ReturnArchiveFromJObject.GetArchive<UpdateDivorceEventCommand>(request.Content)),
+                        //     ""),
                     };
                     break;
                 case "Marriage":

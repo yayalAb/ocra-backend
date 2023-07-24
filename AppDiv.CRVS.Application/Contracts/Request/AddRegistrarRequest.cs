@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid? Id { get; set; } = null;
         public Guid? RelationshipLookupId { get; set; }
         // public virtual UpdatePersonalInfoRequest RegistrarInfo { get; set; }
-
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public Guid? CreatedBy { get; set; }
     }
 }

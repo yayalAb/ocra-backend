@@ -1,15 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
+using Newtonsoft.Json;
 
 namespace AppDiv.CRVS.Application.CouchModels
 {
     public class BirthEventCouch : BaseEventCouch
     {
-        public Guid Id {get; set;}
+        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        public Guid Id2 { get; set; }
         public Guid? FacilityTypeLookupId { get; set; }
         public Guid? FacilityLookupId { get; set; }
         public Guid? BirthPlaceId { get; set; }

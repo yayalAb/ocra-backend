@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             // "DivorcedWife.TypeOfWorkLookupId","DivorcedWife.MarriageStatusLookupId","DivorcedWife.ResidentAddressId","DivorcedWife.NationLookupId",
             // "CourtCase.CourtCaseNumber","Event.CertificateId","Event.EventAddressId",
             "CourtCase.ConfirmedDateEt",
-             "Event.EventDateEt",
+            //  "Event.EventDateEt",
             "Event.EventRegDateEt","Event.CivilRegOfficerId","Event.IsExampted",
             "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.NationalityLookupId",
             // "Event.EventOwener.NationalId",

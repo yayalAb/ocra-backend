@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _marriageEventRepo = marriageEventRepo;
             _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _addressRepo = addressRepo;
-            _settingRepository = settingRepository;            
+            _settingRepository = settingRepository;
             _eventRepo = eventRepo;
 
             // var nonRequiredfieldNames = new List<string> 
@@ -54,11 +54,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     "Event.EventDateEt",
                     "Event.EventRegDateEt","Event.CivilRegOfficerId","Event.IsExampted",
                     "Event.EventOwener.FirstName","Event.EventOwener.MiddleName","Event.EventOwener.LastName","Event.EventOwener.BirthDateEt",
-                    "Event.EventOwener.NationalityLookupId",    
+                    "Event.EventOwener.NationalityLookupId",
             };
             // var nonRequiredLookupFields = new List<string>
             // {
-                
+
             // };
             var lookupFeilds = new List<string>{
                "MarriageTypeId",
@@ -83,13 +83,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             foreach (var lookupFeild in lookupFeilds)
             {
                 var rule = RuleFor(GetNestedProperty<CreateMarriageEventCommand>(lookupFeild))
-                    .MustAsync(async(l , c) => await BeFoundInLookupTable(l))
+                    .MustAsync(async (l, c) => await BeFoundInLookupTable(l))
                     .WithMessage("{PropertyName} with the provided id is not found");
-                    // .When(p => GetNestedProperty<CreateMarriageEventCommand>(lookupFeild) != null);
+                // .When(p => GetNestedProperty<CreateMarriageEventCommand>(lookupFeild) != null);
 
 
             }
-            var addressFeilds = new List<string>{
+            var addressFeilds = new List<string>
+            {
                 // "BrideInfo.BirthAddressId","BrideInfo.ResidentAddressId","Event.EventAddressId",
                 // "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
@@ -120,7 +121,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.FirstName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.MiddleName)).NotEmpty().NotNull();
             RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.LastName)).NotEmpty().NotNull();
-            
+
             // RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.SexLookupId))
             // .ForEach(lookupId => lookupId
             //         .NotEmpty()
@@ -134,11 +135,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             // .When(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId) != null);
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true)).WithMessage("the bride cannot be below the age limit set in setting");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt,e.Event.EventSupportingDocuments?.Count(), true)).WithMessage("the bride cannot be below the age limit set in setting or must attach supporting document");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false)).WithMessage("the Groom cannot be below the age limit set in setting");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt,e.Event.EventSupportingDocuments?.Count(), false)).WithMessage("the Groom cannot be below the age limit set in setting or must attach supporting document");
 
-            WhenAsync(async (e,CancellationToken) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
+            WhenAsync(async (e, CancellationToken) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
 
                 RuleFor(e => e.BrideInfo.Id)
@@ -150,35 +151,35 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 // .NotEmpty()
                 // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.BrideInfo.Id, "wife")).WithMessage("divorce paper document should be attached if bride is a divorcee");
             });
-            WhenAsync(async (e,c) =>await isDivorcee(e.Event.EventOwener.MarriageStatusLookupId), () =>
+            WhenAsync(async (e, c) => await isDivorcee(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
                 // RuleFor(e => e.Event.EventSupportingDocuments)
                 // .NotNull()
                 // .NotEmpty()
                 // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.Event.EventOwener.Id, "husband")).WithMessage("divorce paper document should be attached if eventOwner(Groom) is a divorcee");
             });
-            WhenAsync(async (e,c) => await isWidowed(e.Event.EventOwener.MarriageStatusLookupId), () =>
+            WhenAsync(async (e, c) => await isWidowed(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
                 // RuleFor(e => e.Event.EventSupportingDocuments)
                 // .NotNull()
                 // .NotEmpty()
                 // .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
             });
-            WhenAsync(async (e,c) => await isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
+            WhenAsync(async (e, c) => await isWidowed(e.BrideInfo.MarriageStatusLookupId), () =>
            {
 
 
-            //    RuleFor(e => e.Event.EventSupportingDocuments)
-            //    .NotNull()
-            //    .NotEmpty()
-            //    .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a widow");
+               //    RuleFor(e => e.Event.EventSupportingDocuments)
+               //    .NotNull()
+               //    .NotEmpty()
+               //    .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a widow");
            });
-            WhenAsync(async (e,c) =>!( await isCivilMarriage(e.MarriageTypeId)), () =>
+            WhenAsync(async (e, c) => !(await isCivilMarriage(e.MarriageTypeId)), () =>
             {
                 RuleFor(e => e.ApplicationId)
                 .Must(id => id == null).WithMessage("MarriageApplicationId must be null if marriage type is not civil marriage");
             });
-            WhenAsync(async (e,c) => await isCivilMarriage(e.MarriageTypeId), () =>
+            WhenAsync(async (e, c) => await isCivilMarriage(e.MarriageTypeId), () =>
             {
                 RuleFor(e => e.ApplicationId)
                 .NotNull().WithMessage("marriage application id is required for 'civil' marriage type")
@@ -190,7 +191,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 .MustAsync(async (model, eventRegDateEt, CancellationToken) => await Be15DaysAfterMarriageApplicationDateAsync(eventRegDateEt, model))
                 .WithMessage("there should be atleast 15 day gap between marriage application date and marriage registered date");
             });
-            WhenAsync(async(e,c) => !await isReligionMarriage(e.MarriageTypeId), () =>
+            WhenAsync(async (e, c) => !await isReligionMarriage(e.MarriageTypeId), () =>
           {
               RuleFor(e => e.BrideInfo.Id)
               .Must(BeUnmarried).WithMessage("Bride cannot be mairried : \n polygammy is prohibited for civil and cultural marriage");
@@ -377,7 +378,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
         private async Task<bool> isCivilMarriage(Guid marriageTypeId)
         {
-            var marriageType =await  _lookupRepo.GetLookupById(marriageTypeId);
+            var marriageType = await _lookupRepo.GetLookupById(marriageTypeId);
             return marriageType == null ||
              marriageType.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].or!.ToLower()
              || marriageType.Value.Value<string>("am")?.ToLower() == EnumDictionary.marriageTypeDict[MarriageType.Civil].am!.ToLower();
@@ -443,7 +444,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].or!.ToLower();
         }
 
-        private bool BeAboveTheAgeLimit(string birthDate, string eventDate, bool isBride)
+        private bool BeAboveTheAgeLimit(string birthDate, string eventDate, int? supportingDocCount, bool isBride)
         {
             DateTime birthDateConverted = new CustomDateConverter(birthDate).gorgorianDate;
             DateTime eventDateConverted = new CustomDateConverter(eventDate).gorgorianDate;
@@ -465,8 +466,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             if (!int.TryParse(ageLimit, out int result))
             {
                 throw new InvalidCastException("invalid marriage minimum age limit setting ");
+
             }
-            return eventDateConverted.Year - birthDateConverted.Year >= int.Parse(ageLimit);
+            var meetMinAgeLimit = eventDateConverted.Year - birthDateConverted.Year >= int.Parse(ageLimit);
+
+            return meetMinAgeLimit ||(supportingDocCount != null && supportingDocCount > 0
+            ) ;
+
 
         }
 

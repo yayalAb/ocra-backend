@@ -32,6 +32,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await base.GetAsync(id);
         }
+        public async Task Import(ICollection<Lookup> lookups, CancellationToken cancellationToken)
+        {
+            await dbContext.Lookups.AddRangeAsync(lookups, cancellationToken);
+        }
 
         public Task<Lookup> GetLookupByKey(string key)
         {

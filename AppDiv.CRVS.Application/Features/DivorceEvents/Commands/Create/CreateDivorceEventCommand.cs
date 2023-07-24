@@ -10,6 +10,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
     // Customer create command with CustomerResponse
     public record CreateDivorceEventCommand : IRequest<CreateDivorceEventCommandResponse>
     {
+        public Guid? Id {get; set;}
         public virtual DivorcePartnersInfoDTO DivorcedWife { get; set; }
         public string? WifeBirthCertificateId { get; set; }
         public string? HusbandBirthCertificate { get; set; }
@@ -19,6 +20,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         public virtual AddCourtCaseRequest CourtCase { get; set; }
         public int? NumberOfChildren { get; set; }
         public AddEventForDivorceRequest Event { get; set; }
+        public DateTime? CreatedAt {get; set; }
+        public Guid? CreatedBy {get; set; }
 
     }
 }

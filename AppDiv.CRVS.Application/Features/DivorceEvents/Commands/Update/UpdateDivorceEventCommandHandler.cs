@@ -82,7 +82,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             //     request.Event.PaymentExamption.SupportingDocuments = null;
                             // }
                             //////
-
+                            request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             divorceEvent.Event.EventType = "Divorce";
                             //   await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent,true,cancellationToken);

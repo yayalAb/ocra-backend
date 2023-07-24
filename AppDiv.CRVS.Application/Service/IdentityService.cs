@@ -269,7 +269,7 @@ namespace AppDiv.CRVS.Application.Service
             existingUser.PreferedLanguage = user.PreferedLanguage;
             existingUser.AddressId = user.AddressId;
             //if the user was locked and status is updated to true
-            if (user.Status && existingUser.LockoutEnd > DateTime.Now && !existingUser.Status && existingUser.LockoutEnabled)
+            if (user.Status && existingUser.LockoutEnd > DateTime.Now && existingUser.LockoutEnabled)
             {
                 existingUser.LockoutEnd = DateTime.Now;
             }
@@ -457,6 +457,11 @@ namespace AppDiv.CRVS.Application.Service
         {
             return await _userManager.Users
                                 .AnyAsync(u => u.PhoneNumber == phoneNumber);
+        }
+
+        public async Task UpdateAsync(ApplicationUser user)
+        {
+            await _userManager.UpdateAsync(user);
         }
 
     }
