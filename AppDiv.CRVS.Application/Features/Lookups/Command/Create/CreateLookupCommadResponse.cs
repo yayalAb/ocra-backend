@@ -14,6 +14,6 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Create
         {
 
         }
-        //  public CustomerResponseDTO Customer { get; set; }  
+        public Guid Id { get; set; }  
     }
 }
