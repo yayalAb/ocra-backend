@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Features.Fingerprint.commands;
 using AppDiv.CRVS.Application.Features.Fingerprint.commands.Create;
+using AppDiv.CRVS.Application.Features.Fingerprint.commands.ManageApikey;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,18 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpPost("Verify")]
         public async Task<ActionResult> Verify([FromBody] VerifayCommands command, CancellationToken token)
+        {
+            var result = await _mediator.Send(command, token);
+            return Ok(result);
+        }
+        [HttpPost("RefrashToken")]
+        public async Task<ActionResult> Refrash([FromBody] RefrashApiToken command, CancellationToken token)
+        {
+            var result = await _mediator.Send(command, token);
+            return Ok(result);
+        }
+        [HttpPost("Update")]
+        public async Task<ActionResult> Update([FromBody] UpdateFingerprintCommands command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
             return Ok(result);

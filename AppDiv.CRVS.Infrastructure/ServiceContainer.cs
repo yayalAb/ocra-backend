@@ -124,7 +124,7 @@ namespace AppDiv.CRVS.Infrastructure
                         CountersAggregateInterval = TimeSpan.FromSeconds(5),//TODO: option config/
                         PrepareSchemaIfNecessary = true,
                         DashboardJobListLimit = 50000,
-      
+
                     }
                 ))
             );
@@ -185,7 +185,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IPlanRepository, PlanRepository>();
             services.AddTransient<IReportRepostory, ReportRepostory>();
             services.AddTransient<IReportStoreRepostory, ReportStoreRepostory>();
-
+            services.AddTransient<IReportStoreRepostory, ReportStoreRepostory>();
+            services.AddTransient<IFingerprintApiKeyRepostory, FingerprintApiKeyRepostory>();
 
 
             services.AddScoped<CRVSDbContextInitializer>();
@@ -225,7 +226,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IVerficationRequestRepository, VerficationRequestRepository>();
             services.AddScoped<IWorkHistoryRepository, WorkHistoryRepository>();
             services.AddScoped<ITokenValidatorService, TokenValidatorService>();
-            services.AddScoped<IBackgroundJobs , BackgroundJobs>();
+            services.AddScoped<IBackgroundJobs, BackgroundJobs>();
 
 
 

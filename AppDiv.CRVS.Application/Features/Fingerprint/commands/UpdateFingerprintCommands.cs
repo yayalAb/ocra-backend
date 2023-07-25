@@ -7,10 +7,10 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace AppDiv.CRVS.Application.Features.Fingerprint.commands.Create
+namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
 {
 
-    public class CreateFingerprint : IRequest<object>
+    public class UpdateFingerprintCommands : IRequest<object>
     {
         public string clientKey { get; set; }
         public string registrationID
@@ -22,27 +22,23 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands.Create
 
 
         // Customer delete command handler with string response as output
-        public class CreateFingerprintCommmandHandler : IRequestHandler<CreateFingerprint, object>
+        public class UpdateFingerprintCommandsHandler : IRequestHandler<UpdateFingerprintCommands, object>
         {
             private readonly IRequestApiService _apiRequestService;
             private readonly IPersonalInfoRepository _PersonRepo;
-            public CreateFingerprintCommmandHandler(IRequestApiService apiRequestService, IPersonalInfoRepository PersonRepo)
+            public UpdateFingerprintCommandsHandler(IRequestApiService apiRequestService, IPersonalInfoRepository PersonRepo)
             {
                 _apiRequestService = apiRequestService;
                 _PersonRepo = PersonRepo;
             }
 
-            public async Task<object> Handle(CreateFingerprint request, CancellationToken cancellationToken)
+            public async Task<object> Handle(UpdateFingerprintCommands request, CancellationToken cancellationToken)
             {
                 FingerPrintResponseDto ApiResponse;
                 IdentifyFingerDuplicationDto IdentifayedUser;
                 try
                 {
-                    var Create = new FingerPrintCreateRequest
-                    {
-
-                    };
-                    var responseBody = await _apiRequestService.post("Register", request);
+                    var responseBody = await _apiRequestService.post("Update", request);
                     ApiResponse = JsonSerializer.Deserialize<FingerPrintResponseDto>(responseBody);
                     if (ApiResponse.operationResult == "MATCH_FOUND")
                     {
@@ -85,7 +81,6 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands.Create
                         return IdentifayedUser;
                     }
                     return ApiResponse;
-
                 }
                 catch (Exception exp)
                 {

@@ -16,8 +16,6 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
         public string clientKey { get; set; }
         public BiometricImages? images { get; set; }
 
-
-
         // Customer delete command handler with string response as output
         public class IdentifayCommandCommmandHandler : IRequestHandler<IdentifayCommand, IdentifayFingerDto>
         {

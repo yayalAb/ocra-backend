@@ -71,15 +71,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<OnlineUser> OnlineUsers { get; set; }
         public DbSet<MyReports> MyReports { get; set; }
         public DbSet<ReportStore> ReportStores { get; set; }
-
-
-
-
-
-
-
-
-
+        public DbSet<FingerprintApiKey> FingerprintApiKeys { get; set; }
         public CRVSDbContext(DbContextOptions<CRVSDbContext> options, IUserResolverService userResolverService) : base(options)
         {
             this.ChangeTracker.LazyLoadingEnabled = false;
