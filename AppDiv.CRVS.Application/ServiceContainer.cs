@@ -34,6 +34,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IReturnBirthCertificate, ReturnBirthCertificate>();
             services.AddScoped<IReturnMarriageCertificate, ReturnMarriageCertificate>();
             services.AddScoped<IReturnDivorceCertificate, ReturnDivorceCertificate>();
+            services.AddScoped<IRequestApiService, RequestApiService>();
 
             services.AddScoped<IReturnAdoptionArchive, ReturnAdoptionArchive>();
             services.AddScoped<IReturnDeathArchive, ReturnDeathArchive>();
@@ -48,7 +49,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IWorkHistoryTracker, WorkHistoryTracker>();
             services.AddScoped<IAuditLogService, AuditLogService>();
             services.AddScoped<HelperService>();
-            
+
 
 
             return services;

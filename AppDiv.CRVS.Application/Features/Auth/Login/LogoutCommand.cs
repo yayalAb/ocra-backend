@@ -1,25 +1,10 @@
 using AppDiv.CRVS.Application.Exceptions;
-using AppDiv.CRVS.Application.Contracts.DTOs;
 using MediatR;
-using AppDiv.CRVS.Application.Interfaces;
-using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Domain.Repositories;
-using AppDiv.CRVS.Utility.Contracts;
-using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using AppDiv.CRVS.Application.Common;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Text;
 using Microsoft.Extensions.Primitives;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
