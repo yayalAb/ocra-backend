@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<Lookup?> GetLookupById(Guid id);
         Task InitializeLookupCouch();
         Task Import(ICollection<Lookup> lookups, CancellationToken cancellationToken);
+         Task<(Guid Id, string _Id)> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
 
