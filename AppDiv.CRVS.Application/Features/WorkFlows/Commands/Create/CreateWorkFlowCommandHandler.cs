@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Create
                     workflo.HasPayment = request.workflow.HasPayment;
                     workflo.PaymentStep = request.workflow.PaymentStep;
                     workflo.Steps = CustomMapper.Mapper.Map<ICollection<Step>>(request.workflow.Steps);
-                    await _workflowRepository.UpdateAsync(workflo, x => x.Id);
+                    _workflowRepository.Update(workflo);
                 }
                 else
                 {

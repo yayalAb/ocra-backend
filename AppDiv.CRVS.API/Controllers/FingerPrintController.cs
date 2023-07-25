@@ -49,7 +49,11 @@ namespace AppDiv.CRVS.API.Controllers
             var result = await _mediator.Send(command, token);
             return Ok(result);
         }
-
-
+        [HttpPost("Update")]
+        public async Task<ActionResult> Update([FromBody] UpdateFingerprintCommands command, CancellationToken token)
+        {
+            var result = await _mediator.Send(command, token);
+            return Ok(result);
+        }
     }
 }

@@ -47,7 +47,5 @@ namespace AppDiv.CRVS.Application.Service
             return responseBody;
         }
 
-
-
     }
 }
