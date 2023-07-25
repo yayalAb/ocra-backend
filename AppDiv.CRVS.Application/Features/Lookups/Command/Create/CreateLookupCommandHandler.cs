@@ -58,7 +58,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Create
                 // await _lookupCouchRepository.InsertLookupAsync(lookup);
 
                 var result = await _lookupRepository.SaveChangesAsync(cancellationToken);
-
+                CreateLookupCommadResponse.Id = lookup.Id;
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
                 // CreateLookupCommadResponse.Customer = customerResponse;          
             }

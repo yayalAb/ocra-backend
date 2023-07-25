@@ -53,8 +53,8 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
                 };
                 //
                 await _AddressRepository.InsertAsync(Address, cancellationToken);
-                var result = await _AddressRepository.SaveChangesAsync(cancellationToken);
-
+                await _AddressRepository.SaveChangesAsync(cancellationToken);
+                CreateAddressCommadResponse.Id = Address.Id;
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
                 // CreateLookupCommadResponse.Customer = customerResponse;          
             }

@@ -14,6 +14,6 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create
         {
 
         }
-        //  public CustomerResponseDTO Customer { get; set; }  
+        public Guid Id { get; set; }  
     }
 }
