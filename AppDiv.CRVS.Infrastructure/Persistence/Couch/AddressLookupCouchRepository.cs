@@ -29,7 +29,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
             var newCountry = new CountryCouch
             {
-                Id = (Guid)address.Id,
+                Id2 = (Guid)address.Id,
                 NameAm = address.AddressName?.Value<string>("am"),
                 NameOr = address.AddressName?.Value<string>("or"),
                 Status = address.Status,
@@ -43,7 +43,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
             {
                 var newAddress = new AddressCouch
                 {
-                    Id = address.Id,
+                    Id2= address.Id,
                     NameStr = address.AddressNameStr,
                     AdminLevel = address.AdminLevel,
                     AdminTypeAm = address.AdminTypeLookup == null ? null : address.AdminTypeLookup.Value.Value<string>("am"),
@@ -70,14 +70,14 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
             }
             var parentAddress = _couchContext.AddressCouches
-                            .Where(a => a.Id == address.ParentAddressId)
+                            .Where(a => a.Id2 == address.ParentAddressId)
                             .FirstOrDefault();
             // if parent is not registered as parent ie. first child registration
             if (parentAddress == null)
             {
                 var newParentWithChild = new AddressCouch
                 {
-                    Id = address.ParentAddressId,
+                    Id2 = address.ParentAddressId,
                     NameStr = address.AddressNameStr,
                     AdminLevel = address.AdminLevel,
                     AdminTypeAm = address.AdminTypeLookup == null ? null : address.AdminTypeLookup.Value.Value<string>("am"),
@@ -168,7 +168,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
         var countries = addresses.Where(a => a.AdminLevel == 1)
                                 .Select(a => new CountryCouch
                                 {
-                                    Id = a.Id,
+                                    Id2 = a.Id,
                                     NameAm = a.AddressName == null ? null : a.AddressName.Value<string>("am"),
                                     NameOr = a.AddressName == null ? null : a.AddressName.Value<string>("or"),
                                     Status = a.Status,
@@ -179,7 +179,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
         var selected = addresses.GroupBy(a => new { parentId = a.ParentAddressId, parentAddressName = a.ParentAddress.AddressNameStr }).Select(g => new AddressCouch
         {
-            Id = g.Key.parentId,
+            Id2 = g.Key.parentId,
             NameStr = g.Key.parentAddressName,
             DeletedStatus = false,
             addresses = g.Select(ca => new SingleAddressCouch
@@ -204,10 +204,10 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
     {
         if (address.AdminLevel == 1)
         {
-            var existing = _couchContext.Countries.Where(c => c.Id == address.Id).FirstOrDefault();
+            var existing = _couchContext.Countries.Where(c => c.Id2 == address.Id).FirstOrDefault();
             if (existing != null)
             {
-                existing.Id = address.Id;
+                existing.Id2 = address.Id;
                 existing.NameAm = address.AddressName?.Value<string>("am");
                 existing.NameOr = address.AddressName?.Value<string>("or");
                 existing.Status = address.Status;
@@ -220,7 +220,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
         {
             if (address.AdminLevel != 5)
             {
-                var existingAddressAsParent = _couchContext.AddressCouches.Where(a => a.Id == address.Id).FirstOrDefault();
+                var existingAddressAsParent = _couchContext.AddressCouches.Where(a => a.Id2 == address.Id).FirstOrDefault();
                 if (existingAddressAsParent != null)
                 {
                     existingAddressAsParent.ParentAddressId = address?.ParentAddressId ?? Guid.Empty;
@@ -232,7 +232,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
                     await _couchContext.AddressCouches.AddOrUpdateAsync(existingAddressAsParent);
                 }
             }
-            var existingParent = _couchContext.AddressCouches.Where(a => a.Id == address.ParentAddressId).FirstOrDefault();
+            var existingParent = _couchContext.AddressCouches.Where(a => a.Id2 == address.ParentAddressId).FirstOrDefault();
             if (existingParent != null)
             {
                 var child = existingParent.addresses.Where(a => a.Id == address.Id).FirstOrDefault();
@@ -261,7 +261,7 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
         if (address.AdminLevel == 1)
         {
-            var existing = _couchContext.Countries.Where(c => c.Id == address.Id).FirstOrDefault();
+            var existing = _couchContext.Countries.Where(c => c.Id2 == address.Id).FirstOrDefault();
             _logger.LogCritical($"removing{existing}");
             if (existing != null)
             {
@@ -274,14 +274,14 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
             if (address.AdminLevel != 5)
             {
-                var existing = _couchContext.AddressCouches.Where(l => l.Id == address.Id).FirstOrDefault();
+                var existing = _couchContext.AddressCouches.Where(l => l.Id2 == address.Id).FirstOrDefault();
                 if (existing != null)
                 {
                     existing.DeletedStatus = true;
                     await _couchContext.AddressCouches.AddOrUpdateAsync(existing);
                 }
             }
-            var existingParent = _couchContext.AddressCouches.Where(a => a.Id == address.ParentAddressId).FirstOrDefault();
+            var existingParent = _couchContext.AddressCouches.Where(a => a.Id2 == address.ParentAddressId).FirstOrDefault();
             if (existingParent != null)
             {
                 var existingChild = existingParent.addresses.Where(a => a.Id == address.Id).FirstOrDefault();
