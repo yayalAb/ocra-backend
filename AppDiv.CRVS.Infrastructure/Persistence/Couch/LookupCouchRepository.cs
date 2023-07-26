@@ -13,11 +13,11 @@ public class LookupCouchRepository : ILookupCouchRepository
     {
         _couchContext = couchContext;
     }
-    public async Task<bool> InsertLookupAsync(LookupCouchDTO lookup)
+    public async Task<(Guid Id , string _Id)> InsertLookupAsync(LookupCouchDTO lookup)
     {
         var newLookup = new LookupCouch
         {
-            Id = lookup.Id,
+            Id2 = lookup.Id,
             Key = lookup.Key,
             ValueAm = lookup.Value?.Value<string>("am"),
             ValueOr = lookup.Value?.Value<string>("or"),
@@ -34,14 +34,14 @@ public class LookupCouchRepository : ILookupCouchRepository
 
             throw;
         }
-        return true;
+        return (Id :newLookup.Id2, _Id: newLookup.Id);
     }
     public async Task<bool> BulkInsertAsync(List<Lookup> lookups)
     {
         var res = await _couchContext.Lookups.AddOrUpdateRangeAsync(lookups.Select(
          l => new LookupCouch
          {
-             Id = l.Id,
+             Id2 = l.Id,
              Key = l.Key,
              ValueAm = l.Value.Value<string>("am"),
              ValueOr = l.Value.Value<string>("or"),
@@ -52,11 +52,11 @@ public class LookupCouchRepository : ILookupCouchRepository
     }
     public async Task<bool> UpdateLookupAsync(LookupCouchDTO lookup)
     {
-        var existing = _couchContext.Lookups.Where(l => l.Id == lookup.Id).FirstOrDefault();
+        var existing = _couchContext.Lookups.Where(l => l.Id2 == lookup.Id).FirstOrDefault();
         if (existing != null)
         {
 
-            existing.Id = lookup.Id;
+            existing.Id2 = lookup.Id;
             existing.Key = lookup.Key;
             existing.ValueAm = lookup.Value?.Value<string>("am");
             existing.ValueOr = lookup.Value?.Value<string>("or");
@@ -69,7 +69,7 @@ public class LookupCouchRepository : ILookupCouchRepository
     }
     public async Task<bool> RemoveLookupAsync(LookupCouchDTO lookup)
     {
-        var existing = _couchContext.Lookups.Where(l => l.Id == lookup.Id).FirstOrDefault();
+        var existing = _couchContext.Lookups.Where(l => l.Id2 == lookup.Id).FirstOrDefault();
         if (existing != null)
         {
             existing.status = false;

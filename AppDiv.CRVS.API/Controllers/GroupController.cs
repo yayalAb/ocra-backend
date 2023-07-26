@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Features.Groups.Commands.Create;
 using AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById;
 using AppDiv.CRVS.Application.Features.Groups.Commands.Delete;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Features.Groups.Query.GetDropDownAllGroups;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -39,6 +40,13 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<List<DropDownDto>> GetDropdown()
         {
             return await _mediator.Send(new GetDropDownGroups());
+        }
+
+        [HttpGet("AllGroups")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<DropDownDto>> GetDropdownAllGroups()
+        {
+            return await _mediator.Send(new GetDropDownAllGroups());
         }
 
         [HttpPost("Create")]

@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public bool IsExampted { get; set; } = false;
         public ICollection<AddSupportingDocumentRequest>? EventSupportingDocuments { get; set; }
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
-        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public DateTime? CreatedAt { get; set; }
         public Guid? CreatedBy { get; set; }
     }
 }

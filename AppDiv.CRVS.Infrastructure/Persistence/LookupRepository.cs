@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         // {
         //     return dbContext.Lookups.Where(p => p.Id == id).Any();
         // }
-        public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+        public virtual async Task< (Guid Id , string _Id)> SaveChangesAsync(CancellationToken cancellationToken)
         {
 
             var entries = dbContext.ChangeTracker
@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }).ToList();
 
             bool saveRes = await base.SaveChangesAsync(cancellationToken);
-
+            (Guid Id , string _Id) couchResponse =(Id:Guid.Empty , _Id: string.Empty ) ;
             if (saveRes)
             {
                 foreach (var entry in lookupEntries)
@@ -74,7 +74,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     switch (entry.State)
                     {
                         case EntityState.Added:
-                            await lookupCouchRepo.InsertLookupAsync(entry.Lookup);
+                          couchResponse =  await lookupCouchRepo.InsertLookupAsync(entry.Lookup);
                             break;
                         case EntityState.Modified:
                             await lookupCouchRepo.UpdateLookupAsync(entry.Lookup);
@@ -88,7 +88,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 }
 
             }
-            return saveRes;
+            return couchResponse;
 
 
         }

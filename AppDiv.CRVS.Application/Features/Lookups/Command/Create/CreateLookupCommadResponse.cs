@@ -14,6 +14,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Create
         {
 
         }
-        public Guid Id { get; set; }  
+        public Guid Id { get; set; } 
+        public string _Id {get;set;} 
     }
 }

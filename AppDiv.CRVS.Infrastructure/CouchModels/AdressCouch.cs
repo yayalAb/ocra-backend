@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using CouchDB.Driver.Types;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -5,7 +6,9 @@ using Newtonsoft.Json.Linq;
 namespace AppDiv.CRVS.Infrastructure.CouchModels;
 public class AddressCouch : CouchDocument
 {
-    public Guid? Id { get; set; }
+    [DataMember]
+    [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+    public Guid? Id2 { get; set; }
 
     public string? NameAm
     {
@@ -35,5 +38,5 @@ public class AddressCouch : CouchDocument
     public bool? Status { get; set; }
     public bool DeletedStatus { get; set; }
 
-    public List<SingleAddressCouch> addresses { get; set; } 
+    public List<SingleAddressCouch> addresses { get; set; }
 }
