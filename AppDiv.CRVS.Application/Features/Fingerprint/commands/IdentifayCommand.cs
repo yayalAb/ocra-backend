@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Domain.Models;
 using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.Fingerprint.commands

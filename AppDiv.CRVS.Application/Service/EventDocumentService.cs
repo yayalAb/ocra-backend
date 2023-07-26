@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
+using AppDiv.CRVS.Domain.Models;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -110,7 +111,7 @@ namespace AppDiv.CRVS.Application.Service
             return true;
         }
 
-        public async Task<bool> SaveSupportingDocumentsAsync(Event savedEvent, List<AddSupportingDocumentRequest>? eventSupportingDocs, List<AddSupportingDocumentRequest>? exapmtionSupportingDocs, Guid? paymentExapmtionId, CancellationToken cancellationToken)
+        public async Task<(Dictionary<string , string> userPhotos, Dictionary<string , BiometricImages? >fingerPrints)> SaveSupportingDocumentsAsync(Event savedEvent, List<AddSupportingDocumentRequest>? eventSupportingDocs, List<AddSupportingDocumentRequest>? exapmtionSupportingDocs, Guid? paymentExapmtionId, CancellationToken cancellationToken)
         {
             var personIds = new PersonIdObj
             {
@@ -148,7 +149,7 @@ namespace AppDiv.CRVS.Application.Service
             savePhotos(separatedDocs.userPhotos);
             saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, savedEvent.EventType);
 
-            return true;
+            return (userPhotos: separatedDocs.userPhotos, fingerPrints: separatedDocs.fingerPrints);
         }
 
         public async Task<(IEnumerable<SupportingDocument> supportingDocs, IEnumerable<SupportingDocument> examptionDocs)> createSupportingDocumentsAsync(IEnumerable<AddSupportingDocumentRequest>? supportingDocs, IEnumerable<AddSupportingDocumentRequest>? examptionDocs, Guid EventId, Guid? examptionId, CancellationToken cancellationToken)
@@ -211,35 +212,79 @@ namespace AppDiv.CRVS.Application.Service
             });
 
         }
-        public (Dictionary<string, string> userPhotos, IEnumerable<SupportingDocument> otherDocs) extractSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs)
+        public (Dictionary<string, string> userPhotos,Dictionary<string, BiometricImages?> fingerPrints, IEnumerable<SupportingDocument> otherDocs) extractSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs)
         {
             Dictionary<string, string> userPhotos = new Dictionary<string, string>();
-            supportingDocs.Where(d => d.Type.ToLower() == "webcam").ToList().ForEach(doc =>
+            Dictionary<string, BiometricImages?> fingerPrints = new Dictionary<string, BiometricImages?>();
+
+            supportingDocs.Where(d => d.Type.ToLower() == "webcam" || d.Type.ToLower() == "fingerprint").ToList().ForEach(doc =>
             {
 
-                if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
+                if (idObj.WifeId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
                 {
-                    userPhotos.Add(idObj.WifeId?.ToString(), doc.base64String);
+                    if (doc.Type.ToLower() == "webcam")
+                    {
+                        userPhotos.Add(idObj.WifeId.ToString()!, doc.base64String);
+                    }
+                    else
+                    {
+                        fingerPrints.Add(idObj.WifeId?.ToString()!, doc.FingerPrints);
+                    }
+
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Husband)!.ToLower())
+                else if (idObj.HusbandId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Husband)!.ToLower())
                 {
-                    userPhotos.Add(idObj.HusbandId.ToString(), doc.base64String);
+                    if (doc.Type.ToLower() == "webcam")
+                    {
+                        userPhotos.Add(idObj.HusbandId.ToString()!, doc.base64String);
+
+                    }
+                    else
+                    {
+                        fingerPrints.Add(idObj.HusbandId.ToString()!, doc.FingerPrints);
+
+                    }
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Registrar)!.ToLower())
+                else if (idObj.RegistrarId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Registrar)!.ToLower())
                 {
-                    userPhotos.Add(idObj.RegistrarId.ToString(), doc.base64String);
+                    if (doc.Type.ToLower() == "webcam")
+                    {
+                        userPhotos.Add(idObj.RegistrarId.ToString()!, doc.base64String);
+
+                    }
+                    else
+                    {
+                        fingerPrints.Add(idObj.RegistrarId.ToString()!, doc.FingerPrints);
+
+                    }
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
+                else if (idObj.ChildId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
                 {
-                    userPhotos.Add(idObj.ChildId.ToString(), doc.base64String);
+                    if (doc.Type.ToLower() == "webcam")
+                    {
+                        userPhotos.Add(idObj.ChildId.ToString()!, doc.base64String);
+                    }
+                    else
+                    {
+                        fingerPrints.Add(idObj.ChildId.ToString()!, doc.FingerPrints);
+
+                    }
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Deceased)!.ToLower())
+                else if (idObj.DeceasedId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Deceased)!.ToLower())
                 {
-                    userPhotos.Add(idObj.DeceasedId.ToString(), doc.base64String);
+                    if (doc.Type.ToLower() == "webcam")
+                    {
+                        userPhotos.Add(idObj.DeceasedId.ToString()!, doc.base64String);
+                    }
+                    else
+                    {
+                        fingerPrints.Add(idObj.DeceasedId.ToString()!, doc.FingerPrints);
+
+                    }
                     supportingDocs.ToList().Remove(doc);
                 }
             });
@@ -250,19 +295,27 @@ namespace AppDiv.CRVS.Application.Service
                 {
 
                     var witnessDoc = supportingDocs
-                                .Where(doc => doc.Type.ToLower() == "webcam"
+                                .Where(doc => (doc.Type.ToLower() == "webcam" || doc.Type.ToLower() == "fingerprint")
                                 && doc.Label.ToLower() == $"{Enum.GetName<DocumentLabel>(DocumentLabel.Witness)?.ToLower()}{i}")
                                 .FirstOrDefault();
 
                     if (witnessDoc != null)
                     {
                         var witnessId = idObj.WitnessIds.ToList()[i].ToString();
-                        userPhotos.Add(witnessId, witnessDoc.base64String);
+                        if (witnessDoc.Type.ToLower() == "webcam")
+                        {
+                            userPhotos.Add(witnessId, witnessDoc.base64String);
+                        }
+                        else
+                        {
+                            fingerPrints.Add(witnessId, witnessDoc.FingerPrints);
+
+                        }
                         supportingDocs.ToList().Remove(witnessDoc);
                     }
                 }
             }
-            return (userPhotos: userPhotos, otherDocs: supportingDocs);
+            return (userPhotos: userPhotos,fingerPrints: fingerPrints, otherDocs: supportingDocs);
         }
         public (Dictionary<string, string> userPhotos, IEnumerable<SupportingDocument> otherDocs) ExtractOldSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs)
         {
@@ -270,29 +323,29 @@ namespace AppDiv.CRVS.Application.Service
             supportingDocs.Where(d => d.Type.ToLower() == "webcam").ToList().ForEach(doc =>
             {
 
-                if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
+                if (idObj.WifeId !=null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
                 {
-                    userPhotos.Add(idObj.WifeId?.ToString(), doc.Id.ToString());
+                    userPhotos.Add(idObj.WifeId.ToString()!, doc.Id.ToString());
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Husband)!.ToLower())
+                else if (idObj.HusbandId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Husband)!.ToLower())
                 {
-                    userPhotos.Add(idObj.HusbandId.ToString(), doc.Id.ToString());
+                    userPhotos.Add(idObj.HusbandId.ToString()!, doc.Id.ToString());
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Registrar)!.ToLower())
+                else if (idObj.RegistrarId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Registrar)!.ToLower())
                 {
-                    userPhotos.Add(idObj.RegistrarId.ToString(), doc.Id.ToString());
+                    userPhotos.Add(idObj.RegistrarId.ToString()!, doc.Id.ToString());
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
+                else if (idObj.ChildId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
                 {
-                    userPhotos.Add(idObj.ChildId.ToString(), doc.Id.ToString());
+                    userPhotos.Add(idObj.ChildId.ToString()!, doc.Id.ToString());
                     supportingDocs.ToList().Remove(doc);
                 }
-                else if (doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Deceased)!.ToLower())
+                else if (idObj.DeceasedId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Deceased)!.ToLower())
                 {
-                    userPhotos.Add(idObj.DeceasedId.ToString(), doc.Id.ToString());
+                    userPhotos.Add(idObj.DeceasedId.ToString()!, doc.Id.ToString());
                     supportingDocs.ToList().Remove(doc);
                 }
             });

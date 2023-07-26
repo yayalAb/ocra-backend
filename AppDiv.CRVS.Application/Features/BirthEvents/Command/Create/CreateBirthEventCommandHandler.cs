@@ -77,7 +77,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };
                             // Separate profile photos from supporting documents.
-                            var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
+                            var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
                             // Save the profile photos.
                             _eventDocumentService.savePhotos(userPhotos);
                             // Save Other supporting documents and payment exemption documents.

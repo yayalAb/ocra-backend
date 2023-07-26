@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
 
                             // Save the supporting documents and payment exemption documents.
-                            var (userPhotos, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
+                            var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
                             if (!deathEvent.Event.IsExampted)

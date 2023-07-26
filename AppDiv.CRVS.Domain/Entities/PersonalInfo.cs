@@ -118,7 +118,7 @@ namespace AppDiv.CRVS.Domain.Entities
             {
                 return FirstNameLang + " " + MiddleNameLang + " " + LastNameLang;
             }
-            else 
+            else
             {
                 return new
                 {
@@ -161,6 +161,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<CertificateHistory> CertificateHistoryCivilRegOfficer { get; set; }
 
         public virtual ICollection<Request> CivilRegOfficerRequests { get; set; }
+        public virtual ICollection<PersonDuplicate> PersonDuplicatesNavigation { get; set; }
 
     }
 }
