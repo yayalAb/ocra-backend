@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Domain.Repositories;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
 {
@@ -43,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
             var user = _userRepository.GetAll().Where(x => x.PersonalInfoId == _userResolverService.GetUserPersonalId()).FirstOrDefault();
             if (user == null)
             {
-                throw NotFoundException("User Not Found");
+                throw new NotFoundException("User Not Found");
             }
             var paymentRequestList = _PaymentRequestRepository.GetAll()
             .Include(x => x.Request)
@@ -64,7 +65,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
             await PaginatedList<PaymentRequestListDTO>
                            .CreateAsync(
                                 paymentRequestList
-                                    .OrderByDescending(x =>x.CreatedAt)
+                                    .OrderByDescending(x => x.CreatedAt)
                                     .Select(x => new PaymentRequestListDTO
                                     {
                                         Id = x.Id,
@@ -76,10 +77,6 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }
 
-        private Exception NotFoundException(string v)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

@@ -45,11 +45,9 @@ namespace AppDiv.CRVS.Application.Service
             var jsonData = JsonSerializer.Serialize(request);
             var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
             var response = await _client.PostAsync(Baseurl + url, content);
-            Console.WriteLine("Client Key 1 {0}, token : {1}", clientKey, authorizationToken);
             if (response.StatusCode.ToString() == "Unauthorized")
             {
                 await refrashToken();
-                Console.WriteLine("Client Key 2 {0}, token : {1}", clientKey, authorizationToken);
                 response = await _client.PostAsync(Baseurl + url, content);
             }
             var res = response.EnsureSuccessStatusCode();
@@ -76,7 +74,6 @@ namespace AppDiv.CRVS.Application.Service
                 var json = JsonSerializer.Serialize(request);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
                 var LonginResponse = await httpClient.PostAsync("https://bioplugin.cloudabis.com/api/Authorizations/Token", content);
-                Console.WriteLine("login response : {0}", LonginResponse);
                 LonginResponse.EnsureSuccessStatusCode();
                 var responseBody = await LonginResponse.Content.ReadAsStringAsync();
                 FingerprintApiLoginResponseDto responsData = JsonSerializer.Deserialize<FingerprintApiLoginResponseDto>(responseBody);
@@ -84,18 +81,13 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     clientKey = clientKey1;
                     authorizationToken = responsData.responseData.accessToken;
-                    Console.WriteLine("Client Key test 1 {0}, token : {1}", clientKey, authorizationToken);
                 }
                 UpdateTokenDto passwordpo = Newtonsoft.Json.JsonConvert.DeserializeObject<UpdateTokenDto>(defualtAddress.Value.ToString());
                 passwordpo.token = authorizationToken;
                 string updatedJson = Newtonsoft.Json.JsonConvert.SerializeObject(passwordpo);
                 defualtAddress.Value = JObject.Parse(updatedJson);
-
                 await _settingRepository.UpdateAsync(defualtAddress, x => x.Id);
                 _settingRepository.SaveChanges();
-
-
-
             }
             return "";
         }

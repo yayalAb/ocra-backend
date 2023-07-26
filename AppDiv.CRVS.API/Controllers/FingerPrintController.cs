@@ -43,12 +43,12 @@ namespace AppDiv.CRVS.API.Controllers
             var result = await _mediator.Send(command, token);
             return Ok(result);
         }
-        [HttpPost("RefrashToken")]
-        public async Task<ActionResult> Refrash([FromBody] RefrashApiToken command, CancellationToken token)
-        {
-            var result = await _mediator.Send(command, token);
-            return Ok(result);
-        }
+        // [HttpPost("RefrashToken")]
+        // public async Task<ActionResult> Refrash([FromBody] RefrashApiToken command, CancellationToken token)
+        // {
+        //     var result = await _mediator.Send(command, token);
+        //     return Ok(result);
+        // }
         [HttpPost("Update")]
         public async Task<ActionResult> Update([FromBody] UpdateFingerprintCommands command, CancellationToken token)
         {
