@@ -11,7 +11,6 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
 
     public class VerifayCommands : IRequest<IdentifayFingerDto>
     {
-        public string clientKey { get; set; }
         public string registrationID
         {
             get; set;
@@ -34,7 +33,13 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
                 try
                 {
                     IdentifayFingerDto ApiResponse;
-                    var responseBody = await _apiRequestService.post("Verify", request);
+                    var Create = new FingerPrintApiRequestDto
+                    {
+                        registrationID = request.registrationID,
+                        images = request.images
+
+                    };
+                    var responseBody = await _apiRequestService.post("Verify", Create);
                     ApiResponse = JsonSerializer.Deserialize<IdentifayFingerDto>(responseBody);
                     return ApiResponse;
                 }

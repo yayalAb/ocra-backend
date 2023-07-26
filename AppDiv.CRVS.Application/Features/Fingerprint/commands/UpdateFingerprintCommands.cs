@@ -12,7 +12,6 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
 
     public class UpdateFingerprintCommands : IRequest<object>
     {
-        public string clientKey { get; set; }
         public string registrationID
         {
             get; set;
@@ -38,12 +37,18 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
                 IdentifyFingerDuplicationDto IdentifayedUser;
                 try
                 {
-                    var responseBody = await _apiRequestService.post("Update", request);
+                    var Create = new FingerPrintApiRequestDto
+                    {
+                        registrationID = request.registrationID,
+                        images = request.images
+
+                    };
+                    var responseBody = await _apiRequestService.post("Update", Create);
                     ApiResponse = JsonSerializer.Deserialize<FingerPrintResponseDto>(responseBody);
                     if (ApiResponse.operationResult == "MATCH_FOUND")
                     {
-                        request.registrationID = null;
-                        var IdentfaydUser = await _apiRequestService.post("Identify", request);
+                        Create.registrationID = null;
+                        var IdentfaydUser = await _apiRequestService.post("Identify", Create);
                         IdentifayedUser = JsonSerializer.Deserialize<IdentifyFingerDuplicationDto>(IdentfaydUser);
                         var person = _PersonRepo.GetAll()
                         .Include(x => x.PlaceOfBirthLookup)

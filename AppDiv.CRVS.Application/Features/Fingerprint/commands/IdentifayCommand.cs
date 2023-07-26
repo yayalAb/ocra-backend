@@ -13,7 +13,6 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
 
     public class IdentifayCommand : IRequest<IdentifayFingerDto>
     {
-        public string clientKey { get; set; }
         public BiometricImages? images { get; set; }
 
         // Customer delete command handler with string response as output
@@ -30,7 +29,13 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.commands
                 IdentifayFingerDto ApiResponse;
                 try
                 {
-                    var responseBody = await _apiRequestService.post("Identify", request);
+                    var Create = new FingerPrintApiRequestDto
+                    {
+                        registrationID = null,
+                        images = request.images
+
+                    };
+                    var responseBody = await _apiRequestService.post("Identify", Create);
                     ApiResponse = JsonSerializer.Deserialize<IdentifayFingerDto>(responseBody);
                     return ApiResponse;
 
