@@ -27,7 +27,6 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     public class GetPaymentRateByIdHandler : IRequestHandler<GetPaymentRateByIdQuery, PaymentRateDTO>
     {
         private readonly IPaymentRateRepository _paymentRateRepository;
-
         public GetPaymentRateByIdHandler(IPaymentRateRepository paymentRateRepository)
         {
             _paymentRateRepository = paymentRateRepository;

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Features.Fingerprint.commands;
 using AppDiv.CRVS.Application.Features.Fingerprint.commands.Create;
 using AppDiv.CRVS.Application.Features.Fingerprint.commands.ManageApikey;
+using AppDiv.CRVS.Application.Features.Fingerprint.Query;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -55,5 +56,13 @@ namespace AppDiv.CRVS.API.Controllers
             var result = await _mediator.Send(command, token);
             return Ok(result);
         }
+        [HttpPost("Search")]
+        public async Task<ActionResult> Search([FromBody] SearchByFingerprint command, CancellationToken token)
+        {
+            var result = await _mediator.Send(command, token);
+            return Ok(result);
+        }
+
+
     }
 }

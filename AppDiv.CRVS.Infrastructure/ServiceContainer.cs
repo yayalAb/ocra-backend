@@ -214,9 +214,6 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IMyReportRepository, MyReportRepository>();
             services.AddScoped<IReportStoreRepostory, ReportStoreRepostory>();
 
-
-
-
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<ITransactionService, TransactionService>();
             services.AddScoped<IUpdateEventPaymetnService, UpdateEventPaymetnService>();
