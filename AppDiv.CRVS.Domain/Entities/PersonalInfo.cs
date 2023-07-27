@@ -161,7 +161,9 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<CertificateHistory> CertificateHistoryCivilRegOfficer { get; set; }
 
         public virtual ICollection<Request> CivilRegOfficerRequests { get; set; }
-        public virtual ICollection<PersonDuplicate> PersonDuplicatesNavigation { get; set; }
+        public virtual ICollection<PersonDuplicate> NewPersonDuplicatesNavigation { get; set; }
+        public virtual ICollection<PersonDuplicate> OldPersonDuplicatesNavigation { get; set; }
+
 
     }
 }

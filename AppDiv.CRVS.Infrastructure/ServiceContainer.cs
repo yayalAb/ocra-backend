@@ -227,6 +227,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IWorkHistoryRepository, WorkHistoryRepository>();
             services.AddScoped<ITokenValidatorService, TokenValidatorService>();
             services.AddScoped<IBackgroundJobs, BackgroundJobs>();
+            services.AddScoped<IPersonDuplicateRepository, PersonDuplicateRepository>();
+            services.AddScoped<IEventDuplicateRepository, EventDuplicateRepository>();
 
 
 

@@ -60,6 +60,18 @@ namespace AppDiv.CRVS.Domain.Configuration
             //   .HasForeignKey<PersonalInfo>(m => m.ContactInfoId)
             //   ;
 
+            builder.HasMany(m => m.NewPersonDuplicatesNavigation)
+            .WithOne(m => m.NewPerson)
+            .HasForeignKey(m => m.NewPersonId)
+            .IsRequired(false);
+
+
+            builder.HasMany(m => m.OldPersonDuplicatesNavigation)
+            .WithOne(m => m.OldPerson)
+            .HasForeignKey(m => m.OldPersonId)
+            .IsRequired(false);
+
+
 
         }
     }

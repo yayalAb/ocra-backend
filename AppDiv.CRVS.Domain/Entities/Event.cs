@@ -61,7 +61,9 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get; set;
         }
-        public virtual ICollection<EventDuplicate> EventDuplicatesNavigation {get;set;}
+        public virtual ICollection<EventDuplicate> NewEventDuplicatesNavigation {get;set;}
+        public virtual ICollection<EventDuplicate> OldEventDuplicatesNavigation {get;set;}
+
         [NotMapped]
         public string? _EventDateEt
         {

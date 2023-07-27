@@ -25,6 +25,18 @@ namespace AppDiv.CRVS.Domain.Configurations
             .WithOne(n => n.Event)
             .HasForeignKey<PaymentExamption>(n => n.EventId);
 
+            builder.HasMany(m => m.NewEventDuplicatesNavigation)
+            .WithOne(m => m.NewEvent)
+            .HasForeignKey(m => m.NewEventId)
+            .IsRequired(false);
+
+
+            builder.HasMany(m => m.OldEventDuplicatesNavigation)
+            .WithOne(m => m.OldEvent)
+            .HasForeignKey(m => m.OldEventId)
+            .IsRequired(false);
+
+
         }
     }
 
