@@ -103,14 +103,14 @@ namespace AppDiv.CRVS.Application.Service
             }).WithMessage($"'{propertyName}' Check your supporting documents {string.Join("\n\t", message)}");
         }
 
-        public static IRuleBuilderOptions<T, string?> ValidCertificate<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName)
+        public static IRuleBuilderOptions<T, string?> ValidCertificate<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName, string eventType)
         {
             return ruleBuilder.Must(c =>
             {
                 var valid = int.TryParse(c.Substring(c.Length - 4), out _);
                 if (valid)
                 {
-                    var certfcate = repo.GetAll().Where(x => x.CertificateId == c).FirstOrDefault();
+                    var certfcate = repo.GetAll().Where(x => x.CertificateId == c && x.EventType == eventType).FirstOrDefault();
                     return certfcate == null;
                 }
                 else
