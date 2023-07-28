@@ -89,7 +89,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(birth?.CivilRegOfficer, _dateAndAddressService, _lookupService)),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == birth!.Id)
-                                                    .Where(s => s.Type.ToLower() != "webcam")
                                                     .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
 
 

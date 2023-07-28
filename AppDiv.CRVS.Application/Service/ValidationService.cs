@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Application.Service
                             message.Add("Label is required.");
                             // return false;
                         }
-                        if (d.Type == null || d.Type == "")
+                        if (d.Type == null || d.Type == Guid.Empty)
                         {
                             message.Add("Type is required.");
                             // return false;

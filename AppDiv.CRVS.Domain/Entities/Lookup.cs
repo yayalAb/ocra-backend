@@ -71,6 +71,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<CourtCase> CourtsCaseCourtNavigation { get; set; }
         public virtual ICollection<CertificateHistory> ReasonLookupNavigation { get; set; }
         public virtual ICollection<Transaction> TransactionReasonLookup { get; set; }
+        public virtual ICollection<SupportingDocument> SupportingDocumentTypeNavigation {get;set;}
 
 
 

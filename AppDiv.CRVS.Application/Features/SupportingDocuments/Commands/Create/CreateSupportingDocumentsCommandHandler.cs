@@ -68,10 +68,16 @@ namespace AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create
             }
             return CreateSupportingDocumentsCommandResponse;
         }
-        private Dictionary<string, BiometricImages> mergeBiometricData((Dictionary<string, string> userPhotos, Dictionary<string, BiometricImages> fingerPrints) supportingDocs)
+        private Dictionary<string, BiometricImages> mergeBiometricData((Dictionary<string, string> userPhotos, Dictionary<string, List<BiometricImagesAtt>> fingerPrints) supportingDocs)
         {
-            var BiometricInfo = supportingDocs.fingerPrints;
+            var fingerPrints = supportingDocs.fingerPrints.ToList();
+            Dictionary<string ,BiometricImages >  BiometricInfo = new Dictionary<string, BiometricImages>();
             var userPhotos = supportingDocs.userPhotos.ToList();
+            fingerPrints.ForEach(f => {
+                BiometricInfo.Add(f.Key , new BiometricImages{
+                    fingerprint = f.Value
+                });
+            });
             userPhotos.ForEach(p =>
             {
                 if (BiometricInfo.ContainsKey(p.Key))

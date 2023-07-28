@@ -85,7 +85,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
                                         (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService, _lookupService)),
                 EventSupportingDocuments = _supportingDocument.GetAll()
-                                                .Where(s => s.EventId == death.Id).Where(s => s.Type.ToLower() != "webcam")
+                                                .Where(s => s.EventId == death.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList()
             };
             deathInfo.PaymentExamptionSupportingDocuments = death?.PaymentExamption?.Id == null ? null

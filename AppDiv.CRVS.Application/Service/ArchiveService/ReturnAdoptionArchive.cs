@@ -105,7 +105,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 EventInfo = GetEventInfo(adoption),
                 CivilRegistrarOfficer = GetOfficer(adoption.CivilRegOfficer),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == adoption.Id)
-                                                .Where(s => s.Type.ToLower() != "webcam").ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
+                                                .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
             };
             adoptionInfo.PaymentExamptionSupportingDocuments = adoption?.PaymentExamption?.Id == null ? null
                     : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == adoption.PaymentExamption.Id)
