@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(b => b.Father)
                             .Include(b => b.Mother)
                             .Include(b => b.Event).ThenInclude(e => e.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
-                            .Include(b => b.Event).ThenInclude(e => e.EventSupportingDocuments.Where(s => s.Type.ToLower() != "webcam"))
+                            .Include(b => b.Event).ThenInclude(e => e.EventSupportingDocuments)
                             .Include(b => b.Event).ThenInclude(e => e.EventOwener)
                             .Include(b => b.Event).ThenInclude(e => e.EventRegistrar).ThenInclude(r => r.RegistrarInfo)
                             .FirstOrDefaultAsync(d => d.Id == id);

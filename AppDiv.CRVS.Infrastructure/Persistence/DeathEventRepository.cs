@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return await _dbContext.DeathEvents
                             .Include(d => d.Event).ThenInclude(e => e.EventOwener)
                             .Include(d => d.Event).ThenInclude(e => e.EventRegistrar).ThenInclude(r => r.RegistrarInfo)
-                            .Include(m => m.Event.EventSupportingDocuments.Where(s => s.Type.ToLower() != "webcam"))
+                            .Include(m => m.Event.EventSupportingDocuments)
                             .Include(m => m.Event.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
                             .Include(d => d.DeathNotification)
                             .FirstOrDefaultAsync(d => d.Id == id);

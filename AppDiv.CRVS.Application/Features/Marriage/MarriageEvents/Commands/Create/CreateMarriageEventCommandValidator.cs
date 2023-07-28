@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepo;
         private readonly ISettingRepository _settingRepository;
         private readonly IEventRepository _eventRepo;
+        private readonly Guid? _divorceTypeLookupId;
 
         [Obsolete]
         public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo, ISettingRepository settingRepository, IEventRepository eventRepo)
@@ -34,6 +35,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _addressRepo = addressRepo;
             _settingRepository = settingRepository;
             _eventRepo = eventRepo;
+            _divorceTypeLookupId = _lookupRepo.GetAll()
+                .Where(l => l.ValueStr.ToLower()
+                .Contains(Enum.GetName<SupportingDcoumentType>(SupportingDcoumentType.DivorcePaper)!.ToLower()))
+                .Select(l => l.Id).FirstOrDefault();
 
             // var nonRequiredfieldNames = new List<string> 
             // {
@@ -399,14 +404,16 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 hasRegisteredDivorceCertificate = perosnalInfoId != null
                          && await _divorceEventRepo.GetAllQueryableAsync().Where(e => e.Event.EventOwenerId == perosnalInfoId).AnyAsync();
             }
-            return hasRegisteredDivorceCertificate || supportingDocs == null || supportingDocs.ToList()
-             .Where(doc => doc.Type.ToLower() == Enum.GetName<SupportingDcoumentType>(SupportingDcoumentType.DivorcePaper)!.ToLower())
+
+
+            return hasRegisteredDivorceCertificate || supportingDocs == null ||_divorceTypeLookupId == null|| supportingDocs.ToList()
+             .Where(doc => doc.Type == _divorceTypeLookupId)
              .Any();
         }
         private bool haveDeathCertificateAttachement(ICollection<AddSupportingDocumentRequest>? supportingDocs)
         {
-            return supportingDocs == null || supportingDocs.ToList()
-             .Where(doc => doc.Type.ToLower() == Enum.GetName<SupportingDcoumentType>(SupportingDcoumentType.DeathCertificate)!.ToLower())
+            return supportingDocs == null ||_divorceTypeLookupId == null|| supportingDocs.ToList()
+             .Where(doc => doc.Type == _divorceTypeLookupId)
              .Any();
         }
 

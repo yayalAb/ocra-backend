@@ -21,6 +21,11 @@ namespace AppDiv.CRVS.Domain.Configurations
                 .WithMany(n => n.SupportingDocuments)
                 .HasForeignKey(m => m.PaymentExamptionId)
                 .IsRequired(false);
+
+            builder.HasOne(m => m.TypeLookup)
+                .WithMany(n => n.SupportingDocumentTypeNavigation)
+                .HasForeignKey(m => m.Type)
+                .IsRequired(true);
         }
     }
 }
