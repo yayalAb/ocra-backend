@@ -22,7 +22,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private readonly IUserResolverService _userResolverService;
 
 
-        public CertificateRepository(CRVSDbContext dbContext, IElasticClient elasticClient , IUserResolverService userResolverService) : base(dbContext)
+        public CertificateRepository(CRVSDbContext dbContext, IElasticClient elasticClient, IUserResolverService userResolverService) : base(dbContext)
         {
             this._dbContext = dbContext;
             _elasticClient = elasticClient;
@@ -67,7 +67,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             f => f.CertificateId,
                             f => f.EventType,
                             f => f.CertificateSerialNumber,
-                            f =>f.CivilRegOfficerNameAm,
+                            f => f.CivilRegOfficerNameAm,
                             f => f.CivilRegOfficerNameOr,
                             f => f.AddressAm,
                             f => f.AddressOr,
@@ -126,6 +126,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return await _elasticClient
                                .IndexManyAsync<CertificateIndex>(_dbContext.Certificates
+                                    .Include(c => c.Event
+                                    )
                                    .Select(c => new CertificateIndex
                                    {
                                        Id = c.Id,
@@ -171,12 +173,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                                          : c.Event.EventType.ToLower() == "adoption" ?
                                                          (c.Event.AdoptionEvent.AdoptiveMother.LastName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("or"))
                                                          : null,
-                                       CivilRegOfficerNameAm = c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("am")
-                                                             + c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("am")
-                                                             + c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("am"),
-                                       CivilRegOfficerNameOr = c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("or")
-                                                             + c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("or")
-                                                             + c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("or"),
+                                       CivilRegOfficerNameAm = c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("am")
+                                                             + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("am")
+                                                             + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("am"),
+                                       CivilRegOfficerNameOr = c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("or")
+                                                             + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("or")
+                                                             + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("or"),
                                        CertificateId = c.Event.CertificateId,
                                        CertificateSerialNumber = c.CertificateSerialNumber,
                                        ContentStr = c.ContentStr,
@@ -189,8 +191,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                        MiddleNameAm = c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("am"),
                                        LastNameOr = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or"),
                                        LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
-                                       EventAddressAm = c.Event.EventAddress.AddressName.Value<string>("am"),
-                                       EventAddressOr = c.Event.EventAddress.AddressName.Value<string>("or"),
+                                       EventAddressAm = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("am"),
+                                       EventAddressOr = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("or"),
                                        EventRegisteredAddressId = c.Event.EventRegisteredAddressId
 
                                    }), "certificate");
