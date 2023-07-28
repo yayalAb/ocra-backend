@@ -87,6 +87,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+                            _eventDocumentService.saveFingerPrints(fingerprints);
 
                         }
                         else
@@ -97,6 +98,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                             _eventDocumentService.MovePhotos(userPhotos, "Death");
                             _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+                            //TODO:save fingerprint
                         }
                         // Set the response to Updated.
                         response.Updated("Death Event");

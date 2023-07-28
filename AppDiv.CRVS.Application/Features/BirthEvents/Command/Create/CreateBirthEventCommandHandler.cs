@@ -82,6 +82,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             _eventDocumentService.savePhotos(userPhotos);
                             // Save Other supporting documents and payment exemption documents.
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                            _eventDocumentService.saveFingerPrints(fingerprints);
+                            
                             // For non exempted documents 
                             if (!birthEvent.Event.IsExampted)
                             {
