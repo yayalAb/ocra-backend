@@ -10,7 +10,8 @@ namespace AppDiv.CRVS.Domain.Models
     }
     public class BiometricImages
     {
-        public BiometricImagesAtt[] fingerprint { get; set; }
+        public List<BiometricImagesAtt> fingerprint { get; set; } = new List<BiometricImagesAtt>();
+        public List<BiometricImagesAtt> face {get;set;} = new List<BiometricImagesAtt>();
 
     }
 }

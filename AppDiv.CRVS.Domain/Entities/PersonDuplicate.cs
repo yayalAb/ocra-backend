@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid NewPersonId { get; set; }
         public string FoundWith { get; set; }
         public string Status {get;set;}
-        public string CorrectedBy {get; set;}
+        public string? CorrectedBy {get; set;}
         public virtual PersonalInfo OldPerson {get; set;}
         public virtual PersonalInfo NewPerson {get; set;}
     

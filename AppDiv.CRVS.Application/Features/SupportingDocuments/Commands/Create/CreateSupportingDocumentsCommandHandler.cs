@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,26 +21,16 @@ namespace AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create
         private readonly ISupportingDocumentRepository _supportingDocumentRepo;
         private readonly IEventRepository _eventRepository;
         private readonly IEventDocumentService _eventDocumentService;
-        private readonly IPersonalInfoRepository _personalInfoRepository;
-        private readonly IPersonDuplicateRepository _personDuplicateRepository;
-        private readonly IEventDuplicateRepository _eventDuplicateRepository;
-        private readonly IRequestApiService _requestApiService;
+
 
         public CreateSupportingDocumentsCommandHandler(ISupportingDocumentRepository supportingDocumentRepository,
                                                        IEventRepository eventRepository,
-                                                       IEventDocumentService eventDocumentService,
-                                                       IPersonalInfoRepository personalInfoRepository,
-                                                       IPersonDuplicateRepository personDuplicateRepository,
-                                                       IEventDuplicateRepository eventDuplicateRepository,
-                                                       IRequestApiService requestApiService)
+                                                       IEventDocumentService eventDocumentService
+                                          )
         {
             _supportingDocumentRepo = supportingDocumentRepository;
             _eventRepository = eventRepository;
             _eventDocumentService = eventDocumentService;
-            _personalInfoRepository = personalInfoRepository;
-            _personDuplicateRepository = personDuplicateRepository;
-            _eventDuplicateRepository = eventDuplicateRepository;
-            _requestApiService = requestApiService;
         }
         public async Task<CreateSupportingDocumentsCommandResponse> Handle(CreateSupportingDocumentsCommand request, CancellationToken cancellationToken)
         {
@@ -68,113 +59,44 @@ namespace AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create
                     throw new NotFoundException($"Could not Save supporting Doucments : \n event with Id {request.EventId} is not found");
                 }
 
-                var biometricData = await _eventDocumentService.SaveSupportingDocumentsAsync(savedEvent, request.EventSupportingDocuments, request.ExamptionSupportingDocuments, request.PaymentExamptionId, cancellationToken);
+                var response = await _eventDocumentService.SaveSupportingDocumentsAsync(savedEvent, request.EventSupportingDocuments, request.ExamptionSupportingDocuments, request.PaymentExamptionId, cancellationToken);
+                var biometricData = mergeBiometricData(response);
 
-                foreach (var f in biometricData.fingerPrints.Where(f => f.Key != savedEvent.EventOwenerId.ToString()))
+                CreateSupportingDocumentsCommandResponse.Message = "Supporting document created successfully!";
+                CreateSupportingDocumentsCommandResponse.BiometricData = biometricData;
+                CreateSupportingDocumentsCommandResponse.SavedEvent = savedEvent;
+            }
+            return CreateSupportingDocumentsCommandResponse;
+        }
+        private Dictionary<string, BiometricImages> mergeBiometricData((Dictionary<string, string> userPhotos, Dictionary<string, BiometricImages> fingerPrints) supportingDocs)
+        {
+            var BiometricInfo = supportingDocs.fingerPrints;
+            var userPhotos = supportingDocs.userPhotos.ToList();
+            userPhotos.ForEach(p =>
+            {
+                if (BiometricInfo.ContainsKey(p.Key))
                 {
-
-                    IdentifayFingerDto response;
-
-                    var req = new FingerPrintApiRequestDto
-                    {
-                        registrationID = null,
-                        images = biometricData.fingerPrints[savedEvent.EventOwenerId.ToString()]
-
+                    BiometricInfo[p.Key].face = new List<BiometricImagesAtt>{
+                       new BiometricImagesAtt{
+                        position = 0,
+                        base64Image = p.Value
+                       }
                     };
-                    var resBody = await _requestApiService.post("Identify", req);
-                    response = JsonSerializer.Deserialize<IdentifayFingerDto>(resBody);
-                    if (response?.operationResult.ToUpper() == "MATCH_FOUND")
-                    {
-                        var duplicatePerson = _personalInfoRepository.GetAll()
-                                        .Where(e => e.Id == new Guid(response.bestResult.id))
-                                        .FirstOrDefault();
-                        if (duplicatePerson == null)
-                        {
-                            //TODO:delete biometeric data
-                        }
-                        else
-                        {
-                            var newPersonDuplicate = new PersonDuplicate
-                            {
-                                OldPersonId = duplicatePerson.Id,
-                                NewPersonId = new Guid(response.bestResult.id),
-                                FoundWith = "fingerPrint",
-                                Status = "unchecked",
-                            };
-                            await _personDuplicateRepository.InsertAsync(newPersonDuplicate, cancellationToken);
-                            await _personDuplicateRepository.SaveChangesAsync(cancellationToken);
-                        }
-
-                    }
-
-                }
-
-                IdentifayFingerDto apiResponse;
-                var res = new IdentifayFingerDto();
-
-                var identifyRequest = new FingerPrintApiRequestDto
-                {
-                    registrationID = null,
-                    images = biometricData.fingerPrints[savedEvent.EventOwenerId.ToString()]
-
-                };
-                var responseBody = await _requestApiService.post("Identify", identifyRequest);
-                apiResponse = JsonSerializer.Deserialize<IdentifayFingerDto>(responseBody);
-
-                if (apiResponse?.operationResult.ToUpper() == "MATCH_FOUND")
-                {
-                    var duplicateEvent = _eventRepository.GetAll()
-                               .Where(e => e.EventOwenerId == new Guid(res.bestResult.id)
-                                    && e.EventType.ToLower() == savedEvent.EventType.ToLower()
-                                    && e.Id != savedEvent.Id)
-                               .FirstOrDefault();
-                    if (duplicateEvent != null)
-                    {
-                        var newEventDuplicate = new EventDuplicate
-                        {
-                            OldEventId = duplicateEvent.Id,
-                            NewEventId = savedEvent.Id,
-                            FoundWith = "fingerPrint",
-                            Status = "unchecked",
-                        };
-                        await _eventDuplicateRepository.InsertAsync(newEventDuplicate, cancellationToken);
-                        await _eventDuplicateRepository.SaveChangesAsync(cancellationToken);
-
-
-                    }
-                    else
-                    {
-
-                        var duplicatePerson = _personalInfoRepository.GetAll()
-                                        .Where(e => e.Id == new Guid(res.bestResult.id))
-                                        .FirstOrDefault();
-                        if (duplicatePerson == null)
-                        {
-                            //TODO:delete biometeric data
-                        }
-                        else
-                        {
-                            var newPersonDuplicate = new PersonDuplicate
-                            {
-                                OldPersonId = duplicatePerson.Id,
-                                NewPersonId = new Guid(res.bestResult.id),
-                                FoundWith = "fingerPrint",
-                                Status = "unchecked",
-                            };
-                            await _personDuplicateRepository.InsertAsync(newPersonDuplicate, cancellationToken);
-                            await _personDuplicateRepository.SaveChangesAsync(cancellationToken);
-                        }
-
-                    }
-
                 }
                 else
                 {
-                    CreateSupportingDocumentsCommandResponse.Message = "Supporting document created successfully!";
-
+                    BiometricInfo.Add(p.Key, new BiometricImages
+                    {
+                        face = new List<BiometricImagesAtt>{
+                            new BiometricImagesAtt{
+                                position = 0 ,
+                                base64Image = p.Value
+                            }
+                        }
+                    });
                 }
-            }
-            return CreateSupportingDocumentsCommandResponse;
+            });
+            return BiometricInfo;
         }
     }
 }
