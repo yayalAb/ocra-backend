@@ -66,8 +66,8 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.Query
                         listOfCertifcates = userEvents.Select(d => new SearchCertificateResponseDTO
                         {
                             Id = d.EventOwenerId,
-                            NestedEventId = d.Id,
-                            EventId = d.BirthEvent == null ? d.DivorceEvent == null ? d.DeathEventNavigation == null ? d.AdoptionEvent == null ? d.MarriageEvent == null ? Guid.Empty : d.MarriageEvent.Id : d.AdoptionEvent.Id : d.DeathEventNavigation.Id : d.DivorceEvent.Id : d.BirthEvent.Id,
+                            EventId = d.Id,
+                            NestedEventId = d.BirthEvent == null ? d.DivorceEvent == null ? d.DeathEventNavigation == null ? d.AdoptionEvent == null ? d.MarriageEvent == null ? Guid.Empty : d.MarriageEvent.Id : d.AdoptionEvent.Id : d.DeathEventNavigation.Id : d.DivorceEvent.Id : d.BirthEvent.Id,
                             FullName = d.EventOwener.FirstNameLang + " " + d.EventOwener.MiddleNameLang + " " + d.EventOwener.LastNameLang,
                             // MotherName = d.EventOwener.MiddleNameLang,
                             CivilRegOfficerName = d.CivilRegOfficer.FirstNameLang + " " + d.CivilRegOfficer.MiddleNameLang + " " + d.CivilRegOfficer.LastNameLang,

@@ -26,6 +26,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
         public async Task<GroupDTO> Handle(GroupUpdateCommand request, CancellationToken cancellationToken)
         {
             // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request);
+            Console.WriteLine("testshbnbmfdgnm {0}", request.group.ManagedGroups);
+
             UserGroup groupEntity = new UserGroup
             {
                 Id = request.group.Id,
