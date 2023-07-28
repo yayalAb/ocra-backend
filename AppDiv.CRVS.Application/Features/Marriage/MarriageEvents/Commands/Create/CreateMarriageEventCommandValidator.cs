@@ -135,9 +135,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             // .When(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId) != null);
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt,e.Event.EventSupportingDocuments?.Count(), true)).WithMessage("the bride cannot be below the age limit set in setting or must attach supporting document");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, e.Event.EventSupportingDocuments?.Count(), true)).WithMessage("the bride cannot be below the age limit set in setting or must attach supporting document");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt,e.Event.EventSupportingDocuments?.Count(), false)).WithMessage("the Groom cannot be below the age limit set in setting or must attach supporting document");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, e.Event.EventSupportingDocuments?.Count(), false)).WithMessage("the Groom cannot be below the age limit set in setting or must attach supporting document");
 
             WhenAsync(async (e, CancellationToken) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
@@ -295,7 +295,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
             if (valid)
             {
-                var certfcate = await _eventRepo.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefaultAsync();
+                var certfcate = await _eventRepo.GetAll().Where(x => x.CertificateId == CertId && x.EventType == "Marriage").FirstOrDefaultAsync();
                 if (certfcate == null)
                 {
                     return true;
@@ -470,8 +470,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             }
             var meetMinAgeLimit = eventDateConverted.Year - birthDateConverted.Year >= int.Parse(ageLimit);
 
-            return meetMinAgeLimit ||(supportingDocCount != null && supportingDocCount > 0
-            ) ;
+            return meetMinAgeLimit || (supportingDocCount != null && supportingDocCount > 0
+            );
 
 
         }

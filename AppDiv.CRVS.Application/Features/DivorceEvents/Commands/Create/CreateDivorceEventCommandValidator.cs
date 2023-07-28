@@ -66,12 +66,13 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             {
                 var rule = RuleFor(GetNestedProperty<CreateDivorceEventCommand>(lookupFeild))
                     .Cascade(CascadeMode.StopOnFirstFailure)
-                    .MustAsync(async (lookupId , _) => await BeFoundInLookupTable(lookupId))
+                    .MustAsync(async (lookupId, _) => await BeFoundInLookupTable(lookupId))
                     .WithMessage("{PropertyName} with the provided id is not found");
 
                 // add more validation rules for the field here, if needed
             }
-            var addressFeilds = new List<string>{
+            var addressFeilds = new List<string>
+            {
                 // "DivorcedWife.BirthAddressId","DivorcedWife.ResidentAddressId","Event.EventAddressId",
                 // "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
@@ -124,7 +125,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
             if (valid)
             {
-                var certfcate = _eventRepo.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefault();
+                var certfcate = _eventRepo.GetAll().Where(x => x.CertificateId == CertId && x.EventType == "Divorce").FirstOrDefault();
                 if (certfcate == null)
                 {
                     return true;

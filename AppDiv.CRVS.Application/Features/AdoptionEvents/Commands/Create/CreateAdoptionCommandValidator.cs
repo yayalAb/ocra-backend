@@ -218,7 +218,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             var valid = int.TryParse(CertId.Substring(CertId.Length - 4), out _);
             if (valid)
             {
-                var certfcate = _EventRepository.GetAll().Where(x => x.CertificateId == CertId).FirstOrDefault();
+                var certfcate = _EventRepository.GetAll().Where(x => x.CertificateId == CertId && x.EventType == "Adoption").FirstOrDefault();
                 if (certfcate == null)
                 {
                     return true;
