@@ -32,15 +32,22 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById
 
         public GetGroupbyIdHandler(IGroupRepository groupRepository)
         {
-            
+
             _groupRepository = groupRepository;
         }
         public async Task<GroupDTO> Handle(GetGroupbyId request, CancellationToken cancellationToken)
         {
             // var groups = await _mediator.Send(new GetAllGroupQuery());
             var selectedGroup = await _groupRepository.GetAsync(request.Id);
-            return CustomMapper.Mapper.Map<GroupDTO>(selectedGroup);
-            // return selectedCustomer;
+            var group = new GroupDTO
+            {
+                Id = selectedGroup.Id,
+                GroupName = selectedGroup.GroupName,
+                Description = selectedGroup.Description,
+                Roles = selectedGroup.Roles,
+                ManagedGroups = selectedGroup.ManagedGroups
+            };
+            return group;
         }
     }
 }
