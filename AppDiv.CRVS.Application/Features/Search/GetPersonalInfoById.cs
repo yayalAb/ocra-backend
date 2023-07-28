@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.Search
 {
@@ -18,10 +19,12 @@ namespace AppDiv.CRVS.Application.Features.Search
     public class GetPersonalInfoByIdHandler : IRequestHandler<GetPersonalInfoById, object>
     {
         private readonly IPersonalInfoRepository _PersonaInfoRepository;
+        private readonly IDateAndAddressService _AddressService;
 
-        public GetPersonalInfoByIdHandler(IPersonalInfoRepository PersonaInfoRepository)
+        public GetPersonalInfoByIdHandler(IPersonalInfoRepository PersonaInfoRepository, IDateAndAddressService AddressService)
         {
             _PersonaInfoRepository = PersonaInfoRepository;
+            _AddressService = AddressService;
         }
         public async Task<object> Handle(GetPersonalInfoById request, CancellationToken cancellationToken)
         {
@@ -52,7 +55,9 @@ namespace AppDiv.CRVS.Application.Features.Search
                 ResidentAddressId = an.ResidentAddressId,
                 NationLookupId = an.NationLookupId,
                 ContactInfoId = an.ContactInfoId,
-            });
+            }).FirstOrDefault();
+            SelectedPerson.BirthAddressResponseDTO = await _AddressService?.FormatedAddress(SelectedPerson?.BirthAddressId);
+            SelectedPerson.ResidentAddressResponseDTO = await _AddressService?.FormatedAddress(SelectedPerson?.ResidentAddressId);
 
             return SelectedPerson;
         }

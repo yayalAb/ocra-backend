@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
 {
- 
+
 
     public class GroupUpdateCommandsHandler : IRequestHandler<GroupUpdateCommand, GroupDTO>
     {
@@ -32,6 +32,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
                 GroupName = request.group.GroupName,
                 Description = request.group.Description,
                 Roles = request.group.Roles,
+                ManagedGroups = request.group.ManagedGroups
+
             };
             try
             {

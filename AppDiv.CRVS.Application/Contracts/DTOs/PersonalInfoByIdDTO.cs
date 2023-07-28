@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -8,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class PersonalInfoByIdDTO
     {
         public Guid Id { get; set; }
-        public string? BirhtCertificateId {get; set; }
+        public string? BirhtCertificateId { get; set; }
         public JObject FirstName { get; set; }
         public JObject? MiddleName { get; set; }
         public JObject? LastName { get; set; }
@@ -27,5 +28,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 
         public Guid? NationLookupId { get; set; }
         public Guid? ContactInfoId { get; set; }
+        public AddressResponseDTOE? BirthAddressResponseDTO { get; set; }
+        public AddressResponseDTOE? ResidentAddressResponseDTO { get; set; }
+
     }
 }
