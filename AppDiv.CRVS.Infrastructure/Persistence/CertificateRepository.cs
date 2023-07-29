@@ -8,7 +8,10 @@ using AppDiv.CRVS.Application.Features.Search;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.CouchModels;
+using AppDiv.CRVS.Infrastructure.Service;
 using AppDiv.CRVS.Infrastructure.Services;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Nest;
 using Newtonsoft.Json.Linq;
@@ -36,6 +39,65 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public async Task<IEnumerable<Certificate>> GetByEventAsync(Guid id)
         {
             return await _dbContext.Certificates.Where(c => c.EventId == id).ToListAsync();
+        }
+        public async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
+        {
+            var entries = _dbContext.ChangeTracker
+                       .Entries()
+                       .Where(e => e.Entity is Certificate &&
+                               (e.State == EntityState.Added
+                               || e.State == EntityState.Modified
+                               || e.State == EntityState.Deleted));
+
+            List<CertificateEntry> certificateEntries = entries.Select(e => new CertificateEntry
+            {
+                State = e.State,
+                CertificateId = ((Certificate)e.Entity).Id
+            }).ToList();
+
+
+            var saveChangeRes = await base.SaveChangesAsync(cancellationToken);
+
+
+
+            if (saveChangeRes)
+            {
+                foreach (var entry in certificateEntries)
+                {
+                    entry.Certificate = _dbContext.Certificates
+                             .Where(a => a.Id == entry.CertificateId)
+                            .Include(a => a.Event)
+                            .Include(a => a.Event.AdoptionEvent).ThenInclude(ae => ae.AdoptiveMother)
+                            .Include(a => a.Event.BirthEvent)
+                            .Include(a => a.Event.DeathEventNavigation)
+                            .Include(a => a.Event.DivorceEvent)
+                            .Include(a => a.Event.MarriageEvent)
+                            .Include(a => a.Event.EventOwener).ThenInclude(o => o.ResidentAddress)
+                            .Include(a => a.Event.EventAddress)
+                            .Include(a => a.Event.CivilRegOfficer)
+                            .FirstOrDefault();
+                    if (entry.Certificate != null)
+                    {
+                        switch (entry.State)
+                        {
+                            case EntityState.Added:
+                                BackgroundJob.Enqueue<IBackgroundJobs>(x => x.IndexCertificate(entry.Certificate));
+                                break;
+                            case EntityState.Deleted:
+                                BackgroundJob.Enqueue<IBackgroundJobs>(x => x.RemoveCertificate(entry.CertificateId));
+                                break;
+                            case EntityState.Modified:
+                                //TODO:
+
+                                break;
+                            default: break;
+
+                        }
+                    }
+                }
+            }
+
+            return saveChangeRes;
         }
         public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
         {
