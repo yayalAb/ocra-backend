@@ -19,6 +19,7 @@ using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKey;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKeyForDropDown;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByParentId;
+using AppDiv.CRVS.Application.Features.Lookups.Command.Import;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -140,6 +141,13 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<ActionResult<object>> LookupDropdown([FromQuery] GetLookupByKeyForDropDownQuery query)
         {
             return await _mediator.Send(query);
+        }
+        [HttpPost("Import")]
+        // [ProducesResponseType(StatusCodes.Status200OK)]
+        // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        public async Task<ActionResult<object>> ImportLookup([FromBody] ImportLookupCommand command)
+        {
+            return await _mediator.Send(command);
         }
     }
 }
