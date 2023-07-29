@@ -7,6 +7,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? Country { get; set; }
         public string StatisticCode { get; set; }
         public string Code { get; set; }
+        public Guid? AreaTypeLookupId { get; set; }
+        public Guid? ParentAddressId { get; set; }
 
     }
 }

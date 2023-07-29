@@ -47,7 +47,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry
                                     Id = c.Id,
                                     Country = c.AddressNameLang,
                                     Code = c.Code,
-                                    StatisticCode = c.StatisticCode
+                                    StatisticCode = c.StatisticCode,
+                                    AreaTypeLookupId = c.AreaTypeLookupId,
+                                    ParentAddressId = c.ParentAddressId
                                 })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
 

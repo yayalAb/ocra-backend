@@ -66,7 +66,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllKebele
                                             ? a.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressNameLang
                                             : null,
                                    Code = a.Code,
-                                   StatisticCode = a.StatisticCode
+                                   StatisticCode = a.StatisticCode,
+                                   ParentAddressId = a.ParentAddressId,
+                                   AreaTypeLookupId = a.AreaTypeLookupId
 
                                })
                                , request.PageCount ?? 1, request.PageSize ?? 10);

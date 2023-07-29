@@ -61,7 +61,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllZone
                               : null,
                       Code = a.Code,
                       StatisticCode = a.StatisticCode,
-                      AdminType = string.IsNullOrEmpty(a.AdminTypeLookup.ValueLang) ? null : a.AdminTypeLookup.ValueLang
+                      AdminType = string.IsNullOrEmpty(a.AdminTypeLookup.ValueLang) ? null : a.AdminTypeLookup.ValueLang,
+                      ParentAddressId =a.ParentAddressId,
+                      AreaTypeLookupId = a.AreaTypeLookupId
 
                   })
                   , request.PageCount ?? 1, request.PageSize ?? 10);
