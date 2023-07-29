@@ -78,12 +78,12 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                 .NotNull()
                 .WithMessage("{PropertyName} is required.")
                 .NotEmpty()
-                .WithMessage("{PropertyName} must not be empty.");
+                .WithMessage("{PropertyName} must not be empty.").When(p => p.Adoption.AdoptiveFather != null && p.Adoption.AdoptiveFather.FirstName != null);
             RuleFor(p => p.Adoption.AdoptiveFather.FirstName.or)
                 .NotNull()
                 .WithMessage("{PropertyName} is required.")
                 .NotEmpty()
-                .WithMessage("{PropertyName} must not be empty.");
+                .WithMessage("{PropertyName} must not be empty.").When(p => p.Adoption.AdoptiveFather != null && p.Adoption.AdoptiveFather.FirstName != null);
             RuleFor(p => p.Adoption.Event.EventSupportingDocuments)
                 .NotNull()
                 .WithMessage("{PropertyName} is required.")
@@ -104,27 +104,27 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             RuleFor(p => p.Adoption.Event.EventOwener.BirthDateEt)
             .MustAsync(ValidateDateEt)
                .WithMessage("{PropertyName} is invalid date.");
-            RuleFor(p => p.Adoption.AdoptiveFather.BirthDateEt)
+            RuleFor(p => p.Adoption.AdoptiveFather!.BirthDateEt)
                 .MustAsync(ValidateDateEt)
-                .WithMessage("{PropertyName} is invalid date.");
+                .WithMessage("{PropertyName} is invalid date.").When(p => p.Adoption.AdoptiveFather != null);
 
-            RuleFor(p => p.Adoption.AdoptiveMother.BirthDateEt)
+            RuleFor(p => p.Adoption.AdoptiveMother!.BirthDateEt)
                 .MustAsync(ValidateDateEt)
 
-                .WithMessage("{PropertyName} is invalid date.");
+                .WithMessage("{PropertyName} is invalid date.").When(p => p.Adoption.AdoptiveMother != null);
             // RuleFor(p => p.Adoption.Event.EventRegDateEt)
             //     .MustAsync(ValidateRegDateEt)
             //     .WithMessage("{PropertyName} is must be this year or last year.");
             RuleFor(p => p.Adoption.CourtCase.ConfirmedDateEt)
                    .MustAsync(ValidateDateEt)
                    .WithMessage("{PropertyName} is invalid date.");
-            RuleFor(e => e.Adoption.AdoptiveMother.Id)
+            RuleFor(e => e.Adoption.AdoptiveMother!.Id)
                .MustAsync(ValidateNulleblePersonalInfoForignkey)
-               .WithMessage("{PropertyName} is must be null or Person Foreign key.");
+               .WithMessage("{PropertyName} is must be null or Person Foreign key.").When(e => e.Adoption.AdoptiveMother != null);
 
-            RuleFor(e => e.Adoption.AdoptiveFather.Id)
+            RuleFor(e => e.Adoption.AdoptiveFather!.Id)
                .MustAsync(ValidateNulleblePersonalInfoForignkey)
-               .WithMessage("{PropertyName} is must be null or Person Foreign key.");
+               .WithMessage("{PropertyName} is must be null or Person Foreign key.").When(e => e.Adoption.AdoptiveMother != null);
             RuleFor(e => e.Adoption.Event.EventOwener.Id)
                .MustAsync(ValidateNulleblePersonalInfoForignkey)
                .WithMessage("{PropertyName} is must be null or Person Foreign key.");
@@ -248,9 +248,12 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         }
 
 
-        private async Task<bool> ValidateDateEt(string DateEt, CancellationToken token)
+        private async Task<bool> ValidateDateEt(string? DateEt, CancellationToken token)
         {
-
+            if (DateEt == null)
+            {
+                return false;
+            }
             DateTime ethiodate = _dateConverter.EthiopicToGregorian(DateEt);
             if (ethiodate <= DateTime.Now)
             {
