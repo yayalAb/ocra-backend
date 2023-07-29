@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Features.Marriage.MarriageEvents.Commands;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 {
@@ -98,14 +101,26 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                 HusbandId = marriageEvent.Event.EventOwener.Id,
                                 // WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
                             };
+                            var brideHasDivorce = request.BrideInfo.Id != null
+                                                && MarriageValidatorFunctions.brideHasDivorceInLessThanDateLimitInSetting((Guid)request.BrideInfo.Id, marriageEvent.Event.EventDateEt, _settingRepository, _personalInfoRepository);
+                            var pregnancyFreeSupportingDocAttached = request.Event.EventSupportingDocuments != null
+                                                                    && MarriageValidatorFunctions.hasSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository, "pregnancy free certificate");
+                            var hasUnderAgeApprovalSupportingDoc = request.Event.EventSupportingDocuments != null
+                                                                    && MarriageValidatorFunctions.hasSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository, "underage marriage approval");
+                            var brideBelowAgeLimit = !MarriageValidatorFunctions.IsAboveTheAgeLimit(request.BrideInfo.BirthDateEt, request.Event.EventDateEt, true, _settingRepository);
+                            var groomBelowAgeLimit = !MarriageValidatorFunctions.IsAboveTheAgeLimit(request.Event.EventOwener.BirthDateEt, request.Event.EventDateEt, false, _settingRepository);
+                            if ((brideHasDivorce && pregnancyFreeSupportingDocAttached) || ((brideBelowAgeLimit || groomBelowAgeLimit) && hasUnderAgeApprovalSupportingDoc))
+                            {
+                                marriageEvent.Event.HasPendingDocumentApproval = true;
+                            }
                             marriageEvent.Event.EventType = "Marriage";
                             await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
-                            
+
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-                            
+
                             // create payment request for the event if it is not exempted
                             if (!marriageEvent.Event.IsExampted)
                             {
@@ -151,5 +166,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
             });
         }
+
     }
 }

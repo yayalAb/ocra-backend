@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Domain.Enums;
+using AppDiv.CRVS.Application.Features.Marriage.MarriageEvents.Commands;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 {
@@ -24,6 +25,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepository;
         private readonly ISupportingDocumentRepository _supportingDocumentRepository;
+        private readonly ISettingRepository _settingRepository;
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepository;
 
         public UpdateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
@@ -35,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                                  IEventPaymentRequestService paymentRequestService,
                                                  IAddressLookupRepository addressRepository,
                                                  ISupportingDocumentRepository supportingDocumentRepository,
+                                                 ISettingRepository settingRepository,
                                                  IPaymentExamptionRequestRepository paymentExamptionRequestRepository
                                                  )
         {
@@ -47,6 +50,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             _paymentRequestService = paymentRequestService;
             _addressRepository = addressRepository;
             _supportingDocumentRepository = supportingDocumentRepository;
+            _settingRepository = settingRepository;
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
         }
 
@@ -64,7 +68,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     {
                         var updateMarriageEventCommandResponse = new UpdateMarriageEventCommandResponse();
 
-                        var validator = new UpdateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository);
+                        var validator = new UpdateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _settingRepository, _addressRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors
@@ -107,6 +111,18 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             //     await _marriageEventRepository.SaveChangesAsync(cancellationToken);
 
                             // }
+                            var brideHasDivorce = request.BrideInfo.Id != null
+                                               && MarriageValidatorFunctions.brideHasDivorceInLessThanDateLimitInSetting((Guid)request.BrideInfo.Id, marriageEvent.Event.EventDateEt, _settingRepository, _personalInfoRepository);
+                            var pregnancyFreeSupportingDocAttached = request.Event.EventSupportingDocuments != null
+                                                                    && MarriageValidatorFunctions.hasSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository, "pregnancy free certificate");
+                            var hasUnderAgeApprovalSupportingDoc = request.Event.EventSupportingDocuments != null
+                                                                   && MarriageValidatorFunctions.hasSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository, "underage marriage approval");
+                            var brideBelowAgeLimit = !MarriageValidatorFunctions.IsAboveTheAgeLimit(request.BrideInfo.BirthDateEt, request.Event.EventDateEt, true, _settingRepository);
+                            var groomBelowAgeLimit = !MarriageValidatorFunctions.IsAboveTheAgeLimit(request.Event.EventOwener.BirthDateEt, request.Event.EventDateEt, false, _settingRepository);
+                            if ((brideHasDivorce && pregnancyFreeSupportingDocAttached) || ((brideBelowAgeLimit || groomBelowAgeLimit) && hasUnderAgeApprovalSupportingDoc))
+                            {
+                                marriageEvent.Event.HasPendingDocumentApproval = true;
+                            }
                             var personIds = new PersonIdObj
                             {
                                 WifeId = marriageEvent.BrideInfo.Id,

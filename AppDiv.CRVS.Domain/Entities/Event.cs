@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool IsPaid { get; set; } = false;
         public bool IsCertified { get; set; } = false;
         public bool IsVerified { get; set; } = false;
+        public bool HasPendingDocumentApproval { get; set; } = false;
         public bool OnReprintPaymentRequest { get; set; } = false;
         public bool ReprintWaiting { get; set; } = false;
         public virtual Address EventAddress { get; set; }
@@ -61,8 +62,8 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get; set;
         }
-        public virtual ICollection<EventDuplicate> NewEventDuplicatesNavigation {get;set;}
-        public virtual ICollection<EventDuplicate> OldEventDuplicatesNavigation {get;set;}
+        public virtual ICollection<EventDuplicate> NewEventDuplicatesNavigation { get; set; }
+        public virtual ICollection<EventDuplicate> OldEventDuplicatesNavigation { get; set; }
 
         [NotMapped]
         public string? _EventDateEt

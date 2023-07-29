@@ -9,12 +9,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
     // Validator for birth event create.
     public class CreateBirthEventCommandValidator : AbstractValidator<CreateBirthEventCommand>
     {
-        public CreateBirthEventCommandValidator(IEventRepository eventRepo)
+        public CreateBirthEventCommandValidator(IEventRepository eventRepo, ILookupRepository lookupRepo)
         {
             // Date converter from Ethiopian date to Gregorian date and vice versa.
             var dateConverter = new CustomDateConverter();
             // Validate the inputs.
-            RuleFor(p => p.BirthEvent).SetValidator(new BirthEventValidator(eventRepo));
+            RuleFor(p => p.BirthEvent).SetValidator(new BirthEventValidator(eventRepo, lookupRepo));
             RuleFor(p => p.BirthEvent.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));
             RuleFor(p => p.BirthEvent.Father).SetValidator(new FatherValidator(eventRepo)!)
             .When(p => p.BirthEvent.Father != null);

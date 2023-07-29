@@ -1,4 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Features.Marriage.MarriageEvents.Commands;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Entities;
@@ -140,16 +141,18 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             // .When(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId) != null);
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, e.Event.EventSupportingDocuments?.Count(), true)).WithMessage("the bride cannot be below the age limit set in setting or must attach supporting document");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt,true, e.Event.EventSupportingDocuments))
+            .WithMessage("the bride cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, e.Event.EventSupportingDocuments?.Count(), false)).WithMessage("the Groom cannot be below the age limit set in setting or must attach supporting document");
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false,e.Event.EventSupportingDocuments))
+            .WithMessage("the Groom cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
 
             WhenAsync(async (e, CancellationToken) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
 
                 RuleFor(e => e.BrideInfo.Id)
-                .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt))
-                .WithMessage("divorced bride must wait 6 months to marry again ");
+                .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt, e.Event.EventSupportingDocuments))
+                .WithMessage("divorced bride must wait month limit set in setting to marry again or attach pregnancy free certificate");
 
                 // RuleFor(e => e.Event.EventSupportingDocuments)
                 // .NotNull()
@@ -222,42 +225,23 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             });
 
         }
-        private bool meetMinimumDivorceMarriageGapLimit(Guid? brideId, string eventDateEt)
+
+        private bool BeAboveTheAgeLimit(string birthDate, string eventDateEt, bool isBride, ICollection<AddSupportingDocumentRequest>? supportingDocs)
+        {
+            var beAboveAgeLimit = MarriageValidatorFunctions.IsAboveTheAgeLimit(birthDate, eventDateEt, isBride, _settingRepository);
+            var hasUnderAgeMarriageApprovalDoc = supportingDocs != null && MarriageValidatorFunctions.hasSupportingDoc(supportingDocs, _lookupRepo, "underage marriage approval");
+            return beAboveAgeLimit || hasUnderAgeMarriageApprovalDoc;
+        }
+
+        private bool meetMinimumDivorceMarriageGapLimit(Guid? brideId, string eventDateEt, ICollection<AddSupportingDocumentRequest> supportingDocs)
         {
             if (brideId == null)
             {
                 return true;
             }
-            var brideInfo = _personalInfoRepo.GetAll()
-                   .Include(p => p.DivorceWifeNavigation)
-                   .ThenInclude(d => d.Event)
-                   .Where(p => p.Id == brideId).FirstOrDefault();
-            if (brideInfo == null)
-            {
-                throw new NotFoundException("Bride with the provided Id is not found");
-            }
-            var marriageSetting = _settingRepository.GetAll()
-                  .Where(s => s.Key == "marriageSetting")
-                  .FirstOrDefault();
-            if (marriageSetting == null)
-            {
-                throw new NotFoundException("marriage setting not found");
-            }
-            var remarryGapLimit = marriageSetting.Value.Value<string>("divorced_bride_month_limit_for_remarrying");
-
-            var brideLastDivorceDate = brideInfo.DivorceWifeNavigation
-                      .OrderBy(d => d.Event.EventDate)
-                      .Select(d => d.Event.EventDate).LastOrDefault();
-            var eventDate = new CustomDateConverter(eventDateEt).gorgorianDate;
-            if (int.TryParse(remarryGapLimit, out int result))
-            {
-                return brideLastDivorceDate == null || HelperService.GetMonthDifference(brideLastDivorceDate, eventDate) >= result;
-            }
-            else
-            {
-                return brideLastDivorceDate == null || HelperService.GetMonthDifference(brideLastDivorceDate, eventDate) >= 6;
-            }
-
+            var bridehaseDivorce = MarriageValidatorFunctions.brideHasDivorceInLessThanDateLimitInSetting((Guid)brideId, eventDateEt, _settingRepository, _personalInfoRepo);
+            var hasPregnancyFreeSupportingDoc = MarriageValidatorFunctions.hasSupportingDoc(supportingDocs, _lookupRepo, "pregnancy free certificate");
+            return !bridehaseDivorce || hasPregnancyFreeSupportingDoc;
         }
 
         private bool meetMinimumWitnessCount(int numberOfWitnesses)
@@ -406,13 +390,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             }
 
 
-            return hasRegisteredDivorceCertificate || supportingDocs == null ||_divorceTypeLookupId == null|| supportingDocs.ToList()
+            return hasRegisteredDivorceCertificate || supportingDocs == null || _divorceTypeLookupId == null || supportingDocs.ToList()
              .Where(doc => doc.Type == _divorceTypeLookupId)
              .Any();
         }
         private bool haveDeathCertificateAttachement(ICollection<AddSupportingDocumentRequest>? supportingDocs)
         {
-            return supportingDocs == null ||_divorceTypeLookupId == null|| supportingDocs.ToList()
+            return supportingDocs == null || _divorceTypeLookupId == null || supportingDocs.ToList()
              .Where(doc => doc.Type == _divorceTypeLookupId)
              .Any();
         }
@@ -451,37 +435,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     || marriageStatus.Value.Value<string>("or")?.ToLower() == EnumDictionary.marriageStatusDict[MarriageStatus.widowedWoman].or!.ToLower();
         }
 
-        private bool BeAboveTheAgeLimit(string birthDate, string eventDate, int? supportingDocCount, bool isBride)
-        {
-            DateTime birthDateConverted = new CustomDateConverter(birthDate).gorgorianDate;
-            DateTime eventDateConverted = new CustomDateConverter(eventDate).gorgorianDate;
 
-            var marriageSetting = _settingRepository.GetAll()
-                    .Where(s => s.Key == "marriageSetting")
-                    .FirstOrDefault();
-            if (marriageSetting == null)
-            {
-                throw new NotFoundException("marriage setting not found");
-            }
-            var ageLimit = isBride
-                            ? marriageSetting.Value.Value<string>("bride_min_age")
-                            : marriageSetting.Value.Value<string>("groom_min_age");
-            if (ageLimit == null)
-            {
-                throw new NotFoundException("marriage miminum age setting not found");
-            }
-            if (!int.TryParse(ageLimit, out int result))
-            {
-                throw new InvalidCastException("invalid marriage minimum age limit setting ");
-
-            }
-            var meetMinAgeLimit = eventDateConverted.Year - birthDateConverted.Year >= int.Parse(ageLimit);
-
-            return meetMinAgeLimit || (supportingDocCount != null && supportingDocCount > 0
-            );
-
-
-        }
 
         public async Task<bool> isReligionMarriage(Guid marriageTypeId)
         {
@@ -512,6 +466,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             body = Expression.Convert(body, typeof(object));
             return Expression.Lambda<Func<T, object>>(body, param);
         }
+
 
 
     }

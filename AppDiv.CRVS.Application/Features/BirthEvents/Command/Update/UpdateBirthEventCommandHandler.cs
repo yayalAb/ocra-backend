@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,14 +14,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         private readonly IBirthEventRepository _birthEventRepository;
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IEventRepository _eventRepository;
-
+        private readonly ILookupRepository _lookupRepository;
 
         public UpdateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
+                                              ILookupRepository lookupRepository,
                                               IEventDocumentService eventDocumentService)
         {
             this._eventDocumentService = eventDocumentService;
             this._eventRepository = eventRepository;
+            this._lookupRepository = lookupRepository;
             this._birthEventRepository = birthEventRepository;
         }
         public async Task<UpdateBirthEventCommandResponse> Handle(UpdateBirthEventCommand request, CancellationToken cancellationToken)
@@ -34,7 +37,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     // Create response.
                     var response = new UpdateBirthEventCommandResponse();
                     // Validate the inputs.
-                    var validator = new UpdateBirthEventCommandValidator(_eventRepository);
+                    var validator = new UpdateBirthEventCommandValidator(_eventRepository, _lookupRepository);
                     var validationResult = await validator.ValidateAsync(request, cancellationToken);
                     //Check and log validation errors
                     if (validationResult.Errors.Count > 0)
@@ -65,6 +68,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             // Map the reques to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
                             birthEvent.Event.EventType = "Birth";
+                            if (request.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository))
+                            {
+                                birthEvent.Event.HasPendingDocumentApproval = true;
+                            }
                             // person ids
                             var personIds = new PersonIdObj
                             {
@@ -87,7 +94,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 // Save the newly added supporting documents and exemption documents.
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                                var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
                                 _eventDocumentService.saveFingerPrints(fingerprints);
@@ -101,7 +108,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(userPhotos, "Birth");
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
-                            //TODO:save fingerprint
+                                //TODO:save fingerprint
                             }
                             // Commit the transaction.
                             await transaction?.CommitAsync()!;

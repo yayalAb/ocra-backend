@@ -6,6 +6,8 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
@@ -16,18 +18,21 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IEventRepository _eventRepository;
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly ILookupRepository _lookupRepository;
         private readonly ISmsService _smsService;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
                                               IEventPaymentRequestService paymentRequestService,
+                                              ILookupRepository lookupRepository,
                                               ISmsService smsService)
         {
             _eventDocumentService = eventDocumentService;
             _eventRepository = eventRepository;
             _birthEventRepository = birthEventRepository;
             _paymentRequestService = paymentRequestService;
+            _lookupRepository = lookupRepository;
             _smsService = smsService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
@@ -47,7 +52,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                     // Create new response for birth event.
                     var response = new CreateBirthEventCommandResponse();
                     // Validate the inputs.
-                    var validator = new CreateBirthEventCommandValidator(_eventRepository);
+                    var validator = new CreateBirthEventCommandValidator(_eventRepository, _lookupRepository);
                     var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                     //Check and log validation errors
@@ -66,6 +71,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                         {
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                            if (request.BirthEvent.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.BirthEvent.Event.EventSupportingDocuments, _lookupRepository))
+                            {
+                                birthEvent.Event.HasPendingDocumentApproval = true;
+                            }
                             // Insert to the database.
                             await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
                             // store the persons id from the request
@@ -77,13 +86,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };
                             // Separate profile photos from supporting documents.
-                            var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
+                            var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
                             // Save the profile photos.
                             _eventDocumentService.savePhotos(userPhotos);
                             // Save Other supporting documents and payment exemption documents.
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                             _eventDocumentService.saveFingerPrints(fingerprints);
-                            
+
                             // For non exempted documents 
                             if (!birthEvent.Event.IsExampted)
                             {
@@ -139,5 +148,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
             });
         }
+
     }
 }

@@ -9,10 +9,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
     // Validator for birth update command.
     public class UpdateBirthEventCommandValidator : AbstractValidator<UpdateBirthEventCommand>
     {
-        public UpdateBirthEventCommandValidator(IEventRepository eventRepo)
+        public UpdateBirthEventCommandValidator(IEventRepository eventRepo, ILookupRepository lookupRepo)
         {
             // Validate inputs.
-            RuleFor(p => CustomMapper.Mapper.Map<AddBirthEventRequest>(p)).SetValidator(new BirthEventValidator(eventRepo));
+            RuleFor(p => CustomMapper.Mapper.Map<AddBirthEventRequest>(p)).SetValidator(new BirthEventValidator(eventRepo, lookupRepo));
             RuleFor(p => p.BirthNotification).SetValidator(new BirthNotificationValidator(eventRepo)!)
                     .When(p => p.BirthNotification != null);
             RuleFor(p => p.Event.EventOwener).SetValidator(new ChildValidator(eventRepo));

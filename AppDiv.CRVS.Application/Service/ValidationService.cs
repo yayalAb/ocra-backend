@@ -10,6 +10,7 @@ using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using FluentValidation;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -230,6 +231,20 @@ namespace AppDiv.CRVS.Application.Service
             // Convert the result to object
             body = Expression.Convert(body, typeof(object));
             return Expression.Lambda<Func<T, object>>(body, param);
+        }
+         public static bool HaveGuardianSupportingDoc(ICollection<AddSupportingDocumentRequest>? supportingDocs,ILookupRepository _lookupRepo)
+        {
+            var supportingDocTypeLookupId = _lookupRepo
+                                            .GetAll()
+                                            .Where(l => l.Key.ToLower() == "supporting-document-type"
+                                                && l.ValueStr.ToLower().Contains("guardian certificate"))
+                                            .Select(l => l.Id)
+                                            .FirstOrDefault();
+            if (supportingDocTypeLookupId == null)
+            {
+                throw new NotFoundException($"guardian certificate supporting document type lookup is not found in database");
+            }
+            return supportingDocs != null && supportingDocs.Where(s => s.Type == supportingDocTypeLookupId).Any();
         }
     }
 }
