@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete;
+using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Import;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.MergeAndSplitCommands;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.AllCountry;
@@ -207,6 +208,15 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(query);
         }
+
+        [HttpPost]
+        [Route("Import")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ImportAdderssCommandResponse> ImportAddress([FromBody] ImportAdderssCommand command)
+        {
+            return await _mediator.Send(command);
+        }
+
 
     }
 }

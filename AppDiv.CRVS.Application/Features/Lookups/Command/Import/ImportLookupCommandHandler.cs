@@ -8,6 +8,7 @@ using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Persistence.Couch;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.Lookups.Command.Import
 {
@@ -15,12 +16,12 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Import
     public class ImportLookupCommandHandler : IRequestHandler<ImportLookupCommand, ImportLookupCommadResponse>
     {
         private readonly ILookupRepository _lookupRepository;
-        private readonly ILookupCouchRepository _lookupCouchRepository;
+        private readonly IConvertExcelFileToLookupObjectService _lookupFileService;
 
-        public ImportLookupCommandHandler(ILookupRepository lookupRepository, ILookupCouchRepository lookupCouchRepository)
+        public ImportLookupCommandHandler(ILookupRepository lookupRepository, IConvertExcelFileToLookupObjectService lookupFileService)
         {
             _lookupRepository = lookupRepository;
-            _lookupCouchRepository = lookupCouchRepository;
+            _lookupFileService = lookupFileService;
         }
         public async Task<ImportLookupCommadResponse> Handle(ImportLookupCommand request, CancellationToken cancellationToken)
         {
@@ -43,12 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Import
             }
             if (response.Success)
             {
-                //can use this instead of automapper
-                var lookups = CustomMapper.Mapper.Map<ICollection<Lookup>>(request.Lookups);
-
-                await _lookupRepository.Import(lookups, cancellationToken);
-                await _lookupRepository.SaveChangesAsync(cancellationToken);
-                    
+                await _lookupFileService.ConvertFileToObject(request.lookups, cancellationToken);
             }
             return response;
         }
