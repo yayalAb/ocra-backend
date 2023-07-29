@@ -104,6 +104,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
+                            _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+                            
                             // create payment request for the event if it is not exempted
                             if (!marriageEvent.Event.IsExampted)
                             {

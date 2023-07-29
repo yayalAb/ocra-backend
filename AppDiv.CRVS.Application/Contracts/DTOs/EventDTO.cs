@@ -31,6 +31,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public bool IsCertified { get; set; } = false;
         public UpdatePersonalInfoRequest EventOwener { get; set; }
 
-        public ICollection<SupportingDocumentDTO> EventSupportingDocuments { get; set; }
+        public ICollection<SupportingDocumentDTO>? EventSupportingDocuments { get; set; }
     }
 }

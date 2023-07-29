@@ -169,6 +169,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
+                                _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+
                                 if (!adoptionEvent.Event.IsExampted)
                                 {
                                     //--create payment request and send sms notification to the users

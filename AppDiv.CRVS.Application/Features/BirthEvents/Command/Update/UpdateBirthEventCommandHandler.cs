@@ -90,6 +90,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+                                _eventDocumentService.saveFingerPrints(fingerprints);
+
                             }
                             else
                             {
@@ -99,6 +101,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(userPhotos, "Birth");
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+                            //TODO:save fingerprint
                             }
                             // Commit the transaction.
                             await transaction?.CommitAsync()!;

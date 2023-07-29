@@ -72,25 +72,29 @@ namespace AppDiv.CRVS.Application.Service
                 {
                     try
                     {
-                        string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
-                        // Convert.FromBase64String(myString);
-                        if (d.Label == null || d.Label == "")
+                        if (d.base64String != null)
                         {
-                            message.Add("Label is required.");
-                            // return false;
+
+                            string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
+                            // Convert.FromBase64String(myString);
+                            if (d.Label == null || d.Label == "")
+                            {
+                                message.Add("Label is required.");
+                                // return false;
+                            }
+                            if (d.Type == null || d.Type == Guid.Empty)
+                            {
+                                message.Add("Type is required.");
+                                // return false;
+                            }
+                            if (d.Description == null || d.Description == "")
+                            {
+                                message.Add("Description is required.");
+                                // return false;
+                            }
+                            // return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
+                            //     (d.Description == null || d.Description == "") ? false : true;
                         }
-                        if (d.Type == null || d.Type == Guid.Empty)
-                        {
-                            message.Add("Type is required.");
-                            // return false;
-                        }
-                        if (d.Description == null || d.Description == "")
-                        {
-                            message.Add("Description is required.");
-                            // return false;
-                        }
-                        // return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
-                        //     (d.Description == null || d.Description == "") ? false : true;
                     }
                     catch (FormatException)
                     {

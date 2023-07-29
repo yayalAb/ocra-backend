@@ -112,6 +112,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Divorce");
+                            _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
 
                             }
                             else
@@ -122,6 +123,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Divorce");
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Divorce");
+                            //TODO:save fingerprint
                             }
                             // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);

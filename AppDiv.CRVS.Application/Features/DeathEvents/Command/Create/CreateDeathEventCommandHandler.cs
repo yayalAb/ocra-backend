@@ -74,6 +74,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
+                            _eventDocumentService.saveFingerPrints(fingerprints);
                             if (!deathEvent.Event.IsExampted)
                             {
                                 // Get Payment rate for death certificate.

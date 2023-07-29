@@ -16,11 +16,11 @@ namespace AppDiv.CRVS.Application.Service
         private readonly IFileService _fileService;
         private readonly ISupportingDocumentRepository _supportingDocumentRepository;
         private readonly ILookupRepository _lookupRepository;
-        private readonly Guid? _webCamTypeLookupId ;
+        private readonly Guid? _webCamTypeLookupId;
         private readonly Guid? _fingerprintTypeLookupId;
 
 
-        public EventDocumentService(IFileService fileService, ISupportingDocumentRepository supportingDocumentRepository , ILookupRepository lookupRepository)
+        public EventDocumentService(IFileService fileService, ISupportingDocumentRepository supportingDocumentRepository, ILookupRepository lookupRepository)
         {
             _fileService = fileService;
             _supportingDocumentRepository = supportingDocumentRepository;
@@ -28,12 +28,12 @@ namespace AppDiv.CRVS.Application.Service
             _webCamTypeLookupId = _lookupRepository.GetAll()
                     .Where(l => l.ValueStr.ToLower()
                     .Contains("webcam"))
-                    .Select(l =>l.Id)
+                    .Select(l => l.Id)
                     .FirstOrDefault();
             _fingerprintTypeLookupId = _lookupRepository.GetAll()
                     .Where(l => l.ValueStr.ToLower()
                     .Contains("fingerprint"))
-                    .Select(l =>l.Id)
+                    .Select(l => l.Id)
                     .FirstOrDefault();
         }
         public bool saveSupportingDocuments(ICollection<SupportingDocument> eventDocs, ICollection<SupportingDocument>? examptionDocs, string eventType)
@@ -126,7 +126,7 @@ namespace AppDiv.CRVS.Application.Service
             return true;
         }
 
-        public async Task<(Dictionary<string , string> userPhotos, Dictionary<string , List<BiometricImagesAtt>? >fingerPrint)> SaveSupportingDocumentsAsync(Event savedEvent, List<AddSupportingDocumentRequest>? eventSupportingDocs, List<AddSupportingDocumentRequest>? exapmtionSupportingDocs, Guid? paymentExapmtionId, CancellationToken cancellationToken)
+        public async Task<(Dictionary<string, string> userPhotos, Dictionary<string, List<BiometricImagesAtt>?> fingerPrint)> SaveSupportingDocumentsAsync(Event savedEvent, List<AddSupportingDocumentRequest>? eventSupportingDocs, List<AddSupportingDocumentRequest>? exapmtionSupportingDocs, Guid? paymentExapmtionId, CancellationToken cancellationToken)
         {
             var personIds = new PersonIdObj
             {
@@ -163,7 +163,7 @@ namespace AppDiv.CRVS.Application.Service
             var separatedDocs = extractSupportingDocs(personIds, docs.supportingDocs);
             savePhotos(separatedDocs.userPhotos);
             saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, savedEvent.EventType);
-
+            saveFingerPrints(separatedDocs.fingerPrint);
             return (userPhotos: separatedDocs.userPhotos, fingerPrint: separatedDocs.fingerPrint);
         }
 
@@ -197,12 +197,31 @@ namespace AppDiv.CRVS.Application.Service
         {
             var folder = Path.Combine("Resources", "PersonPhotos");
 
-            personPhotos.ToList().ForEach(p =>
-            {
-                var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folder);
-                _fileService.UploadBase64FileAsync(p.Value, p.Key, fullPath, FileMode.Create);
-            });
+            personPhotos.ToList().ForEach(async p =>
+           {
+               var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folder);
+               await _fileService.UploadBase64FileAsync(p.Value, p.Key, fullPath, FileMode.Create);
+           });
 
+        }
+        public void saveFingerPrints(Dictionary<string, List<BiometricImagesAtt>?> fingerprints)
+        {
+            if (fingerprints.Values != null)
+            {
+                var mainFolder = Path.Combine("Resources", "fingerprints");
+                fingerprints.ToList().ForEach(fingerPrintData =>
+                {
+                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), mainFolder, fingerPrintData.Key);//fingerPrintData.key is personId
+                    if (fingerPrintData.Value != null)
+                    {
+                        fingerPrintData.Value.ForEach(async finger =>
+                        {
+                            await _fileService.UploadBase64FileAsync(finger.base64Image, finger.position.ToString(), fullPath, FileMode.Create);
+                        });
+                    }
+
+                });
+            }
         }
         public void MovePhotos(Dictionary<string, string> personPhotos, string eventType)
         {
@@ -227,7 +246,7 @@ namespace AppDiv.CRVS.Application.Service
             });
 
         }
-        public (Dictionary<string, string> userPhotos,Dictionary<string, List<BiometricImagesAtt>?> fingerPrint, IEnumerable<SupportingDocument> otherDocs) extractSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs)
+        public (Dictionary<string, string> userPhotos, Dictionary<string, List<BiometricImagesAtt>?> fingerPrint, IEnumerable<SupportingDocument> otherDocs) extractSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs)
         {
             Dictionary<string, string> userPhotos = new Dictionary<string, string>();
             Dictionary<string, List<BiometricImagesAtt>?> fingerPrint = new Dictionary<string, List<BiometricImagesAtt>?>();
@@ -330,7 +349,7 @@ namespace AppDiv.CRVS.Application.Service
                     }
                 }
             }
-            return (userPhotos: userPhotos,fingerPrint: fingerPrint, otherDocs: supportingDocs);
+            return (userPhotos: userPhotos, fingerPrint: fingerPrint, otherDocs: supportingDocs);
         }
         public (Dictionary<string, string> userPhotos, IEnumerable<SupportingDocument> otherDocs) ExtractOldSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs)
         {
@@ -338,7 +357,7 @@ namespace AppDiv.CRVS.Application.Service
             supportingDocs.Where(d => d.Type == _webCamTypeLookupId).ToList().ForEach(doc =>
             {
 
-                if (idObj.WifeId !=null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
+                if (idObj.WifeId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
                 {
                     userPhotos.Add(idObj.WifeId.ToString()!, doc.Id.ToString());
                     supportingDocs.ToList().Remove(doc);
