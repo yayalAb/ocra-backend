@@ -24,6 +24,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string GroupName { get; set; } = "";
         public string AdminLevel { get; set; }
         public string AddressCode { get; set; }
+        public bool? CanRegisterEvent { get; set; } 
+
 
 
 

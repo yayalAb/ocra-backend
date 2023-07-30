@@ -30,6 +30,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public string? UserImage { get; set; }
         public List<Guid> UserGroups { get; set; }
         public int SelectedAdminType { get; set; }
+        public bool? CanRegisterEvent { get; set; } = null;
 
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
     }
@@ -61,25 +62,25 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             var executionStrategy = _groupRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
-            using (var transaction = _groupRepository.Database.BeginTransaction())
-            {
-                try
+                using (var transaction = _groupRepository.Database.BeginTransaction())
                 {
-                    if (!isValidBase64String(request.UserImage))
+                    try
                     {
-                        throw new BadRequestException("user Image is invalid base64String");
-                    }
-                    await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
-                    // var contact = new ContactInfo
-                    // {
-                    //     Id = request.PersonalInfo.ContactInfo.Id,
-                    //     Email = request.Email,
-                    //     Phone = request.PersonalInfo.ContactInfo.Phone,
-                    //     HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
-                    //     Website = request.PersonalInfo.ContactInfo.Website,
-                    //     Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
-                    //     ModifiedAt = DateTime.Now
-                    // };
+                        if (!isValidBase64String(request.UserImage))
+                        {
+                            throw new BadRequestException("user Image is invalid base64String");
+                        }
+                        await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
+                        // var contact = new ContactInfo
+                        // {
+                        //     Id = request.PersonalInfo.ContactInfo.Id,
+                        //     Email = request.Email,
+                        //     Phone = request.PersonalInfo.ContactInfo.Phone,
+                        //     HouseNumber = request.PersonalInfo.ContactInfo.HouseNumber,
+                        //     Website = request.PersonalInfo.ContactInfo.Website,
+                        //     Linkdin = request.PersonalInfo.ContactInfo.Linkdin,
+                        //     ModifiedAt = DateTime.Now
+                        // };
 
                         // 2e946713-6676-49ff-8a64-5b43772a6574 group
                         // 15911d9e-2196-47b0-845d-bd99ca25467f addres
@@ -123,15 +124,15 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                             Status = request.Status,
                             PreferedLanguage = request.PreferedLanguage,
                             SelectedAdminType = request.SelectedAdminType,
-
+                            CanRegisterEvent = request.CanRegisterEvent
                         };
 
-                    try
-                    {
-                        await _identityService.UpdateUserAsync(user);
-                        
-                        if (request.UserImage != null)
+                        try
                         {
+                            await _identityService.UpdateUserAsync(user);
+
+                            if (request.UserImage != null)
+                            {
 
                                 var file = request.UserImage;
                                 var folderName = Path.Combine("Resources", "UserProfiles");
