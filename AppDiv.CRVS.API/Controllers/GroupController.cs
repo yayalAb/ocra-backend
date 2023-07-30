@@ -94,13 +94,13 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<BaseResponse> DeleteLookup(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<BaseResponse> DeleteLookup([FromBody] DeleteGroupCommands commad)
         {
             try
             {
                 string result = string.Empty;
-                return await _mediator.Send(new DeleteGroupCommands { Id = id });
+                return await _mediator.Send(commad);
             }
             catch (Exception exp)
             {

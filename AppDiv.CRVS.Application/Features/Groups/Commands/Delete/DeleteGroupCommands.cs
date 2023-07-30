@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
     // Customer create command with UserGroup response
     public class DeleteGroupCommands : IRequest<BaseResponse>
     {
-        public Guid Id { get; set; }
+        public Guid[] Id { get; set; }
 
     }
 
@@ -33,8 +33,11 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Delete
             try
             {
                 var groupEntity = await _groupRepository.GetAsync(request.Id);
-
-                await _groupRepository.DeleteAsync(request.Id);
+                foreach (var item in request.Id)
+                {
+                    await _groupRepository.DeleteAsync(request.Id);
+                }
+                
                 await _groupRepository.SaveChangesAsync(cancellationToken);
                 res.Deleted("Group");
             }

@@ -77,12 +77,12 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult> DeleteUser(string id)
+        [HttpDelete("Delete")]
+        public async Task<ActionResult> DeleteUser([FromBody] DeleteUserCommand command)
         {
             try
             {
-                var response = await Mediator.Send(new DeleteUserCommand(id));
+                var response = await Mediator.Send(command);
                 if (response.Status == 200)
                 {
                     return Ok(response);
