@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using AppDiv.CRVS.Application.Features.User.Command.CheckDuplication;
+using AppDiv.CRVS.Application.Features.Auth.YourTeam;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -113,11 +114,23 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpPost("CheckDuplication")]
-         public async Task<ActionResult> CheckDuplicateEmail([FromBody] CheckDuplicationCommand command)
+        public async Task<ActionResult> CheckDuplicateEmail([FromBody] CheckDuplicationCommand command)
         {
             try
             {
                 return Ok(await Mediator.Send(command));
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+        [HttpGet("YourTeam")]
+        public async Task<ActionResult> GetYourTeam([FromBody] GetYourTeamQuery query)
+        {
+            try
+            {
+                return Ok(await Mediator.Send(query));
             }
             catch (Exception exp)
             {
