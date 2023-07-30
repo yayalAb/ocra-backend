@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
     // Customer create command with BaseResponse response
     public class DeleteLookupCommand : IRequest<BaseResponse>
     {
-        public Guid[] Id { get; set; }
+        public Guid[] Ids { get; set; }
 
     }
 
@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Delete
             var response = new BaseResponse();
             try
             {
-                IEnumerable<Guid> ids = request.Id;
+                IEnumerable<Guid> ids = request.Ids;
                 foreach (Guid x in ids)
                 {
                     await _lookupRepository.DeleteAsync(x); ;

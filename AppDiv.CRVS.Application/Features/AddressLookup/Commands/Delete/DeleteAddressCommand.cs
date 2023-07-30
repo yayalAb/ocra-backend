@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
     // Customer create command with BaseResponse response
     public class DeleteAddressCommand : IRequest<BaseResponse>
     {
-        public Guid[] Id { get; set; }
+        public Guid[] Ids { get; set; }
 
     }
 
@@ -31,7 +31,7 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Commands.Delete
             var response = new BaseResponse();
             try
             {
-                foreach (Guid id in request.Id)
+                foreach (Guid id in request.Ids)
                 {
                     await _addressRepository.DeleteAsync(id);
 
