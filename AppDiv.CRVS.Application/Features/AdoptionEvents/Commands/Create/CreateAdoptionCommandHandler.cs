@@ -101,6 +101,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
 
                                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
+                                if (request?.Adoption?.Event?.EventRegisteredAddressId != null && request?.Adoption?.Event?.EventRegisteredAddressId != Guid.Empty)
+                                {
+                                    adoptionEvent.Event.EventRegisteredAddressId = request.Adoption.Event.EventRegisteredAddressId;
+                                }
                                 adoptionEvent.Event.EventAddressId = request.Adoption.CourtCase.Court.AddressId;
 
                                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
@@ -176,7 +180,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     //--create payment request and send sms notification to the users
                                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Adoption", adoptionEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                     amount = response.amount;
-                                    Console.WriteLine("Amount {0}", response.amount);
                                     if (response.amount == 0 || response.amount == 0.0)
                                     {
                                         adoptionEvent.Event.IsPaid = true;

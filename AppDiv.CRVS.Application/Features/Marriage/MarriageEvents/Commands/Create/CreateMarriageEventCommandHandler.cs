@@ -92,6 +92,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                         {
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
+                            if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
+                            {
+                                marriageEvent.Event.EventRegisteredAddressId = request?.Event.EventRegisteredAddressId;
+                            }
 
 
                             // //TODO: //

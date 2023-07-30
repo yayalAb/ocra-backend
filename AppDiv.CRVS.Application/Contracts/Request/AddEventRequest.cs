@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string? EventDateEt { get; set; }
         public string EventRegDateEt { get; set; }
         public Guid? EventAddressId { get; set; }
+        public Guid? EventRegisteredAddressId { get; set; }
 
         // public string? InformantType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
@@ -21,8 +22,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
         public AddressResponseDTOE? EventAddressResponseDTO { get; set; }
 
-        public DateTime? CreatedAt {get; set; } = DateTime.Now;
-        public Guid? CreatedBy {get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
+        public Guid? CreatedBy { get; set; }
 
     }
 }

@@ -62,6 +62,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                         {
                             // Map the request to the model entity.
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
+                            if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
+                            {
+                                deathEvent.Event.EventRegisteredAddressId = request.DeathEvent?.Event.EventRegisteredAddressId;
+                            }
                             // Persons id
                             var personIds = new PersonIdObj
                             {
@@ -71,7 +75,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
 
                             // Save the supporting documents and payment exemption documents.
-                            var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
+                            var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
                             _eventDocumentService.saveFingerPrints(fingerprints);

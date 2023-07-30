@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string? EventRegDateEt { get; set; }
         public Guid CivilRegOfficerId { get; set; }
         public bool IsExampted { get; set; } = false;
+        public Guid? EventRegisteredAddressId { get; set; }
         public ICollection<AddSupportingDocumentRequest>? EventSupportingDocuments { get; set; }
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
         public DateTime? CreatedAt { get; set; }

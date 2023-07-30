@@ -71,6 +71,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                         {
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                            if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
+                            {
+                                birthEvent.Event.EventRegisteredAddressId = request.BirthEvent?.Event.EventRegisteredAddressId;
+                            }
                             if (request.BirthEvent.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.BirthEvent.Event.EventSupportingDocuments, _lookupRepository))
                             {
                                 birthEvent.Event.HasPendingDocumentApproval = true;

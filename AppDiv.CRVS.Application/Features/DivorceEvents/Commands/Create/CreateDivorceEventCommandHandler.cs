@@ -73,6 +73,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                         {
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
+                            if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
+                            {
+                                divorceEvent.Event.EventRegisteredAddressId = request?.Event.EventRegisteredAddressId;
+                            }
                             divorceEvent.Event.EventType = "Divorce";
 
                             var personIds = new PersonIdObj
@@ -85,7 +89,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
                             _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-                        
+
                             // create payment request for the event if it is not exempted
                             if (!divorceEvent.Event.IsExampted)
                             {

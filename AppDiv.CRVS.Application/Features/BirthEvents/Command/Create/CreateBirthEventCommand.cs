@@ -17,6 +17,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         // public virtual MotherInfoDTO Mother { get; set; }
         // public virtual AddEventForBirthRequest Event { get; set; }
         // public virtual AddBirthNotificationRequest? BirthNotification { get; set; } = null;
-        
+
     }
 }
