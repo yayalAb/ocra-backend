@@ -33,12 +33,18 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.Validation
         {
             bool isValid = true;
             var selectedlookup = _lookupRepository.GetAll().Where
-             (x => EF.Functions.Like(x.ValueStr, $"%{request.lookupName}%"));
+             (x => EF.Functions.Like(x.ValueStr, $"%{request.lookupName}%")).ToList();
             if (selectedlookup.FirstOrDefault() != null)
             {
-
+                foreach (var value in selectedlookup)
+                {
+                    if (value.Value.Value<string>(request.lang) == request.lookupName)
+                    {
+                        isValid = false;
+                        break;
+                    }
+                }
             }
-
             return isValid;
         }
     }
