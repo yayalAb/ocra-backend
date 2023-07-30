@@ -91,10 +91,10 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<IActionResult> DeleteLookup(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteLookup([FromBody] DeleteLookupCommand command)
         {
-            var res = await _mediator.Send(new DeleteLookupCommand { Id = id });
+            var res = await _mediator.Send(command);
             if (res.Success)
             {
                 return Ok(res);

@@ -112,12 +112,12 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<Object> DeleteAddress(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<Object> DeleteAddress([FromBody] DeleteAddressCommand commads)
         {
             try
             {
-                var response = await _mediator.Send(new DeleteAddressCommand { Id = id });
+                var response = await _mediator.Send(commads);
                 if (response.Success)
                 {
                     return Ok(response);
