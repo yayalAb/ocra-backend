@@ -20,6 +20,7 @@ using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKeyForDropDown;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByParentId;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Import;
+using AppDiv.CRVS.Application.Features.Lookups.Query.Validation;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -151,7 +152,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPost("IsValid")]
-        public async Task<ActionResult<object>> validate([FromBody] ImportLookupCommand command)
+        public async Task<ActionResult<object>> validate([FromBody] ValidatLookupNameQuery command)
         {
             return await _mediator.Send(command);
         }
