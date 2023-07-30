@@ -31,9 +31,15 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.Validation
         }
         public async Task<bool> Handle(ValidatLookupNameQuery request, CancellationToken cancellationToken)
         {
+            bool isValid = true;
             var selectedlookup = _lookupRepository.GetAll().Where
              (x => EF.Functions.Like(x.ValueStr, $"%{request.lookupName}%"));
-            return CustomMapper.Mapper.Map<bool>(selectedlookup);
+            if (selectedlookup.FirstOrDefault() != null)
+            {
+
+            }
+
+            return isValid;
         }
     }
 }

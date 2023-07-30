@@ -149,5 +149,13 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(command);
         }
+
+        [HttpPost("IsValid")]
+        public async Task<ActionResult<object>> validate([FromBody] ImportLookupCommand command)
+        {
+            return await _mediator.Send(command);
+        }
+
+
     }
 }
