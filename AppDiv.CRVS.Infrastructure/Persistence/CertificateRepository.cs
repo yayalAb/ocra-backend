@@ -87,8 +87,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                 BackgroundJob.Enqueue<IBackgroundJobs>(x => x.RemoveCertificate(entry.CertificateId));
                                 break;
                             case EntityState.Modified:
-                                //TODO:
-
+                                BackgroundJob.Enqueue<IBackgroundJobs>(x => x.updateCertificate(entry.Certificate));
                                 break;
                             default: break;
 

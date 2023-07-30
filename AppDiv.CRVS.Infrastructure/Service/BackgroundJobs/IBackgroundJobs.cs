@@ -13,5 +13,6 @@ namespace AppDiv.CRVS.Infrastructure.Service
         public Task GetEventJob();
         public Task IndexCertificate(Certificate certificate);
         public Task RemoveCertificate(Guid certificateId);
+        public Task updateCertificate(Certificate certificate);
     }
 }
