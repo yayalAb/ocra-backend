@@ -50,6 +50,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUsersByAddressId
                 FullName = u.PersonalInfo.FirstNameLang + " " + u.PersonalInfo.MiddleNameLang + " " + u.PersonalInfo.LastNameLang,
                 AddressName = u.Address.AddressNameLang,
                 Email = u.Email,
+                CanRegisterEvent = u.CanRegisterEvent,
                 Online = !request.AddOnlineFlag ?false : _onlineUserRepository.GetAll().Where(ou => ou.UserId == u.Id).Any() 
             }).ToListAsync();
 

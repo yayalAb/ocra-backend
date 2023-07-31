@@ -151,6 +151,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     CreatedDate = _convertor.GregorianToEthiopic(user.CreatedAt),
                     AdminLevel = ((AdminLevel)user.Address.AdminLevel).ToString(),
                     AddressCode = user.Address.Code,
+                    CanRegisterEvent = user.CanRegisterEvent,
                     PersonalInfo = new PersonalInfoDTO
                     {
                         Id = user.PersonalInfo.Id,

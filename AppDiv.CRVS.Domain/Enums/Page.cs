@@ -51,6 +51,7 @@ public enum Page
     DeliveryTypeLookup,
     PaymentWayLookup,
     MarriageApplication,
+    MarriageApplicationList,
     AdministrativeLevelLookup,
     DuringDeath,
     CauseOfDeath,

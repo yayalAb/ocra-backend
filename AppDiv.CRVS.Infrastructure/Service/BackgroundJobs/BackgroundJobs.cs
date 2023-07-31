@@ -106,7 +106,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             Console.WriteLine("job started event sync ....... .......");
 
             var eventDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                    .Where(n => n.StartsWith("eventcouch")).ToList();
+                                    .Where(n => n.StartsWith("eventcouchaa2b04e7-010a-11ee-a622-fa163e736d71")).ToList();
             Console.WriteLine($"db count ---- {eventDbNames.Count}");
 
 
@@ -114,13 +114,14 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
 
                 var eventDb = _couchContext.Client.GetDatabase<BaseEventCouch>(dbName);
-                var unsyncedEventDocs = eventDb.Where(e => !(e.Synced));
+                var unsyncedEventDocs = eventDb.Where(e => !(e.Synced) && e.Id == "03346d9a-14eb-49b9-bbb5-ac4b778239cd");
                 Console.WriteLine($"db name ------- {dbName}");
 
                 Console.WriteLine($"unsynced count -- {unsyncedEventDocs.ToList().Count()}");
 
                 foreach (var eventDoc in unsyncedEventDocs)
                 {
+                    var eventDocCouch = eventDoc;
                     try
                     {
                         Console.WriteLine($"doc --eventType-- ${eventDoc.EventType}");
@@ -135,6 +136,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
                                 var marriageDb = _couchContext.Client.GetDatabase<MarriageEventCouch>(dbName);
                                 var marriageEventCouch = marriageDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                                eventDocCouch = marriageEventCouch;
                                 Console.WriteLine($"doc --(isnull)-- ${marriageEventCouch == null}");
                                 Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
 
@@ -227,6 +229,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             case "birth":
                                 var birthDb = _couchContext.Client.GetDatabase<BirthEventCouch>(dbName);
                                 var birthEventCouch = birthDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                                eventDocCouch = birthEventCouch;
                                 Console.WriteLine($"doc --(isnull)-- ${birthEventCouch == null}");
                                 Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
 
@@ -328,12 +331,13 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
 
                                 break;
+
                             case "death":
                                 var deathDb = _couchContext.Client.GetDatabase<DeathEventCouch>(dbName);
                                 var deathEventCouch = deathDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                                eventDocCouch = deathEventCouch;
                                 Console.WriteLine($"doc --(isnull)-- ${deathEventCouch == null}");
                                 Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
-
 
                                 if (deathEventCouch == null)
                                 {
@@ -388,11 +392,15 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 var res3 = await _mediator.Send(deathEventCommand);
                                 Console.WriteLine($"doc --save succeded-- ${res3.Success}");
                                 Console.WriteLine($"doc --save message-- ${res3.Message}");
+                                Console.WriteLine($"doc -  id -- ${deathEventCommand.DeathEvent.Id}");
+
 
                                 if (!res3.Success)
                                 {
                                     deathEventCouch.Failed = true;
                                     deathEventCouch.FailureMessage = res3.Message;
+                                    Console.WriteLine($"doc -failed-  id -- ${deathEventCommand.DeathEvent.Id}");
+
                                     await deathDb.AddOrUpdateAsync(deathEventCouch);
 
                                     break;
@@ -418,6 +426,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             case "adoption":
                                 var adoptionDb = _couchContext.Client.GetDatabase<AdoptionEventCouch>(dbName);
                                 var adoptionEventCouch = adoptionDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                                eventDocCouch = adoptionEventCouch;
                                 Console.WriteLine($"doc --(isnull)-- ${adoptionEventCouch == null}");
 
 
@@ -517,6 +526,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             case "divorce":
                                 var divorceDb = _couchContext.Client.GetDatabase<DivorceEventCouch>(dbName);
                                 var divorceEventCouch = divorceDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
+                                eventDocCouch = divorceEventCouch;
                                 Console.WriteLine($"doc --(isnull)-- ${divorceEventCouch == null}");
                                 Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
 
@@ -607,9 +617,12 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     catch (Exception e)
                     {
                         Console.WriteLine($"exception  ---- {e.Message}");
-                        eventDoc.Failed = true;
-                        eventDoc.FailureMessage = e.Message;
-                        await eventDb.AddOrUpdateAsync(eventDoc);
+                        if (eventDocCouch != null)
+                        {
+                            eventDocCouch.Failed = true;
+                            eventDocCouch.FailureMessage = e.Message;
+                            var res = await eventDb.AddOrUpdateAsync(eventDocCouch);
+                        }
 
 
                     }
@@ -655,7 +668,38 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
         public async Task IndexCertificate(Certificate certificate)
         {
-            await _elasticClient.CreateDocumentAsync<CertificateIndex>(new CertificateIndex
+            await _elasticClient.CreateDocumentAsync<CertificateIndex>(mapCertificateIndex(certificate));
+            //TODO:indexed boolean in certificate table and bg service for indexing failed certificate indexes
+
+        }
+
+        public async Task RemoveCertificate(Guid certificateId)
+        {
+            await _elasticClient.DeleteByQueryAsync<CertificateIndex>(c =>
+             c.Index("certificates")
+                .Query(q =>
+                    q.Match(m =>
+                        m.Field(f => f.Id == certificateId)
+                        )));
+        }
+        public async Task updateCertificate(Certificate certificate)
+        {
+            await _elasticClient.UpdateByQueryAsync<CertificateIndex>(c =>
+             c.Index("certificates")
+                .Query(q =>
+                    q.Match(m =>
+                        m.Field(f => f.Id == certificate.Id)
+                        )).Script(script => script
+                 // Use the _source field in the script to set the entire document to the new one.
+                 .Source($"ctx._source = params.newDocument")
+                 .Params(p => p.Add("newDocument", mapCertificateIndex(certificate)))
+             ));
+
+        }
+
+        private CertificateIndex mapCertificateIndex(Certificate certificate)
+        {
+            return new CertificateIndex
             {
                 Id = certificate.Id,
                 EventId = certificate.Event.Id,
@@ -722,30 +766,36 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 EventAddressOr = certificate.Event.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("or"),
                 EventRegisteredAddressId = certificate.Event.EventRegisteredAddressId
 
-            });
-            //TODO:indexed boolean in certificate table and bg service for indexing failed certificate indexes
-
+            };
         }
 
-        public async Task RemoveCertificate(Guid certificateId)
+        private PersonalInfoIndex mapPersonalInfoIndex(PersonalInfo personalInfo)
         {
-            await _elasticClient.DeleteByQueryAsync<CertificateIndex>(c =>
-             c.Index("certificates")
-                .Query(q =>
-                    q.Match(m =>
-                        m.Field(f => f.Id == certificateId)
-                        )));
+            return new PersonalInfoIndex
+            {
+                Id = personalInfo.Id,
+                FirstNameStr = personalInfo.FirstNameStr,
+                FirstNameOr = personalInfo.FirstName == null ? null : personalInfo.FirstName.Value<string>("or"),
+                FirstNameAm = personalInfo.FirstName == null ? null : personalInfo.FirstName.Value<string>("am"),
+                MiddleNameStr = personalInfo.MiddleNameStr,
+                MiddleNameOr = personalInfo.MiddleName == null ? null : personalInfo.MiddleName.Value<string>("or"),
+                MiddleNameAm = personalInfo.MiddleName == null ? null : personalInfo.MiddleName.Value<string>("am"),
+                LastNameStr = personalInfo.LastNameStr,
+                LastNameOr = personalInfo.LastName == null ? null : personalInfo.LastName.Value<string>("or"),
+                LastNameAm = personalInfo.LastName == null ? null : personalInfo.LastName.Value<string>("am"),
+                NationalId = personalInfo.NationalId,
+                PhoneNumber = personalInfo.PhoneNumber,
+                BirthDate = personalInfo.BirthDate,
+                GenderOr = personalInfo.SexLookup.Value == null ? null : personalInfo.SexLookup.Value.Value<string>("or"),
+                GenderAm = personalInfo.SexLookup.Value == null ? null : personalInfo.SexLookup.Value.Value<string>("am"),
+                GenderStr = personalInfo.SexLookup.ValueStr,
+                TypeOfWorkStr = personalInfo.TypeOfWorkLookup.ValueStr,
+                TitleStr = personalInfo.TitleLookup.ValueStr,
+                MarriageStatusStr = personalInfo.MarraigeStatusLookup.ValueStr,
+                AddressOr = personalInfo.ResidentAddress.AddressName == null ? null : personalInfo.ResidentAddress.AddressName.Value<string>("or"),
+                AddressAm = personalInfo.ResidentAddress.AddressName == null ? null : personalInfo.ResidentAddress.AddressName.Value<string>("am"),
+                DeathStatus = personalInfo.DeathStatus
+            };
         }
-        // public async Task updateCertificate(Certificate certificate)
-        // {
-        //     await _elasticClient.Update<CertificateIndex>(c => 
-        //      c.Index("certificates")
-        //         .Query(q =>
-        //             q.Match(m =>
-        //                 m.Field(f => f.Id == certificate.Id)
-        //                 )));
-        // }
-
-
     }
 }

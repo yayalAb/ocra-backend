@@ -47,7 +47,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                   HelperService helperService,
                                   IMailService mailService,
                                   IOptions<SMTPServerConfiguration> config,
-                                  ISmsService smsService, 
+                                  ISmsService smsService,
                                   IDateAndAddressService addressService)
         {
             _identityService = identityService;
@@ -78,7 +78,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 {
                     UserId = response.userId,
                     Name = request.UserName,
-                    isFirstTime = response.status == AuthStatus.FirstTimeLogin ,
+                    isFirstTime = response.status == AuthStatus.FirstTimeLogin,
                     isOtpUnverified = response.status == AuthStatus.OtpUnverified
                 };
 
@@ -95,14 +95,14 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 {
                     throw new AuthenticationException(string.Join(",", response.result.Errors));
                 }
-                 //send otp by email    
-                var content =newOtp+ "is your new otp code";
+                //send otp by email    
+                var content = newOtp + "is your new otp code";
                 var subject = "OCRVS";
                 await _mailService.SendAsync(body: content, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: res.email, cancellationToken);
 
                 //send otp by phone 
-                await _smsService.SendSMS(res.phone , subject +"\n"+content);
-                return  new AuthResponseDTO
+                await _smsService.SendSMS(res.phone, subject + "\n" + content);
+                return new AuthResponseDTO
                 {
                     UserId = response.userId,
                     Name = request.UserName,
@@ -122,7 +122,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
 
 
-            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, response.roles , userData.AddressId, userData.Address.AdminLevel));
+            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, response.roles, userData.AddressId, userData.Address.AdminLevel));
 
 
             var userRoles = userData.UserGroups.SelectMany(ug => ug.Roles
@@ -144,7 +144,35 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 canUpdate = g.Aggregate(false, (acc, x) => acc || x.canUpdate),
                 canView = g.Aggregate(false, (acc, x) => acc || x.canView),
                 canViewDetail = g.Aggregate(false, (acc, x) => acc || x.canViewDetail)
-            });
+            }).ToList();
+            if (userData.CanRegisterEvent != null && userData.CanRegisterEvent == true)
+            {
+                Console.WriteLine($"yyyyyy..........{userData.CanRegisterEvent}");
+                string marriage = Enum.GetName<Page>(Page.Marriage)?.ToLower()!;
+                string birth = Enum.GetName<Page>(Page.Birht)?.ToLower()!;
+                string adoption = Enum.GetName<Page>(Page.Adoption)?.ToLower()!;
+                string death = Enum.GetName<Page>(Page.Death)?.ToLower()!;
+                string divorce = Enum.GetName<Page>(Page.Devorce)?.ToLower()!;
+                string marriageApplication = Enum.GetName<Page>(Page.MarriageApplication)?.ToLower()!;
+                string marriageApplicationList = Enum.GetName<Page>(Page.MarriageApplicationList)?.ToLower()!;
+
+                userRoles.Where(p =>
+                           p.page.ToLower() == marriage
+                           || p.page.ToLower() == birth
+                           || p.page.ToLower() == adoption
+                           || p.page.ToLower() == death
+                           || p.page.ToLower() == divorce
+                           || p.page.ToLower() == marriageApplication
+                           || p.page.ToLower() == marriageApplicationList)
+                           .ToList().ForEach(r =>
+                   {
+                       r.canAdd = true;
+                       r.canView = true;
+                       r.canUpdate = true;
+                       r.canViewDetail = true;
+                       r.canDelete = true;
+                   });
+            }
             var LoginHis = new LoginHistory
             {
                 Id = Guid.NewGuid(),
@@ -173,6 +201,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 FirstName = userData.PersonalInfo?.FirstName,
                 MiddleName = userData.PersonalInfo?.MiddleName,
                 LastName = userData.PersonalInfo?.LastName,
+                CanRegisterEvent = userData.CanRegisterEvent,
                 Address = await _addressService.FormatedAddress(userData.AddressId)!
             };
         }

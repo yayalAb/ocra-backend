@@ -14,6 +14,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         public bool Status {get; set; }
         public string PreferedLanguage {get; set; }= "oro";
         public int SelectedAdminType {get; set;}=0;
+        public bool? CanRegisterEvent {get;set;} = null;
+
 
         // public string Password { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }

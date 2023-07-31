@@ -22,6 +22,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? CreatedBy { get; set; }
         public ICollection<Guid> UserGroups { get; set; }
         public int SelectedAdminType { get; set; } = 0;
+        public bool? CanRegisterEvent { get; set; }
+
 
         // public Guid PersonalInfoId { get; set; }
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
