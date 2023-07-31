@@ -75,22 +75,22 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
-        // [HttpDelete("Delete/{id}")]
-        // public async Task<ActionResult> DeletePaymentRate(Guid id)
-        // {
-        //     try
-        //     {
-        //         var result = await Mediator.Send(new DeletePaymentRateCommand(id));
-        //         if (result.Success)
-        //             return Ok(result);
-        //         else
-        //             return BadRequest(result);
-        //     }
-        //     catch (Exception exp)
-        //     {
-        //         return BadRequest(exp.Message);
-        //     }
-        // }
+        [HttpDelete("Delete")]
+        public async Task<ActionResult> DeletePaymentRate([FromBody] DeletePaymentRateCommand command)
+        {
+            try
+            {
+                var result = await Mediator.Send(command);
+                if (result.Success)
+                    return Ok(result);
+                else
+                    return BadRequest(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
 
     }
 }
