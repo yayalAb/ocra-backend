@@ -85,6 +85,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 HusbandId = divorceEvent.Event.EventOwener.Id,
                             };
                             await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, cancellationToken);
+                            // await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
+
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, divorceEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
