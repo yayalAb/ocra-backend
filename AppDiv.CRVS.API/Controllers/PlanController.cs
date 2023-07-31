@@ -78,12 +78,12 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<Object> DeletePlan(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<Object> DeletePlan([FromBody] DeletePlanCommand commads)
         {
             try
             {
-                return await _mediator.Send(new DeletePlanCommand(id));
+                return await _mediator.Send(commads);
             }
             catch (Exception exp)
             {

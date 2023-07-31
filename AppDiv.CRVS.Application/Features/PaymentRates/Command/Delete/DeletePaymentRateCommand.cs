@@ -13,12 +13,9 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
     // Customer create command with string response
     public class DeletePaymentRateCommand : IRequest<BaseResponse>
     {
-        public Guid Id { get; private set; }
+        public Guid[] Ids { get; set; }
 
-        public DeletePaymentRateCommand(Guid Id)
-        {
-            this.Id = Id;
-        }
+
     }
 
     // Customer delete command handler with string response as output
@@ -35,10 +32,13 @@ namespace AppDiv.CRVS.Application.Features.PaymentRates.Command.Delete
             var response = new BaseResponse();
             try
             {
-                var paymentRateEntity = await _paymentRateRepository.GetByIdAsync(request.Id);
-                if (paymentRateEntity != null)
+                if (request.Ids != null && request.Ids.Length > 0)
                 {
-                    await _paymentRateRepository.DeleteAsync(request.Id);
+                    foreach (var item in request.Ids)
+                    {
+                        await _paymentRateRepository.DeleteAsync(item);
+
+                    }
                     await _paymentRateRepository.SaveChangesAsync(cancellationToken);
                     response.Deleted("Payment rate");
                 }

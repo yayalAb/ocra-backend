@@ -13,12 +13,9 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Delete
     // Customer create command with string response
     public class DeletePlanCommand : IRequest<BaseResponse>
     {
-        public Guid Id { get; private set; }
+        public Guid[] Ids { get; set; }
 
-        public DeletePlanCommand(Guid Id)
-        {
-            this.Id = Id;
-        }
+
     }
 
     // Customer delete command handler with string response as output
@@ -35,17 +32,22 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Delete
             var response = new BaseResponse();
             try
             {
-                var planEntity = await _planRepository.GetAsync(request.Id);
-                if (planEntity != null)
+                if (request.Ids != null && request.Ids.Length > 0)
                 {
-                    await _planRepository.DeleteAsync(request.Id);
-                    await _planRepository.SaveChangesAsync(cancellationToken);
+                    foreach (var item in request.Ids)
+                    {
+                        await _planRepository.DeleteAsync(item);
+
+                    }
                     response.Deleted("Payment rate");
+
+                    await _planRepository.SaveChangesAsync(cancellationToken);
                 }
                 else
                 {
                     response.BadRequest("There is no payment rate with the specified id");
                 }
+
 
             }
             catch (Exception exp)
