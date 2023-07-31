@@ -417,8 +417,6 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                         deathEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
 
                                     }
-
-
                                 }
                                 deathEventCouch.Synced = true;
                                 await deathDb.AddOrUpdateAsync(deathEventCouch);

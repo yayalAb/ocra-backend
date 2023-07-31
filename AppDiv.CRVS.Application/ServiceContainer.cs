@@ -46,6 +46,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IMergeAndSplitAddressService, MergeAndSplitAddressService>();
             services.AddScoped<IConvertFileToObjectService, ConvertFileToObjectService>();
             services.AddScoped<IConvertExcelFileToLookupObjectService, ConvertExcelFileToLookupObjectService>();
+            services.AddScoped<IEventImportService, EventImportService>();
 
             services.AddScoped<IContentValidator, ContentValidator>();
             services.AddScoped<IWorkHistoryTracker, WorkHistoryTracker>();
