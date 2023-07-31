@@ -10,13 +10,16 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class AuditGridDTO
     {
         public Guid? Id { get; set; }
+        public string? TablePkId { get; set; }
         public string? UserName { get; set; }
         public string? Action { get; set; }
         public string? AuditedEntity { get; set; }
+        public string Address { get; set; }
         public JObject? Content { get; set; }
         public AuditGridDTO(AuditLog? audit, bool withContent)
         {
             Id = audit?.AuditId;
+            TablePkId = audit?.TablePk;
             UserName = audit?.EnviromentJson?.Value<string>("UserName");
             AuditedEntity = audit?.EntityType;
             Action = audit?.Action;
