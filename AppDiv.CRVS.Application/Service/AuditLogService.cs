@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Service
                 string key = property.Name.TrimEnd("Id".ToCharArray());
                 JToken value = property.Value;
                 result[property.Name] = property.Value;
-                if (!string.IsNullOrWhiteSpace(key))
+                if (!string.IsNullOrWhiteSpace(key) && property.Name.EndsWith("Id"))
                 {
                     result[key] = _auditlog.GetAll().OrderByDescending(a => a.AuditDate).FirstOrDefault(a => a.TablePk == value.ToString())?.AuditDataJson?.Value<JObject>("ColumnValues");
                 }
@@ -53,11 +53,22 @@ namespace AppDiv.CRVS.Application.Service
             {
                 if (property.Name.EndsWith("Str"))
                 {
-                    string newName = property.Name.Substring(0, property.Name.Length - 3);
-                    JObject obj = JObject.Parse((string)property.Value);
-                    JProperty newProperty = new JProperty(newName, obj);
+                    string newName = property.Name[..^3];
+                    JObject obj;
+                    JArray objArray;
+                    JProperty newProperty;
+                    try
+                    { 
+                        obj = JObject.Parse((string)(property?.Value ?? "{}"));
+                        newProperty = new(newName, obj);
+                    }
+                    catch (System.Exception)
+                    {
+                        objArray = JArray.Parse((string)(property?.Value ?? "[]"));
+                        newProperty = new(newName, objArray);
+                    }
                     property?.Parent?.Add(newProperty);
-                    property.Remove();
+                    property?.Remove();
                 }
             }
             return content;
