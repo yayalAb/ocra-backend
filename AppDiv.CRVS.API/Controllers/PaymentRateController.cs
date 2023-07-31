@@ -75,12 +75,12 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<ActionResult> DeletePaymentRate(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<ActionResult> DeletePaymentRate([FromBody] DeletePaymentRateCommand command)
         {
             try
             {
-                var result = await Mediator.Send(new DeletePaymentRateCommand(id));
+                var result = await Mediator.Send(command);
                 if (result.Success)
                     return Ok(result);
                 else
