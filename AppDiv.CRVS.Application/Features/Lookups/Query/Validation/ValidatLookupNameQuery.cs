@@ -13,14 +13,14 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.Lookups.Query.Validation
 {
-    public class ValidatLookupNameQuery : IRequest<bool>
+    public class ValidatLookupNameQuery : IRequest<object>
     {
         public string lookupName { get; set; }
         public string lang { get; set; }
 
     }
 
-    public class ValidatLookupNameQueryHandler : IRequestHandler<ValidatLookupNameQuery, bool>
+    public class ValidatLookupNameQueryHandler : IRequestHandler<ValidatLookupNameQuery, object>
     {
 
         private readonly ILookupRepository _lookupRepository;
@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.Validation
         {
             _lookupRepository = lookupQueryRepository;
         }
-        public async Task<bool> Handle(ValidatLookupNameQuery request, CancellationToken cancellationToken)
+        public async Task<object> Handle(ValidatLookupNameQuery request, CancellationToken cancellationToken)
         {
             bool isValid = true;
             var selectedlookup = _lookupRepository.GetAll().Where
@@ -45,7 +45,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.Validation
                     }
                 }
             }
-            return isValid;
+
+            return new { isValid = isValid };
         }
     }
 }
