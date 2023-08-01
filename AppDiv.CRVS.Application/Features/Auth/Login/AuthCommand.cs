@@ -14,6 +14,7 @@ using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Utility.Config;
 using AppDiv.CRVS.Domain.Enums;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
 
@@ -183,8 +184,9 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Device = _httpContext.HttpContext?.Request.Headers["User-Agent"].ToString()
 
             };
-            await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
-            await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
+            Console.WriteLine("login history : {0} ", JsonConvert.SerializeObject(LoginHis));
+            // await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
+            // await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
 
             return new AuthResponseDTO()
             {
