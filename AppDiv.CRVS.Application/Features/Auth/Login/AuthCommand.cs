@@ -173,18 +173,18 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                        r.canDelete = true;
                    });
             }
-            var LoginHis = new LoginHistory
-            {
-                Id = Guid.NewGuid(),
-                UserId = response.userId,
-                EventType = "Login",
-                EventDate = DateTime.Now,
-                IpAddress = _httpContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
-                Device = _httpContext.HttpContext?.Request.Headers["User-Agent"].ToString()
+            // var LoginHis = new LoginHistory
+            // {
+            //     Id = Guid.NewGuid(),
+            //     UserId = response.userId,
+            //     EventType = "Login",
+            //     EventDate = DateTime.Now,
+            //     IpAddress = _httpContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+            //     Device = _httpContext.HttpContext?.Request.Headers["User-Agent"].ToString()
 
-            };
-            await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
-            await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
+            // };
+            // await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
+            // await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
 
             return new AuthResponseDTO()
             {
