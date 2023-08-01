@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Domain.Entities.Audit;
+using AppDiv.CRVS.Domain.Repositories;
+using AppDiv.CRVS.Utility.Services;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
@@ -14,14 +16,18 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? UserName { get; set; }
         public string? Action { get; set; }
         public string? AuditedEntity { get; set; }
-        public string Address { get; set; }
+        public string? AuditDate { get; set; }
+        public Guid? AddressId { get; set; }
         public JObject? Content { get; set; }
-        public AuditGridDTO(AuditLog? audit, bool withContent)
+        public AuditGridDTO(AuditLog? audit, bool withContent, IUserRepository user)
         {
+            var convertor = new CustomDateConverter();
             Id = audit?.AuditId;
             TablePkId = audit?.TablePk;
-            UserName = audit?.EnviromentJson?.Value<string>("UserName");
+            AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
+            UserName = audit?.AuditUserId != Guid.Empty ? user.GetSingle(audit!.AuditUserId.ToString())?.UserName : string.Empty;
             AuditedEntity = audit?.EntityType;
+            AddressId = audit?.AddressId;
             Action = audit?.Action;
             Content = withContent ? audit?.AuditDataJson?.Value<JObject>("ColumnValues") : null;
         }

@@ -19,11 +19,13 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
         {
             var audit = _auditLogRepository.GetAll().Where(a => a.AuditId == request.Id).FirstOrDefault();
             // var response = _mediator.Send(new GetAuditLogQuery());
-            var data = new JObject { ["NewValues"] = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")) };
-            if (audit?.Action == "Update")
-            {
-                data["OldValues"] = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes")));
-            }
+            var data = new JObject();
+            // { ["NewValues"] = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")) };
+            data["Changes"] = _auditService.GetAllChanges(audit.AuditDataJson.Value<JArray>("Changes"), audit.AuditDate, audit.EntityType);
+            // if (audit?.Action == "Update")
+            // {
+            //     data["OldValues"] = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes")));
+            // }
             return Task.FromResult(data);
         }
     }

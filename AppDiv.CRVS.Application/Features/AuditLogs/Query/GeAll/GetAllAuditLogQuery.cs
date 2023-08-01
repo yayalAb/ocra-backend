@@ -11,8 +11,14 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
     public record GetAllAuditLogQuery : IRequest<PaginatedList<AuditGridDTO>>
     {
         public string? Id { get; set; }
+        public Guid? AddressId { get; set; }
+        public Guid? UserId { get; set; }
+        public string? StartDate { get; set; }
+        public string? EndDate { get; set; }
+        public string? EntityType { get; set; }
         public bool WithContent { get; set; } = false;
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
+        public string? SearchString { get; set; }
     }
 }

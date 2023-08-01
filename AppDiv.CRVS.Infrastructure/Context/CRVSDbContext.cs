@@ -155,13 +155,16 @@ namespace AppDiv.CRVS.Infrastructure
                     auditEntity.EntityType = auditedEntity.EntityType.Name;
                     auditEntity.AuditDate = DateTime.Now;
                     auditEntity.AuditUserId = Guid.NewGuid();
+                    auditEntity.AddressId = Guid.NewGuid();
                     if (userResolverService != null)
                     {
                         var userId = userResolverService.GetUserId();
+                        var workingAddressId = userResolverService.GetWorkingAddressId();
 
                         auditEntity.AuditUserId = userId != null
                                 ? new Guid(userId)
                                 : Guid.Empty;
+                        auditEntity.AddressId = workingAddressId;
                     }
 
                     auditEntity.Action = auditedEntity.Action;

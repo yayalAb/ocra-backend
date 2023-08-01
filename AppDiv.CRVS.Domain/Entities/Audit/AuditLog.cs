@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Domain.Entities.Audit
         public string EntityType { get; set; }
         public DateTime AuditDate { get; set; }
         public Guid? AuditUserId { get; set; }
+        public Guid? AddressId { get; set; }
         public string TablePk { get; set; }
         [NotMapped]
         public JObject AuditDataJson

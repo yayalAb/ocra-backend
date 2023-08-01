@@ -35,17 +35,50 @@ namespace AppDiv.CRVS.Application.Service
         public JObject GetNestedElements(JObject? content)
         {
             var result = new JObject();
-            foreach (JProperty property in content?.Properties())
+            if (content != null)
             {
-                string key = property.Name.TrimEnd("Id".ToCharArray());
-                JToken value = property.Value;
-                result[property.Name] = property.Value;
-                if (!string.IsNullOrWhiteSpace(key) && property.Name.EndsWith("Id"))
+                foreach (var property in content.Properties())
                 {
-                    result[key] = _auditlog.GetAll().OrderByDescending(a => a.AuditDate).FirstOrDefault(a => a.TablePk == value.ToString())?.AuditDataJson?.Value<JObject>("ColumnValues");
+                    string key = property.Name.TrimEnd("Id".ToCharArray());
+                    JToken value = property.Value;
+                    result[property.Name] = property.Value;
+                    if (!string.IsNullOrWhiteSpace(key) && property.Name.EndsWith("Id"))
+                    {
+                        result[key] = _auditlog.GetAll().OrderByDescending(a => a.AuditDate).FirstOrDefault(a => a.TablePk == value.ToString())?.AuditDataJson?.Value<JObject>("ColumnValues");
+                    }
                 }
             }
             return ConvertStringToObject(result);
+        }
+
+        public static JObject Filter(JObject single)
+        {
+            if (single.Value<string>("ColumnName").EndsWith("Str"))
+            {
+                single["ColumnName"] = single.Value<string>("ColumnName")[..^3];
+                try
+                {
+                    single["NewValue"] = JObject.Parse((string)(single.Value<string>("NewValue") ?? "{}"));
+                    single["OriginalValue"] = JObject.Parse((string)(single.Value<string>("OriginalValue") ?? "{}"));
+                    // objOld = JObject.Parse((string)(single.Value<string>("OriginalValue") ?? "{}"));
+                    // newProperty = new(newName, obj);
+                }
+                catch (System.Exception)
+                {
+                    try
+                    {
+                        single["NewValue"] = JArray.Parse((string)(single.Value<string>("NewValue") ?? "{}"));
+                        single["OriginalValue"] = JArray.Parse((string)(single.Value<string>("OriginalValue") ?? "{}"));
+                    }
+                    catch (System.Exception)
+                    {
+                        
+                        // throw;
+                    }
+                    // newProperty = new(newName, objArray);
+                }
+            }
+            return single;
         }
         private JObject ConvertStringToObject(JObject content)
         {
@@ -58,7 +91,7 @@ namespace AppDiv.CRVS.Application.Service
                     JArray objArray;
                     JProperty newProperty;
                     try
-                    { 
+                    {
                         obj = JObject.Parse((string)(property?.Value ?? "{}"));
                         newProperty = new(newName, obj);
                     }
@@ -73,7 +106,81 @@ namespace AppDiv.CRVS.Application.Service
             }
             return content;
         }
+        public static JArray GetChanges(JArray? content)
+        {
+            JArray oldData = new();
+            if (content != null)
+            {
+                foreach (var changeObject in
+                            from change in content
+                            let changeObject = (JObject)change
+                            let columnName = changeObject?.GetValue("ColumnName")?.ToString()
+                            let originalValue = changeObject?.GetValue("OriginalValue")
+                            let newValue = changeObject?.GetValue("NewValue")
+                            where columnName != null && originalValue != newValue
+                            select changeObject
+                            )
+                {
+                    oldData.Add(Filter(changeObject));
+                }
+            }
+            return oldData;
+        }
+        public JArray GetAllChanges(JArray content, DateTime auditDate, string entityType)
+        {
+            var changes = GetChanges(content);
+            foreach (JObject change in changes.ToList())
+            {
+                if (change.Value<string>("ColumnName")!.EndsWith("Id") && !change.Value<string>("ColumnName")!.Equals("Id"))
+                {
+                    
+                    var newData = this.GetAuditById(change.Value<string>("NewValue"), auditDate);
+                    // var newData = GetAllNestedIds(change.Value<string>("NewValue"), auditDate);
+                    if (newData == null)
+                        continue;
+                    // if (entityType.EndsWith("Event"))
+                        newData = this.GetAll(GetChanges(newData), auditDate);
+                    newData = this.GetAll(newData, auditDate);
+                    var obj = new JObject
+                    {
+                        // obj.Add("Old" + change.Value<string>("ColumnName"), oldData);
+                        { change.Value<string>("ColumnName")![..^2], newData == null ? newData : GetChanges(newData) }
+                    };
+                    changes.Add(obj);
+                    // changes.Add(newData);
+                    // changes = GetAllChanges(changes, auditDate);
+                }
 
-    
+            }
+            return changes;
+        }
+
+        public JArray GetAll(JArray single, DateTime auditDate)
+        {
+            var innerChanges = GetChanges(single);
+            foreach (var item in innerChanges.ToList())
+            {
+                if (item.Value<string>("ColumnName")!.EndsWith("Id") && !item.Value<string>("ColumnName")!.Equals("Id"))
+                {
+                    var data = this.GetAuditById(item.Value<string>("NewValue"), auditDate);
+                    var obj = new JObject
+                    {
+                        { item.Value<string>("ColumnName")![..^2], data != null ? GetChanges(data) : data }
+                    };
+                    innerChanges.Add(obj);
+                    // getAll(single);
+                }
+            }
+            return innerChanges;
+        }
+        public JArray? GetAuditById(string id, DateTime auditDate)
+        {
+            return _auditlog.GetAll()
+                    .OrderBy(a => a.AuditDate)
+                    .Where(a => a.AuditDate >= auditDate.AddMinutes(-1) && a.AuditDate <= auditDate.AddMinutes(1))
+                    .FirstOrDefault(a => a.TablePk == id)?
+                    .AuditDataJson?.Value<JArray>("Changes");
+        }
+
     }
 }
