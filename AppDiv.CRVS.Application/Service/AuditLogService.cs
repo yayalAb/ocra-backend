@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto.Tls;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -111,17 +112,15 @@ namespace AppDiv.CRVS.Application.Service
             JArray oldData = new();
             if (content != null)
             {
-                foreach (var changeObject in
-                            from change in content
-                            let changeObject = (JObject)change
-                            let columnName = changeObject?.GetValue("ColumnName")?.ToString()
-                            let originalValue = changeObject?.GetValue("OriginalValue")
-                            let newValue = changeObject?.GetValue("NewValue")
-                            where columnName != null && originalValue != newValue
-                            select changeObject
-                            )
+                foreach (var changeObject in content)
                 {
-                    oldData.Add(Filter(changeObject));
+                    var change = (JObject)changeObject;
+                    Console.WriteLine("xxxxxxx : {0}{1}{2}",change?.GetValue("OriginalValue"), change?.GetValue("NewValue") ,Guid.TryParse(change?.GetValue("NewValue")?.ToString(), out _));
+                    if (!Object.Equals(change?.GetValue("OriginalValue"), change?.GetValue("NewValue")) 
+                            || Guid.TryParse(change?.GetValue("NewValue")?.ToString(), out _))
+                    {
+                        oldData.Add(Filter(change));
+                    }
                 }
             }
             return oldData;
@@ -139,12 +138,12 @@ namespace AppDiv.CRVS.Application.Service
                     if (newData == null)
                         continue;
                     // if (entityType.EndsWith("Event"))
-                        newData = this.GetAll(GetChanges(newData), auditDate);
-                    newData = this.GetAll(newData, auditDate);
+                        newData = this.GetAll((newData), auditDate);
+                    newData = this.GetAll((newData), auditDate);
                     var obj = new JObject
                     {
                         // obj.Add("Old" + change.Value<string>("ColumnName"), oldData);
-                        { change.Value<string>("ColumnName")![..^2], newData == null ? newData : GetChanges(newData) }
+                        { change.Value<string>("ColumnName")![..^2], newData == null ? newData : (newData) }
                     };
                     changes.Add(obj);
                     // changes.Add(newData);
