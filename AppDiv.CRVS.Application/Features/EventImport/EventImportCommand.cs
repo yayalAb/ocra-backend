@@ -5,34 +5,32 @@ using Microsoft.EntityFrameworkCore;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.EventImport
 {
     // Customer EventImportCommand with  response
     public class EventImportCommand : IRequest<object>
     {
-        public JArray Events { get; set; }
+        public JObject[] Events { get; set; }
 
     }
 
     public class EventImportCommandHandler : IRequestHandler<EventImportCommand, object>
     {
-        private readonly IEventRepository _eventRepository;
+        private readonly IEventImportService _importEventService;
 
-        public EventImportCommandHandler(IEventRepository eventRepository)
+
+        public EventImportCommandHandler(IEventImportService importEventService)
         {
-            _eventRepository = eventRepository;
+            _importEventService = importEventService;
         }
         public async Task<object> Handle(EventImportCommand request, CancellationToken cancellationToken)
         {
-            Guid eventID = Guid.Empty;
-            foreach (var item in request.Events)
-            {
-                // var
 
-            }
+            var response = await _importEventService.ImportEvent(request.Events);
 
-            return "";
+            return response;
         }
     }
 }

@@ -79,6 +79,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   EventDate = e.EventDateEt,
                                   EventRegDate = e.EventRegDateEt,
                                   IsCertified = e.IsCertified,
+                                  HasPendingDocumentApproval = e.HasPendingDocumentApproval,
                                   IsReprint = e.ReprintWaiting,
                                   PaymentDate = e.EventPaymentRequest
                                         .Where(r => r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("certificategeneration")

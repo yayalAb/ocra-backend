@@ -14,6 +14,7 @@ using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.Payments.Command.Create;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Infrastructure.Context;
@@ -106,7 +107,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             Console.WriteLine("job started event sync ....... .......");
 
             var eventDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                    .Where(n => n.StartsWith("eventcouchaa2b04e7-010a-11ee-a622-fa163e736d71")).ToList();
+                                    .Where(n => n.StartsWith("eventcouch")).ToList();
             Console.WriteLine($"db count ---- {eventDbNames.Count}");
 
 
@@ -114,7 +115,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
 
                 var eventDb = _couchContext.Client.GetDatabase<BaseEventCouch>(dbName);
-                var unsyncedEventDocs = eventDb.Where(e => !(e.Synced) && e.Id == "03346d9a-14eb-49b9-bbb5-ac4b778239cd");
+                var unsyncedEventDocs = eventDb.Where(e => !(e.Synced));
                 Console.WriteLine($"db name ------- {dbName}");
 
                 Console.WriteLine($"unsynced count -- {unsyncedEventDocs.ToList().Count()}");
@@ -417,8 +418,6 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                         deathEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
 
                                     }
-
-
                                 }
                                 deathEventCouch.Synced = true;
                                 await deathDb.AddOrUpdateAsync(deathEventCouch);
@@ -666,40 +665,100 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
         }
 
-        public async Task IndexCertificate(Certificate certificate)
+        public async Task AddIndex<T>(List<object> entities, string indexName) where T : BaseIndex
         {
-            await _elasticClient.CreateDocumentAsync<CertificateIndex>(mapCertificateIndex(certificate));
+            dynamic indexObj = new List<BaseIndex>();
+            if (indexName == "certificates")
+            {
+                List<Certificate> certificates = entities.Select(e => (Certificate)e).ToList();
+                indexObj = mapCertificateIndex(certificates);
+
+
+            }
+            else if (indexName == "personal_info")
+            {
+                // List<PersonalInfo> personalInfos = entities.Select(e => (PersonalInfo)e).ToList();
+                // indexObj = mapPersonalInfoIndex(personalInfos);
+                indexObj = entities.Select(e => (PersonalInfoIndex)e).ToList();
+                _elasticClient.Indices.Delete("personal_info");//TODO:remove this line
+            }
+            else
+            {
+                throw new ApplicationException("invalid index name");
+            }
+
+            _elasticClient.IndexMany<T>((IEnumerable<T>)indexObj);
+            await _elasticClient.Indices.RefreshAsync(indexName);
+
             //TODO:indexed boolean in certificate table and bg service for indexing failed certificate indexes
 
         }
 
-        public async Task RemoveCertificate(Guid certificateId)
+        public async Task RemoveIndex<T>(List<Guid> indexIds, string indexName) where T : BaseIndex
         {
-            await _elasticClient.DeleteByQueryAsync<CertificateIndex>(c =>
-             c.Index("certificates")
+            await _elasticClient.DeleteByQueryAsync<T>(c =>
+             c.Index(indexName)
                 .Query(q =>
                     q.Match(m =>
-                        m.Field(f => f.Id == certificateId)
+                        m.Field(f => indexIds.Contains(f.Id))
                         )));
+            await _elasticClient.Indices.RefreshAsync(indexName);
         }
-        public async Task updateCertificate(Certificate certificate)
+        public async Task UpdateIndex<T>(List<object> entities, string indexName) where T : BaseIndex
         {
-            await _elasticClient.UpdateByQueryAsync<CertificateIndex>(c =>
-             c.Index("certificates")
-                .Query(q =>
-                    q.Match(m =>
-                        m.Field(f => f.Id == certificate.Id)
-                        )).Script(script => script
-                 // Use the _source field in the script to set the entire document to the new one.
-                 .Source($"ctx._source = params.newDocument")
-                 .Params(p => p.Add("newDocument", mapCertificateIndex(certificate)))
-             ));
+            var certificateIndexes = new List<CertificateIndex>();
+            var personalInfoIndexes = new List<PersonalInfoIndex>();
+            if (indexName == "certificates")
+            {
+                List<Certificate> certificates = entities.Select(e => (Certificate)e).ToList();
+                certificateIndexes = (mapCertificateIndex(certificates)).ToList();
+                foreach (var certificateIndex in certificateIndexes)
+                {
+                    await _elasticClient.UpdateByQueryAsync<T>(c =>
+                                 c.Index(indexName)
+                                    .Query(q =>
+                                        q.Match(m =>
+                                            m.Field(f => f.Id == certificateIndex.Id)
+                                            )).Script(script => script
+                                     // Use the _source field in the script to set the entire document to the new one.
+                                     .Source($"ctx._source = params.newDocument")
+                                     .Params(p => p.Add("newDocument", certificateIndex))
+                                 ));
+                };
+
+            }
+            else if (indexName == "personal_info")
+            {
+                List<PersonalInfo> personalInfos = entities.Select(e => (PersonalInfo)e).ToList();
+                personalInfoIndexes = (mapPersonalInfoIndex(personalInfos)).ToList();
+                foreach (var personIndex in personalInfoIndexes)
+                {
+                    await _elasticClient.UpdateByQueryAsync<T>(c =>
+                                 c.Index(indexName)
+                                    .Query(q =>
+                                        q.Match(m =>
+                                            m.Field(f => f.Id == personIndex.Id)
+                                            )).Script(script => script
+                                     // Use the _source field in the script to set the entire document to the new one.
+                                     .Source($"ctx._source = params.newDocument")
+                                     .Params(p => p.Add("newDocument", personIndex))
+                                 ));
+                };
+            }
+            else
+            {
+                throw new ApplicationException("invalid index name");
+            }
+
+
+            await _elasticClient.Indices.RefreshAsync(indexName);
+
 
         }
 
-        private CertificateIndex mapCertificateIndex(Certificate certificate)
+        private IEnumerable<CertificateIndex> mapCertificateIndex(List<Certificate> certificates)
         {
-            return new CertificateIndex
+            return certificates.Select(certificate => new CertificateIndex
             {
                 Id = certificate.Id,
                 EventId = certificate.Event.Id,
@@ -766,12 +825,12 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 EventAddressOr = certificate.Event.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("or"),
                 EventRegisteredAddressId = certificate.Event.EventRegisteredAddressId
 
-            };
+            });
         }
 
-        private PersonalInfoIndex mapPersonalInfoIndex(PersonalInfo personalInfo)
+        private IEnumerable<PersonalInfoIndex> mapPersonalInfoIndex(List<PersonalInfo> personalInfos)
         {
-            return new PersonalInfoIndex
+            return personalInfos.Select(personalInfo => new PersonalInfoIndex
             {
                 Id = personalInfo.Id,
                 FirstNameStr = personalInfo.FirstNameStr,
@@ -795,7 +854,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 AddressOr = personalInfo.ResidentAddress.AddressName == null ? null : personalInfo.ResidentAddress.AddressName.Value<string>("or"),
                 AddressAm = personalInfo.ResidentAddress.AddressName == null ? null : personalInfo.ResidentAddress.AddressName.Value<string>("am"),
                 DeathStatus = personalInfo.DeathStatus
-            };
+            });
         }
     }
 }

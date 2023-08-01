@@ -1,9 +1,12 @@
 ﻿using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
+// using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Contracts;
 using Audit.EntityFramework;
 using Microsoft.EntityFrameworkCore;
@@ -1171,6 +1174,19 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 .Where(e => e.Entity is BaseAuditableEntity || e.Entity is ApplicationUser && (
                         e.State == EntityState.Added
                         || e.State == EntityState.Modified));
+            var personEntries = _dbContext.ChangeTracker
+                .Entries()
+                .Where(e => e.Entity is PersonalInfo && (
+                        e.State == EntityState.Added
+                        || e.State == EntityState.Modified
+                        || e.State == EntityState.Deleted)).ToList();
+            List<PersonalInfoEntry> personalInfoEntries = personEntries.Select(e => new PersonalInfoEntry
+            {
+                State = e.State,
+                PersonalInfoId = ((PersonalInfo)e.Entity).Id
+            }).ToList();
+
+
 
             // For each entity we will set the Audit properties
             foreach (var entityEntry in entries)
@@ -1179,7 +1195,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 // the CreatedAt and CreatedBy properties
                 if (entityEntry.State == EntityState.Added)
                 {
-                  
+
                     ((BaseAuditableEntity)entityEntry.Entity).CreatedAt = ((BaseAuditableEntity)entityEntry.Entity).CreatedAt != null
                                                                     && ((BaseAuditableEntity)entityEntry.Entity).CreatedAt != new DateTime()
                                                                     ? ((BaseAuditableEntity)entityEntry.Entity).CreatedAt
@@ -1208,6 +1224,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // we call the base implementation of SaveChangesAsync
             // to actually save our entities in the database
             await _dbContext.SaveChangesAsync(cancellationToken);
+            HelperService.IndexPersonalInfo(personalInfoEntries, _dbContext);
             return true;
         }
 

@@ -15,11 +15,14 @@ using Microsoft.AspNetCore.Cors;
 using AppDiv.CRVS.Infrastructure.Hub.ChatHub;
 using Hangfire;
 using AppDiv.CRVS.Infrastructure.Service;
+using Newtonsoft.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddControllers().AddNewtonsoftJson(); ;
+builder.Services.AddControllers().AddNewtonsoftJson(options => {
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+}); 
 
 
 // For authentication
@@ -218,7 +221,7 @@ app.MapControllers();
 // BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
 
 // BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
-RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSync",x => x.GetEventJob(), Cron.Hourly());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSyncs",x => x.GetEventJob(), Cron.Hourly());
 RecurringJob.AddOrUpdate<IBackgroundJobs>("marriageApplicationSync",x => x.SyncMarriageApplicationJob(), Cron.Hourly());
 
 

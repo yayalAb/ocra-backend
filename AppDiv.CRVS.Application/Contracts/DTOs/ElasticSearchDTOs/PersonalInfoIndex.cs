@@ -1,9 +1,9 @@
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
 {
-    public class PersonalInfoIndex
+    public class PersonalInfoIndex:BaseIndex
     {
-        public Guid Id { get; set; }
+        // public Guid Id { get; set; }
         public string? FirstNameStr { get; set; }
         public string? FirstNameOr { get; set; }
         public string? FirstNameAm { get; set; }

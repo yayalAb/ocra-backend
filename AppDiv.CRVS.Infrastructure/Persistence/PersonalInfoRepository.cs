@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query)
         {
-            _elasticClient.Indices.Delete("personal_info");
+            // _elasticClient.Indices.Delete("personal_info");
             if (!_elasticClient.Indices.Exists("personal_info").Exists)
             {
 
