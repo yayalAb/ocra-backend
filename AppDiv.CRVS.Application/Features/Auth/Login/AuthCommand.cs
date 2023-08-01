@@ -184,9 +184,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Device = _httpContext.HttpContext?.Request.Headers["User-Agent"].ToString()
 
             };
-            Console.WriteLine("login history : {0} ", JsonConvert.SerializeObject(LoginHis));
-            // await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
-            // await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
+            await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
+            await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
 
             return new AuthResponseDTO()
             {

@@ -1,4 +1,5 @@
-﻿using Ab.Domain.Configuration.Settings;
+﻿using System;
+using Ab.Domain.Configuration.Settings;
 using AppDiv.CRVS.Domain.Configuration.Settings;
 using AppDiv.CRVS.Domain.Entities.Audit;
 using AppDiv.CRVS.Domain.Entities.Settings;
@@ -159,7 +160,7 @@ namespace AppDiv.CRVS.Infrastructure
                     if (userResolverService != null)
                     {
                         var userId = userResolverService.GetUserId();
-                        var workingAddressId = userResolverService.GetWorkingAddressId();
+                        var workingAddressId = Guid.Empty;//; userResolverService.GetWorkingAddressId()
 
                         auditEntity.AuditUserId = userId != null
                                 ? new Guid(userId)
