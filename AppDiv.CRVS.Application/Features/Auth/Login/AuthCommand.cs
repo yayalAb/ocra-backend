@@ -14,6 +14,7 @@ using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Utility.Config;
 using AppDiv.CRVS.Domain.Enums;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
 
@@ -173,16 +174,17 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                        r.canDelete = true;
                    });
             }
-            // var LoginHis = new LoginHistory
-            // {
-            //     Id = Guid.NewGuid(),
-            //     UserId = response.userId,
-            //     EventType = "Login",
-            //     EventDate = DateTime.Now,
-            //     IpAddress = _httpContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
-            //     Device = _httpContext.HttpContext?.Request.Headers["User-Agent"].ToString()
+            var LoginHis = new LoginHistory
+            {
+                Id = Guid.NewGuid(),
+                UserId = response.userId,
+                EventType = "Login",
+                EventDate = DateTime.Now,
+                IpAddress = _httpContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
+                Device = _httpContext.HttpContext?.Request.Headers["User-Agent"].ToString()
 
-            // };
+            };
+            Console.WriteLine("login history : {0} ", JsonConvert.SerializeObject(LoginHis));
             // await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             // await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
 
