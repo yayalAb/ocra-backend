@@ -28,10 +28,15 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                     .When(p => (p.BirthEvent.Event.EventRegistrar != null
                                 || p.BirthEvent.Event.InformantType?.ToLower() == "legal guardian"
                                 || p.BirthEvent.Event.InformantType?.ToLower() == "police officer"));
-            RuleFor(p => p.BirthEvent.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator()!)
+            RuleFor(p => p.BirthEvent.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.EventSupportingDocuments")!)
                     .When(p => (p.BirthEvent.Event.EventSupportingDocuments != null));
             RuleFor(p => p.BirthEvent.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo)!)
                 .When(p => (p.BirthEvent.Event.IsExampted));
+            When(p => p.BirthEvent.Event.PaymentExamption?.SupportingDocuments != null, () =>
+            {
+                RuleFor(p => p.BirthEvent.Event.PaymentExamption.SupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.PaymentExamption.SupportingDocuments")!)
+                    .When(p => (p.BirthEvent.Event.IsExampted));
+            });
         }
 
     }

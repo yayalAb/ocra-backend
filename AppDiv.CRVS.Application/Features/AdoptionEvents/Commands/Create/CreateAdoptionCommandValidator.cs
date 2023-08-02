@@ -3,6 +3,7 @@ using FluentValidation;
 using AppDiv.CRVS.Utility.Services;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 {
@@ -132,6 +133,32 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             // RuleFor(e => e.Adoption.CourtCase.Id)
             //     .MustAsync(CheckIdOnCeate)
             //     .WithMessage("{PropertyName} is must be null on Create.");
+
+            When(e => e.Adoption.Event.EventSupportingDocuments != null, () =>
+           {
+               RuleFor(e => e.Adoption.Event.EventSupportingDocuments
+               .Select(doc => doc.base64String))
+               .ForEach(base64String => base64String
+               .Must(HelperService.IsBase64String))
+               .When(base64String => base64String != null).WithMessage("{PropertyName} -- invalid base64String format ");
+               When(e => e.Adoption.Event.EventSupportingDocuments.Select(doc => doc.FingerPrint) != null, () =>
+               {
+                   RuleFor(e => e.Adoption.Event.EventSupportingDocuments
+                   .SelectMany(doc => doc.FingerPrint.Select(f => f.base64Image)))
+                   .ForEach(image => image
+                   .Must(HelperService.IsBase64String))
+                   .When(image => image != null).WithMessage("{PropertyName} -- invalid base64String format");
+               });
+
+           });
+            When(e => e.Adoption.Event.PaymentExamption?.SupportingDocuments != null, () =>
+           {
+               RuleFor(e => e.Adoption.Event.PaymentExamption.SupportingDocuments
+               .Select(doc => doc.base64String))
+               .ForEach(base64String => base64String
+               .Must(HelperService.IsBase64String))
+               .When(base64String => base64String != null).WithMessage("{PropertyName} -- invalid base64String format");
+           });
         }
         private async Task<bool> ValidateForignkeyAddress(Guid? request, CancellationToken token)
         {

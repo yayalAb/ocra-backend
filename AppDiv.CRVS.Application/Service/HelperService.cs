@@ -23,6 +23,21 @@ namespace AppDiv.CRVS.Application.Service
 
             return code.Substring(0, 6);
         }
+        public static bool IsBase64String(string input)
+        {
+            try
+            {
+                var base64String = input.Substring(input.IndexOf(',') + 1);
+                // Attempt to convert the input string to a byte array
+                byte[] buffer = Convert.FromBase64String(base64String);
+                return true;
+            }
+            catch (FormatException)
+            {
+                // If the conversion fails, catch the FormatException and return false
+                return false;
+            }
+        }
 
         public static int GetMonthDifference(DateTime startDate, DateTime endDate)
         {

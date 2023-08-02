@@ -69,14 +69,31 @@ namespace AppDiv.CRVS.Application.Service
             // repository = repo;
             return ruleBuilder.Must(docs =>
             {
-                foreach (var d in docs)
+                if (docs != null)
                 {
-                    try
-                    {
-                        if (d.base64String != null)
-                        {
 
-                            string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
+                    foreach (var d in docs)
+                    {
+                        try
+                        {
+                            if (d.base64String != null && !HelperService.IsBase64String(d.base64String))
+                            {
+                                message.Add("invalid base64String");
+                            }
+                            if (d.FingerPrint != null)
+                            {
+                                var images = d.FingerPrint.Select(f => f.base64Image)
+                                     .ToList();
+                                for (int i = 0; i < images.Count(); i++)
+                                {
+                                    if (!HelperService.IsBase64String(images[i]))
+                                    {
+                                        message.Add($"invalid base64String: fingerPrint - {i}");
+                                    }
+
+                                }
+
+                            }
                             // Convert.FromBase64String(myString);
                             if (d.Label == null || d.Label == "")
                             {
@@ -88,22 +105,23 @@ namespace AppDiv.CRVS.Application.Service
                                 message.Add("Type is required.");
                                 // return false;
                             }
-                            if (d.Description == null || d.Description == "")
-                            {
-                                message.Add("Description is required.");
-                                // return false;
-                            }
+                            // if (d.Description == null || d.Description == "")
+                            // {
+                            //     message.Add("Description is required.");
+                            //     // return false;
+                            // }
                             // return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
                             //     (d.Description == null || d.Description == "") ? false : true;
+
+                        }
+                        catch (FormatException)
+                        {
+                            message.Add("Invalid Base64String.");
+                            return false;
                         }
                     }
-                    catch (FormatException)
-                    {
-                        message.Add("Invalid Base64String.");
-                        // return false;
-                    }
                 }
-
+                
                 return message.Count > 0 ? false : true;
             }).WithMessage($"'{propertyName}' Check your supporting documents {string.Join("\n\t", message)}");
         }
@@ -232,7 +250,7 @@ namespace AppDiv.CRVS.Application.Service
             body = Expression.Convert(body, typeof(object));
             return Expression.Lambda<Func<T, object>>(body, param);
         }
-         public static bool HaveGuardianSupportingDoc(ICollection<AddSupportingDocumentRequest>? supportingDocs,ILookupRepository _lookupRepo)
+        public static bool HaveGuardianSupportingDoc(ICollection<AddSupportingDocumentRequest>? supportingDocs, ILookupRepository _lookupRepo)
         {
             var supportingDocTypeLookupId = _lookupRepo
                                             .GetAll()
