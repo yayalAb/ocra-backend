@@ -39,8 +39,6 @@ namespace AppDiv.CRVS.Infrastructure.Services
             {
                 var tokenstring = httpContext?.HttpContext?.Request == null ? null :
                  httpContext?.HttpContext?.Request?.Headers["Authorization"].ToString().Split(" ").Last();
-                Console.WriteLine($"userrrr=============== {tokenstring}");
-
                 if (!string.IsNullOrEmpty(tokenstring) && tokenstring.ToLower() != "undefined" && tokenstring.ToLower() != "null")
                 {
                     // TODO: readtoken exception handling
@@ -56,13 +54,12 @@ namespace AppDiv.CRVS.Infrastructure.Services
         public Guid GetWorkingAddressId()
         {
             var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
-            if (string.IsNullOrEmpty(tokenstring))
+            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
             {
                 return Guid.Empty;
 
             }
             var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
-
             var addressId = token.Claims.FirstOrDefault(c => c.Type == "addressId")?.Value;
             if (addressId == null)
             {
@@ -73,13 +70,13 @@ namespace AppDiv.CRVS.Infrastructure.Services
         public int GetAdminLevel()
         {
             var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
-            if (string.IsNullOrEmpty(tokenstring))
+            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+
             {
                 return -1;
 
             }
             var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
-
             var adminLevel = token.Claims.FirstOrDefault(c => c.Type == "adminLevel")?.Value;
             if (int.TryParse(adminLevel, out int level))
             {
@@ -90,7 +87,8 @@ namespace AppDiv.CRVS.Infrastructure.Services
         public Guid GetUserPersonalId()
         {
             var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
-            if (string.IsNullOrEmpty(tokenstring))
+            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+
             {
                 return Guid.Empty;
 
@@ -106,10 +104,10 @@ namespace AppDiv.CRVS.Infrastructure.Services
         }
         public Guid GetUserPersonalIdFromAccessTokenParam()
         {
-        
+
             var tokenstring = httpContext?.HttpContext?.Request.Query["access_token"];
-            
-            if (string.IsNullOrEmpty(tokenstring))
+
+            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
             {
                 return Guid.Empty;
 
