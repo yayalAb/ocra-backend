@@ -136,12 +136,8 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 //     await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
 
                 // }
-                var personIds = new PersonIdObj
-                {
-                    MotherId = adoptionEvent.AdoptiveMother.Id,
-                    FatherId = adoptionEvent.AdoptiveFather.Id,
-                    ChildId = adoptionEvent.Event.EventOwener.Id
-                };
+                var personIds = new PersonIdObj();
+
                 if (!request.IsFromCommand)
                 {
                     adoptionEvent.Event.EventSupportingDocuments = null;
@@ -150,6 +146,12 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                         adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
                     }
                     _adoptionEventRepository.EFUpdate(adoptionEvent);
+                    personIds = new PersonIdObj
+                    {
+                        MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
+                        FatherId = adoptionEvent.AdoptiveFather != null ? adoptionEvent.AdoptiveFather.Id : adoptionEvent.AdoptiveFatherId,
+                        ChildId = adoptionEvent.Event.EventOwener != null ? adoptionEvent.Event.EventOwener.Id : adoptionEvent.Event.EventOwenerId
+                    };
                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
                     var result = await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
@@ -160,6 +162,12 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 else
                 {
                     _adoptionEventRepository.EFUpdate(adoptionEvent);
+                    personIds = new PersonIdObj
+                    {
+                        MotherId = adoptionEvent.AdoptiveMother.Id,
+                        FatherId = adoptionEvent.AdoptiveFather.Id,
+                        ChildId = adoptionEvent.Event.EventOwener.Id
+                    };
                     var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
                     _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
                     if (!adoptionEvent.Event.IsExampted)

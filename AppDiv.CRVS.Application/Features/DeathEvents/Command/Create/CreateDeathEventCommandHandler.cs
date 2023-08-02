@@ -66,13 +66,13 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             {
                                 deathEvent.Event.EventRegisteredAddressId = request.DeathEvent?.Event.EventRegisteredAddressId;
                             }
+                            await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                             // Persons id
                             var personIds = new PersonIdObj
                             {
                                 DeceasedId = deathEvent.Event.EventOwener.Id,
                                 RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
                             };
-                            await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
 
                             // Save the supporting documents and payment exemption documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);

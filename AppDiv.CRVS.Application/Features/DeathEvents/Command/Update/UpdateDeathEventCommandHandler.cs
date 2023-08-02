@@ -7,7 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
-{  
+{
     // update death event command handler
     public class UpdateDeathEventCommandHandler : IRequestHandler<UpdateDeathEventCommand, UpdateDeathEventCommandResponse>
     {
@@ -62,12 +62,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // Map the reques to model eintity.
                         var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                         deathEvent.Event.EventType = "Death";
-                        // persons id.
-                        var personIds = new PersonIdObj
-                        {
-                            DeceasedId = deathEvent.Event.EventOwener.Id,
-                            RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
-                        };
                         // Set the supporting documents to null.
                         deathEvent.Event.EventSupportingDocuments = null!;
                         if (deathEvent.Event.PaymentExamption != null)
@@ -78,13 +72,19 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         deathEvent.Event.EventOwener.DeathStatus = true;
                         // Update the Death Event.
                         _deathEventRepository.UpdateWithNested(deathEvent);
+                        // persons id.
+                        var personIds = new PersonIdObj
+                        {
+                            DeceasedId = deathEvent.Event.EventOwenerId,
+                            RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfoId
+                        };
                         // if the update not from the corection request.
                         if (!request.IsFromCommand)
                         {
                             // Save the supporting documents.
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
-                            var (userPhotos,fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                            var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
                             _eventDocumentService.saveFingerPrints(fingerprints);
