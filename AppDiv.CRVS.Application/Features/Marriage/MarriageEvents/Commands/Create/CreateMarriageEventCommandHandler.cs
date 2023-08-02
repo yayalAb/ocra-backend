@@ -98,13 +98,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             }
 
 
-                            // //TODO: //
-                            var personIds = new PersonIdObj
-                            {
-                                WifeId = marriageEvent.BrideInfo.Id,
-                                HusbandId = marriageEvent.Event.EventOwener.Id,
-                                // WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
-                            };
                             var brideHasDivorce = request.BrideInfo.Id != null
                                                 && MarriageValidatorFunctions.brideHasDivorceInLessThanDateLimitInSetting((Guid)request.BrideInfo.Id, marriageEvent.Event.EventDateEt, _settingRepository, _personalInfoRepository);
                             var pregnancyFreeSupportingDocAttached = request.Event.EventSupportingDocuments != null
@@ -120,6 +113,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             marriageEvent.Event.EventType = "Marriage";
                             await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, cancellationToken);
 
+                            // //TODO: //
+                            var personIds = new PersonIdObj
+                            {
+                                WifeId = marriageEvent.BrideInfo.Id,
+                                HusbandId = marriageEvent.Event.EventOwener.Id,
+                                WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
+                            };
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");

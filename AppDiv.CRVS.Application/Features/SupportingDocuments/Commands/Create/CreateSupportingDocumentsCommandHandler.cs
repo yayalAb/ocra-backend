@@ -56,7 +56,8 @@ namespace AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create
                                     .Include(e => e.DeathEventNavigation).FirstOrDefaultAsync();
                 if (savedEvent == null)
                 {
-                    throw new NotFoundException($"Could not Save supporting Doucments : \n event with Id {request.EventId} is not found");
+                    CreateSupportingDocumentsCommandResponse.Success = false;
+                    CreateSupportingDocumentsCommandResponse.Message = $"Could not save supporting Doucments : \n event with Id {request.EventId} is not found";
                 }
 
                 var response = await _eventDocumentService.SaveSupportingDocumentsAsync(savedEvent, request.EventSupportingDocuments, request.ExamptionSupportingDocuments, request.PaymentExamptionId, cancellationToken);
@@ -71,10 +72,12 @@ namespace AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create
         private Dictionary<string, BiometricImages> mergeBiometricData((Dictionary<string, string> userPhotos, Dictionary<string, List<BiometricImagesAtt>> fingerPrints) supportingDocs)
         {
             var fingerPrints = supportingDocs.fingerPrints.ToList();
-            Dictionary<string ,BiometricImages >  BiometricInfo = new Dictionary<string, BiometricImages>();
+            Dictionary<string, BiometricImages> BiometricInfo = new Dictionary<string, BiometricImages>();
             var userPhotos = supportingDocs.userPhotos.ToList();
-            fingerPrints.ForEach(f => {
-                BiometricInfo.Add(f.Key , new BiometricImages{
+            fingerPrints.ForEach(f =>
+            {
+                BiometricInfo.Add(f.Key, new BiometricImages
+                {
                     fingerprint = f.Value
                 });
             });
