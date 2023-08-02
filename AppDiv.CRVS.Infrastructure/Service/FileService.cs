@@ -2,6 +2,7 @@
 using System;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
+
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
@@ -58,29 +59,28 @@ namespace AppDiv.CRVS.Infrastructure.Services
         {
 
 
-            try
+            if (!Directory.Exists(pathToSave))
             {
-                if (!Directory.Exists(pathToSave))
-                {
-                    // If folder does not exist, create it
-                    Directory.CreateDirectory(pathToSave);
-                }
+                // If folder does not exist, create it
+                Directory.CreateDirectory(pathToSave);
+            }
 
-                // Convert the Base64 string to a byte array.
-                string myString = base64String.Substring(base64String.IndexOf(',') + 1);
-                //    _logger.LogCritical(myString);
-                byte[] bytes = Convert.FromBase64String(myString);
-                var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
-                var fullPath = Path.Combine(pathToSave, fileName + extension);
-                await File.WriteAllBytesAsync(fullPath, bytes);
-                return true;
+
+            if (!HelperService.IsBase64String(base64String))
+            {
+                return false;
 
             }
-            catch (System.Exception)
-            {
+            // Convert the Base64 string to a byte array.
+            string myString = base64String.Substring(base64String.IndexOf(',') + 1);
+            byte[] bytes = Convert.FromBase64String(myString);
 
-                throw;
-            }
+            var extension = string.IsNullOrEmpty(getFileExtension(bytes)) ? "." + getFileExtension(bytes) : ".png";
+            var fullPath = Path.Combine(pathToSave, fileName + extension);
+            await File.WriteAllBytesAsync(fullPath, bytes);
+
+            return true;
+
 
         }
 
@@ -119,52 +119,63 @@ namespace AppDiv.CRVS.Infrastructure.Services
             try
             {
                 string folderName;
-            if (eventType != null)
-            {
-                folderName = Path.Combine("Resources", folder, eventType);
-            }
-            else{
+                if (eventType != null)
+                {
+                    folderName = Path.Combine("Resources", folder, eventType);
+                }
+                else
+                {
 
-            folderName = Path.Combine("Resources", folder);
-            }
-            var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
+                    folderName = Path.Combine("Resources", folder);
+                }
+                var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
 
-            var matchingFiles = Directory.GetFiles(fullPath, fileId + "*");
+                var matchingFiles = Directory.GetFiles(fullPath, fileId + "*");
 
-            if (matchingFiles.Length == 0)
-            {
-                throw new NotFoundException("file not found");
+                if (matchingFiles.Length == 0)
+                {
+                    throw new NotFoundException("file not found");
 
-            }
-            var actualFilePath = matchingFiles.First();
-            var fileExtension = Path.GetExtension(actualFilePath);
-            var actualFileName = Path.GetFileNameWithoutExtension(actualFilePath);
+                }
+                var actualFilePath = matchingFiles.First();
+                var fileExtension = Path.GetExtension(actualFilePath);
+                var actualFileName = Path.GetFileNameWithoutExtension(actualFilePath);
 
-            _logger.LogCritical(fileExtension);
+                _logger.LogCritical(fileExtension);
 
-            var fileContent = System.IO.File.ReadAllBytes(actualFilePath);
-            ;
-            return (file: fileContent, fileName: actualFileName, fileExtenion: fileExtension);
+                var fileContent = System.IO.File.ReadAllBytes(actualFilePath);
+                ;
+                return (file: fileContent, fileName: actualFileName, fileExtenion: fileExtension);
 
             }
             catch (System.IO.DirectoryNotFoundException e)
             {
-                
+
                 throw new BadRequestException($"could not find the directory of the path specified:\n{e.Message}");
             }
-            
+
         }
 
         private string? getFileExtension(byte[] bytes)
         {
-            // Use ImageSharp to identify the image format
-            IImageFormat format = Image.DetectFormat(bytes);
 
-            // Get the file extension from the image format
-            return format?.FileExtensions.FirstOrDefault();
+            try
+            {
+
+                // Use ImageSharp to identify the image format
+                IImageFormat format = Image.DetectFormat(bytes);
+
+
+                // Get the file extension from the image format
+                return format?.FileExtensions.FirstOrDefault();
+            }
+            catch (Exception e)
+            {
+                return null;
+            }
 
         }
-        
+
 
     }
 }
