@@ -101,13 +101,14 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
 
                                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request.Adoption);
+
                                 if (request?.Adoption?.Event?.EventRegisteredAddressId != null && request?.Adoption?.Event?.EventRegisteredAddressId != Guid.Empty)
                                 {
-                                    adoptionEvent.Event.EventRegisteredAddressId = request.Adoption.Event.EventRegisteredAddressId;
+                                    adoptionEvent.Event.EventRegisteredAddressId = request?.Adoption?.Event?.EventRegisteredAddressId;
                                 }
-                                adoptionEvent.Event.EventAddressId = request.Adoption.CourtCase.Court.AddressId;
+                                adoptionEvent.Event.EventAddressId = request?.Adoption?.CourtCase?.Court?.AddressId;
 
-                                if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
+                                if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent?.AdoptiveFather?.Id != Guid.Empty)
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
                                     // selectedperson.SexLookupId = adoptionEvent.AdoptiveFather.SexLookupId;
@@ -163,13 +164,13 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     adoptionEvent.CourtCase.CourtId = adoptionEvent.CourtCase.Court.Id;
                                     adoptionEvent.CourtCase.Court = null;
                                 }
+                                await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                                 var personIds = new PersonIdObj
                                 {
-                                    MotherId = adoptionEvent.AdoptiveMother.Id,
-                                    FatherId = adoptionEvent.AdoptiveFather.Id,
-                                    ChildId = adoptionEvent.Event.EventOwener.Id
+                                    MotherId = adoptionEvent?.AdoptiveMother?.Id,
+                                    FatherId = adoptionEvent?.AdoptiveFather?.Id,
+                                    ChildId = adoptionEvent?.Event.EventOwener?.Id
                                 };
-                                await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");

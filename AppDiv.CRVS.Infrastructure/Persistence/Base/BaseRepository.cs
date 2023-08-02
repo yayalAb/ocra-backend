@@ -1224,7 +1224,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // we call the base implementation of SaveChangesAsync
             // to actually save our entities in the database
             await _dbContext.SaveChangesAsync(cancellationToken);
-            HelperService.IndexPersonalInfo(personalInfoEntries, _dbContext);
+            // HelperService.IndexPersonalInfo(personalInfoEntries, _dbContext);
             return true;
         }
 

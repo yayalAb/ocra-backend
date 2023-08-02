@@ -52,7 +52,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.Plans.Command.Update;
 using AppDiv.CRVS.Domain.Entities.Audit;
-using  AppDiv.CRVS.Application.Features.Messages.Command.Create;
+using AppDiv.CRVS.Application.Features.Messages.Command.Create;
 using AppDiv.CRVS.Application.CouchModels;
 
 namespace AppDiv.CRVS.Application.Mapper
@@ -183,7 +183,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddRegistrarRequest, Registrar>();
             CreateMap<Registrar, RegistrarDTO>().ReverseMap();
 
-            CreateMap<AddSupportingDocumentRequest, SupportingDocument>();
+            CreateMap<AddSupportingDocumentRequest, SupportingDocument>().ReverseMap();
             CreateMap<AddPaymentExamptionDTO, PaymentExamption>();
             CreateMap<BirthEvent, AddBirthEventRequest>().ReverseMap();
             CreateMap<BirthEvent, BirthEventDTO>()
@@ -268,10 +268,10 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
             CreateMap<Transaction, TransactionRequestDTO>().ReverseMap();
             CreateMap<AuditLog, AuditLogDTO>().ReverseMap();
-            CreateMap<PaymentRate , PaymentRateCouchDTO>();
+            CreateMap<PaymentRate, PaymentRateCouchDTO>();
 
 
-            CreateMap<CreateMessageCommand , Message>().ReverseMap();   
+            CreateMap<CreateMessageCommand, Message>().ReverseMap();
 
             // CreateMap<MarriageApplicationCouch , CreateMarriageApplicationCommand>()
             // .ForPath(x => x.BrideInfo.BirthAddressResponseDTO, opt => opt.Ignore())

@@ -68,7 +68,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
             return await executionStrategy.ExecuteAsync(async () =>
             {
 
-                using (var transaction =  _CorrectionRequestRepostory.Database.BeginTransaction())
+                using (var transaction = _CorrectionRequestRepostory.Database.BeginTransaction())
                 {
                     try
 

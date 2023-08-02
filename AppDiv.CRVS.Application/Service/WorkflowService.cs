@@ -93,7 +93,6 @@ namespace AppDiv.CRVS.Application.Service
         }
         public Guid GetReceiverGroupId(string workflowType, int step)
         {
-            Console.WriteLine("workFlow {0} Step {1} ", workflowType, step);
             var groupId = _workflowRepository.GetAll()
             .Where(w => w.workflowName == workflowType)
             .Select(w => w.Steps.Where(s => s.step == step).Select(s => s.UserGroupId).FirstOrDefault()
@@ -124,12 +123,12 @@ namespace AppDiv.CRVS.Application.Service
             }
             else
             {
+
                 ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
                   (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
                   request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
 
             }
-
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
@@ -145,8 +144,6 @@ namespace AppDiv.CRVS.Application.Service
                         string? userId = _userRepository.GetAll()
                                             .Where(u => u.PersonalInfoId == request.CivilRegOfficerId)
                                             .Select(u => u.Id).FirstOrDefault();
-
-
 
                         if (userId == null)
                         {
