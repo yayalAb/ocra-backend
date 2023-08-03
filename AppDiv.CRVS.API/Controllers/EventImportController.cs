@@ -19,7 +19,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> ImportEvents([FromBody] EventImportCommand command)
+        public async Task<IActionResult> ImportEvents([FromForm] EventImportCommand command)
         {
             return Ok(await Mediator.Send(command));
         }

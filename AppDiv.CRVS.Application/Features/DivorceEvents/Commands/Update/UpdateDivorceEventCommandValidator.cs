@@ -1,4 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Validators;
 using FluentValidation;
 using System.Linq.Expressions;
 
@@ -72,7 +73,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
 
                 // add more validation rules for the field here, if needed
             }
-            var addressFeilds = new List<string>{
+            var addressFeilds = new List<string>
+            {
                 // "DivorcedWife.BirthAddressId","DivorcedWife.ResidentAddressId","Event.EventAddressId",
                 // "Event.EventOwener.BirthAddressId","Event.EventOwener.ResidentAddressId"
             };
@@ -136,6 +138,15 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                 .NotNull()
                 .NotEmpty()
                 .Must(BeFoundInEventTable).WithMessage("event with the provided id is not found");
+            RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.EventSupportingDocuments")!)
+                   .When(p => (p.Event.EventSupportingDocuments != null));
+            RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo)!)
+                    .When(p => (p.Event.IsExampted));
+            When(p => p.Event.PaymentExamption?.SupportingDocuments != null, () =>
+            {
+                RuleFor(p => p.Event.PaymentExamption.SupportingDocuments)
+                .SetValidator(new SupportingDocumentsValidator("Event.PaymentExamption.SupportingDocuments")!);
+            });
 
         }
 

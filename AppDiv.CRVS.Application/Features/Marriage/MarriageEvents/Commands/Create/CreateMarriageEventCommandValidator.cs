@@ -2,6 +2,7 @@
 using AppDiv.CRVS.Application.Features.Marriage.MarriageEvents.Commands;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Validators;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Utility.Services;
@@ -141,10 +142,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             // .When(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId) != null);
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt,true, e.Event.EventSupportingDocuments))
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true, e.Event.EventSupportingDocuments))
             .WithMessage("the bride cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false,e.Event.EventSupportingDocuments))
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false, e.Event.EventSupportingDocuments))
             .WithMessage("the Groom cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
 
             WhenAsync(async (e, CancellationToken) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
@@ -222,6 +223,17 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 //     .NotNull().WithMessage("paymentExamptionReasonId cannot be null")
                 //     .NotEmpty().WithMessage("paymentExamptionReasonId cannot be empty")
                 //     .Must(BeFoundInLookupTable).WithMessage("paymentExamptionRequest with the provided id is not found");
+            });
+            When(p => p.Event.EventSupportingDocuments != null, () =>
+            {
+                RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.EventSupportingDocuments")!);
+            });
+            RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo)!)
+                    .When(p => (p.Event.IsExampted));
+            When(p => p.Event.PaymentExamption?.SupportingDocuments != null, () =>
+            {
+                RuleFor(p => p.Event.PaymentExamption.SupportingDocuments)
+                .SetValidator(new SupportingDocumentsValidator("Event.PaymentExamption.SupportingDocuments")!);
             });
 
         }

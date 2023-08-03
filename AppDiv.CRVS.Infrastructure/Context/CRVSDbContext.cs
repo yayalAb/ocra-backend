@@ -160,7 +160,7 @@ namespace AppDiv.CRVS.Infrastructure
                     if (userResolverService != null)
                     {
                         var userId = userResolverService.GetUserId();
-                        var workingAddressId = Guid.Empty;//; userResolverService.GetWorkingAddressId()
+                        var workingAddressId = userResolverService.GetWorkingAddressId();
 
                         auditEntity.AuditUserId = userId != null
                                 ? new Guid(userId)

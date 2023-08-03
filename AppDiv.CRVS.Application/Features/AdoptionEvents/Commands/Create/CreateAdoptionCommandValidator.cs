@@ -3,6 +3,8 @@ using FluentValidation;
 using AppDiv.CRVS.Utility.Services;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Validators;
 
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 {
@@ -132,6 +134,16 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             // RuleFor(e => e.Adoption.CourtCase.Id)
             //     .MustAsync(CheckIdOnCeate)
             //     .WithMessage("{PropertyName} is must be null on Create.");
+
+            RuleFor(p => p.Adoption.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.EventSupportingDocuments")!)
+                         .When(p => (p.Adoption.Event.EventSupportingDocuments != null));
+            RuleFor(p => p.Adoption.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(_EventRepository)!)
+                .When(p => (p.Adoption.Event.IsExampted));
+            When(p => p.Adoption.Event.PaymentExamption?.SupportingDocuments != null, () =>
+            {
+                RuleFor(p => p.Adoption.Event.PaymentExamption.SupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.PaymentExamption.SupportingDocuments")!)
+                    .When(p => (p.Adoption.Event.IsExampted));
+            });
         }
         private async Task<bool> ValidateForignkeyAddress(Guid? request, CancellationToken token)
         {

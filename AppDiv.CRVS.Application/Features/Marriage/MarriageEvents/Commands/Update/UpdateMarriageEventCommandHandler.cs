@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         private readonly ISupportingDocumentRepository _supportingDocumentRepository;
         private readonly ISettingRepository _settingRepository;
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepository;
+        private readonly IEventRepository _eventRepository;
 
         public UpdateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
                                                  IPersonalInfoRepository personalInfoRepository,
@@ -38,7 +39,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                                  IAddressLookupRepository addressRepository,
                                                  ISupportingDocumentRepository supportingDocumentRepository,
                                                  ISettingRepository settingRepository,
-                                                 IPaymentExamptionRequestRepository paymentExamptionRequestRepository
+                                                 IPaymentExamptionRequestRepository paymentExamptionRequestRepository,
+                                                 IEventRepository eventRepository
                                                  )
         {
             _marriageEventRepository = marriageEventRepository;
@@ -52,6 +54,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             _supportingDocumentRepository = supportingDocumentRepository;
             _settingRepository = settingRepository;
             _paymentExamptionRequestRepository = paymentExamptionRequestRepository;
+            _eventRepository = eventRepository;
         }
 
         public async Task<UpdateMarriageEventCommandResponse> Handle(UpdateMarriageEventCommand request, CancellationToken cancellationToken)
@@ -68,7 +71,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     {
                         var updateMarriageEventCommandResponse = new UpdateMarriageEventCommandResponse();
 
-                        var validator = new UpdateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _settingRepository, _addressRepository);
+                        var validator = new UpdateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _settingRepository, _addressRepository,_eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors

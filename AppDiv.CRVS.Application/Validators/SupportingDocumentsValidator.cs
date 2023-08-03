@@ -6,9 +6,10 @@ namespace AppDiv.CRVS.Application.Validators
 {
     public class SupportingDocumentsValidator : AbstractValidator<ICollection<AddSupportingDocumentRequest>>
     {
-        public SupportingDocumentsValidator()
+        public SupportingDocumentsValidator(string propertyName)
         {
-            RuleFor(p => p).NotEmpty().NotNull().SupportingDocNull("Event.EventSupportingDocuments");
+            RuleFor(p => p).NotEmpty().NotNull().SupportingDocNull(propertyName);
+            
         }
     }
 }

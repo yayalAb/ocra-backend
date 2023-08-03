@@ -34,7 +34,6 @@ namespace AppDiv.CRVS.Application.Service
             {
 
                 eventType = (string)item["eventType"];
-                Console.WriteLine("Event Type : {0}", eventType);
                 try
                 {
                     switch (eventType.ToLower())

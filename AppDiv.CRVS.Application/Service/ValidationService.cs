@@ -63,49 +63,38 @@ namespace AppDiv.CRVS.Application.Service
                                 return repo.CheckForeignKey<PaymentExamptionRequest>(guid);
                             }).WithMessage($"'{propertyName}' Unable to Get The PaymentExamption Request");
         }
-        public static IRuleBuilderOptions<T, ICollection<AddSupportingDocumentRequest>?> SupportingDocNull<T>(this IRuleBuilder<T, ICollection<AddSupportingDocumentRequest>?> ruleBuilder, string propertyName)
+        public static IRuleBuilderOptions<T, IEnumerable<AddSupportingDocumentRequest>?> SupportingDocNull<T>(this IRuleBuilder<T, ICollection<AddSupportingDocumentRequest>?> ruleBuilder, string propertyName)
         {
             var message = new List<string>();
             // repository = repo;
-            return ruleBuilder.Must(docs =>
-            {
-                foreach (var d in docs)
+            return ruleBuilder.ForEach(docs => docs.
+                ChildRules(d =>
                 {
-                    try
-                    {
-                        if (d.base64String != null)
-                        {
 
-                            string myString = d.base64String.Substring(d.base64String.IndexOf(',') + 1);
-                            // Convert.FromBase64String(myString);
-                            if (d.Label == null || d.Label == "")
-                            {
-                                message.Add("Label is required.");
-                                // return false;
-                            }
-                            if (d.Type == null || d.Type == Guid.Empty)
-                            {
-                                message.Add("Type is required.");
-                                // return false;
-                            }
-                            if (d.Description == null || d.Description == "")
-                            {
-                                message.Add("Description is required.");
-                                // return false;
-                            }
-                            // return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
-                            //     (d.Description == null || d.Description == "") ? false : true;
-                        }
-                    }
-                    catch (FormatException)
-                    {
-                        message.Add("Invalid Base64String.");
-                        // return false;
-                    }
+                    // d.RuleFor(d => d.base64String)
+                    //     .Must(str => str == null || HelperService.IsBase64String(str)).WithMessage("invalid base64string")
+                    //     .Must(str => str == null || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                    //     .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files");
+                    // d.RuleFor(d => d.FingerPrint)
+                    //    .ForEach(f => f.ChildRules(f =>
+                    //    {
+                    //        f.RuleFor(f => f.base64Image)
+                    //        .NotNull()
+                    //        .Must(str => HelperService.IsBase64String(str)).WithMessage("invalid base64string")
+                    //        .Must(str => str == null || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                    //        .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files"); ;
+                    //    }));
+                    // d.RuleFor(d => d.Type)
+                    //     .NotNull()
+                    //     .Must(t => t != Guid.Empty).WithMessage("type is required");
+                    // d.RuleFor(d => d.Label)
+                    //     .NotNull()
+                    //     .NotEmpty().WithMessage("type is required");
+
+
                 }
+                        ));
 
-                return message.Count > 0 ? false : true;
-            }).WithMessage($"'{propertyName}' Check your supporting documents {string.Join("\n\t", message)}");
         }
 
         public static IRuleBuilderOptions<T, string?> ValidCertificate<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName, string eventType)
@@ -232,7 +221,7 @@ namespace AppDiv.CRVS.Application.Service
             body = Expression.Convert(body, typeof(object));
             return Expression.Lambda<Func<T, object>>(body, param);
         }
-         public static bool HaveGuardianSupportingDoc(ICollection<AddSupportingDocumentRequest>? supportingDocs,ILookupRepository _lookupRepo)
+        public static bool HaveGuardianSupportingDoc(ICollection<AddSupportingDocumentRequest>? supportingDocs, ILookupRepository _lookupRepo)
         {
             var supportingDocTypeLookupId = _lookupRepo
                                             .GetAll()

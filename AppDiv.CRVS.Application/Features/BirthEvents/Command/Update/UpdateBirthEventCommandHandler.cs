@@ -72,14 +72,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             {
                                 birthEvent.Event.HasPendingDocumentApproval = true;
                             }
-                            // person ids
-                            var personIds = new PersonIdObj
-                            {
-                                MotherId = birthEvent.Mother.Id,
-                                FatherId = birthEvent.Father.Id,
-                                ChildId = birthEvent.Event.EventOwener.Id,
-                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
-                            };
                             // Set the supporting documents and exemption documents null
                             birthEvent.Event.EventSupportingDocuments = null!;
                             if (birthEvent.Event.PaymentExamption != null)
@@ -88,6 +80,14 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             }
                             // Update the birth event.
                             _birthEventRepository.UpdateAll(birthEvent);
+                            // person ids
+                            var personIds = new PersonIdObj
+                            {
+                                MotherId = birthEvent.Mother != null ? birthEvent.Mother.Id : birthEvent.MotherId,
+                                FatherId = birthEvent.Father != null ? birthEvent.Father.Id : birthEvent.FatherId,
+                                ChildId = birthEvent.Event.EventOwener != null ? birthEvent.Event.EventOwener.Id : birthEvent.Event.EventOwenerId,
+                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null ? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
+                            };
                             // for requests not from correction request
                             if (!request.IsFromCommand)
                             {

@@ -1,5 +1,7 @@
 ﻿using AppDiv.CRVS.Application.Features.Marriage.MarriageEvents.Commands;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Validators;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Utility.Services;
@@ -19,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepo;
         private readonly ISettingRepository _settingRepository;
         private readonly IAddressLookupRepository _addressRepo;
+        private readonly IEventRepository eventRepo;
         private readonly Guid? _divorcePaperTypeLookupId;
         private readonly Guid? _deathCertificateTypeLookupId;
 
@@ -29,7 +32,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                                    IMarriageEventRepository marriageEventRepo,
                                                    IPaymentExamptionRequestRepository paymentExamptionRequestRepo,
                                                    ISettingRepository settingRepository,
-                                                   IAddressLookupRepository addressRepo)
+                                                   IAddressLookupRepository addressRepo,
+                                                   IEventRepository eventRepo
+                                                   )
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -39,6 +44,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _settingRepository = settingRepository;
             _addressRepo = addressRepo;
+            this.eventRepo = eventRepo;
             _divorcePaperTypeLookupId = _lookupRepo.GetAll()
                 .Where(l => l.ValueStr.ToLower()
                 .Contains(Enum.GetName<SupportingDcoumentType>(SupportingDcoumentType.DivorcePaper)!.ToLower()))
@@ -138,13 +144,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             // RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
             RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt,true, e.Event.EventSupportingDocuments))
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true, e.Event.EventSupportingDocuments))
             .WithMessage("the bride cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
             RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false,e.Event.EventSupportingDocuments))
+            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false, e.Event.EventSupportingDocuments))
             .WithMessage("the Groom cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
 
-            
+
 
             WhenAsync(async (e, c) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
@@ -209,6 +215,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                 //     .NotNull().WithMessage("paymentExamptionReasonLookupId cannot be null")
                 //     .NotEmpty().WithMessage("paymentExamptionReasonLookupId cannot be empty")
                 //     .Must(BeFoundInExamptionRequestTable).WithMessage("paymentExamptionRequest with the provided id is not found");
+            });
+            RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.EventSupportingDocuments")!)
+                               .When(p => (p.Event.EventSupportingDocuments != null));
+            RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo)!)
+                    .When(p => (p.Event.IsExampted));
+            When(p => p.Event.PaymentExamption?.SupportingDocuments != null, () =>
+            {
+                RuleFor(p => p.Event.PaymentExamption.SupportingDocuments)
+                .SetValidator(new SupportingDocumentsValidator("Event.PaymentExamption.SupportingDocuments")!);
             });
 
         }

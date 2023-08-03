@@ -52,7 +52,8 @@ using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.Plans.Command.Update;
 using AppDiv.CRVS.Domain.Entities.Audit;
-using  AppDiv.CRVS.Application.Features.Messages.Command.Create;
+using AppDiv.CRVS.Application.Features.Messages.Command.Create;
+using AppDiv.CRVS.Application.Features.Messages.Command.Create;
 using AppDiv.CRVS.Application.CouchModels;
 
 namespace AppDiv.CRVS.Application.Mapper
@@ -183,7 +184,6 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<AddRegistrarRequest, Registrar>();
             CreateMap<Registrar, RegistrarDTO>().ReverseMap();
 
-            CreateMap<AddSupportingDocumentRequest, SupportingDocument>();
             CreateMap<AddPaymentExamptionDTO, PaymentExamption>();
             CreateMap<BirthEvent, AddBirthEventRequest>().ReverseMap();
             CreateMap<BirthEvent, BirthEventDTO>()
@@ -229,7 +229,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<BrideInfoDTO, PersonalInfo>().ReverseMap();
 
             CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
-            CreateMap<SupportingDocument, AddSupportingDocumentRequest>().ReverseMap();
+            CreateMap<SupportingDocument, AddSupportingDocumentRequest>()
+            .ForMember(s => s.Type, opt => opt.MapFrom(d => d.Type)).ReverseMap();
             CreateMap<PaymentExamption, UpdatePaymentExamptionRequest>().ReverseMap();
             CreateMap<Registrar, UpdateRegistrarRequest>().ReverseMap();
             CreateMap<AddEventForBirthRequest, Event>().ReverseMap();
@@ -268,10 +269,10 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<EventInfoArchive, DivorceInfo>().ReverseMap();
             CreateMap<Transaction, TransactionRequestDTO>().ReverseMap();
             CreateMap<AuditLog, AuditLogDTO>().ReverseMap();
-            CreateMap<PaymentRate , PaymentRateCouchDTO>();
+            CreateMap<PaymentRate, PaymentRateCouchDTO>();
 
 
-            CreateMap<CreateMessageCommand , Message>().ReverseMap();   
+            CreateMap<CreateMessageCommand, Message>().ReverseMap();
 
             // CreateMap<MarriageApplicationCouch , CreateMarriageApplicationCommand>()
             // .ForPath(x => x.BrideInfo.BirthAddressResponseDTO, opt => opt.Ignore())

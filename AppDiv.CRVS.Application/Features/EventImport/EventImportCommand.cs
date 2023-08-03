@@ -6,30 +6,29 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Interfaces;
+using Microsoft.AspNetCore.Http;
 
 namespace AppDiv.CRVS.Application.Features.EventImport
 {
     // Customer EventImportCommand with  response
     public class EventImportCommand : IRequest<object>
     {
-        public JObject[] Events { get; set; }
+        public IFormFile Events { get; set; }
 
     }
 
     public class EventImportCommandHandler : IRequestHandler<EventImportCommand, object>
     {
-        private readonly IEventImportService _importEventService;
+        private readonly IFileExtractorService _importEventService;
 
 
-        public EventImportCommandHandler(IEventImportService importEventService)
+        public EventImportCommandHandler(IFileExtractorService importEventService)
         {
             _importEventService = importEventService;
         }
         public async Task<object> Handle(EventImportCommand request, CancellationToken cancellationToken)
         {
-
-            var response = await _importEventService.ImportEvent(request.Events);
-
+            var response = _importEventService.ExtractFile(request.Events);
             return response;
         }
     }

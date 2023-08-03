@@ -1,4 +1,5 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Entities;
 using FluentValidation;
 
@@ -92,6 +93,32 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update
             //     .WithMessage("{PropertyName} is required.")
             //     .NotEmpty()
             //     .WithMessage("{PropertyName} must not be empty.");
+            When(e => e.Event.EventSupportingDocuments != null, () =>
+         {
+             RuleFor(e => e.Event.EventSupportingDocuments
+             .Select(doc => doc.base64String))
+             .ForEach(base64String => base64String
+             .Must(HelperService.IsBase64String))
+             .When(base64String => base64String != null).WithMessage("{PropertyName} -- invalid base64String format ");
+             When(e => e.Event.EventSupportingDocuments.Select(doc => doc.FingerPrint) != null, () =>
+             {
+                 RuleFor(e => e.Event.EventSupportingDocuments
+                 .SelectMany(doc => doc.FingerPrint.Select(f => f.base64Image)))
+                 .ForEach(image => image
+                 .Must(HelperService.IsBase64String))
+                 .When(image => image != null).WithMessage("{PropertyName} -- invalid base64String format");
+             });
+
+         });
+            When(e => e.Event.PaymentExamption?.SupportingDocuments != null, () =>
+           {
+               RuleFor(e => e.Event.PaymentExamption.SupportingDocuments
+               .Select(doc => doc.base64String))
+               .ForEach(base64String => base64String
+               .Must(HelperService.IsBase64String))
+               .When(base64String => base64String != null).WithMessage("{PropertyName} -- invalid base64String format");
+           });
+
         }
         private bool BeEqual(LanguageModel obj1, LanguageModel obj2)
         {

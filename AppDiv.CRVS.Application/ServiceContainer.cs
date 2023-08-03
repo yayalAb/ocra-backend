@@ -51,6 +51,7 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IContentValidator, ContentValidator>();
             services.AddScoped<IWorkHistoryTracker, WorkHistoryTracker>();
             services.AddScoped<IAuditLogService, AuditLogService>();
+            services.AddScoped<IFileExtractorService, FileExtractorService>();
             services.AddScoped<HelperService>();
 
 

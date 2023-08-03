@@ -94,17 +94,17 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             // }
 
                             // var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
-                            var personIds = new PersonIdObj
-                            {
-                                WifeId = divorceEvent.DivorcedWife.Id,
-                                HusbandId = divorceEvent.Event.EventOwener.Id
-                            };
                             divorceEvent.Event.EventSupportingDocuments = null;
                             if (divorceEvent.Event.PaymentExamption != null)
                             {
                                 divorceEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
                             _DivorceEventRepository.EFUpdate(divorceEvent);
+                            var personIds = new PersonIdObj
+                            {
+                                WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,
+                                HusbandId = divorceEvent.Event.EventOwenerId
+                            };
                             if (!request.IsFromCommand)
                             {
                                 var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
@@ -112,7 +112,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Divorce");
-                            _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+                                _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
 
                             }
                             else
@@ -123,7 +123,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Divorce");
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Divorce");
-                            //TODO:save fingerprint
+                                //TODO:save fingerprint
                             }
                             // var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);

@@ -20,10 +20,15 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                     .When(p => p.DeathEvent.Event.EventRegistrar != null);
             RuleFor(p => p.DeathEvent.Event.EventRegistrar).Must(r => !(r == null)).WithMessage("Registrar Is Required")
                     .When(p => p.DeathEvent.Event.EventRegistrar == null);
-            RuleFor(p => p.DeathEvent.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator()!)
+            RuleFor(p => p.DeathEvent.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.EventSupportingDocuments")!)
                     .When(p => (p.DeathEvent.Event.EventSupportingDocuments != null));
             RuleFor(p => p.DeathEvent.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo)!)
                     .When(p => (p.DeathEvent.Event.IsExampted));
+            When(p => p.DeathEvent.Event.PaymentExamption?.SupportingDocuments != null, () =>
+            {
+                RuleFor(p => p.DeathEvent.Event.PaymentExamption.SupportingDocuments)
+                .SetValidator(new SupportingDocumentsValidator("Event.PaymentExamption.SupportingDocuments")!);
+            });
 
         }
 
