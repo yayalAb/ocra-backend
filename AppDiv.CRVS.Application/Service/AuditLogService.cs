@@ -20,15 +20,20 @@ namespace AppDiv.CRVS.Application.Service
         public JObject GetContent(JArray? content)
         {
             JObject oldData = new();
-            foreach (var (columnName, originalValue) in
+            foreach (var (columnName, originalValue, newValue) in
                             from change in content
                             let changeObject = (JObject)change
                             let columnName = changeObject?.GetValue("ColumnName")?.ToString()
                             let originalValue = changeObject?.GetValue("OriginalValue")
+                            let newValue = changeObject?.GetValue("NewValue")
                             where columnName != null
-                            select (columnName, originalValue))
+                            select (columnName, originalValue, newValue))
             {
-                oldData.Add(columnName, originalValue);
+                var oldValue = originalValue;
+                // Console.WriteLine($"{columnName} old Val= {oldValue} is empty {Object.Equals(oldValue, Guid.Empty)} || {oldValue.ToString() == Guid.Empty.ToString()}");
+                if (oldValue.ToString() == Guid.Empty.ToString())
+                    oldValue = newValue;
+                oldData.Add(columnName, oldValue);
             }
 
             return oldData;
@@ -98,8 +103,16 @@ namespace AppDiv.CRVS.Application.Service
                     }
                     catch (System.Exception)
                     {
-                        objArray = JArray.Parse((string)(property?.Value ?? "[]"));
-                        newProperty = new(newName, objArray);
+                        try
+                        {
+                            objArray = JArray.Parse((string)(property?.Value ?? "[]"));
+                            newProperty = new(newName, objArray);
+                        }
+                        catch (System.Exception)
+                        {
+                            newProperty = new(newName, property?.Value);
+                            // throw;
+                        }
                     }
                     property?.Parent?.Add(newProperty);
                     property?.Remove();
