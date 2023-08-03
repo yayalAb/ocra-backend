@@ -63,67 +63,38 @@ namespace AppDiv.CRVS.Application.Service
                                 return repo.CheckForeignKey<PaymentExamptionRequest>(guid);
                             }).WithMessage($"'{propertyName}' Unable to Get The PaymentExamption Request");
         }
-        public static IRuleBuilderOptions<T, ICollection<AddSupportingDocumentRequest>?> SupportingDocNull<T>(this IRuleBuilder<T, ICollection<AddSupportingDocumentRequest>?> ruleBuilder, string propertyName)
+        public static IRuleBuilderOptions<T, IEnumerable<AddSupportingDocumentRequest>?> SupportingDocNull<T>(this IRuleBuilder<T, ICollection<AddSupportingDocumentRequest>?> ruleBuilder, string propertyName)
         {
             var message = new List<string>();
             // repository = repo;
-            return ruleBuilder.Must(docs =>
-            {
-                if (docs != null)
+            return ruleBuilder.ForEach(docs => docs.
+                ChildRules(d =>
                 {
 
-                    foreach (var d in docs)
-                    {
-                        try
-                        {
-                            if (d.base64String != null && !HelperService.IsBase64String(d.base64String))
-                            {
-                                message.Add("invalid base64String");
-                            }
-                            if (d.FingerPrint != null)
-                            {
-                                var images = d.FingerPrint.Select(f => f.base64Image)
-                                     .ToList();
-                                for (int i = 0; i < images.Count(); i++)
-                                {
-                                    if (!HelperService.IsBase64String(images[i]))
-                                    {
-                                        message.Add($"invalid base64String: fingerPrint - {i}");
-                                    }
+                    // d.RuleFor(d => d.base64String)
+                    //     .Must(str => str == null || HelperService.IsBase64String(str)).WithMessage("invalid base64string")
+                    //     .Must(str => str == null || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                    //     .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files");
+                    // d.RuleFor(d => d.FingerPrint)
+                    //    .ForEach(f => f.ChildRules(f =>
+                    //    {
+                    //        f.RuleFor(f => f.base64Image)
+                    //        .NotNull()
+                    //        .Must(str => HelperService.IsBase64String(str)).WithMessage("invalid base64string")
+                    //        .Must(str => str == null || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                    //        .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files"); ;
+                    //    }));
+                    // d.RuleFor(d => d.Type)
+                    //     .NotNull()
+                    //     .Must(t => t != Guid.Empty).WithMessage("type is required");
+                    // d.RuleFor(d => d.Label)
+                    //     .NotNull()
+                    //     .NotEmpty().WithMessage("type is required");
 
-                                }
 
-                            }
-                            // Convert.FromBase64String(myString);
-                            if (d.Label == null || d.Label == "")
-                            {
-                                message.Add("Label is required.");
-                                // return false;
-                            }
-                            if (d.Type == null || d.Type == Guid.Empty)
-                            {
-                                message.Add("Type is required.");
-                                // return false;
-                            }
-                            // if (d.Description == null || d.Description == "")
-                            // {
-                            //     message.Add("Description is required.");
-                            //     // return false;
-                            // }
-                            // return d.Label == null || d.Label == "" ? false : d.Type == null || d.Type == "" ? false :
-                            //     (d.Description == null || d.Description == "") ? false : true;
-
-                        }
-                        catch (FormatException)
-                        {
-                            message.Add("Invalid Base64String.");
-                            return false;
-                        }
-                    }
                 }
-                
-                return message.Count > 0 ? false : true;
-            }).WithMessage($"'{propertyName}' Check your supporting documents {string.Join("\n\t", message)}");
+                        ));
+
         }
 
         public static IRuleBuilderOptions<T, string?> ValidCertificate<T>(this IRuleBuilder<T, string?> ruleBuilder, IEventRepository repo, string propertyName, string eventType)
