@@ -70,8 +70,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             // Persons id
                             var personIds = new PersonIdObj
                             {
-                                DeceasedId = deathEvent.Event.EventOwener.Id,
-                                RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                                DeceasedId = deathEvent.Event.EventOwener != null? deathEvent.Event.EventOwener.Id : deathEvent.Event.EventOwenerId,
+                                RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo != null ?deathEvent.Event.EventRegistrar?.RegistrarInfo.Id : deathEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
 
                             // Save the supporting documents and payment exemption documents.

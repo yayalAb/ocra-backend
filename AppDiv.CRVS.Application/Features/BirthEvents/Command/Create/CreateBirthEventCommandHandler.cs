@@ -84,10 +84,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             // store the persons id from the request
                             var personIds = new PersonIdObj
                             {
-                                MotherId = birthEvent.Mother?.Id,
-                                FatherId = birthEvent.Father?.Id,
-                                ChildId = birthEvent.Event.EventOwener.Id,
-                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                                MotherId = birthEvent.Mother != null? birthEvent.Mother?.Id:birthEvent.MotherId,
+                                FatherId = birthEvent.Father != null? birthEvent.Father?.Id: birthEvent.FatherId,
+                                ChildId = birthEvent.Event.EventOwener !=null? birthEvent.Event.EventOwener.Id : birthEvent.Event.EventOwenerId,
+                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
                             // Separate profile photos from supporting documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
