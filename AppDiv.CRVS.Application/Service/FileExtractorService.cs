@@ -1,3 +1,4 @@
+using Internal;
 using System;
 using System.Collections.Generic;
 using System.IO.Compression;
@@ -6,11 +7,21 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System.Security.Cryptography;
+using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
     public class FileExtractorService : IFileExtractorService
     {
+        private readonly IEventImportService _eventImportService;
+        public FileExtractorService(IEventImportService eventImportService)
+        {
+            _eventImportService = eventImportService;
+        }
+
+
         private static readonly Dictionary<string, string> MIMETypesDictionary = new Dictionary<string, string>
         {
             {"image/bmp", "bmp"},
@@ -66,7 +77,7 @@ namespace AppDiv.CRVS.Application.Service
             };
 
 
-        public string[] ExtractFile(IFormFile file)
+        public async Task<string[]> ExtractFile(IFormFile file)
         {
             if (file == null || file.Length == 0)
             {
@@ -76,6 +87,14 @@ namespace AppDiv.CRVS.Application.Service
             try
             {
                 Directory.CreateDirectory(extractPath);
+                string[] files = Directory.GetFiles(extractPath);
+
+                // Loop through files and delete each one
+                foreach (string fl in files)
+                {
+                    File.Delete(fl);
+                }
+
                 using (ZipArchive archive = new ZipArchive(file.OpenReadStream()))
                 {
                     foreach (ZipArchiveEntry entry in archive.Entries)
@@ -92,6 +111,20 @@ namespace AppDiv.CRVS.Application.Service
                     }
                 }
                 string[] extractedFiles = Directory.GetFiles(extractPath);
+                foreach (string item in extractedFiles)
+                {
+                    using (StreamReader reader = new StreamReader(item))
+                    {
+                        string contents = reader.ReadToEnd();
+                        string content = Decrypt(contents, "OCRAOCRAOCRAOCRA");
+                        var result = await _eventImportService.ImportEvent(content);
+
+                    }
+
+
+                }
+
+
 
                 return extractedFiles;
             }
@@ -125,10 +158,26 @@ namespace AppDiv.CRVS.Application.Service
             // Convert the base64 string to a byte array
         }
 
+        public static string Decrypt(string cipherText, string key)
+        {
+            byte[] cipherBytes = Convert.FromBase64String(cipherText);
+            byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+            byte[] ivBytes = new byte[16];
+            using (SymmetricAlgorithm algorithm = Aes.Create())
+            {
+                algorithm.Mode = CipherMode.ECB;
+                algorithm.Padding = PaddingMode.PKCS7;
+                algorithm.Key = keyBytes;
+                algorithm.IV = ivBytes;
+                using (ICryptoTransform decryptor = algorithm.CreateDecryptor(algorithm.Key, algorithm.IV))
+                {
+                    byte[] decryptedBytes = decryptor.TransformFinalBlock(cipherBytes, 0, cipherBytes.Length);
+                    return Encoding.UTF8.GetString(decryptedBytes);
+                }
+            }
+        }
         private static string? GetExtensionFromBase64Metadata(string base64String)
         {
-            // The base64 string is typically in the format "data:image/png;base64,iVBORw0KGgoAAA..."
-            // We can attempt to extract the file extension from the metadata part "image/png"
             string[] parts = base64String.Split(',');
             if (parts.Length >= 2 && parts[0].StartsWith("data:") && parts[1].Contains("/"))
             {
@@ -142,14 +191,11 @@ namespace AppDiv.CRVS.Application.Service
 
         private static string? GetExtensionFromMimeType(string mimeType)
         {
-
             if (MIMETypesDictionary.ContainsKey(mimeType))
             {
                 return "." + MIMETypesDictionary[mimeType];
             }
             return null;
         }
-
-
     }
 }

@@ -55,7 +55,8 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
     public async Task<UpdateAdoptionCommandResponse> Handle(UpdateAdoptionCommand request, CancellationToken cancellationToken)
     {
         var UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse();
-
+        request.Event.EventOwener.MiddleName = request?.AdoptiveFather?.FirstName;
+        request.Event.EventOwener.LastName = request?.AdoptiveFather?.MiddleName;
         var validator = new CreateAdoptionCommandValidetor(_adoptionEventRepository);
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (validationResult.Errors.Count > 0)
