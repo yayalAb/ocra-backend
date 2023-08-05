@@ -37,20 +37,23 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var applicationuser = _userRepository.GetAll()
             .Include(x => x.Address)
             .Where(x => x.PersonalInfoId == request.CivilRegOfficerId).FirstOrDefault();
+
+
             if (applicationuser == null)
             {
                 throw new NotFoundException("user does not exist");
             }
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
-                              .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId || e.ReprintWaiting);
+                              .Where(e => e.EventRegisteredAddressId == applicationuser.AddressId);
             IQueryable<Event> eventsQueriable;
             if (request.isVerification)
             {
+
                 eventsQueriable = await _ReturnVerficationList.GetVerficationRequestedCertificateList(request.CivilRegOfficerId);
             }
             else
             {
-                eventsQueriable = eventByCivilReg.Where(e => (!e.IsCertified && (e.IsPaid || e.IsExampted) || (e.ReprintWaiting)));
+                eventsQueriable = eventByCivilReg.Where(e => ((!e.IsCertified && (e.IsPaid || e.IsExampted)) || (e.ReprintWaiting)));
             }
             eventsQueriable = eventsQueriable.Include(e => e.EventOwener);
             if (!string.IsNullOrEmpty(request.SearchString))

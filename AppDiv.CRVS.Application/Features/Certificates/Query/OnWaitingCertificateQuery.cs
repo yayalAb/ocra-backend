@@ -22,11 +22,13 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
     {
         private readonly IEventRepository _eventRepository;
         private readonly ISettingRepository _SettinglookupRepository;
+        private readonly IUserResolverService _userResolverService;
 
-        public OnWaitingCertificateQueryHandler(ISettingRepository SettinglookupRepository, IEventRepository eventRepository)
+        public OnWaitingCertificateQueryHandler(ISettingRepository SettinglookupRepository, IUserResolverService userResolverService, IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
             _SettinglookupRepository = SettinglookupRepository;
+            _userResolverService = userResolverService;
         }
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(OnWaitingCertificateQuery request, CancellationToken cancellationToken)
         {
@@ -36,12 +38,10 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 throw new NotFoundException("Defualt Address not Found");
             }
             int editWaitingTime = int.Parse(defualtAddress.Value.Value<string>("edit_wating_time"));
-            Console.WriteLine("Edit waiting time {0} ", editWaitingTime);
-
-
+            Guid? CreatedBy = _userResolverService.GetUserPersonalId();
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(x => x.EventCertificates.OrderByDescending(x => x.CreatedAt))
-                              .Where(e => (e.CivilRegOfficerId == request.CivilRegOfficerId
+                              .Where(e => ((e.CivilRegOfficerId == request.CivilRegOfficerId) || (e.CreatedBy == CreatedBy)
                               && e.IsCertified) && (e.EventCertificates.FirstOrDefault().CreatedAt > DateTime.Now.AddHours(-editWaitingTime)));
 
             eventByCivilReg = eventByCivilReg.Include(e => e.EventOwener);

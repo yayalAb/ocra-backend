@@ -37,6 +37,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool IsExampted { get; set; } = false;
         public bool IsPaid { get; set; } = false;
         public bool IsCertified { get; set; } = false;
+        public bool? IsOfflineReg { get; set; } = false;
         public bool IsVerified { get; set; } = false;
         public bool HasPendingDocumentApproval { get; set; } = false;
         public bool OnReprintPaymentRequest { get; set; } = false;

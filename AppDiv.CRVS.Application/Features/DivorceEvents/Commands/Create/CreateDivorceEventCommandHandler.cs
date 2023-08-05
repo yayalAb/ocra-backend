@@ -75,7 +75,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                divorceEvent.Event.EventRegisteredAddressId = request?.Event.EventRegisteredAddressId;
+                                divorceEvent.Event.EventRegisteredAddressId = request?.Event?.EventRegisteredAddressId;
                             }
                             divorceEvent.Event.EventType = "Divorce";
                             await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent, cancellationToken);
