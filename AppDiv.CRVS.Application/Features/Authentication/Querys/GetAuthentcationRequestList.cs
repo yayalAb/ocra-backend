@@ -110,7 +110,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
 
             if (!request.IsYourRequestList)
             {
-                RequestListDto = RequestListDto.Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
+                RequestListDto = RequestListDto.Where(rg => userGroup.UserGroups.Select(g => g.Id).ToList().Contains((Guid)rg.ResponsbleGroupId));
             }
             else
             {
