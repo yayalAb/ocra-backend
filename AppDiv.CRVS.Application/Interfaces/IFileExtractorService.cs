@@ -8,6 +8,6 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface IFileExtractorService
     {
-        string[] ExtractFile(IFormFile file);
+        Task<string[]> ExtractFile(IFormFile file);
     }
 }

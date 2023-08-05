@@ -25,12 +25,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly IEventRepository _eventRepository;
         private readonly IUserRepository _userRepository;
         private readonly IReturnVerficationList _ReturnVerficationList;
+        private readonly IUserResolverService _UserReso;
 
-        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IReturnVerficationList ReturnVerficationList, IUserRepository userRepository, IEventRepository eventRepository)
+        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IUserResolverService UserReso, IReturnVerficationList ReturnVerficationList, IUserRepository userRepository, IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
             _userRepository = userRepository;
             _ReturnVerficationList = ReturnVerficationList;
+            _UserReso = UserReso;
         }
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
@@ -42,15 +44,16 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 throw new NotFoundException("user does not exist");
             }
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
-                              .Where(e => e.CivilRegOfficerId == request.CivilRegOfficerId || e.ReprintWaiting);
+                              .Where(e => e.EventRegisteredAddressId == applicationuser.AddressId);
             IQueryable<Event> eventsQueriable;
             if (request.isVerification)
             {
+
                 eventsQueriable = await _ReturnVerficationList.GetVerficationRequestedCertificateList(request.CivilRegOfficerId);
             }
             else
             {
-                eventsQueriable = eventByCivilReg.Where(e => (!e.IsCertified && (e.IsPaid || e.IsExampted) || (e.ReprintWaiting)));
+                eventsQueriable = eventByCivilReg.Where(e => ((!e.IsCertified && (e.IsPaid || e.IsExampted)) || (e.ReprintWaiting)));
             }
             eventsQueriable = eventsQueriable.Include(e => e.EventOwener);
             if (!string.IsNullOrEmpty(request.SearchString))
@@ -68,8 +71,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             return await PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
                                eventsQueriable.Include(e => e.EventOwener)
-                             .Include(e => e.EventPaymentRequest)
-                                .ThenInclude(e => e.Payment)
+                             .Include(e => e.EventPaymentRequest).OrderBy(x => x.CreatedAt)
+
                               .Select(e => new PaidCertificateDTO
                               {
                                   EventId = e.Id,
@@ -81,12 +84,12 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   IsCertified = e.IsCertified,
                                   HasPendingDocumentApproval = e.HasPendingDocumentApproval,
                                   IsReprint = e.ReprintWaiting,
-                                  PaymentDate = e.EventPaymentRequest
-                                        .Where(r => r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("certificategeneration")
-                                        || r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("reprint"))
-                                        .FirstOrDefault().Payment.CreatedAt
+                                  //   PaymentDate = e.EventPaymentRequest
+                                  //         .Where(r => r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("certificategeneration")
+                                  //         || r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("reprint"))
+                                  //         .FirstOrDefault().Payment.CreatedAt
 
-                              }).OrderByDescending(e => e.PaymentDate)
+                              })//.OrderByDescending(e => e.C).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              .Select(w => new AuthenticationRequestListDTO
              {
                  Id = w.Id,
-                 ResponsbleGroupId = w.Workflow.Steps.Where(g => g.step == w.NextStep).Select(x => x.UserGroupId).FirstOrDefault(),
+                 ResponsbleGroupId = w.Workflow.Steps.Where(g => g.step == w.NextStep).Select(x => x.UserGroupId).FirstOrDefault() ?? Guid.Empty,
                  ResponsbleGroup = w.Workflow.Steps.Where(g => g.step == w.NextStep).Select(x => x.UserGroup.GroupName).FirstOrDefault(),
                  OfficerId = w.CivilRegOfficerId,
                  RequestedBy = w.CivilRegOfficer.FirstNameLang + " " + w.CivilRegOfficer.MiddleNameLang + " " + w.CivilRegOfficer.LastNameLang,
@@ -105,12 +105,11 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .Select(x => x.UserGroupId).FirstOrDefault()
              });
 
-            //  .Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault()
-            //  || rg.OfficerId == userGroup.PersonalInfoId);
 
             if (!request.IsYourRequestList)
             {
-                RequestListDto = RequestListDto.Where(rg => userGroup.UserGroups.Select(g => g.Id).ToList().Contains((Guid)rg.ResponsbleGroupId));
+                RequestListDto = RequestListDto.Where(rg => userGroup.UserGroups.Select(g => g.Id).ToList().Contains(rg.ResponsbleGroupId)); 
+                // RequestListDto = RequestListDto.Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
             }
             else
             {
@@ -129,10 +128,3 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
     }
 }
-
-
-//  .Where(wf => wf.CivilRegOfficerId == userGroup.PersonalInfoId)
-// Where(w => w.Workflow.Steps.Where(g => g.step == w.currentStep).Any())
-//  wf.CivilRegOfficerId == userGroup.PersonalInfoId ||
-//   wf.Workflow.Steps.Any(s => s.UserGroupId == new Guid(userGroup.Id))
-//  _WorkflowService.GetNextStep(w.RequestType, w.currentStep, true)

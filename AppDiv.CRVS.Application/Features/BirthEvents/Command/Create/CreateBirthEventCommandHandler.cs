@@ -20,13 +20,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly ILookupRepository _lookupRepository;
         private readonly ISmsService _smsService;
+        private readonly IAddressLookupRepository _addressRepostory;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
                                               IEventPaymentRequestService paymentRequestService,
                                               ILookupRepository lookupRepository,
-                                              ISmsService smsService)
+                                              ISmsService smsService,
+                                              IAddressLookupRepository addressRepostory
+                                              )
         {
             _eventDocumentService = eventDocumentService;
             _eventRepository = eventRepository;
@@ -34,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _paymentRequestService = paymentRequestService;
             _lookupRepository = lookupRepository;
             _smsService = smsService;
+            _addressRepostory = addressRepostory;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -73,6 +77,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
+                                var address = await _addressRepostory.GetAsync(request.BirthEvent.Event.EventRegisteredAddressId);
+                                if (address != null && address.AdminLevel != 5)
+                                {
+                                    birthEvent.Event.IsCertified = true;
+                                    birthEvent.Event.IsPaid = true;
+                                    birthEvent.Event.IsOfflineReg = true;
+                                }
                                 birthEvent.Event.EventRegisteredAddressId = request.BirthEvent?.Event.EventRegisteredAddressId;
                             }
                             if (request.BirthEvent.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.BirthEvent.Event.EventSupportingDocuments, _lookupRepository))
@@ -84,10 +95,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             // store the persons id from the request
                             var personIds = new PersonIdObj
                             {
-                                MotherId = birthEvent.Mother?.Id,
-                                FatherId = birthEvent.Father?.Id,
-                                ChildId = birthEvent.Event.EventOwener.Id,
-                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo.Id
+                                MotherId = birthEvent.Mother != null ? birthEvent.Mother?.Id : birthEvent.MotherId,
+                                FatherId = birthEvent.Father != null ? birthEvent.Father?.Id : birthEvent.FatherId,
+                                ChildId = birthEvent.Event.EventOwener != null ? birthEvent.Event.EventOwener.Id : birthEvent.Event.EventOwenerId,
+                                RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null ? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
                             // Separate profile photos from supporting documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);

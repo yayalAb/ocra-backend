@@ -17,8 +17,12 @@ namespace AppDiv.CRVS.Application.CouchModels
         public bool Paid { get; set; } = false;
         public float? Amount { get; set; }
         public CouchPaymentDTO? Payment { get; set; }
-        public bool Failed {get; set; }= false;
-        public string? FailureMessage {get;set;}  
+        public bool Failed { get; set; } = false;
+        public string? FailureMessage { get; set; }
+        public bool Exported { get; set; } = false;
+        public bool CertificateSynced { get; set; } = false;
+        public bool paymentSynced { get; set; } = false;
+        public string? serialNo { get; set; }
 
     }
 }

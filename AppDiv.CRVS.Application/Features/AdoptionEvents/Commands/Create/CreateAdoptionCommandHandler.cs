@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IPaymentExamptionRequestRepository _PaymentExaptionRepo;
         private readonly IEventRepository _EventRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly IAddressLookupRepository _addressRepostory;
 
         private readonly ISmsService _smsService;
 
@@ -40,7 +41,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         IPaymentExamptionRequestRepository PaymentExaptionRepo,
                                         IEventRepository EventRepository,
                                         IEventPaymentRequestService paymentRequestService,
-                                        ISmsService smsService)
+                                        ISmsService smsService,
+                                        IAddressLookupRepository addressRepostory)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -54,6 +56,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _EventRepository = EventRepository;
             _paymentRequestService = paymentRequestService;
             _smsService = smsService;
+            _addressRepostory = addressRepostory;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
@@ -104,6 +107,13 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
                                 if (request?.Adoption?.Event?.EventRegisteredAddressId != null && request?.Adoption?.Event?.EventRegisteredAddressId != Guid.Empty)
                                 {
+                                    var address = await _addressRepostory.GetAsync(request.Adoption.Event.EventRegisteredAddressId);
+                                    if (address != null && address.AdminLevel != 5)
+                                    {
+                                        adoptionEvent.Event.IsCertified = true;
+                                        adoptionEvent.Event.IsPaid = true;
+                                        adoptionEvent.Event.IsOfflineReg = true;
+                                    }
                                     adoptionEvent.Event.EventRegisteredAddressId = request?.Adoption?.Event?.EventRegisteredAddressId;
                                 }
                                 adoptionEvent.Event.EventAddressId = request?.Adoption?.CourtCase?.Court?.AddressId;

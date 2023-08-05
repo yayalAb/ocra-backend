@@ -76,7 +76,15 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
             var extension = FileExtractorService.GetFileExtensionFromBase64String(base64String) ?? ".bin";
             var fullPath = Path.Combine(pathToSave, fileName + extension);
+            var matchingFiles = Directory.GetFiles(pathToSave, fileName + "*");
+            //removing file with the same id but different extension 
+            matchingFiles.ToList().ForEach(file =>
+            {
+                System.IO.File.Delete(file);
+            });
+
             await File.WriteAllBytesAsync(fullPath, bytes);
+
 
             return true;
 
@@ -104,7 +112,6 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
                 }
                 return true;
-
             }
             catch (System.Exception)
             {
@@ -172,6 +179,5 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
 
         }
- 
     }
 }

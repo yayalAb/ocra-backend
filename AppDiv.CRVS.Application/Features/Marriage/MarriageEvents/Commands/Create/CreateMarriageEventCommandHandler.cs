@@ -30,6 +30,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly ISettingRepository _settingRepository;
         private readonly IEventRepository _eventRepository;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
+        private readonly IAddressLookupRepository _addressRepostory;
 
         public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
                                                  IPersonalInfoRepository personalInfoRepository,
@@ -43,7 +44,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                                  ISmsService smsService,
                                                  ISettingRepository settingRepository,
                                                  IEventRepository eventRepository,
-                                                 ILogger<CreateMarriageEventCommandHandler> logger)
+                                                 ILogger<CreateMarriageEventCommandHandler> logger,
+                                                 IAddressLookupRepository addressRepostory)
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -58,6 +60,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _settingRepository = settingRepository;
             _eventRepository = eventRepository;
             this.logger = logger;
+            _addressRepostory = addressRepostory;
         }
 
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
@@ -94,10 +97,15 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
+                                var address = await _addressRepostory.GetAsync(request.Event.EventRegisteredAddressId);
+                                if (address != null && address.AdminLevel != 5)
+                                {
+                                    marriageEvent.Event.IsCertified = true;
+                                    marriageEvent.Event.IsPaid = true;
+                                    marriageEvent.Event.IsOfflineReg = true;
+                                }
                                 marriageEvent.Event.EventRegisteredAddressId = request?.Event.EventRegisteredAddressId;
                             }
-
-
                             var brideHasDivorce = request.BrideInfo.Id != null
                                                 && MarriageValidatorFunctions.brideHasDivorceInLessThanDateLimitInSetting((Guid)request.BrideInfo.Id, marriageEvent.Event.EventDateEt, _settingRepository, _personalInfoRepository);
                             var pregnancyFreeSupportingDocAttached = request.Event.EventSupportingDocuments != null
@@ -116,9 +124,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             // //TODO: //
                             var personIds = new PersonIdObj
                             {
-                                WifeId = marriageEvent.BrideInfo.Id,
-                                HusbandId = marriageEvent.Event.EventOwener.Id,
-                                WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
+                                WifeId = marriageEvent.BrideInfo != null ? marriageEvent.BrideInfo.Id : marriageEvent.BrideInfoId,
+                                HusbandId = marriageEvent.Event.EventOwener != null ? marriageEvent.Event.EventOwener.Id : marriageEvent.Event.EventOwenerId,
+                                WitnessIds = marriageEvent.Witnesses
+                                        .Select(w => w.WitnessPersonalInfo != null ? w.WitnessPersonalInfo.Id : w.WitnessPersonalInfoId).ToList()
                             };
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
@@ -162,7 +171,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     }
                     catch (Exception e)
                     {
-                        logger.LogCritical($"ccccccccccc{e.Message}");
                         await transaction.RollbackAsync();
                         throw;
                     }

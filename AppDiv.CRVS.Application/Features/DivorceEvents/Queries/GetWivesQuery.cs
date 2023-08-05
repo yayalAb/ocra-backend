@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
             if(husbandInfo == null){
                 throw new NotFoundException($"person with id {request.HusbandId} is not found");
             }
-            return husbandInfo.Events.Where(e => e.MarriageEvent != null)
+            return husbandInfo.Events.Where(e => e.MarriageEvent != null && !e.MarriageEvent.IsDivorced )
                             .Select(e => new PersonSearchResponse{
                                 Id = e.MarriageEvent.BrideInfoId,
                                 FullName = e.MarriageEvent.BrideInfo.FirstNameLang + " "+e.MarriageEvent.BrideInfo.MiddleNameLang+" "+e.MarriageEvent.BrideInfo.LastNameLang,

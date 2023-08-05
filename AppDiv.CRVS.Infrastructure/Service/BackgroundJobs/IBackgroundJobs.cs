@@ -13,9 +13,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
         public Task job1();
         public Task SyncMarriageApplicationJob();
         public Task GetEventJob();
-        public Task AddIndex<T>(List<object> entities, string indexName) where T : BaseIndex;
-        public Task RemoveIndex<T>(List<Guid> indexIds, string indexName) where T : BaseIndex;
+        // public Task AddIndex<T>(List<object> entities, string indexName) where T : BaseIndex;
+        // public Task RemoveIndex<T>(List<Guid> indexIds, string indexName) where T : BaseIndex;
 
-        public Task UpdateIndex<T>(List<object> entities, string indexName) where T : BaseIndex;
+        // public Task UpdateIndex<T>(List<object> entities, string indexName) where T : BaseIndex;
+        public Task AddPersonIndex(List<PersonalInfoIndex> entities, string indexName);
     }
 }

@@ -161,7 +161,7 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<PaymentExamption, PaymentExamptionDTO>().ReverseMap();
             CreateMap<PaymentExamption, AddPaymentExamptionRequest>().ReverseMap();
 
-            CreateMap<SupportingDocument, SupportingDocumentDTO>().ReverseMap();
+            CreateMap<SupportingDocument, SupportingDocumentDTO>().ForMember(s => s.Type, opt => opt.MapFrom(d => d.Type)).ReverseMap();
             CreateMap<SupportingDocument, SupportingDocumentRequest>().ReverseMap();
 
             CreateMap<Certificate, CertificateDTO>().ReverseMap();
@@ -228,7 +228,8 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<BrideInfoDTO, PersonalInfo>().ReverseMap();
 
-            CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>().ReverseMap();
+            CreateMap<SupportingDocument, UpdateSupportingDocumentRequest>()
+            .ForMember(s => s.Type, opt => opt.MapFrom(d => d.Type)).ReverseMap();
             CreateMap<SupportingDocument, AddSupportingDocumentRequest>()
             .ForMember(s => s.Type, opt => opt.MapFrom(d => d.Type)).ReverseMap();
             CreateMap<PaymentExamption, UpdatePaymentExamptionRequest>().ReverseMap();

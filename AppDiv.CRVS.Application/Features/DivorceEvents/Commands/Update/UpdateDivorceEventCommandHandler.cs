@@ -103,7 +103,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             var personIds = new PersonIdObj
                             {
                                 WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,
-                                HusbandId = divorceEvent.Event.EventOwenerId
+                                HusbandId = divorceEvent.Event.EventOwener != null ? divorceEvent.Event.EventOwener.Id : divorceEvent.Event.EventOwenerId
                             };
                             if (!request.IsFromCommand)
                             {
