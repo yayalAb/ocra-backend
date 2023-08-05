@@ -9,7 +9,7 @@ using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
 {
-    public record GetAuditLogDetailQuery : IRequest<JObject>
+    public record GetAuditLogDetailQuery : IRequest<object>
     {
         public Guid Id { set; get; }
     }

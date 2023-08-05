@@ -1,3 +1,4 @@
+using AppDiv.CRVS.Application.Features.Archives.Query;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
@@ -5,28 +6,40 @@ using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
 {
-    public class GetAuditLogDetailQueryHandler : IRequestHandler<GetAuditLogDetailQuery, JObject>
+    public class GetAuditLogDetailQueryHandler : IRequestHandler<GetAuditLogDetailQuery, object>
     {
         private readonly IAuditLogRepository _auditLogRepository;
         private readonly IAuditLogService _auditService;
+        private readonly IMediator _mediator;
 
-        public GetAuditLogDetailQueryHandler(IAuditLogRepository auditLogRepository, IAuditLogService auditService)
+        public GetAuditLogDetailQueryHandler(IAuditLogRepository auditLogRepository, IAuditLogService auditService, IMediator mediator)
         {
             _auditLogRepository = auditLogRepository;
             this._auditService = auditService;
+            this._mediator = mediator;
         }
-        public Task<JObject> Handle(GetAuditLogDetailQuery request, CancellationToken cancellationToken)
+        public async Task<object> Handle(GetAuditLogDetailQuery request, CancellationToken cancellationToken)
         {
             var audit = _auditLogRepository.GetAll().Where(a => a.AuditId == request.Id).FirstOrDefault();
             // var response = _mediator.Send(new GetAuditLogQuery());
             var data = new JObject();
-            // { ["NewValues"] = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")) };
-            data["Changes"] = _auditService.GetAllChanges(audit.AuditDataJson.Value<JArray>("Changes"), audit.AuditDate, audit.EntityType);
+            var eventType =  audit.EntityType.EndsWith("Event") ? audit.EntityType[..^5] : audit.EntityType;
+            var newData = await _mediator.Send(new GenerateArchivePreviewQuery { Content = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")), EventType = eventType, Command = "Update"}, cancellationToken);
+            var oldData = await _mediator.Send(new GenerateArchivePreviewQuery { Content = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes"))), EventType = eventType, Command = "Update"}, cancellationToken);
+            var result = 
+                new 
+                { 
+                    NewData = (newData as dynamic).Content, 
+                    OldValue = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes"))),
+                    OldData =  (oldData as dynamic).Content
+                };
+            // data["NewValues"] = await _mediator.Send(new GenerateArchivePreviewQuery { Content = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")), EventType = audit.EntityType, Command = "Update"});
+            // data["Changes"] = _auditService.GetAllChanges(audit.AuditDataJson.Value<JArray>("Changes"), audit.AuditDate, audit.EntityType);
             // if (audit?.Action == "Update")
             // {
-            //     data["OldValues"] = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes")));
+            // data["OldValues"] = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes")));
             // }
-            return Task.FromResult(data);
+            return result;
         }
     }
 }
