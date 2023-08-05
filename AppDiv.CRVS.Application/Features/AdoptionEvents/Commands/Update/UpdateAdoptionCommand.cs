@@ -165,9 +165,9 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     _adoptionEventRepository.EFUpdate(adoptionEvent);
                     personIds = new PersonIdObj
                     {
-                        MotherId = adoptionEvent.AdoptiveMother.Id,
-                        FatherId = adoptionEvent.AdoptiveFather.Id,
-                        ChildId = adoptionEvent.Event.EventOwener.Id
+                        MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
+                        FatherId = adoptionEvent.AdoptiveFather != null ? adoptionEvent.AdoptiveFather.Id : adoptionEvent.AdoptiveFatherId,
+                        ChildId = adoptionEvent.Event.EventOwener != null ? adoptionEvent.Event.EventOwener.Id : adoptionEvent.Event.EventOwenerId
                     };
                     var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
                     _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");

@@ -75,8 +75,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // persons id.
                         var personIds = new PersonIdObj
                         {
-                            DeceasedId = deathEvent.Event.EventOwenerId,
-                            RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfoId
+                            DeceasedId = deathEvent.Event.EventOwener != null ?deathEvent.Event.EventOwener.Id: deathEvent.Event.EventOwenerId,
+                            RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo != null ?deathEvent.Event.EventRegistrar.RegistrarInfo.Id : deathEvent.Event.EventRegistrar?.RegistrarInfoId
                         };
                         // if the update not from the corection request.
                         if (!request.IsFromCommand)

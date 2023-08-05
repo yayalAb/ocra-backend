@@ -116,9 +116,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             // //TODO: //
                             var personIds = new PersonIdObj
                             {
-                                WifeId = marriageEvent.BrideInfo.Id,
-                                HusbandId = marriageEvent.Event.EventOwener.Id,
-                                WitnessIds = marriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id).ToList()
+                                WifeId = marriageEvent.BrideInfo != null ? marriageEvent.BrideInfo.Id : marriageEvent.BrideInfoId,
+                                HusbandId = marriageEvent.Event.EventOwener != null ? marriageEvent.Event.EventOwener.Id : marriageEvent.Event.EventOwenerId,
+                                WitnessIds = marriageEvent.Witnesses
+                                        .Select(w => w.WitnessPersonalInfo != null ? w.WitnessPersonalInfo.Id : w.WitnessPersonalInfoId).ToList()
                             };
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
@@ -162,7 +163,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     }
                     catch (Exception e)
                     {
-                        logger.LogCritical($"ccccccccccc{e.Message}");
                         await transaction.RollbackAsync();
                         throw;
                     }

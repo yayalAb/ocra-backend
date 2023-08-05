@@ -58,6 +58,7 @@ namespace AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create
                 {
                     CreateSupportingDocumentsCommandResponse.Success = false;
                     CreateSupportingDocumentsCommandResponse.Message = $"Could not save supporting Doucments : \n event with Id {request.EventId} is not found";
+                    return CreateSupportingDocumentsCommandResponse;
                 }
 
                 var response = await _eventDocumentService.SaveSupportingDocumentsAsync(savedEvent, request.EventSupportingDocuments, request.ExamptionSupportingDocuments, request.PaymentExamptionId, cancellationToken);

@@ -82,8 +82,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                             var personIds = new PersonIdObj
                             {
-                                WifeId = divorceEvent.DivorcedWife.Id,
-                                HusbandId = divorceEvent.Event.EventOwener.Id,
+                                WifeId = divorceEvent.DivorcedWife != null?divorceEvent.DivorcedWife.Id:divorceEvent.DivorcedWifeId,
+                                HusbandId = divorceEvent.Event.EventOwener !=null? divorceEvent.Event.EventOwener.Id : divorceEvent.Event.EventOwenerId,
                             };
                             // await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
 
