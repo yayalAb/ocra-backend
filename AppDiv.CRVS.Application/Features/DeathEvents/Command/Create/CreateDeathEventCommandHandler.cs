@@ -17,11 +17,13 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         private readonly IEventDocumentService _eventDocumentService;
         private readonly ISmsService _smsService;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly IAddressLookupRepository _addressRepostory;
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
                                               ISmsService smsService,
-                                              IEventPaymentRequestService paymentRequestService)
+                                              IEventPaymentRequestService paymentRequestService,
+                                              IAddressLookupRepository addressRepostory)
 
         {
             _deathEventRepository = deathEventRepository;
@@ -29,6 +31,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _eventDocumentService = eventDocumentService;
             _smsService = smsService;
             _paymentRequestService = paymentRequestService;
+            _addressRepostory = addressRepostory;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -64,14 +67,21 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
+                                var address = await _addressRepostory.GetAsync(request.DeathEvent.Event.EventRegisteredAddressId);
+                                if (address != null && address.AdminLevel != 5)
+                                {
+                                    deathEvent.Event.IsCertified = true;
+                                    deathEvent.Event.IsPaid = true;
+                                    deathEvent.Event.IsOfflineReg = true;
+                                }
                                 deathEvent.Event.EventRegisteredAddressId = request.DeathEvent?.Event.EventRegisteredAddressId;
                             }
                             await _deathEventRepository.InsertOrUpdateAsync(deathEvent, cancellationToken);
                             // Persons id
                             var personIds = new PersonIdObj
                             {
-                                DeceasedId = deathEvent.Event.EventOwener != null? deathEvent.Event.EventOwener.Id : deathEvent.Event.EventOwenerId,
-                                RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo != null ?deathEvent.Event.EventRegistrar?.RegistrarInfo.Id : deathEvent.Event.EventRegistrar?.RegistrarInfoId
+                                DeceasedId = deathEvent.Event.EventOwener != null ? deathEvent.Event.EventOwener.Id : deathEvent.Event.EventOwenerId,
+                                RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo != null ? deathEvent.Event.EventRegistrar?.RegistrarInfo.Id : deathEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
 
                             // Save the supporting documents and payment exemption documents.

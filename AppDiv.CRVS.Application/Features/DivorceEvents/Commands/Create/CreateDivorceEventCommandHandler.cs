@@ -22,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly ISmsService _smsService;
         private readonly IEventRepository _eventRepository;
         private readonly ICourtRepository _courtRepository;
+        private readonly IAddressLookupRepository _addressRepostory;
 
         public CreateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
                                                 IPersonalInfoRepository personalInfoRepository,
@@ -31,7 +32,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                                 IEventPaymentRequestService paymentRequestService,
                                                 ISmsService smsService,
                                                 IEventRepository eventRepository,
-                                                ICourtRepository courtRepository)
+                                                ICourtRepository courtRepository,
+                                                IAddressLookupRepository addressRepostory)
         {
             _DivorceEventRepository = DivorceEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -42,6 +44,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _smsService = smsService;
             _eventRepository = eventRepository;
             _courtRepository = courtRepository;
+            _addressRepostory = addressRepostory;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
@@ -75,6 +78,13 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
+                                var address = await _addressRepostory.GetAsync(request.Event.EventRegisteredAddressId);
+                                if (address != null && address.AdminLevel != 5)
+                                {
+                                    divorceEvent.Event.IsCertified = true;
+                                    divorceEvent.Event.IsPaid = true;
+                                    divorceEvent.Event.IsOfflineReg = true;
+                                }
                                 divorceEvent.Event.EventRegisteredAddressId = request?.Event?.EventRegisteredAddressId;
                             }
                             divorceEvent.Event.EventType = "Divorce";
@@ -82,8 +92,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                             var personIds = new PersonIdObj
                             {
-                                WifeId = divorceEvent.DivorcedWife != null?divorceEvent.DivorcedWife.Id:divorceEvent.DivorcedWifeId,
-                                HusbandId = divorceEvent.Event.EventOwener !=null? divorceEvent.Event.EventOwener.Id : divorceEvent.Event.EventOwenerId,
+                                WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,
+                                HusbandId = divorceEvent.Event.EventOwener != null ? divorceEvent.Event.EventOwener.Id : divorceEvent.Event.EventOwenerId,
                             };
                             // await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
 
