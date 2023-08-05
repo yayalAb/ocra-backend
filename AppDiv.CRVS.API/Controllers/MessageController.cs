@@ -41,8 +41,8 @@ namespace AppDiv.CRVS.API.Controllers
 
             if (res.Success)
             {
-                _chatHub.Clients.User(res.CreatedMessage.SenderId).NewMessage(res.CreatedMessage);
-                _chatHub.Clients.User(res.CreatedMessage.ReceiverId).NewMessage(res.CreatedMessage);
+                await _chatHub.Clients.User(res.CreatedMessage.SenderId).NewMessage(res.CreatedMessage);
+                await _chatHub.Clients.User(res.CreatedMessage.ReceiverId).NewMessage(res.CreatedMessage);
                 res.CreatedMessage = null;
                 return Ok(res);
             }
@@ -58,19 +58,19 @@ namespace AppDiv.CRVS.API.Controllers
             var userAddress = _userResolverService.GetWorkingAddressId();
             var userId = _userResolverService.GetUserId();
             Console.WriteLine($"addressId ----{userAddress}");
-            if (userAddress == null || userAddress == Guid.Empty) 
+            if (userAddress == null || userAddress == Guid.Empty)
             {
                 return Unauthorized("Could not find user address ,please login first");
             }
-            return Ok(await Mediator.Send(new GetUsersByAddressIdQuery{ AddressId = userAddress , Except = userId , AddOnlineFlag = true}));
+            return Ok(await Mediator.Send(new GetUsersByAddressIdQuery { AddressId = userAddress, Except = userId, AddOnlineFlag = true }));
         }
         [HttpPost("test")]
         public async Task<IActionResult> soket([FromBody] CreateMessageCommand command)
         {
             var res = await Mediator.Send(command);
 
-            _chatHub.Clients.User(res.CreatedMessage.SenderId).NewMessage(res.CreatedMessage);
-            _chatHub.Clients.User(res.CreatedMessage.ReceiverId).NewMessage(res.CreatedMessage);
+            await _chatHub.Clients.User(res.CreatedMessage.SenderId).NewMessage(res.CreatedMessage);
+            await _chatHub.Clients.User(res.CreatedMessage.ReceiverId).NewMessage(res.CreatedMessage);
             return Ok("message sent");
         }
     }
