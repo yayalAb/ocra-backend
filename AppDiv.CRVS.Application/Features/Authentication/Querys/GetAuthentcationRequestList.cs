@@ -105,8 +105,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .Select(x => x.UserGroupId).FirstOrDefault()
              });
 
-            //  .Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault()
-            //  || rg.OfficerId == userGroup.PersonalInfoId);
 
             if (!request.IsYourRequestList)
             {
