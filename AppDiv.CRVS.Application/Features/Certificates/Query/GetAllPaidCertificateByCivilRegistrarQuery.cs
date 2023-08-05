@@ -25,20 +25,20 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly IEventRepository _eventRepository;
         private readonly IUserRepository _userRepository;
         private readonly IReturnVerficationList _ReturnVerficationList;
+        private readonly IUserResolverService _UserReso;
 
-        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IReturnVerficationList ReturnVerficationList, IUserRepository userRepository, IEventRepository eventRepository)
+        public GetAllPaidCertificateByCivilRegistrarQueryHandler(IUserResolverService UserReso, IReturnVerficationList ReturnVerficationList, IUserRepository userRepository, IEventRepository eventRepository)
         {
             _eventRepository = eventRepository;
             _userRepository = userRepository;
             _ReturnVerficationList = ReturnVerficationList;
+            _UserReso = UserReso;
         }
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
             var applicationuser = _userRepository.GetAll()
             .Include(x => x.Address)
             .Where(x => x.PersonalInfoId == request.CivilRegOfficerId).FirstOrDefault();
-
-
             if (applicationuser == null)
             {
                 throw new NotFoundException("user does not exist");
@@ -71,8 +71,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             return await PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
                                eventsQueriable.Include(e => e.EventOwener)
-                             .Include(e => e.EventPaymentRequest)
-                                .ThenInclude(e => e.Payment)
+                             .Include(e => e.EventPaymentRequest).OrderBy(x => x.CreatedAt)
+
                               .Select(e => new PaidCertificateDTO
                               {
                                   EventId = e.Id,
@@ -84,12 +84,12 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   IsCertified = e.IsCertified,
                                   HasPendingDocumentApproval = e.HasPendingDocumentApproval,
                                   IsReprint = e.ReprintWaiting,
-                                  PaymentDate = e.EventPaymentRequest
-                                        .Where(r => r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("certificategeneration")
-                                        || r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("reprint"))
-                                        .FirstOrDefault().Payment.CreatedAt
+                                  //   PaymentDate = e.EventPaymentRequest
+                                  //         .Where(r => r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("certificategeneration")
+                                  //         || r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("reprint"))
+                                  //         .FirstOrDefault().Payment.CreatedAt
 
-                              }).OrderByDescending(e => e.PaymentDate)
+                              })//.OrderByDescending(e => e.C).ToList()
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
