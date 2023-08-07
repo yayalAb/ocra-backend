@@ -59,7 +59,10 @@ namespace AppDiv.CRVS.API.Controllers
             try
             {
                 var result = await _mediator.Send(command);
-                return Ok(result);
+                if (result.Success)
+                    return Ok(result);
+                else
+                    return BadRequest(result);
             }
             catch (Exception exp)
             {

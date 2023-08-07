@@ -7,6 +7,7 @@ using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.Groups.Commands.Create
 {
@@ -14,8 +15,12 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Create
     public class CreateGroupCommandHAndler : IRequestHandler<CreateGroupCommand, CreateGroupComandResponse>
     {
         private readonly IGroupRepository _groupRepository;
-        public CreateGroupCommandHAndler(IGroupRepository groupRepository)
+        private readonly IUserResolverService _userResolver;
+        private readonly IIdentityService _user;
+        public CreateGroupCommandHAndler(IGroupRepository groupRepository, IUserResolverService userResolver, IIdentityService user)
         {
+            this._user = user;
+            this._userResolver = userResolver;
             _groupRepository = groupRepository;
         }
         public async Task<CreateGroupComandResponse> Handle(CreateGroupCommand request, CancellationToken cancellationToken)
@@ -46,11 +51,17 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Create
                     GroupName = request.group.GroupName,
                     Description = request.group.Description,
                     Roles = request.group.Roles,
-                    ManagedGroups = request.group.ManagedGroups
+                    ManagedGroups = request.group.ManagedGroups,
+                    ManageAll = request.group.ManageAll
                 };
                 //
                 await _groupRepository.InsertAsync(group, cancellationToken);
                 await _groupRepository.SaveChangesAsync(cancellationToken);
+                // var user = await _user.GetSingleUserAsync(_userResolver.GetUserId());
+                // user.UserGroups.Add(group);
+                // await _user.UpdateAsync(user);
+
+                
 
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
                 // CreateGroupComandResponse.Customer = customerResponse;          
