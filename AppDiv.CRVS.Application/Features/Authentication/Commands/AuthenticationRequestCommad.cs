@@ -51,11 +51,17 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         }
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
+                        Console.WriteLine("Workflow does not found 1");
+
             var response = new BaseResponse();
-            Guid WorkflowId = _WorkflowRepository.GetAll()
-            .Where(wf => wf.workflowName == "authentication").Select(x => x.Id).FirstOrDefault();
-            if (WorkflowId == null || WorkflowId == Guid.Empty)
+            var Workflow= _WorkflowRepository.GetAll()
+            .Include(x=>x.Steps)
+            .Where(wf => wf.workflowName == "authentication").FirstOrDefault();
+                          Console.WriteLine("Workflow does not found 2" );
+
+            if (Workflow == null || Workflow?.Steps == null)
             {
+              Console.WriteLine("Workflow does not found");
                 var certificate = _certificateRepository.GetAll()
                 .Include(x => x.Event)
                 .Where(x => x.Id == request.CertificateId).FirstOrDefault();
@@ -93,7 +99,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                     CivilRegOfficerId = request.CivilRegOfficer,
                     currentStep = 0,
                     NextStep = next,
-                    WorkflowId = WorkflowId
+                    WorkflowId = Workflow.Id
                 }
             };
             await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);
@@ -111,7 +117,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             {
                 CurrentStep = 0,
                 ApprovalStatus = true,
-                WorkflowId = WorkflowId,
+                WorkflowId = Workflow.Id,
                 RequestId = AuthenticationRequest.RequestId,
                 CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
                 Remark = request.Remark

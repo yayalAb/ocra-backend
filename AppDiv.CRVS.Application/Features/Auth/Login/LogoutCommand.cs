@@ -41,7 +41,12 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             var res = new BaseResponse();
             if (UserId == null && UserId == Guid.Empty)
             {
-                throw new NotFoundException("User Not Found");
+                      res = new BaseResponse
+                  {
+                      Success = false,
+                      Message = "Logout successfully"
+                  };
+                  return res;
             }
             var response = _userRepository.GetAll().Where(x => x.PersonalInfoId == UserId).FirstOrDefault();
             if(response == null){
@@ -68,7 +73,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             await _tokenRepository.InsertAsync(tokenLogout, cancellationToken);
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
-            res = new BaseResponse
+           res = new BaseResponse
             {
                 Success = false,
                 Message = "Logout successfully"
