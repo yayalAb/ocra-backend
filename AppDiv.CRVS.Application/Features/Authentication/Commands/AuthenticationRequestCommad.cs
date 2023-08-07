@@ -64,6 +64,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
               Console.WriteLine("Workflow does not found: {0}",request.CertificateId);
                 var certificate = _certificateRepository.GetAll()
                 .Include(x => x.Event)
+                .Include(x => x.Event.EventOwener)
                 .Where(x => x.Id == request.CertificateId).FirstOrDefault();
               Console.WriteLine("Workflow does not  6");
 
@@ -71,11 +72,12 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 {
                     throw new NotFoundException("Certificate With the given Id Does't Found");
                 }
+                 Console.WriteLine("Workflow does not  6 : {0}",certificate.Event.EventType);
                 (float amount, string code) respons = await _eventPayment.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "authentication",
                     null, false, false, cancellationToken);
-              Console.WriteLine("Workflow does not found 7");
+              // Console.WriteLine("Workflow does not found 7");
 
-                if (respons.amount == 0)
+                if (true)
                 {
                     certificate.AuthenticationStatus = true;
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
