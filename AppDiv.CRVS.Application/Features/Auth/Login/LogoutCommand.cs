@@ -46,11 +46,16 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                       Success = false,
                       Message = "Logout successfully"
                   };
-                  return res;
+                   return res;
             }
             var response = _userRepository.GetAll().Where(x => x.PersonalInfoId == UserId).FirstOrDefault();
             if(response == null){
-              throw new NotFoundException("User Not Found");
+                  res = new BaseResponse
+                  {
+                      Success = false,
+                      Message = "Logout successfully"
+                  };
+                   return res;
             }
 
             var tokenLogout = new RevocationToken
