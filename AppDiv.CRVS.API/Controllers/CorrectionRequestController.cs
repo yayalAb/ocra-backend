@@ -34,8 +34,16 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CorrectionREquest([FromBody] CreateCorrectionRequest command)
         {
+             var result = await _mediator.Send(command);
+                if (result.Success)
+                {
+                  return Ok(result);
+                }
 
-            return Ok(await Mediator.Send(command));
+                else
+                {
+               return BadRequest(result);
+                }
         }
 
         [HttpGet("GetAll")]
@@ -60,9 +68,15 @@ namespace AppDiv.CRVS.API.Controllers
             {
                 var result = await _mediator.Send(command);
                 if (result.Success)
-                    return Ok(result);
+                {
+                  return Ok(result);
+                }
+
                 else
-                    return BadRequest(result);
+                {
+               return BadRequest(result);
+                }
+
             }
             catch (Exception exp)
             {
