@@ -108,7 +108,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                 }
                             }
                             // Insert into the database.
-                            var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                            // var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                         }
                         catch (System.Exception ex)
                         {

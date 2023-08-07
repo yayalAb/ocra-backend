@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                     {
                         var updateMarriageEventCommandResponse = new UpdateMarriageEventCommandResponse();
 
-                        var validator = new UpdateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _settingRepository, _addressRepository,_eventRepository);
+                        var validator = new UpdateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _settingRepository, _addressRepository, _eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         //Check and log validation errors
@@ -137,10 +137,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             {
                                 marriageEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
-                            await _marriageEventRepository.EFUpdateAsync(marriageEvent);
+                            await _marriageEventRepository.EFUpdateAsync(marriageEvent,cancellationToken);
                             if (!request.IsFromCommand)
                             {
-                                var result = await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
@@ -152,7 +151,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             {
                                 // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                var result = await _marriageEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Marriage");
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Marriage");

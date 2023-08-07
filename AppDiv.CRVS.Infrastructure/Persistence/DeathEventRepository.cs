@@ -80,6 +80,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 }
                 // await _dbContext.DeathEvents.AddAsync(entity,cancellationToken);
                 await base.InsertAsync(entity, cancellationToken);
+                await base.SaveChangesAsync(cancellationToken);
             }
             catch (System.Exception)
             {

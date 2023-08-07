@@ -93,7 +93,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             {
                                 // Save the newly added supporting documents and exemption documents.
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
@@ -104,7 +104,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             {
                                 // Move the supporting documents form temporary to permenant place.
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.MovePhotos(userPhotos, "Birth");
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");

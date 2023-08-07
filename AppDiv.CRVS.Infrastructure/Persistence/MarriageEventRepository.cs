@@ -23,14 +23,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public IQueryable<MarriageEvent> GetAllQueryableAsync()
         {
-        
+
             return dbContext.MarriageEvents.AsQueryable();
         }
-        public void DisposeDbContext(){
+        public void DisposeDbContext()
+        {
             // dbContext.Dispose();
             dbContext.Dispose();
         }
-        public async Task EFUpdateAsync(MarriageEvent marriageEvent)
+        public async Task EFUpdateAsync(MarriageEvent marriageEvent, CancellationToken cancellationToken)
         {
             var existingOwner = await dbContext.PersonalInfos.FindAsync(marriageEvent.Event.EventOwener.Id);
             if (existingOwner == null)
@@ -122,7 +123,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             });
 
 
-            dbContext.MarriageEvents.Update(marriageEvent);
+            base.Update(marriageEvent);
+            await base.SaveChangesAsync(CancellationToken.None);
         }
         public bool exists(Guid id)
         {
@@ -141,10 +143,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 }
             });
             await dbContext.Witnesses.AddRangeAsync(witnesses);
+            await dbContext.SaveChangesAsync();
         }
         public async Task InsertOrUpdateAsync(MarriageEvent entity, CancellationToken cancellationToken)
         {
-            entity.BrideInfo.SexLookupId =await dbContext.Lookups.Where(l => l.Key == "sex")
+            entity.BrideInfo.SexLookupId = await dbContext.Lookups.Where(l => l.Key == "sex")
                                         .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
                                             || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                             || EF.Functions.Like(l.ValueStr, "%Female%"))
@@ -192,12 +195,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 entity.BrideInfo = null!;
 
             }
-            var witnessIds  = new List<Guid>();
+            var witnessIds = new List<Guid>();
             witnessIds = entity.Witnesses
                     .Where(wi => wi.WitnessPersonalInfo.Id != null && wi.WitnessPersonalInfo.Id != Guid.Empty)
                     .Select(wi => wi.WitnessPersonalInfo.Id).ToList();
-            var existingWitnesses = dbContext.PersonalInfos.Where(w =>witnessIds.Contains(w.Id) ).ToList();
-            existingWitnesses.ForEach(ew =>{
+            var existingWitnesses = dbContext.PersonalInfos.Where(w => witnessIds.Contains(w.Id)).ToList();
+            existingWitnesses.ForEach(ew =>
+            {
                 var newWitness = entity.Witnesses
                                     .Where(w => w.WitnessPersonalInfo.Id == ew.Id)
                                     .Select(w => w.WitnessPersonalInfo).FirstOrDefault();
@@ -211,7 +215,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             entity.Witnesses?.ToList().ForEach(async witness =>
             {
-                
+
                 if (witness.WitnessPersonalInfo.Id != null && witness.WitnessPersonalInfo.Id != Guid.Empty)
                 {
                     // var keyValuePair = new Dictionary<string, object>{
@@ -222,7 +226,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
                     // };
-                    
+
                     // await updatePersonalInfo(keyValuePair, witness.WitnessPersonalInfo.Id, "witness");
                     witness.WitnessPersonalInfoId = witness.WitnessPersonalInfo.Id;
                     witness.WitnessPersonalInfo = null!;
@@ -231,6 +235,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             });
 
             await base.InsertAsync(entity, cancellationToken);
+            await base.SaveChangesAsync(cancellationToken);
+
 
 
 

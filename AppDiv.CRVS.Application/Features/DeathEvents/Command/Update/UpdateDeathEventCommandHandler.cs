@@ -83,7 +83,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         {
                             // Save the supporting documents.
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
-                            var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
@@ -94,7 +93,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         {
                             // Move the supportin documents from temporary folder.
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
-                            var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                             _eventDocumentService.MovePhotos(userPhotos, "Death");
                             _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
