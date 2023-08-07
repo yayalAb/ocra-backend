@@ -43,7 +43,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             {
                       res = new BaseResponse
                   {
-                      Success = false,
+                      Success = true,
                       Message = "Logout successfully"
                   };
                    return res;
@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             if(response == null){
                   res = new BaseResponse
                   {
-                      Success = false,
+                      Success = true,
                       Message = "Logout successfully"
                   };
                    return res;
@@ -80,7 +80,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
            res = new BaseResponse
             {
-                Success = false,
+                Success = true,
                 Message = "Logout successfully"
             };
             return res;
