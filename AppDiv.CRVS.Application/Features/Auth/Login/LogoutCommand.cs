@@ -44,6 +44,10 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 throw new NotFoundException("User Not Found");
             }
             var response = _userRepository.GetAll().Where(x => x.PersonalInfoId == UserId).FirstOrDefault();
+            if(response==null){
+              throw new NotFoundException("User Not Found");
+            }
+
             var tokenLogout = new RevocationToken
             {
                 Id = Guid.NewGuid(),
@@ -55,7 +59,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             var LoginHis = new LoginHistory
             {
                 Id = Guid.NewGuid(),
-                UserId = response.Id,
+                UserId = response?.Id,
                 EventType = "Logout",
                 EventDate = DateTime.Now,
                 IpAddress = _httpContext?.HttpContext?.Connection?.RemoteIpAddress.ToString(),
