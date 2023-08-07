@@ -58,8 +58,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 UserId = response.Id,
                 EventType = "Logout",
                 EventDate = DateTime.Now,
-                IpAddress = _httpContext.HttpContext.Connection.RemoteIpAddress.ToString(),
-                Device = _httpContext.HttpContext.Request.Headers["User-Agent"].ToString()
+                IpAddress = _httpContext?.HttpContext?.Connection?.RemoteIpAddress.ToString(),
+                Device = _httpContext?.HttpContext?.Request
 
             };
             await _tokenRepository.InsertAsync(tokenLogout, cancellationToken);
