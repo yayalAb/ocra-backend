@@ -59,18 +59,22 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             .Where(wf => wf.workflowName == "authentication").FirstOrDefault();
                           Console.WriteLine("Workflow does not found 2" );
 
-            if (Workflow == null || Workflow?.Steps == null)
+            if (Workflow == null || Workflow?.Steps.Count == 0)
             {
-              Console.WriteLine("Workflow does not found");
+              Console.WriteLine("Workflow does not found: {0}",request.CertificateId);
                 var certificate = _certificateRepository.GetAll()
                 .Include(x => x.Event)
                 .Where(x => x.Id == request.CertificateId).FirstOrDefault();
+              Console.WriteLine("Workflow does not  6");
+
                 if (certificate == null)
                 {
                     throw new NotFoundException("Certificate With the given Id Does't Found");
                 }
                 (float amount, string code) respons = await _eventPayment.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "authentication",
                     null, false, false, cancellationToken);
+              Console.WriteLine("Workflow does not found 7");
+
                 if (respons.amount == 0)
                 {
                     certificate.AuthenticationStatus = true;
