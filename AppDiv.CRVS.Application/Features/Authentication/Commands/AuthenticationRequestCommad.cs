@@ -51,31 +51,24 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         }
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
-                        Console.WriteLine("Workflow does not found 1");
-
             var response = new BaseResponse();
             var Workflow= _WorkflowRepository.GetAll()
             .Include(x=>x.Steps)
             .Where(wf => wf.workflowName == "authentication").FirstOrDefault();
-                          Console.WriteLine("Workflow does not found 2" );
 
             if (Workflow == null || Workflow?.Steps.Count == 0)
             {
-              Console.WriteLine("Workflow does not found: {0}",request.CertificateId);
                 var certificate = _certificateRepository.GetAll()
                 .Include(x => x.Event)
                 .Include(x => x.Event.EventOwener)
                 .Where(x => x.Id == request.CertificateId).FirstOrDefault();
-              Console.WriteLine("Workflow does not  6");
 
                 if (certificate == null)
                 {
                     throw new NotFoundException("Certificate With the given Id Does't Found");
                 }
-                 Console.WriteLine("Workflow does not  6 : {0}",certificate.Event.EventType);
                 (float amount, string code) respons = await _eventPayment.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "authentication",
                     null, false, false, cancellationToken);
-              // Console.WriteLine("Workflow does not found 7");
 
                 if (true)
                 {

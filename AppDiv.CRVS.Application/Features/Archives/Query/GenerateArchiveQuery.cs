@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
     {
         public JObject Content { get; set; }
         public Guid? TemplateId { get; set; }
+         public bool? IsAuthenticated { get; set; } = false;
 
     }
 
@@ -36,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         public Guid Id { get; set; }
         public string? CertificateSerialNumber { get; set; }
         public bool IsPrint { get; set; } = false;
+
 
     }
 
@@ -79,7 +81,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         }
         public async Task<object> Handle(GenerateArchiveQuery request, CancellationToken cancellationToken)
         {
-
+            bool Authenticated=true;
 
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             if (selectedEvent == null)
@@ -107,9 +109,17 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             var content = await _eventRepository.GetArchive(request.Id);
             var certificate = _archiveGenerator.GetArchive(request, content, birthCertificateNo?.Event?.CertificateId);
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType + " " + "Archive").FirstOrDefault();
+           var certficatesList= _certificateRepository.GetAll().Where(x => x.EventId == request.Id && x.Status);
+           foreach(var xx in certficatesList){
+               if(!xx.AuthenticationStatus){
+                  Authenticated=false;
+                  break;
+               }
+           }
             var response = new ArchiveResponseDTO();
             response.Content = certificate;
             response.TemplateId = certificateTemplateId?.Id;
+            response.IsAuthenticated=Authenticated;
             return response;
         }
 
