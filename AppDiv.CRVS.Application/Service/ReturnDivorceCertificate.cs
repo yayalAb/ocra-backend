@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.Application.Service
 
                 WifeBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).month, "or").month,
                 WifeBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).month, "Am").month,
-                WifeBirthDay = convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).day.ToString(),
+                WifeBirthDay = convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).day.ToString("D2"),
                 WifeBirthYear = convertor.getSplitted(divorce.DivorcedWife?.BirthDateEt).year.ToString(),
 
                 WifeBirthAddressAm = wifeBirthAddress?.am,
@@ -65,7 +65,7 @@ namespace AppDiv.CRVS.Application.Service
 
                 HusbandBirthMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).month, "or").month,
                 HusbandBirthMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).month, "Am").month,
-                HusbandBirthDay = convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).day.ToString(),
+                HusbandBirthDay = convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).day.ToString("D2"),
                 HusbandBirthYear = convertor.getSplitted(divorce.Event.EventOwener?.BirthDateEt).year.ToString(),
 
                 HusbandBirthAddressAm = husbandBirthAddress?.am,
@@ -76,7 +76,7 @@ namespace AppDiv.CRVS.Application.Service
 
                 DivorceMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.Event?.EventDateEt).month, "or").month,
                 DivorceMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.Event?.EventDateEt).month, "Am").month,
-                DivorceDay = convertor.getSplitted(divorce.Event?.EventDateEt).day.ToString(),
+                DivorceDay = convertor.getSplitted(divorce.Event?.EventDateEt).day.ToString("D2"),
                 DivorceYear = convertor.getSplitted(divorce.Event?.EventDateEt).year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
@@ -85,12 +85,12 @@ namespace AppDiv.CRVS.Application.Service
 
                 EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventRegDateEt).month, "or").month,
                 EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce.Event.EventRegDateEt).month, "am").month,
-                EventRegisteredDay = convertor.getSplitted(divorce.Event.EventRegDateEt).day.ToString(),
+                EventRegisteredDay = convertor.getSplitted(divorce.Event.EventRegDateEt).day.ToString("D2"),
                 EventRegisteredYear = convertor.getSplitted(divorce.Event.EventRegDateEt).year.ToString(),
 
                 GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
                 GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
-                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
+                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString("D2"),
                 GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),
 
                 CivileRegOfficerFullNameOr = divorce.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "

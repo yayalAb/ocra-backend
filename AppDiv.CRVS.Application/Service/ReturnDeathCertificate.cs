@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Service
 
                 BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(death.Event.EventOwener.BirthDateEt).month, "or").month,
                 BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(death.Event.EventOwener.BirthDateEt).month, "Am").month,
-                BirthDay = convertor.getSplitted(death.Event.EventOwener.BirthDateEt).day.ToString(),
+                BirthDay = convertor.getSplitted(death.Event.EventOwener.BirthDateEt).day.ToString("D2"),
                 BirthYear = convertor.getSplitted(death.Event.EventOwener.BirthDateEt).year.ToString(),
 
                 // BirthAddressAm = death.Event?.EventAddress?.Id.ToString(),
@@ -53,11 +53,11 @@ namespace AppDiv.CRVS.Application.Service
 
                 DeathMonthOr = new EthiopicDateTime(convertor.getSplitted(death.Event.EventDateEt).month, "or").month,
                 DeathMonthAm = new EthiopicDateTime(convertor.getSplitted(death.Event.EventDateEt).month, "Am").month,
-                DeathDay = convertor.getSplitted(death.Event.EventDateEt).day.ToString(),
+                DeathDay = convertor.getSplitted(death.Event.EventDateEt).day.ToString("D2"),
                 DeathYear = convertor.getSplitted(death.Event.EventDateEt).year.ToString(),
 
                 // DeathMonth = death.Event.EventDate.Month.ToString(),
-                // DeathDay = death.Event.EventDate.Day.ToString(),
+                // DeathDay = death.Event.EventDate.day.ToString("D2"),
                 // DeathYear = death.Event.EventDate.Year.ToString(),
 
                 NationalityOr = death.Event?.EventOwener?.NationalityLookup?.Value?.Value<string>("or"),
@@ -65,12 +65,12 @@ namespace AppDiv.CRVS.Application.Service
 
                 EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(death.Event.EventRegDateEt).month, "or").month,
                 EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(death.Event.EventRegDateEt).month, "am").month,
-                EventRegisteredDay = convertor.getSplitted(death.Event.EventRegDateEt).day.ToString(),
+                EventRegisteredDay = convertor.getSplitted(death.Event.EventRegDateEt).day.ToString("D2"),
                 EventRegisteredYear = convertor.getSplitted(death.Event.EventRegDateEt).year.ToString(),
 
                 GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
                 GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
-                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
+                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString("D2"),
                 GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),
 
                 CivileRegOfficerFullNameOr = death.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "
