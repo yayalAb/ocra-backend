@@ -34,7 +34,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Command.Update
                 GroupName = request.group.GroupName,
                 Description = request.group.Description,
                 Roles = request.group.Roles,
-                ManagedGroups = request.group.ManagedGroups
+                ManagedGroups = request.group.ManagedGroups,
+                ManageAll = request.group.ManageAll
 
             };
             try

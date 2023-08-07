@@ -35,19 +35,27 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetAllGroup
         }
         public async Task<List<DropDownDto>> Handle(GetDropDownGroups request, CancellationToken cancellationToken)
         {
-
+            // Get User from token
             var user = _userResolver.GetUserId() != null ? await _user.GetSingleUserAsync(_userResolver.GetUserId()!) : null;
-            var managedGroups = new List<Guid>();
+            var managedGroups = new List<Guid>(); // managed groups by the user group
+            var groupManager = false;   // is he a group manager
             if (user != null)
             {
                 foreach (var group in user.UserGroups)
                 {
+                    if (group.ManageAll)
+                    {
+                        groupManager = true; // if one of his group is manage all groups set group manager to true
+                        break;
+                    }
                     var groupsId = group.ManagedGroups.Select(gId => (Guid)gId).ToList();
                     managedGroups.AddRange(groupsId);
+                    managedGroups.Add(group.Id);
                 }
                 
             }
-            var groups = await _groupRepository.GetMultipleUserGroups(managedGroups);
+            var groups = groupManager ? _groupRepository.GetAll().OrderByDescending(g => g.CreatedAt).ToList() 
+                                      : await _groupRepository.GetMultipleUserGroups(managedGroups);
             return groups.Select(g => new DropDownDto{
                 Key= g.Id,
                 Value = g.GroupName
