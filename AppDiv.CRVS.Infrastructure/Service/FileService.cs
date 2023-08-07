@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Interfaces;
 
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Service;
+using Hangfire.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp.Formats;
@@ -120,14 +121,21 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
 
         }
-        public (byte[] file, string fileName, string fileExtenion) getFile(string fileId, string folder, string? eventType)
+        public (byte[] file, string fileName, string fileExtenion) getFile(string fileId, string folder, string? eventType, string? fingerPrintIndex)
         {
             try
             {
                 string folderName;
+                string fileName = fileId;
                 if (eventType != null)
                 {
+
                     folderName = Path.Combine("Resources", folder, eventType);
+                }
+               else if (!string.IsNullOrEmpty(fingerPrintIndex))
+                {
+                    folderName = Path.Combine("Resources", folder, fileId);
+                    fileName = fingerPrintIndex;
                 }
                 else
                 {
@@ -135,8 +143,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
                     folderName = Path.Combine("Resources", folder);
                 }
                 var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-
-                var matchingFiles = Directory.GetFiles(fullPath, fileId + "*");
+                var matchingFiles = Directory.GetFiles(fullPath, fileName + "*");
 
                 if (matchingFiles.Length == 0)
                 {
@@ -162,6 +169,42 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         }
 
+        public List<string> GetFileNamesInfolder(string folder)
+        {
+            try
+            {
+
+                var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folder);
+                return Directory.GetFiles(fullPath).ToList();
+            }
+            catch (Exception e)
+            {
+                return new List<string>();
+            }
+        }
+        public (byte[] file, string fileName, string fileExtenion) getFile(string fullPath)
+        {
+            try
+            {
+
+
+                var fileExtension = Path.GetExtension(fullPath);
+                var actualFileName = Path.GetFileNameWithoutExtension(fullPath);
+
+                _logger.LogCritical(fileExtension);
+                var fileContent = System.IO.File.ReadAllBytes(fullPath);
+                return (file: fileContent, fileName: actualFileName, fileExtenion: fileExtension);
+
+            }
+            catch (System.IO.DirectoryNotFoundException e)
+            {
+
+                throw new BadRequestException($"could not find the directory of the path specified:\n{e.Message}");
+            }
+
+        }
+
+
         private string? getImageFileExtension(byte[] bytes)
         {
 
@@ -179,5 +222,8 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
 
         }
+
+
+
     }
 }

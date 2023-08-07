@@ -32,5 +32,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public UpdatePersonalInfoRequest EventOwener { get; set; }
 
         public ICollection<SupportingDocumentDTO>? EventSupportingDocuments { get; set; }
+        public List<string> fingerPrints { get; set; } = new List<string>();
+
     }
 }

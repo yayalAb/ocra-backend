@@ -23,12 +23,14 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
         private readonly IDateAndAddressService _AddressService;
 
         private readonly IMapper _mapper;
+        private readonly IEventDocumentService _eventDocumentService;
 
-        public GetDivorceEventByIdQueryHandler(IDivorceEventRepository DivorceEventRepository, IDateAndAddressService AddressService, IMapper mapper)
+        public GetDivorceEventByIdQueryHandler(IDivorceEventRepository DivorceEventRepository, IDateAndAddressService AddressService, IMapper mapper, IEventDocumentService eventDocumentService)
         {
             _DivorceEventRepository = DivorceEventRepository;
             _AddressService = AddressService;
             _mapper = mapper;
+            _eventDocumentService = eventDocumentService;
         }
         public async Task<UpdateDivorceEventCommand> Handle(GetDivorceEventByIdQuery request, CancellationToken cancellationToken)
         {
@@ -57,6 +59,13 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
             DivorceEvent.CourtCase.Court.AddressResponseDTO = await _AddressService.FormatedAddress(DivorceEvent?.CourtCase.Court?.AddressId);
 
             DivorceEvent.Event.EventAddressResponseDTO = await _AddressService.FormatedAddress(DivorceEvent?.Event.EventAddressId);
+
+            var ids = new List<string?>{
+                DivorceEvent!.DivorcedWife?.Id.ToString(),
+                DivorceEvent.Event?.EventOwener?.Id.ToString()
+            };
+            DivorceEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
+
 
             return DivorceEvent;
         }

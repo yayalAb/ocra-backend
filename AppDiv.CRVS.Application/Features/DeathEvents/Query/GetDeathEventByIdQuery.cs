@@ -22,12 +22,13 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     {
         private readonly IDeathEventRepository _deathEventRepository;
         private readonly IDateAndAddressService _AddressService;
+        private readonly IEventDocumentService _eventDocumentService;
 
-
-        public GetDeathEventByIdHandler(IDeathEventRepository deathEventRepository, IDateAndAddressService AddressService)
+        public GetDeathEventByIdHandler(IDeathEventRepository deathEventRepository, IDateAndAddressService AddressService, IEventDocumentService eventDocumentService)
         {
             _deathEventRepository = deathEventRepository;
             _AddressService = AddressService;
+            _eventDocumentService = eventDocumentService;
         }
         public async Task<DeathEventDTO> Handle(GetDeathEventByIdQuery request, CancellationToken cancellationToken)
         {
@@ -48,6 +49,12 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 DeathEvent!.Event.EventRegistrar.RegistrarInfo.BirthAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.BirthAddressId)!;
                 DeathEvent!.Event.EventRegistrar.RegistrarInfo.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.ResidentAddressId)!;
             }
+            var ids = new List<string?>{
+                DeathEvent!.Event.EventRegistrar?.RegistrarInfo?.Id.ToString(),
+                DeathEvent.Event?.EventOwener?.Id.ToString()
+            };
+            DeathEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
+
             return DeathEvent!;
         }
     }

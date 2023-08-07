@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Utility.Contracts;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -24,12 +25,14 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
         private readonly IAdoptionEventRepository _adoptionEventRepository;
         private readonly IDateAndAddressService _AddressService;
         private readonly IMapper _mapper;
+        private readonly IEventDocumentService _eventDocumentService;
 
-        public AdoptionEventGetByIdQueryHandler(IDateAndAddressService AddressService, IAdoptionEventRepository adoptionEventRepository, IMapper mapper)
+        public AdoptionEventGetByIdQueryHandler(IDateAndAddressService AddressService, IAdoptionEventRepository adoptionEventRepository, IMapper mapper, IEventDocumentService EventDocumentService)
         {
             _adoptionEventRepository = adoptionEventRepository;
             _AddressService = AddressService;
             _mapper = mapper;
+            _eventDocumentService = EventDocumentService;
         }
         public async Task<AdoptionDTO> Handle(AdoptionEventGetByIdQuery request, CancellationToken cancellationToken)
         {
@@ -57,6 +60,14 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
             adoptionEvent.Event.EventOwener.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.BirthAddressId);
             adoptionEvent.Event.EventOwener.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.ResidentAddressId);
             adoptionEvent.CourtCase.Court.CourtAddress = await _AddressService.FormatedAddress(adoptionEvent.CourtCase.Court.AddressId);
+
+            var ids = new List<string?>{
+                adoptionEvent.AdoptiveFather?.Id.ToString(),
+                adoptionEvent.AdoptiveMother?.Id.ToString(),
+                adoptionEvent.Event.EventOwener?.Id.ToString()
+            };
+
+            adoptionEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
 
 
             return adoptionEvent;

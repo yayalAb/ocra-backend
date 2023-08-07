@@ -30,16 +30,18 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     {
         private readonly IBirthEventRepository _BirthEventRepository;
         private readonly IDateAndAddressService _AddressService;
+        private readonly IEventDocumentService _eventDocumentService;
 
-        public GetBirthEventByIdHandler(IBirthEventRepository BirthEventRepository, IDateAndAddressService AddressService)
+        public GetBirthEventByIdHandler(IBirthEventRepository BirthEventRepository, IDateAndAddressService AddressService, IEventDocumentService eventDocumentService)
         {
             _BirthEventRepository = BirthEventRepository;
             _AddressService = AddressService;
+            _eventDocumentService = eventDocumentService;
         }
         public async Task<BirthEventDTO> Handle(GetBirthEventByIdQuery request, CancellationToken cancellationToken)
         {
 
-            var selectedBirthEvent = await _BirthEventRepository.GetWithIncludedAsync(request.Id) 
+            var selectedBirthEvent = await _BirthEventRepository.GetWithIncludedAsync(request.Id)
                                         ?? throw new NotFoundException("Birth Event with the Given Id Is Not Found");
 
             var BirthEvent = CustomMapper.Mapper.Map<BirthEventDTO>(selectedBirthEvent);
@@ -61,6 +63,16 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 BirthEvent!.Event.EventRegistrar.RegistrarInfo.BirthAddressResponseDTO = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventRegistrar?.RegistrarInfo?.BirthAddressId)!;
                 BirthEvent!.Event.EventRegistrar.RegistrarInfo.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(BirthEvent?.Event?.EventRegistrar?.RegistrarInfo?.ResidentAddressId)!;
             }
+
+            var ids = new List<string?>{
+                BirthEvent.Father?.Id.ToString(),
+                BirthEvent.Mother?.Id.ToString(),
+                BirthEvent.Event.EventOwener?.Id.ToString(),
+                BirthEvent.Event.EventRegistrar?.RegistrarInfo?.Id.ToString()
+            };
+
+            BirthEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
+
 
             return BirthEvent!;
         }

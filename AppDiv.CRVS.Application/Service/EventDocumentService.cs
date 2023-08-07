@@ -190,6 +190,7 @@ namespace AppDiv.CRVS.Application.Service
                 });
                 await _supportingDocumentRepository.InsertAsync(mappedExamptionDocs, cancellationToken);
             }
+            await _supportingDocumentRepository.SaveChangesAsync(cancellationToken);
             return (supportingDocs: mappedDocs, examptionDocs: mappedExamptionDocs);
         }
 
@@ -403,6 +404,16 @@ namespace AppDiv.CRVS.Application.Service
                 }
             }
             return (userPhotos: userPhotos, otherDocs: supportingDocs);
+        }
+
+        public List<string> getFingerprintUrls(List<string> personIds)
+        {
+            List<string> fingerPrintUrls = new List<string>();
+            personIds.ForEach(id =>
+            {
+                fingerPrintUrls.AddRange(_fileService.GetFileNamesInfolder("Resources/fingerprints/" + id));
+            });
+            return fingerPrintUrls;
         }
 
     }
