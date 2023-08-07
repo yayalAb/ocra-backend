@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 throw new NotFoundException("User Not Found");
             }
             var response = _userRepository.GetAll().Where(x => x.PersonalInfoId == UserId).FirstOrDefault();
-            if(response==null){
+            if(response == null){
               throw new NotFoundException("User Not Found");
             }
 
@@ -63,8 +63,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 EventType = "Logout",
                 EventDate = DateTime.Now,
                 IpAddress = _httpContext?.HttpContext?.Connection?.RemoteIpAddress.ToString(),
-                Device = _httpContext?.HttpContext?.Request
-
+                Device = _httpContext?.HttpContext?.Request.ToString()
             };
             await _tokenRepository.InsertAsync(tokenLogout, cancellationToken);
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
