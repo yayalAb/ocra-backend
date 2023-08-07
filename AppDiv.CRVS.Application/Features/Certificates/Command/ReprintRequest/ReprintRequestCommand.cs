@@ -55,12 +55,18 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.ReprintRequest
             {
                 try
                 {
-                    Console.WriteLine("payment rate : {0}", certificate.Event.EventType);
                     (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "Reprint", null, false, false, cancellationToken);
                     if (response.amount == 0)
                     {
-                        res.Message = "Payment Rate not found";
-                        res.Success = false;
+                    var Selectedevent=_eventRepository.GetAll()
+                           .Where(x => x.Id == certificate.Event.Id).FirstOrDefault();
+                    Selectedevent.ReprintWaiting = true;
+                    await _eventRepository.UpdateAsync(Selectedevent, x => x.Id);
+                    await _eventRepository.SaveChangesAsync(cancellationToken);
+                  var response1=new BaseResponse{  Message = "You can get the requested certificate on certificate list",
+                    Success = true};
+                    return response1;
+
                     }
                 }
                 catch (Exception exp)
