@@ -52,20 +52,25 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse();
-            Guid WorkflowId = _WorkflowRepository.GetAll()
-            .Where(wf => wf.workflowName == "authentication").Select(x => x.Id).FirstOrDefault();
-            if (WorkflowId == null || WorkflowId == Guid.Empty)
+            var Workflow= _WorkflowRepository.GetAll()
+            .Include(x=>x.Steps)
+            .Where(wf => wf.workflowName == "authentication").FirstOrDefault();
+
+            if (Workflow == null || Workflow?.Steps.Count == 0)
             {
                 var certificate = _certificateRepository.GetAll()
                 .Include(x => x.Event)
+                .Include(x => x.Event.EventOwener)
                 .Where(x => x.Id == request.CertificateId).FirstOrDefault();
+
                 if (certificate == null)
                 {
                     throw new NotFoundException("Certificate With the given Id Does't Found");
                 }
                 (float amount, string code) respons = await _eventPayment.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "authentication",
                     null, false, false, cancellationToken);
-                if (respons.amount == 0)
+
+                if (true)
                 {
                     certificate.AuthenticationStatus = true;
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
@@ -93,7 +98,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                     CivilRegOfficerId = request.CivilRegOfficer,
                     currentStep = 0,
                     NextStep = next,
-                    WorkflowId = WorkflowId
+                    WorkflowId = Workflow.Id
                 }
             };
             await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);
@@ -111,7 +116,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             {
                 CurrentStep = 0,
                 ApprovalStatus = true,
-                WorkflowId = WorkflowId,
+                WorkflowId = Workflow.Id,
                 RequestId = AuthenticationRequest.RequestId,
                 CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
                 Remark = request.Remark
