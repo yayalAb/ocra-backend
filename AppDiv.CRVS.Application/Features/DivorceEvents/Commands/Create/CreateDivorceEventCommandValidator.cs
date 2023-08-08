@@ -119,15 +119,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                 .MustAsync(ValidateCertifcateId)
                 .WithMessage("The last 4 digit of  {PropertyName} must be int., and must be unique.")
                 .When(e => e.Event.CertificateId != null);
-            RuleFor(p => p.Event.EventSupportingDocuments).SetValidator(new SupportingDocumentsValidator("Event.EventSupportingDocuments")!)
-                   .When(p => (p.Event.EventSupportingDocuments != null));
-            RuleFor(p => p.Event.PaymentExamption).SetValidator(new PaymentExamptionValidator(eventRepo)!)
-                    .When(p => (p.Event.IsExampted));
-            When(p => p.Event.PaymentExamption?.SupportingDocuments != null, () =>
-            {
-                RuleFor(p => p.Event.PaymentExamption.SupportingDocuments)
-                .SetValidator(new SupportingDocumentsValidator("Event.PaymentExamption.SupportingDocuments")!);
-            });
+            
         }
 
         private async Task<bool> ValidateCertifcateId(string CertId, CancellationToken token)

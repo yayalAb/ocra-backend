@@ -45,11 +45,11 @@ namespace AppDiv.CRVS.API.Controllers
         public async Task<IActionResult> GetByName([FromQuery] string name)
         {
             var templateId = await Mediator.Send(new GetCertificateTemplatesByNameQuery { Name = name });
-            var response = _fileService.getFile(templateId?.ToString(),"CertificateTemplates", null);
+            var response = _fileService.getFile(templateId?.ToString(), "CertificateTemplates", null, null);
 
             return File(response.file,
                             "application/octet-stream"
-                            , response.fileName+response.fileExtenion);
+                            , response.fileName + response.fileExtenion);
         }
 
     }

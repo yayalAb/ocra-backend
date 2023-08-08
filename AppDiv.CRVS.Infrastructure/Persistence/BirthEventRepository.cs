@@ -131,6 +131,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
                 await base.InsertAsync(entity, cancellationToken);
+                await base.SaveChangesAsync(cancellationToken);
             }
             catch (System.Exception)
             {
@@ -208,6 +209,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 //     entity.Mother = selectedperson;
                 // }
                 _dbContext.BirthEvents.Update(entity);
+                _dbContext.SaveChangesAsync();
 
                 // base.Update(entity);
             }

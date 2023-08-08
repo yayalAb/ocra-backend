@@ -49,7 +49,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
                 CourtConfirmationMonthOr = new EthiopicDateTime(convertor.getSplitted(court?.ConfirmedDateEt).month, "or").month,
                 CourtConfirmationMonthAm = new EthiopicDateTime(convertor.getSplitted(court.ConfirmedDateEt).month, "am").month,
-                CourtConfirmationDay = convertor.getSplitted(court?.ConfirmedDateEt).day.ToString(),
+                CourtConfirmationDay = convertor.getSplitted(court?.ConfirmedDateEt).day.ToString("D2"),
                 CourtConfirmationYear = convertor.getSplitted(court?.ConfirmedDateEt).year.ToString(),
 
                 CourtCaseNumber = court?.CourtCaseNumber
@@ -64,7 +64,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             divorceInfo.MarriageMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).month, "or")?.month;
             divorceInfo.MarriageMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).month, "Am")?.month;
-            divorceInfo.MarriageDay = convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).day.ToString();
+            divorceInfo.MarriageDay = convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).day.ToString("D2");
             divorceInfo.MarriageYear = convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).year.ToString();
 
             divorceInfo.WifeBirthCertificateId = divorce?.DivorceEvent?.WifeBirthCertificateId;

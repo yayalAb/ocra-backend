@@ -215,7 +215,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
                                 }
 
-                                await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
+                                // await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
                                 // if (amount != 0 || adoptionEvent.Event.IsExampted)
                                 // {
                                 await transaction.CommitAsync();

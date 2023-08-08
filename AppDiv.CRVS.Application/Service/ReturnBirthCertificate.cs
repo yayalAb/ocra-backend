@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Service
 
                 BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(birth?.Event?.EventDateEt).month, "or")?.month,
                 BirthMonthAm = new EthiopicDateTime(convertor.getSplitted(birth?.Event?.EventDateEt).month, "Am")?.month,
-                BirthDay = convertor.getSplitted(birth?.Event?.EventDateEt).day.ToString(),
+                BirthDay = convertor.getSplitted(birth?.Event?.EventDateEt).day.ToString("D2"),
                 BirthYear = convertor.getSplitted(birth?.Event?.EventDateEt).year.ToString(),
 
                 // BirthAddressAm = birth.Event?.EventAddress?.Id.ToString(),
@@ -69,12 +69,12 @@ namespace AppDiv.CRVS.Application.Service
 
                 EventRegisteredMonthOr = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventRegDateEt).month, "or").month,
                 EventRegisteredMonthAm = new EthiopicDateTime(convertor.getSplitted(birth.Event.EventRegDateEt).month, "am").month,
-                EventRegisteredDay = convertor.getSplitted(birth.Event.EventRegDateEt).day.ToString(),
+                EventRegisteredDay = convertor.getSplitted(birth.Event.EventRegDateEt).day.ToString("D2"),
                 EventRegisteredYear = convertor.getSplitted(birth.Event.EventRegDateEt).year.ToString(),
 
                 GeneratedMonthOr = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "or").month,
                 GeneratedMonthAm = new EthiopicDateTime(convertor.getSplitted(CreatedAtEt).month, "am").month,
-                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString(),
+                GeneratedDay = convertor.getSplitted(CreatedAtEt).day.ToString("D2"),
                 GeneratedYear = convertor.getSplitted(CreatedAtEt).year.ToString(),
 
                 CivileRegOfficerFullNameOr = birth.Event.CivilRegOfficer?.FirstName?.Value<string>("or") + " "

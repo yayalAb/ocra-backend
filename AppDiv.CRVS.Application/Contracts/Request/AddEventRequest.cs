@@ -19,6 +19,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         // public UpdatePersonalInfoRequest EventOwener { get; set; }
         // public AddRegistrarRequest EventRegistrar { get; set; }
         public ICollection<AddSupportingDocumentRequest>? EventSupportingDocuments { get; set; }
+        public List<string> fingerPrints { get; set; } = new List<string>();
+
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
         public AddressResponseDTOE? EventAddressResponseDTO { get; set; }
 

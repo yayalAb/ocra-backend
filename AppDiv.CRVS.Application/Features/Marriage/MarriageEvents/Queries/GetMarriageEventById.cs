@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -21,12 +22,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
     {
         private readonly IMarriageEventRepository _MarriageEventRepository;
         private readonly IDateAndAddressService _AddressService;
+        private readonly IEventDocumentService _eventDocumentService;
         private readonly IMapper _mapper;
 
-        public GetMarriageEventByIdQueryHandler(IMarriageEventRepository MarriageEventRepository, IMapper mapper, IDateAndAddressService AddressService)
+        public GetMarriageEventByIdQueryHandler(IMarriageEventRepository MarriageEventRepository, IMapper mapper, IDateAndAddressService AddressService, IEventDocumentService eventDocumentService)
         {
             _MarriageEventRepository = MarriageEventRepository;
             _AddressService = AddressService;
+            _eventDocumentService = eventDocumentService;
             _mapper = mapper;
         }
         public async Task<UpdateMarriageEventCommand> Handle(GetMarriageEventByIdQuery request, CancellationToken cancellationToken)
@@ -59,6 +62,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
             {
                 wit.WitnessPersonalInfo.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(wit?.WitnessPersonalInfo?.ResidentAddressId);
             }
+            var ids = new List<string?>{
+                MarriageEvent!.BrideInfo?.Id.ToString(),
+                MarriageEvent.Event?.EventOwener?.Id.ToString(),
+            };
+            ids.AddRange(MarriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id.ToString()));
+            MarriageEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
+
 
 
             return MarriageEvent;

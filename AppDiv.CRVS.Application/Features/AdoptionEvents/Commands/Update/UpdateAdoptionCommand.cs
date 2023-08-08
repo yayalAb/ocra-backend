@@ -146,7 +146,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     {
                         adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
                     }
-                    _adoptionEventRepository.EFUpdate(adoptionEvent);
+                    await _adoptionEventRepository.EFUpdate(adoptionEvent, cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
@@ -154,7 +154,6 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                         ChildId = adoptionEvent.Event.EventOwener != null ? adoptionEvent.Event.EventOwener.Id : adoptionEvent.Event.EventOwenerId
                     };
                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
-                    var result = await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                     _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                     _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
@@ -162,7 +161,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 }
                 else
                 {
-                    _adoptionEventRepository.EFUpdate(adoptionEvent);
+                    await _adoptionEventRepository.EFUpdate(adoptionEvent, cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
