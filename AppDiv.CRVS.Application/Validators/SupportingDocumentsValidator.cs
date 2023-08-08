@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Validators
     {
         public SupportingDocumentsValidator(string propertyName)
         {
-            RuleFor(p => p).NotEmpty().NotNull().SupportingDocNull(propertyName);
+            RuleFor(p => p).SupportingDocNull(propertyName);
             
         }
     }
