@@ -157,6 +157,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                     "eventSupportingDocuments" => content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments"),
                     "paymentExamption" => content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")
                 };
+                Console.WriteLine("contents ttttttt : {0}",contentList);
                 var supportingDocuments = new List<AddSupportingDocumentRequest>();
                 if (contentList != null)
                 {

@@ -71,8 +71,8 @@ namespace AppDiv.CRVS.Application.Service
                 ChildRules(d =>
                 {
                     d.RuleFor(d => d.base64String)
-                        .Must(str => str == null || HelperService.IsBase64String(str)).WithMessage("invalid base64string")
-                        .Must(str => str == null || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                        .Must(str => string.IsNullOrEmpty(str) || HelperService.IsBase64String(str)).WithMessage("invalid base64string")
+                        .Must(str => string.IsNullOrEmpty(str) || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
                         .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files");
                     d.RuleFor(d => d.FingerPrint)
                        .ForEach(f => f.ChildRules(f =>
@@ -80,7 +80,7 @@ namespace AppDiv.CRVS.Application.Service
                            f.RuleFor(f => f.base64Image)
                            .NotNull()
                            .Must(str => HelperService.IsBase64String(str)).WithMessage("invalid base64string")
-                           .Must(str => str == null || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                           .Must(str => string.IsNullOrEmpty(str) || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
                            .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files"); ;
                        }));
                     d.RuleFor(d => d.Type)
