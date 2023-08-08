@@ -226,6 +226,9 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IBackgroundJobs, BackgroundJobs>();
             services.AddScoped<IPersonDuplicateRepository, PersonDuplicateRepository>();
             services.AddScoped<IEventDuplicateRepository, EventDuplicateRepository>();
+            services.AddScoped<IMarriageApplicationCouchRepository, MarriageApplicationCouchRepository>();
+
+
 
 
 

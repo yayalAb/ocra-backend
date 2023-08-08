@@ -1,6 +1,7 @@
 ﻿using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.Marriage.MarriageEvents.Commands;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Persistence.Couch;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Application.Validators;
 using AppDiv.CRVS.Domain.Entities;
@@ -8,6 +9,7 @@ using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Utility.Services;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using System.Linq.Expressions;
 
 namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
@@ -22,11 +24,21 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IPaymentExamptionRequestRepository _paymentExamptionRequestRepo;
         private readonly IAddressLookupRepository _addressRepo;
         private readonly ISettingRepository _settingRepository;
+        private readonly IMarriageApplicationCouchRepository _marraigeApplicationCouchRepo;
         private readonly IEventRepository _eventRepo;
         private readonly Guid? _divorceTypeLookupId;
 
         [Obsolete]
-        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo, IMarriageApplicationRepository marriageApplicationRepo, IPersonalInfoRepository personalInfoRepo, IDivorceEventRepository divorceEventRepo, IMarriageEventRepository marriageEventRepo, IPaymentExamptionRequestRepository paymentExamptionRequestRepo, IAddressLookupRepository addressRepo, ISettingRepository settingRepository, IEventRepository eventRepo)
+        public CreateMarriageEventCommandValidator(ILookupRepository lookupRepo,
+                                                   IMarriageApplicationRepository marriageApplicationRepo,
+                                                   IPersonalInfoRepository personalInfoRepo,
+                                                   IDivorceEventRepository divorceEventRepo,
+                                                   IMarriageEventRepository marriageEventRepo,
+                                                   IPaymentExamptionRequestRepository paymentExamptionRequestRepo,
+                                                   IAddressLookupRepository addressRepo,
+                                                   ISettingRepository settingRepository,
+                                                   IMarriageApplicationCouchRepository marraigeApplicationCouchRepo,
+                                                   IEventRepository eventRepo)
         {
             _lookupRepo = lookupRepo;
             _marriageApplicationRepo = marriageApplicationRepo;
@@ -36,6 +48,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _paymentExamptionRequestRepo = paymentExamptionRequestRepo;
             _addressRepo = addressRepo;
             _settingRepository = settingRepository;
+            _marraigeApplicationCouchRepo = marraigeApplicationCouchRepo;
             _eventRepo = eventRepo;
             _divorceTypeLookupId = _lookupRepo.GetAll()
                 .Where(l => l.ValueStr.ToLower()
@@ -193,7 +206,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 RuleFor(e => e.ApplicationId)
                 .NotNull().WithMessage("marriage application id is required for 'civil' marriage type")
                 .NotEmpty().WithMessage("marriage application id cannot be empty for 'civil' marriage type")
-                .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
+                .MustAsync(async (e, applicationId, CancellationToken) =>
+                    BeFoundInMarriageApplicationTable(applicationId)
+                        || ((e.Event.EventRegisteredAddressId != null)
+                            && await (BeFoundInMarriageApplicationCouch(applicationId, (Guid)e.Event.EventRegisteredAddressId, CancellationToken))
+                        )
+                    )
+                    .WithMessage("marriage application with the provided id not found ,")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
                 RuleFor(e => e.Event.EventRegDateEt)
@@ -375,6 +394,21 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private bool BeFoundInMarriageApplicationTable(Guid? applicationId)
         {
             return applicationId == null || _marriageApplicationRepo.exists((Guid)applicationId);
+        }
+        private async Task<bool> BeFoundInMarriageApplicationCouch(Guid? applicationId, Guid registrationAddressId, CancellationToken cancellationToken)
+        {
+            if (applicationId == null)
+            {
+                return true;
+            }
+            var res = await _marraigeApplicationCouchRepo.Exists((Guid)applicationId, registrationAddressId);
+            if (!res.Success)
+            {
+                return false;
+            }
+            var syncRes = await _marraigeApplicationCouchRepo.SyncMarraigeApplication(res.marriageApplication!, registrationAddressId, cancellationToken);
+            return syncRes.Success;
+
         }
 
         private async Task<bool> isCivilMarriage(Guid marriageTypeId)
