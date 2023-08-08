@@ -152,7 +152,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             // modifiedContent = content;
             try
             {
-                var contentList = type switch
+                var contentList = type switch 
                 {
                     "eventSupportingDocuments" => content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments"),
                     "paymentExamption" => content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")

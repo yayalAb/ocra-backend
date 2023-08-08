@@ -44,11 +44,10 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 throw new NotFoundException("user does not exist");
             }
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
-                              .Where(e => e.EventRegisteredAddressId == applicationuser.AddressId);
+                              .Where(e => e.EventRegisteredAddressId == applicationuser.AddressId|| e.CreatedBy==new Guid(applicationuser.Id));
             IQueryable<Event> eventsQueriable;
             if (request.isVerification)
             {
-
                 eventsQueriable = await _ReturnVerficationList.GetVerficationRequestedCertificateList(request.CivilRegOfficerId);
             }
             else
