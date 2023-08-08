@@ -236,11 +236,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             await base.InsertAsync(entity, cancellationToken);
             await base.SaveChangesAsync(cancellationToken);
-
-
-
-
-
         }
 
         private async Task updatePersonalInfo(Dictionary<string, object> keyValuePair, Guid id, string feildName)

@@ -36,7 +36,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         // 08db641e-a7a6-44cc-868e-4b3a02249d49--bride
         // 08db641e-a801-4cb6-8778-eaf20f9cdf41 groom
-        public void EFUpdate(DivorceEvent DivorceEvent)
+        public async Task EFUpdate(DivorceEvent DivorceEvent, CancellationToken cancellationToken)
         {
             var existingOwner = dbContext.PersonalInfos.Find(DivorceEvent.Event.EventOwener.Id);
             if (existingOwner == null)
@@ -95,8 +95,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"PhoneNumber", DivorceEvent.DivorcedWife.PhoneNumber}
             };
             DivorceEvent.DivorcedWife = HelperService.UpdateObjectFeilds<PersonalInfo>(existingWife, divorcedWifeFeilds);
-            dbContext.DivorceEvents.Update(DivorceEvent);
-            dbContext.SaveChanges();
+            base.Update(DivorceEvent);
+            await base.SaveChangesAsync(cancellationToken);
         }
         public bool exists(Guid id)
         {
