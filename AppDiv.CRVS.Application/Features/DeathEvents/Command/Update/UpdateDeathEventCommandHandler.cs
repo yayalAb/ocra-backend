@@ -90,14 +90,13 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
 
                         }
                         else
-                        {                            // Move the supportin documents from temporary folder.
+                        {
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                            Console.WriteLine("userPhotos : {0}",userPhotos);
                             if(userPhotos!=null &&(userPhotos.Count != 0)){
                                 _eventDocumentService.MovePhotos(userPhotos, "Death");
                             }
-                            _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+                            // _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
 
                         }
                         // Set the response to Updated.
