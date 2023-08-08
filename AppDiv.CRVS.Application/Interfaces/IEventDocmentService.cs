@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public (Dictionary<string, string> userPhotos, Dictionary<string, List<BiometricImagesAtt>?> fingerPrint, IEnumerable<SupportingDocument> otherDocs) extractSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs);
         public (Dictionary<string, string> userPhotos, IEnumerable<SupportingDocument> otherDocs) ExtractOldSupportingDocs(PersonIdObj idObj, IEnumerable<SupportingDocument> supportingDocs);
         public List<string> getFingerprintUrls(List<string> personIds);
+        public List<Dictionary<string, string>> getSingleFingerprintUrls(string? personId);
 
     }
 }

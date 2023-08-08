@@ -60,12 +60,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
 
             DivorceEvent.Event.EventAddressResponseDTO = await _AddressService.FormatedAddress(DivorceEvent?.Event.EventAddressId);
 
-            var ids = new List<string?>{
-                DivorceEvent!.DivorcedWife?.Id.ToString(),
-                DivorceEvent.Event?.EventOwener?.Id.ToString()
+            DivorceEvent.Event.fingerPrints = new
+            {
+                Husband = _eventDocumentService.getSingleFingerprintUrls(DivorceEvent.Event.EventOwener?.Id.ToString()),
+                Wife = _eventDocumentService.getSingleFingerprintUrls(DivorceEvent.DivorcedWife?.Id.ToString())
             };
-            DivorceEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
-
 
             return DivorceEvent;
         }

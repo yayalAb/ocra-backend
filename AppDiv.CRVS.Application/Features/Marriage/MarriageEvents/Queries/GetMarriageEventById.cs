@@ -69,7 +69,20 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
             ids.AddRange(MarriageEvent.Witnesses.Select(w => w.WitnessPersonalInfo.Id.ToString()));
             MarriageEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
 
+            MarriageEvent.Event.fingerPrints = new
+            {
+                Husband = _eventDocumentService.getSingleFingerprintUrls(MarriageEvent.Event.EventOwener?.Id.ToString()),
+                Wife = _eventDocumentService.getSingleFingerprintUrls(MarriageEvent.BrideInfo
+                ?.Id.ToString())
+            };
+            var witnessFingerPrints =
 
+            MarriageEvent.Event.fingerPrints = new
+            {
+                Husband = _eventDocumentService.getSingleFingerprintUrls(MarriageEvent.Event.EventOwener?.Id.ToString()),
+                Wife = _eventDocumentService.getSingleFingerprintUrls(MarriageEvent.BrideInfo?.Id.ToString()),
+                Witness = MarriageEvent.Witnesses.Select(w => _eventDocumentService.getSingleFingerprintUrls(w.WitnessPersonalInfo?.Id.ToString()).ToList())
+            };
 
             return MarriageEvent;
         }
