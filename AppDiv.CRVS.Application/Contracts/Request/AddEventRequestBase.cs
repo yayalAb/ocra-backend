@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public bool IsExampted { get; set; } = false;
         public Guid? EventRegisteredAddressId { get; set; }
         public ICollection<AddSupportingDocumentRequest>? EventSupportingDocuments { get; set; }
-        public List<string> fingerPrints { get; set; } = new List<string>();
+        public object fingerPrints { get; set; } = new Object{};
 
         public AddPaymentExamptionRequest? PaymentExamption { get; set; }
         public DateTime? CreatedAt { get; set; }

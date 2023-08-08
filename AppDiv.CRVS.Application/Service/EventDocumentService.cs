@@ -415,6 +415,19 @@ namespace AppDiv.CRVS.Application.Service
             });
             return fingerPrintUrls;
         }
+        public List<Dictionary<string, string>> getSingleFingerprintUrls(string? personId)
+        {
+            return personId == null ? new List<Dictionary<string, string>>()
+                        : _fileService.GetFileNamesInfolder("Resources/fingerprints/" + personId)
+                        .Select(url => new Dictionary<string, string>{
+                                {
+                                    int.TryParse(url.Split(".")[url.Split(".").Length -2][^2..],out int str)
+                                    ? str.ToString()
+                                    : url.Split(".")[url.Split(".").Length -2][^1..] , url
+                                }
+
+                            }).ToList();
+        }
 
     }
 }

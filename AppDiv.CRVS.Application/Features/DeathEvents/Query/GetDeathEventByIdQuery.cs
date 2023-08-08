@@ -49,12 +49,11 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 DeathEvent!.Event.EventRegistrar.RegistrarInfo.BirthAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.BirthAddressId)!;
                 DeathEvent!.Event.EventRegistrar.RegistrarInfo.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.ResidentAddressId)!;
             }
-            var ids = new List<string?>{
-                DeathEvent!.Event.EventRegistrar?.RegistrarInfo?.Id.ToString(),
-                DeathEvent.Event?.EventOwener?.Id.ToString()
+            DeathEvent.Event.fingerPrints = new
+            {
+                Deceased = _eventDocumentService.getSingleFingerprintUrls(DeathEvent.Event.EventOwener?.Id.ToString()),
+                Registrar = _eventDocumentService.getSingleFingerprintUrls(DeathEvent.Event.EventRegistrar?.RegistrarInfo?.Id.ToString())
             };
-            DeathEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
-
             return DeathEvent!;
         }
     }

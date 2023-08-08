@@ -61,15 +61,13 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
             adoptionEvent.Event.EventOwener.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.ResidentAddressId);
             adoptionEvent.CourtCase.Court.CourtAddress = await _AddressService.FormatedAddress(adoptionEvent.CourtCase.Court.AddressId);
 
-            var ids = new List<string?>{
-                adoptionEvent.AdoptiveFather?.Id.ToString(),
-                adoptionEvent.AdoptiveMother?.Id.ToString(),
-                adoptionEvent.Event.EventOwener?.Id.ToString()
+
+            adoptionEvent.Event.fingerPrints = new
+            {
+                Mother = _eventDocumentService.getSingleFingerprintUrls(adoptionEvent.AdoptiveMother?.Id.ToString()),
+                Father = _eventDocumentService.getSingleFingerprintUrls(adoptionEvent.AdoptiveFather?.Id.ToString()),
+                Child = _eventDocumentService.getSingleFingerprintUrls(adoptionEvent.Event.EventOwener?.Id.ToString())
             };
-
-            adoptionEvent.Event.fingerPrints = _eventDocumentService.getFingerprintUrls(ids.Where(id => id != null).ToList()!);
-
-
             return adoptionEvent;
         }
     }
