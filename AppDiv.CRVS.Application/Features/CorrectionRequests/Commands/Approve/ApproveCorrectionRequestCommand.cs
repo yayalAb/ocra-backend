@@ -82,33 +82,34 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                            .Where(x => x.RequestId == request.Id)
                            .Include(x => x.Request).FirstOrDefault();
                             var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
-                            if (modifiedEvent.Event.EventType == "Adoption")
+                            if (modifiedEvent.Event.EventType.ToLower() == "adoption")
                             {
                                 UpdateAdoptionCommand AdoptionCommand = CorrectionRequestResponse.Content.ToObject<UpdateAdoptionCommand>();
                                 AdoptionCommand.IsFromCommand = true;
                                 var response1 = await _mediator.Send(AdoptionCommand);
                                 // await _eventRepostory.SaveChangesAsync(cancellationToken);
                             }
-                            else if (modifiedEvent.Event.EventType == "Birth")
+                            else if (modifiedEvent.Event.EventType.ToLower() == "birth")
                             {
                                 UpdateBirthEventCommand BirthCommand = CorrectionRequestResponse.Content.ToObject<UpdateBirthEventCommand>();
                                 BirthCommand.IsFromCommand = true;
                                 var response1 = await _mediator.Send(BirthCommand);
                             }
-                            else if (modifiedEvent.Event.EventType == "Death")
-                            {
+                            else if (modifiedEvent.Event.EventType.ToLower() == "death")
+                            { Console.WriteLine("Content death deathdeathdeathdeathdeathdeath : {0}");
+                                Console.WriteLine("Content asssaa : {0}",CorrectionRequestResponse.Content);
                                 UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
                                 DeathCommand.IsFromCommand = true;
                                 var response1 = await _mediator.Send(DeathCommand);
                             }
-                            else if (modifiedEvent.Event.EventType == "Divorce")
+                            else if (modifiedEvent.Event.EventType.ToLower() == "divorce")
                             {
                                 UpdateDivorceEventCommand DivorceCommand = CorrectionRequestResponse.Content.ToObject<UpdateDivorceEventCommand>();
                                 DivorceCommand.IsFromCommand = true;
                                 var response1 = await _mediator.Send(DivorceCommand);
                                 // await _eventRepostory.SaveChangesAsync(cancellationToken);
                             }
-                            else if (modifiedEvent.Event.EventType == "Marriage")
+                            else if (modifiedEvent.Event.EventType.ToLower() == "marriage")
                             {
                                 UpdateMarriageEventCommand MarriageCommand = CorrectionRequestResponse.Content.ToObject<UpdateMarriageEventCommand>();
                                 MarriageCommand.IsFromCommand = true;
