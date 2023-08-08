@@ -8,6 +8,7 @@ using AppDiv.CRVS.Application.Service;
 using Hangfire.Annotations;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Nest;
 using SixLabors.ImageSharp.Formats;
 
 namespace AppDiv.CRVS.Infrastructure.Services
@@ -58,36 +59,44 @@ namespace AppDiv.CRVS.Infrastructure.Services
         public async Task<bool> UploadBase64FileAsync(string base64String, string fileName, string pathToSave, FileMode? fileMode = FileMode.Create)
         {
 
-
-            if (!Directory.Exists(pathToSave))
+            try
             {
-                // If folder does not exist, create it
-                Directory.CreateDirectory(pathToSave);
+
+                if (!Directory.Exists(pathToSave))
+                {
+                    // If folder does not exist, create it
+                    Directory.CreateDirectory(pathToSave);
+                }
+
+
+                if (!HelperService.IsBase64String(base64String))
+                {
+                    return false;
+
+                }
+                // Convert the Base64 string to a byte array.
+                string myString = base64String.Substring(base64String.IndexOf(',') + 1);
+                byte[] bytes = Convert.FromBase64String(myString);
+
+                var extension = FileExtractorService.GetFileExtensionFromBase64String(base64String) ?? ".bin";
+                var fullPath = Path.Combine(pathToSave, fileName + extension);
+                var matchingFiles = Directory.GetFiles(pathToSave, fileName + "*");
+                //removing file with the same id but different extension 
+                matchingFiles.ToList().ForEach(file =>
+                {
+                    System.IO.File.Delete(file);
+                });
+
+                await File.WriteAllBytesAsync(fullPath, bytes);
+
+
+                return true;
             }
-
-
-            if (!HelperService.IsBase64String(base64String))
+            catch (Exception e)
             {
                 return false;
-
             }
-            // Convert the Base64 string to a byte array.
-            string myString = base64String.Substring(base64String.IndexOf(',') + 1);
-            byte[] bytes = Convert.FromBase64String(myString);
 
-            var extension = FileExtractorService.GetFileExtensionFromBase64String(base64String) ?? ".bin";
-            var fullPath = Path.Combine(pathToSave, fileName + extension);
-            var matchingFiles = Directory.GetFiles(pathToSave, fileName + "*");
-            //removing file with the same id but different extension 
-            matchingFiles.ToList().ForEach(file =>
-            {
-                System.IO.File.Delete(file);
-            });
-
-            await File.WriteAllBytesAsync(fullPath, bytes);
-
-
-            return true;
 
 
         }
@@ -117,7 +126,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
             catch (System.Exception)
             {
 
-                throw;
+                return false;
             }
 
         }
@@ -132,7 +141,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
                     folderName = Path.Combine("Resources", folder, eventType);
                 }
-               else if (!string.IsNullOrEmpty(fingerPrintIndex))
+                else if (!string.IsNullOrEmpty(fingerPrintIndex))
                 {
                     folderName = Path.Combine("Resources", folder, fileId);
                     fileName = fingerPrintIndex;
