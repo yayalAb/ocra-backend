@@ -67,14 +67,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             catch (Exception exp)
             {
                 response.BadRequest(exp.Message);
-                // throw new ApplicationException(exp.Message);
             }
             return response;
         }
         private ICollection<AddSupportingDocumentRequest> GetSupportingDocuments(JObject content, string type, out JObject modifiedContent)
         {
-            // content = content?.Value<JObject>("event");
-            // modifiedContent = content;
             try
             {
                 var contentList = type switch

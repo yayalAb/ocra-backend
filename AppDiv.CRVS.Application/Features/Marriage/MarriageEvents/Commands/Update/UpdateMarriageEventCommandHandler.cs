@@ -152,7 +152,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                 // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                                _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Marriage");
+                                       if(separatedDocs.userPhotos!=null &&(separatedDocs.userPhotos.Count != 0)){
+                                        _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Marriage");
+                                          }
+
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Marriage");
                                 //TODO:save fingerprint
                             }

@@ -106,7 +106,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                                _eventDocumentService.MovePhotos(userPhotos, "Birth");
+                                if(userPhotos!=null &&(userPhotos.Count != 0)){
+                                   _eventDocumentService.MovePhotos(userPhotos, "Birth");
+                            }
+
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
                                 //TODO:save fingerprint
                             }

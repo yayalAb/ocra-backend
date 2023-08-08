@@ -22,7 +22,7 @@ public class UpdateAdoptionCommand : IRequest<UpdateAdoptionCommandResponse>
 {
     public Guid? Id { get; set; }
     public Guid? BeforeAdoptionAddressId { get; set; }
-    public string? BirthCertificateId { get; set; }
+    public string? AdoptionCertificateId { get; set; }
     public LanguageModel ApprovedName { get; set; }
     public LanguageModel? Reason { get; set; }
     public virtual AddAdoptionPersonalInfoRequest AdoptiveMother { get; set; }
@@ -156,7 +156,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                     _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                    _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+                    _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Adoption");
 
                 }
                 else
@@ -169,10 +169,12 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                         ChildId = adoptionEvent.Event.EventOwener != null ? adoptionEvent.Event.EventOwener.Id : adoptionEvent.Event.EventOwenerId
                     };
                     var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
-                    _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Birth");
+                     if(separatedDocs.userPhotos!=null &&(separatedDocs.userPhotos.Count != 0)){
+                                  _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Adoption");
+                            }
                     if (!adoptionEvent.Event.IsExampted)
                     {
-                        _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Birth");
+                        _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                     }
                 }
                 // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
