@@ -99,7 +99,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             {
                                 divorceEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
-                            _DivorceEventRepository.EFUpdate(divorceEvent);
+                            await _DivorceEventRepository.EFUpdate(divorceEvent, cancellationToken);
                             var personIds = new PersonIdObj
                             {
                                 WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,

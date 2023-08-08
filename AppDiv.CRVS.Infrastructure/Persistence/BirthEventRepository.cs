@@ -140,7 +140,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
         }
 
-        public void UpdateAll(BirthEvent entity)
+        public async Task UpdateAll(BirthEvent entity, CancellationToken cancellationToken)
         {
             try
             {
@@ -208,8 +208,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
                 //     entity.Mother = selectedperson;
                 // }
-                _dbContext.BirthEvents.Update(entity);
-                _dbContext.SaveChangesAsync();
+                base.Update(entity);
+               await base.SaveChangesAsync(cancellationToken);
 
                 // base.Update(entity);
             }

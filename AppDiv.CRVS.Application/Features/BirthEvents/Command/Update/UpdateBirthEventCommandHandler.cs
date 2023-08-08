@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 birthEvent.Event.PaymentExamption.SupportingDocuments = null!;
                             }
                             // Update the birth event.
-                            _birthEventRepository.UpdateAll(birthEvent);
+                            await _birthEventRepository.UpdateAll(birthEvent, cancellationToken);
                             // person ids
                             var personIds = new PersonIdObj
                             {

@@ -41,14 +41,16 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
     private readonly IPersonalInfoRepository _personalInfoRepository;
     private readonly IEventDocumentService _eventDocumentService;
     private readonly IFileService _fileService;
+    private readonly IEventRepository _eventRepository;
     private readonly ILookupRepository _LookupsRepo;
 
 
-    public UpdateAdoptionCommandHandler(ILookupRepository LookupsRepo, IEventDocumentService eventDocumentService, IAdoptionEventRepository adoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService)
+    public UpdateAdoptionCommandHandler(ILookupRepository LookupsRepo, IEventDocumentService eventDocumentService, IAdoptionEventRepository adoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService , IEventRepository eventRepository)
     {
         _adoptionEventRepository = adoptionEventRepository;
         _personalInfoRepository = personalInfoRepository;
         _fileService = fileService;
+        _eventRepository = eventRepository;
         _LookupsRepo = LookupsRepo;
         _eventDocumentService = eventDocumentService;
     }
@@ -57,7 +59,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
         var UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse();
         request.Event.EventOwener.MiddleName = request?.AdoptiveFather?.FirstName;
         request.Event.EventOwener.LastName = request?.AdoptiveFather?.MiddleName;
-        var validator = new CreateAdoptionCommandValidetor(_adoptionEventRepository);
+        var validator = new CreateAdoptionCommandValidetor(_adoptionEventRepository, _eventRepository);
         var validationResult = await validator.ValidateAsync(request, cancellationToken);
         if (validationResult.Errors.Count > 0)
         {

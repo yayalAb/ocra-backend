@@ -461,6 +461,13 @@ namespace AppDiv.CRVS.Application.Service
 
         public async Task UpdateAsync(ApplicationUser user)
         {
+            if (user.Status && user.LockoutEnd > DateTime.Now && user.LockoutEnabled)
+            {
+                user.LockoutEnd = DateTime.Now;
+            }
+            user.ModifiedAt = DateTime.UtcNow;
+            user.ModifiedBy = _userResolverService.GetUserId() != null ? new Guid(_userResolverService.GetUserId()!) : Guid.Empty;
+            
             await _userManager.UpdateAsync(user);
         }
 
