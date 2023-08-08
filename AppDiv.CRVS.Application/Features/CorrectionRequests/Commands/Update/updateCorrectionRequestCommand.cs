@@ -91,6 +91,10 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
                         AddSupportingDocumentRequest file = sup?.ToObject<AddSupportingDocumentRequest>();
                         if (file.Id != null)
                         {
+                            if (type == "eventSupportingDocuments")
+                                content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments")?[i].Remove();
+                            else
+                                content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")?[i].Remove();
                             continue;
                         }
                         file.Id = Guid.NewGuid();

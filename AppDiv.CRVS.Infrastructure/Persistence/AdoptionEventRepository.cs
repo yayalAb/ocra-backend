@@ -53,7 +53,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
-        public void EFUpdate(AdoptionEvent adoptionEvent)
+        public async Task  EFUpdate(AdoptionEvent adoptionEvent ,CancellationToken cancellationToken)
         {
             _dbContext.AdoptionEvents.Update(adoptionEvent);
         }

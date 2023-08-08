@@ -3,7 +3,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Query;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
-using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
+// using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
 using AppDiv.CRVS.Infrastructure.Services;
 using Hangfire;
 using MediatR;
@@ -18,16 +18,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private readonly CRVSDbContext dbContext;
         private readonly IMediator _mediator;
         private readonly IElasticClient elasticClient;
-        private readonly IFireAndForgetJobs fireAndForgetJobs;
+        // private readonly IFireAndForgetJobs fireAndForgetJobs;
 
         public DatabaseFacade Database => dbContext.Database;
 
-        public DivorceEventRepository(CRVSDbContext dbContext, IMediator mediator, IElasticClient elasticClient, IFireAndForgetJobs fireAndForgetJobs) : base(dbContext)
+        public DivorceEventRepository(CRVSDbContext dbContext, IMediator mediator, IElasticClient elasticClient /*IFireAndForgetJobs fireAndForgetJobs*/) : base(dbContext)
         {
             this.dbContext = dbContext;
             this._mediator = mediator;
             this.elasticClient = elasticClient;
-            this.fireAndForgetJobs = fireAndForgetJobs;
+            // this.fireAndForgetJobs = fireAndForgetJobs;
         }
         public IQueryable<DivorceEvent> GetAllQueryableAsync()
         {
@@ -251,7 +251,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         //         // var fireAndForgetJobs = new FireAndForgetJobs();
         //         bgClient.Schedule<IFireAndForgetJobs>(x => x.test(),TimeSpan.Zero);
         //         // bgClient.Enqueue<IFireAndForgetJobs>(x => x.test());
-                
+
 
 
 
