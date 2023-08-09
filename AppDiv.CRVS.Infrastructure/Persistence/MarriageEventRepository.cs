@@ -1,6 +1,7 @@
 
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Domain.Configuration;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Infrastructure.Services;
@@ -33,6 +34,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task EFUpdateAsync(MarriageEvent marriageEvent, CancellationToken cancellationToken)
         {
+            if (marriageEvent.Event.PaymentExamption != null && (marriageEvent.Event.PaymentExamption.Id == null || marriageEvent.Event.PaymentExamption.Id == Guid.Empty))
+            {
+                var paymentExamption = marriageEvent.Event.PaymentExamption;
+                await dbContext.PaymentExamptions.AddAsync(paymentExamption);
+                marriageEvent.Event.PaymentExamption = null;
+
+            }
             var existingOwner = await dbContext.PersonalInfos.FindAsync(marriageEvent.Event.EventOwener.Id);
             if (existingOwner == null)
             {

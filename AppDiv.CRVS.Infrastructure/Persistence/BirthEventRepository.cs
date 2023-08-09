@@ -144,6 +144,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             try
             {
+                if (entity.Event.PaymentExamption != null && (entity.Event.PaymentExamption.Id == null || entity.Event.PaymentExamption.Id == Guid.Empty))
+                {
+                    var paymentExamption = entity.Event.PaymentExamption;
+                    await _dbContext.PaymentExamptions.AddAsync(paymentExamption);
+                    entity.Event.PaymentExamption = null;
+
+                }
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
                 entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
@@ -209,7 +216,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 //     entity.Mother = selectedperson;
                 // }
                 base.Update(entity);
-               await base.SaveChangesAsync(cancellationToken);
+                await base.SaveChangesAsync(cancellationToken);
 
                 // base.Update(entity);
             }

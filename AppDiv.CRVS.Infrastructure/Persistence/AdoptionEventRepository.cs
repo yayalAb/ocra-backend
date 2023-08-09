@@ -56,6 +56,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task EFUpdate(AdoptionEvent adoptionEvent, CancellationToken cancellationToken)
         {
+            if (adoptionEvent.Event.PaymentExamption != null && (adoptionEvent.Event.PaymentExamption.Id == null || adoptionEvent.Event.PaymentExamption.Id == Guid.Empty))
+            {
+                var paymentExamption = adoptionEvent.Event.PaymentExamption;
+                await _dbContext.PaymentExamptions.AddAsync(paymentExamption);
+                adoptionEvent.Event.PaymentExamption = null;
+
+            }
             base.Update(adoptionEvent);
             await base.SaveChangesAsync(cancellationToken);
         }
