@@ -96,8 +96,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                                 var response1 = await _mediator.Send(BirthCommand);
                             }
                             else if (modifiedEvent.Event.EventType.ToLower() == "death")
-                            { Console.WriteLine("Content death deathdeathdeathdeathdeathdeath : {0}");
-                                Console.WriteLine("Content asssaa : {0}",CorrectionRequestResponse.Content);
+                            { 
                                 UpdateDeathEventCommand DeathCommand = CorrectionRequestResponse.Content.ToObject<UpdateDeathEventCommand>();
                                 DeathCommand.IsFromCommand = true;
                                 var response1 = await _mediator.Send(DeathCommand);
