@@ -75,8 +75,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // persons id.
                         var personIds = new PersonIdObj
                         {
-                            DeceasedId = deathEvent.Event.EventOwener != null ?deathEvent.Event.EventOwener.Id: deathEvent.Event.EventOwenerId,
-                            RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo != null ?deathEvent.Event.EventRegistrar.RegistrarInfo.Id : deathEvent.Event.EventRegistrar?.RegistrarInfoId
+                            DeceasedId = deathEvent.Event.EventOwener != null ? deathEvent.Event.EventOwener.Id : deathEvent.Event.EventOwenerId,
+                            RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo != null ? deathEvent.Event.EventRegistrar.RegistrarInfo.Id : deathEvent.Event.EventRegistrar?.RegistrarInfoId
                         };
                         // if the update not from the corection request.
                         if (!request.IsFromCommand)
@@ -93,7 +93,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         {
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                            if(userPhotos!=null &&(userPhotos.Count != 0)){
+                            if (userPhotos != null && (userPhotos.Count != 0))
+                            {
                                 _eventDocumentService.MovePhotos(userPhotos, "Death");
                             }
                             // _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
@@ -102,9 +103,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // Set the response to Updated.
                         response.Updated("Death Event");
                         // Commit the transaction.
-                         if (!request.IsFromCommand){
-                              await transaction?.CommitAsync()!;
-                         }
+                        if (!request.IsFromCommand)
+                        {
+                            await transaction?.CommitAsync()!;
+                        }
 
 
                     }
@@ -113,7 +115,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                 catch (Exception)
                 {
                     // Rollback the transaction on exception.
-                    await transaction?.RollbackAsync()!;
+                    if (transaction != null)
+                    {
+                        await transaction?.RollbackAsync()!;
+                    }
                     throw;
                 }
 
