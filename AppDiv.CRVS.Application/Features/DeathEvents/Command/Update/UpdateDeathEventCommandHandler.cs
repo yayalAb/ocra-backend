@@ -91,6 +91,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         }
                         else
                         {
+                              deathEvent.Event.IsCertified=false;
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                             if (userPhotos != null && (userPhotos.Count != 0))

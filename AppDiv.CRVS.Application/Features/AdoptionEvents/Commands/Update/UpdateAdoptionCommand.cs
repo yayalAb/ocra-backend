@@ -163,6 +163,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 }
                 else
                 {
+                    adoptionEvent.Event.IsCertified=false;
                     await _adoptionEventRepository.EFUpdate(adoptionEvent, cancellationToken);
                     personIds = new PersonIdObj
                     {

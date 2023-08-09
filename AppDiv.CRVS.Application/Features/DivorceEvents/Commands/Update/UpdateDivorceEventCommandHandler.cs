@@ -118,6 +118,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             else
                             {
                                 // _DivorceEventRepository.EFUpdate(divorceEvent);
+                                divorceEvent.Event.IsCertified=false;
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);

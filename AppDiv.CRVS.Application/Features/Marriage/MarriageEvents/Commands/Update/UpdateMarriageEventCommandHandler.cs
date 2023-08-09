@@ -149,6 +149,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             }
                             else
                             {
+                                marriageEvent.Event.IsCertified=false;
                                 // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
