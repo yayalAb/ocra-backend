@@ -16,10 +16,10 @@ namespace AppDiv.CRVS.Domain.Entities
         public string GroupName { get; set; }
         public string? DescriptionStr { get; set; }
         public string RolesStr { get; set; }
-        public string ManagedGroupsStr { get; set; }
+        public string? ManagedGroupsStr { get; set; }
         public bool ManageAll { get; set; }
         [NotMapped]
-        public JObject Description
+        public JObject? Description
         {
             get
             {
@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Domain.Entities
         }
 
         [NotMapped]
-        public JArray ManagedGroups
+        public JArray? ManagedGroups
         {
             get
             {
