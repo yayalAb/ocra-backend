@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                ManagedGroupsStr = value.ToString();
+                ManagedGroupsStr =(value==null||value.Count==0) ? "[]":value.ToString();
             }
         }
         public virtual ICollection<ApplicationUser> ApplicationUsers { get; set; }
