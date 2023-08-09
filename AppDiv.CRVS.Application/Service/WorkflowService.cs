@@ -236,10 +236,10 @@ namespace AppDiv.CRVS.Application.Service
                     .Include(x => x.EventOwener)
                     .Where(x => x.Id == EventId).FirstOrDefault();
                     (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, false, false, cancellationToken);
-                    if (response.amount == 0)
-                    {
-                        throw new NotFoundException("Payment Rate not Found");
-                    }
+                    // if (response.amount == 0)
+                    // {
+                    //     throw new NotFoundException("Payment Rate not Found");
+                    // }
                 }
                 catch (Exception ex)
                 {

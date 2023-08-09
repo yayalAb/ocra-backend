@@ -101,10 +101,10 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                 throw new NotFoundException("User Not Found Please Logout and Login Once");
 
             }
-            if (userInfo.AddressId != selectedEvent.EventRegisteredAddressId)
-            {
-                throw new NotFoundException("You Are Not Allowed to See This Event Detail");
-            }
+            // if (userInfo.AddressId != selectedEvent.EventRegisteredAddressId)
+            // {
+            //     throw new NotFoundException("You Are Not Allowed to See This Event Detail");
+            // }
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
             var content = await _eventRepository.GetArchive(request.Id);
             var certificate = _archiveGenerator.GetArchive(request, content, birthCertificateNo?.Event?.CertificateId);
