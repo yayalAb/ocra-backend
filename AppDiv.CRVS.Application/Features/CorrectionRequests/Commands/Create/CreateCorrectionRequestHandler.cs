@@ -183,7 +183,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                             base64String = file?.base64String
                         };
                         supportingDocuments.Add(file);
-                        newFile.base64String = "null";
+                        newFile.base64String = string.Empty;
                         JToken supdoc = JToken.FromObject(newFile);
                         if (type == "eventSupportingDocuments")
                             content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments")?[i].Replace(supdoc);
