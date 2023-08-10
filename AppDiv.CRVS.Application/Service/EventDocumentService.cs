@@ -421,9 +421,8 @@ namespace AppDiv.CRVS.Application.Service
                         : _fileService.GetFileNamesInfolder("Resources/fingerprints/" + personId)
                         .Select(url => new Dictionary<string, string>{
                                 {
-                                    int.TryParse(url.Split(".")[url.Split(".").Length -2][^2..],out int str)
-                                    ? str.ToString()
-                                    : url.Split(".")[url.Split(".").Length -2][^1..] , url
+                                    Path.GetFileNameWithoutExtension(url)
+                                     , url
                                 }
 
                             }).ToList();
