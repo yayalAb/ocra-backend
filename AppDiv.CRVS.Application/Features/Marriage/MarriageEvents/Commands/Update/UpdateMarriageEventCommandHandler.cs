@@ -134,6 +134,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                 marriageEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
                             await _marriageEventRepository.EFUpdateAsync(marriageEvent, cancellationToken);
+                            marriageEvent.Event.IsCertified=false;
                             if (!request.IsFromCommand)
                             {
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
@@ -145,7 +146,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             }
                             else
                             {
-                                marriageEvent.Event.IsCertified=false;
                                 // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);

@@ -89,6 +89,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null ? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
                             // for requests not from correction request
+                            birthEvent.Event.IsCertified=false;
                             if (!request.IsFromCommand)
                             {
                                 // Save the newly added supporting documents and exemption documents.
@@ -103,7 +104,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             else
                             {
                                 // Move the supporting documents form temporary to permenant place.
-                                birthEvent.Event.IsCertified=false;
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);

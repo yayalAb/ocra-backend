@@ -32,17 +32,21 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         }
         public async Task<PaginatedList<PaidCertificateDTO>> Handle(OnWaitingCertificateQuery request, CancellationToken cancellationToken)
         {
-            var defualtAddress = _SettinglookupRepository.GetAll().Where(x => x.Key == "generalSetting").FirstOrDefault();
-            if (defualtAddress == null)
+            var generalSetting = _SettinglookupRepository.GetAll().Where(x => x.Key == "generalSetting").FirstOrDefault();
+            if (generalSetting == null)
             {
-                throw new NotFoundException("Defualt Address not Found");
+                throw new NotFoundException("General Setting Does not found");
             }
-            int editWaitingTime = int.Parse(defualtAddress.Value.Value<string>("edit_wating_time"));
+            int editWaitingTime = int.Parse(generalSetting.Value.Value<string>("edit_wating_time"));
+             if (editWaitingTime == null)
+            {
+                throw new NotFoundException("edit waiting time does not Set in general setting");
+            }
             Guid? CreatedBy = _userResolverService.GetUserPersonalId();
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(x => x.EventCertificates.OrderByDescending(x => x.CreatedAt))
                               .Where(e => ((e.CivilRegOfficerId == request.CivilRegOfficerId) || (e.CreatedBy == CreatedBy)
-                              && e.IsCertified) && (e.EventCertificates.FirstOrDefault().CreatedAt > DateTime.Now.AddHours(-editWaitingTime)));
+                              && e.IsCertified) && (e.EventCertificates.Where(x=>x.Status).FirstOrDefault().CreatedAt > DateTime.Now.AddHours(-editWaitingTime)));
 
             eventByCivilReg = eventByCivilReg.Include(e => e.EventOwener);
             if (!string.IsNullOrEmpty(request.SearchString))

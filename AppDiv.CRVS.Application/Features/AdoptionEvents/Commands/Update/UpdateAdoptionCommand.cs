@@ -140,7 +140,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
 
                 // }
                 var personIds = new PersonIdObj();
-
+                adoptionEvent.Event.IsCertified=false;
                 if (!request.IsFromCommand)
                 {
                     adoptionEvent.Event.EventSupportingDocuments = null;
@@ -163,7 +163,6 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 }
                 else
                 {
-                    adoptionEvent.Event.IsCertified=false;
                     await _adoptionEventRepository.EFUpdate(adoptionEvent, cancellationToken);
                     personIds = new PersonIdObj
                     {

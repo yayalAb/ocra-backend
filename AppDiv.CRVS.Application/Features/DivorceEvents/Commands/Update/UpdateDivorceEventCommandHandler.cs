@@ -105,6 +105,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                                 WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,
                                 HusbandId = divorceEvent.Event.EventOwener != null ? divorceEvent.Event.EventOwener.Id : divorceEvent.Event.EventOwenerId
                             };
+                            divorceEvent.Event.IsCertified=false;
                             if (!request.IsFromCommand)
                             {
                                 var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
@@ -118,7 +119,6 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             else
                             {
                                 // _DivorceEventRepository.EFUpdate(divorceEvent);
-                                divorceEvent.Event.IsCertified=false;
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);

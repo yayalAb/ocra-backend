@@ -78,6 +78,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             DeceasedId = deathEvent.Event.EventOwener != null ? deathEvent.Event.EventOwener.Id : deathEvent.Event.EventOwenerId,
                             RegistrarId = deathEvent.Event.EventRegistrar?.RegistrarInfo != null ? deathEvent.Event.EventRegistrar.RegistrarInfo.Id : deathEvent.Event.EventRegistrar?.RegistrarInfoId
                         };
+                        deathEvent.Event.IsCertified = false;
+
                         // if the update not from the corection request.
                         if (!request.IsFromCommand)
                         {
@@ -91,7 +93,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         }
                         else
                         {
-                            deathEvent.Event.IsCertified = false;
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                             if (userPhotos != null && (userPhotos.Count != 0))
