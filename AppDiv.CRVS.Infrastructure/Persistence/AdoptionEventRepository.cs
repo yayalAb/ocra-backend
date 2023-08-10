@@ -60,7 +60,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             adoptionEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(adoptionEvent.Event, _dbContext, paymentRequestService,cancellationToken);
 
-            base.Update(adoptionEvent);
+            base.UpdateWithNested(adoptionEvent);
             await base.SaveChangesAsync(cancellationToken);
         }
 

@@ -130,7 +130,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             });
 
 
-            base.Update(marriageEvent);
+            base.UpdateWithNested(marriageEvent);
             await base.SaveChangesAsync(CancellationToken.None);
         }
         public bool exists(Guid id)

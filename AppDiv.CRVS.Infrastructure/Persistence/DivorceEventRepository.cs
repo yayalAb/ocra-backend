@@ -98,7 +98,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     {"PhoneNumber", DivorceEvent.DivorcedWife.PhoneNumber}
             };
             DivorceEvent.DivorcedWife = HelperService.UpdateObjectFeilds<PersonalInfo>(existingWife, divorcedWifeFeilds);
-            base.Update(DivorceEvent);
+            base.UpdateWithNested(DivorceEvent);
             await base.SaveChangesAsync(cancellationToken);
         }
         public bool exists(Guid id)

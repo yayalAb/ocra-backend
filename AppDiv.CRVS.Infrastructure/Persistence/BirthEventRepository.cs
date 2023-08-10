@@ -211,7 +211,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
                 //     entity.Mother = selectedperson;
                 // }
-                base.Update(entity);
+                base.UpdateWithNested(entity);
                 await base.SaveChangesAsync(cancellationToken);
 
                 // base.Update(entity);
