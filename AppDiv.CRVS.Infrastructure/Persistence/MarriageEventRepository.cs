@@ -1,5 +1,6 @@
 
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Configuration;
 using AppDiv.CRVS.Domain.Entities;
@@ -32,9 +33,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // dbContext.Dispose();
             dbContext.Dispose();
         }
-        public async Task EFUpdateAsync(MarriageEvent marriageEvent, CancellationToken cancellationToken)
+        public async Task EFUpdateAsync(MarriageEvent marriageEvent, IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken)
         {
-            marriageEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(marriageEvent.Event, dbContext);
+            HelperService.HasCamera = marriageEvent.HasCamera;
+            HelperService.HasVideo = marriageEvent.HasVideo;
+            marriageEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(marriageEvent.Event, dbContext, paymentRequestService, cancellationToken);
+
 
             var existingOwner = await dbContext.PersonalInfos.FindAsync(marriageEvent.Event.EventOwener.Id);
             if (existingOwner == null)

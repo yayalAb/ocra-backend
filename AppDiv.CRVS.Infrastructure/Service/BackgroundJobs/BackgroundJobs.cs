@@ -84,7 +84,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     var marriageApplicationCommand
                      = new CreateMarriageApplicationCommand
                      {
-                         Id = marraigeApplication.Id,
+                         Id = new Guid(marraigeApplication.Id),
                          ApplicationDateEt = marraigeApplication.ApplicationDateEt,
                          ApplicationAddressId = marraigeApplication.ApplicationAddressId,
                          BrideInfo = marraigeApplication.BrideInfo,

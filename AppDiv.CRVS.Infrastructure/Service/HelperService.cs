@@ -3,6 +3,8 @@
 using System.Reflection;
 using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Domain.Configuration;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.Service;
 // using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
@@ -19,6 +21,8 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
     {
         private readonly CRVSDbContext _context;
+        public static bool HasCamera = false;
+        public static bool HasVideo = false;
 
         public HelperService(CRVSDbContext context)
         {
@@ -102,16 +106,27 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
         }
 
-        public static async Task<PaymentExamption?> UpdatePaymentExamption(Event updatedEvent, CRVSDbContext dbContext)
+        public static async Task<PaymentExamption?> UpdatePaymentExamption(Event updatedEvent, CRVSDbContext dbContext, IEventPaymentRequestService _paymentRequestService, CancellationToken cancellationToken)
         {
+
             if (updatedEvent.PaymentExamption != null && (updatedEvent.PaymentExamption.Id == null || updatedEvent.PaymentExamption.Id == Guid.Empty))
             {
                 var examptionExists = await dbContext.PaymentExamptions.Where(p => p.EventId == updatedEvent.Id).AnyAsync();
-                if (!examptionExists)
+                if (!examptionExists)//-- examption status changed form false to true
                 {
                     var paymentExamption = updatedEvent.PaymentExamption;
                     paymentExamption.EventId = updatedEvent.Id;
                     await dbContext.PaymentExamptions.AddAsync(paymentExamption);
+                    //remove payment request
+                    var paymentRequest = await dbContext.PaymentRequests
+                        .Where(pr => pr.EventId == updatedEvent.Id
+                        && EF.Functions.Like(pr.PaymentRate.PaymentTypeLookup.ValueStr.ToLower(), $"%certificategeneration%"))
+                        .FirstOrDefaultAsync();
+                    if (paymentRequest != null)
+                    {
+                        dbContext.PaymentRequests.Remove(paymentRequest);
+                    }
+
                 }
                 updatedEvent.PaymentExamption = null;
             }
@@ -127,6 +142,10 @@ namespace AppDiv.CRVS.Infrastructure.Services
                                 .Select(sd => sd.Id).ToListAsync();
                         //TODO: remove supporting doc files from server
                         dbContext.PaymentExamptions.Remove(oldExamption);
+
+                        // create payment request
+                        var response = await _paymentRequestService.CreatePaymentRequest(updatedEvent.EventType, updatedEvent, "CertificateGeneration", null, HasCamera, HasVideo, cancellationToken);
+
                     }
                 }
             }

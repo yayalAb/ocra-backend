@@ -95,7 +95,13 @@ namespace AppDiv.CRVS.Application.Service
             _paymentRequestRepository.SaveChanges();
             return (amount: paymentRate.Amount, code: paymentCode);
         }
-        
+
+        public async Task RemovePaymentRequest(Guid eventId)
+        {
+            
+
+        }
+
         public async Task<bool> IsActive(string eventType, DateTime EventDate, DateTime EventRegDate)
         {
             string eve = eventType.ToLower() + "Setting";

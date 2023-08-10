@@ -1,6 +1,7 @@
 using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Query;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 // using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
@@ -36,9 +37,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         // 08db641e-a7a6-44cc-868e-4b3a02249d49--bride
         // 08db641e-a801-4cb6-8778-eaf20f9cdf41 groom
-        public async Task EFUpdate(DivorceEvent DivorceEvent, CancellationToken cancellationToken)
+        public async Task EFUpdate(DivorceEvent DivorceEvent, IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken)
         {
-            DivorceEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(DivorceEvent.Event, dbContext);
+            DivorceEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(DivorceEvent.Event, dbContext, paymentRequestService, cancellationToken);
 
             var existingOwner = dbContext.PersonalInfos.Find(DivorceEvent.Event.EventOwener.Id);
             if (existingOwner == null)
