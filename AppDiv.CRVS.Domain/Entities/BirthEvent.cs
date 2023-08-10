@@ -19,6 +19,5 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup BirthPlace { get; set; }
         public virtual Event Event { get; set; }
         public virtual BirthNotification BirthNotification { get; set; }
-
     }
 }
