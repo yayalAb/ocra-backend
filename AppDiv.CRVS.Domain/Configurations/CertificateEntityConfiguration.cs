@@ -11,10 +11,12 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.Event)
                 .WithMany(n => n.EventCertificates)
-                .HasForeignKey(m => m.EventId);
+                .HasForeignKey(m => m.EventId)
+                .OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(m => m.AuthenticationRequests)
                 .WithOne(n => n.Certificate)
-                .HasForeignKey(n => n.RequestId);
+                .HasForeignKey(n => n.RequestId)
+                .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

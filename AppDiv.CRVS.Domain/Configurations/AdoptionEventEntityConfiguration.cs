@@ -12,25 +12,31 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.BeforeAdoptionAddress)
                  .WithMany(n => n.BeforeAdoptionAddressNavigation)
                  .HasForeignKey(m => m.BeforeAdoptionAddressId)
-                 .IsRequired(false);
+                 .IsRequired(false)
+                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.AdoptiveMother)
                  .WithMany(n => n.AdoptiveMotherNavigation)
                  .HasForeignKey(m => m.AdoptiveMotherId)
-                 .IsRequired(false);
+                 .IsRequired(false)
+                 .OnDelete(DeleteBehavior.Restrict)
+                 ;
 
             builder.HasOne(m => m.AdoptiveFather)
                  .WithMany(n => n.AdoptiveFatherNavigation)
                  .HasForeignKey(m => m.AdoptiveFatherId)
-                 .IsRequired(false);
+                 .IsRequired(false)
+                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(m => m.CourtCase)
                  .WithOne(n => n.AdoptionEventCourtCase)
                  .HasForeignKey<AdoptionEvent>(m => m.CourtCaseId)
-                 .IsRequired(false);
+                 .IsRequired(false)
+                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.Event)
             .WithOne(n => n.AdoptionEvent)
-            .HasForeignKey<AdoptionEvent>(m => m.EventId);
+            .HasForeignKey<AdoptionEvent>(m => m.EventId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

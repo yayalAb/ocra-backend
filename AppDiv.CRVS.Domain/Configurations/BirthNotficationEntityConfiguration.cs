@@ -10,7 +10,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.DeliveryTypeLookup)
                .WithMany(n => n.DeliveryTypeNavigation)
-               .HasForeignKey(m => m.DeliveryTypeLookupId);
+               .HasForeignKey(m => m.DeliveryTypeLookupId)
+               .OnDelete(DeleteBehavior.Restrict);
 
             // builder.HasOne(m => m.BirthEvent)
             //    .WithOne(n => n.BirthNotification)

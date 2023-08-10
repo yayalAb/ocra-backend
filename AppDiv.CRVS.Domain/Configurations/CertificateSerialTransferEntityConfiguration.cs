@@ -11,10 +11,12 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.Sender)
                .WithMany(n => n.SenderCertificateSerialTransfers)
                .HasForeignKey(m => m.SenderId)
-               .IsRequired(false);
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(m => m.Reciever)
                .WithMany(n => n.RecieverCertificateSerialTransfers)
-               .HasForeignKey(m => m.RecieverId);
+               .HasForeignKey(m => m.RecieverId)
+               .OnDelete(DeleteBehavior.Restrict);
 
 
         }

@@ -13,19 +13,24 @@ namespace AppDiv.CRVS.Domain.Configuration
             builder.HasOne(m => m.AreaTypeLookup)
                 .WithMany(n => n.AddressAreaTypeNavigation)
                 .HasForeignKey(m => m.AreaTypeLookupId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.AdminTypeLookup)
                 .WithMany(n => n.AdminTypeNavigation)
                 .HasForeignKey(m => m.AdminTypeLookupId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(m => m.ParentAddress)
                 .WithMany(n => n.ChildAddresses)
                 .HasForeignKey(m => m.ParentAddressId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(m => m.CertificateSerialRanges)
                 .WithOne(n => n.Address)
-                .HasForeignKey(n => n.AddressId);
+                .HasForeignKey(n => n.AddressId)
+                .OnDelete(DeleteBehavior.Restrict);
+            
         }
     }
 }

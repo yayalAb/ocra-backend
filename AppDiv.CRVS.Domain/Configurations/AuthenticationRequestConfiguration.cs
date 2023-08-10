@@ -14,7 +14,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.Request)
                     .WithOne(n => n.AuthenticationRequest)
-                    .HasForeignKey<AuthenticationRequest>(n => n.RequestId);
+                    .HasForeignKey<AuthenticationRequest>(n => n.RequestId)
+                    .OnDelete(DeleteBehavior.Restrict);
 
 
         }
