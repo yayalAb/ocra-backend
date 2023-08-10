@@ -102,7 +102,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             {
                                 _eventDocumentService.MovePhotos(userPhotos, "Death");
                             }
-                            // _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+                             _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
 
                         }
                         // Set the response to Updated.
