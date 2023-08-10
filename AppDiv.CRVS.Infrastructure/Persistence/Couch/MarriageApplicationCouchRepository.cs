@@ -30,7 +30,7 @@ public class MarriageApplicationCouchRepository : IMarriageApplicationCouchRepos
             return (Success: false, Message: $"database not found in couch for the addressId -- {addressId}", marriageApplication: null);
         }
         var marriageApplicationCouches = _couchContext.Client.GetDatabase<MarriageApplicationCouch>(dbName);
-        var marriageApplication = await marriageApplicationCouches.Where(m => m.Id == applicationId).FirstOrDefaultAsync();
+        var marriageApplication = await marriageApplicationCouches.Where(m => m.Id == applicationId.ToString()).FirstOrDefaultAsync();
         if (marriageApplication == null)
         {
             return (Success: false, Message: $"marriage application with id {applicationId} is not found in couchdb", marriageApplication: null);
@@ -51,7 +51,7 @@ public class MarriageApplicationCouchRepository : IMarriageApplicationCouchRepos
         var marriageApplicationCommand
                      = new CreateMarriageApplicationCommand
                      {
-                         Id = marriageApplicationCouch.Id,
+                         Id = new Guid(marriageApplicationCouch.Id),
                          ApplicationDateEt = marriageApplicationCouch.ApplicationDateEt,
                          ApplicationAddressId = marriageApplicationCouch.ApplicationAddressId,
                          BrideInfo = marriageApplicationCouch.BrideInfo,
