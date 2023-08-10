@@ -97,7 +97,8 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     {
                         marraigeApplication.Synced = true;
                         await marriageDb.AddOrUpdateAsync(marraigeApplication);
-                    }
+                    }//08db971e-eefe-431b-80ec-d74d8713817d
+                    //08db8831-cdee-438e-80a9-4100d6587b16
 
 
                 }
