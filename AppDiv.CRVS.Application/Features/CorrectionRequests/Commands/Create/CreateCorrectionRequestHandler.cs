@@ -105,9 +105,9 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                             return response;
                         }
                         var supportingDocuments = GetSupportingDocumentsMe(CorrectionRequest.Content, "eventSupportingDocuments");
-                        var examptionDocuments = GetSupportingDocumentsMe(supportingDocuments, "paymentExamption");
-                        // _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events?.EventType);
-                        CorrectionRequest.Content = examptionDocuments;
+                        var examptionDocuments = GetSupportingDocumentsMe(supportingDocuments.Item1, "paymentExamption");
+                        _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments.Item2, examptionDocuments.Item2, events?.EventType);
+                        CorrectionRequest.Content = examptionDocuments.Item1;
 
                         await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
                         var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
@@ -148,7 +148,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
         }
        
 
-        private JObject GetSupportingDocumentsMe(JObject content, string type)
+        private (JObject,List<AddSupportingDocumentRequest>) GetSupportingDocumentsMe(JObject content, string type)
         {
 
             var supportingDocuments = new List<AddSupportingDocumentRequest>();
@@ -162,11 +162,14 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                 if(contentList!=null){
                 foreach (JObject item in contentList.ToList())
                 {
-                    if (item["id"] == null)
+                    if 
+                    (item["id"] == null)
                     {
                         item["id"] = Guid.NewGuid().ToString();
+                        supportingDocuments.Add(item.ToObject<AddSupportingDocumentRequest>());
                         item["base64String"]="";
-                    }else{
+                    }
+                    else{
                       contentList.Remove(item);  
                     }
                 }
@@ -176,7 +179,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             {
                 throw;
             }
-            return content;
+            return( content,supportingDocuments);
         }
 
 
