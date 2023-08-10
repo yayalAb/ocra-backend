@@ -38,6 +38,7 @@ public class UpdateAdoptionCommand : IRequest<UpdateAdoptionCommandResponse>
 public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionCommand, UpdateAdoptionCommandResponse>
 {
     private readonly IAdoptionEventRepository _adoptionEventRepository;
+    private readonly IEventPaymentRequestService _paymentRequestService;
     private readonly IPersonalInfoRepository _personalInfoRepository;
     private readonly IEventDocumentService _eventDocumentService;
     private readonly IFileService _fileService;
@@ -45,9 +46,10 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
     private readonly ILookupRepository _LookupsRepo;
 
 
-    public UpdateAdoptionCommandHandler(ILookupRepository LookupsRepo, IEventDocumentService eventDocumentService, IAdoptionEventRepository adoptionEventRepository, IPersonalInfoRepository personalInfoRepository, IFileService fileService , IEventRepository eventRepository)
+    public UpdateAdoptionCommandHandler(ILookupRepository LookupsRepo, IEventDocumentService eventDocumentService, IAdoptionEventRepository adoptionEventRepository, IEventPaymentRequestService paymentRequestService, IPersonalInfoRepository personalInfoRepository, IFileService fileService, IEventRepository eventRepository)
     {
         _adoptionEventRepository = adoptionEventRepository;
+        _paymentRequestService = paymentRequestService;
         _personalInfoRepository = personalInfoRepository;
         _fileService = fileService;
         _eventRepository = eventRepository;
@@ -148,7 +150,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     {
                         adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
                     }
-                    await _adoptionEventRepository.EFUpdate(adoptionEvent, cancellationToken);
+                    await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
@@ -163,8 +165,8 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 }
                 else
                 {
-                    adoptionEvent.Event.IsCertified=false;
-                    await _adoptionEventRepository.EFUpdate(adoptionEvent, cancellationToken);
+                    adoptionEvent.Event.IsCertified = false;
+                    await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
@@ -172,9 +174,10 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                         ChildId = adoptionEvent.Event.EventOwener != null ? adoptionEvent.Event.EventOwener.Id : adoptionEvent.Event.EventOwenerId
                     };
                     var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
-                     if(separatedDocs.userPhotos!=null &&(separatedDocs.userPhotos.Count != 0)){
-                                  _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Adoption");
-                            }
+                    if (separatedDocs.userPhotos != null && (separatedDocs.userPhotos.Count != 0))
+                    {
+                        _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Adoption");
+                    }
                     if (!adoptionEvent.Event.IsExampted)
                     {
                         _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");

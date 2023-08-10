@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.Services;
@@ -54,9 +55,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return null;
         }
 
-        public async Task UpdateWithNested(DeathEvent deathEvent, CancellationToken cancellationToken)
+        public async Task UpdateWithNested(DeathEvent deathEvent, IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken)
         {
-            deathEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(deathEvent.Event, _dbContext);
+            deathEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(deathEvent.Event, _dbContext, paymentRequestService, cancellationToken);
 
             base.UpdateWithNested(deathEvent);
             await base.SaveChangesAsync(cancellationToken);

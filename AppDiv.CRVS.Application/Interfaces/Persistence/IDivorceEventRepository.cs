@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         public IQueryable<DivorceEvent> GetAllQueryableAsync();
         public DatabaseFacade Database { get; }
-        public Task EFUpdate(DivorceEvent DivorceEvent, CancellationToken cancellationToken);
+        public Task EFUpdate(DivorceEvent DivorceEvent, IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken);
         public bool exists(Guid id);
         public Task InsertOrUpdateAsync(DivorceEvent entity, CancellationToken cancellationToken);
     }

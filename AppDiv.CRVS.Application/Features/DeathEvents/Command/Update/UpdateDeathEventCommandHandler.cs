@@ -13,13 +13,16 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
     {
         private readonly IDeathEventRepository _deathEventRepository;
         private readonly IEventRepository _eventRepository;
+        private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IEventDocumentService _eventDocumentService;
         public UpdateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventRepository eventRepository,
+                                              IEventPaymentRequestService paymentRequestService,
                                               IEventDocumentService eventDocumentService)
         {
             this._deathEventRepository = deathEventRepository;
             this._eventRepository = eventRepository;
+            this._paymentRequestService = paymentRequestService;
             this._eventDocumentService = eventDocumentService;
         }
         public async Task<UpdateDeathEventCommandResponse> Handle(UpdateDeathEventCommand request, CancellationToken cancellationToken)
@@ -71,7 +74,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // Set the daeth status of the person to true.
                         deathEvent.Event.EventOwener.DeathStatus = true;
                         // Update the Death Event.
-                        await _deathEventRepository.UpdateWithNested(deathEvent, cancellationToken);
+                        await _deathEventRepository.UpdateWithNested(deathEvent,_paymentRequestService,cancellationToken);
                         // persons id.
                         var personIds = new PersonIdObj
                         {

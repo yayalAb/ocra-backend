@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface IMarriageEventRepository : IBaseRepository<MarriageEvent>
     {
         public IQueryable<MarriageEvent> GetAllQueryableAsync();
-        public Task EFUpdateAsync(MarriageEvent marriageEvent, CancellationToken cancellationToken);
+        Task EFUpdateAsync(MarriageEvent marriageEvent, IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken);
         public Task InsertWitness(List<Witness> witnesses);
         public bool exists(Guid id);
         // public DatabaseFacade Database;

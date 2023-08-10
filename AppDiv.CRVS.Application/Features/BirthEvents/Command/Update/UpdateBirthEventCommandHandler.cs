@@ -14,15 +14,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         private readonly IBirthEventRepository _birthEventRepository;
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IEventRepository _eventRepository;
+        private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly ILookupRepository _lookupRepository;
 
         public UpdateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
+                                              IEventPaymentRequestService paymentRequestService,
                                               ILookupRepository lookupRepository,
                                               IEventDocumentService eventDocumentService)
         {
             this._eventDocumentService = eventDocumentService;
             this._eventRepository = eventRepository;
+            this._paymentRequestService = paymentRequestService;
             this._lookupRepository = lookupRepository;
             this._birthEventRepository = birthEventRepository;
         }
@@ -79,7 +82,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 birthEvent.Event.PaymentExamption.SupportingDocuments = null!;
                             }
                             // Update the birth event.
-                            await _birthEventRepository.UpdateAll(birthEvent, cancellationToken);
+                            await _birthEventRepository.UpdateAll(birthEvent, _paymentRequestService, cancellationToken);
                             // person ids
                             var personIds = new PersonIdObj
                             {
@@ -103,7 +106,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             else
                             {
                                 // Move the supporting documents form temporary to permenant place.
-                                birthEvent.Event.IsCertified=false;
+                                birthEvent.Event.IsCertified = false;
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);

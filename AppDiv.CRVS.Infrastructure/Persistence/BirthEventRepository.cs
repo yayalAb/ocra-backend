@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.Services;
@@ -141,11 +142,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
         }
 
-        public async Task UpdateAll(BirthEvent entity, CancellationToken cancellationToken)
+        public async Task UpdateAll(BirthEvent entity,IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken)
         {
             try
             {
-                entity.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(entity.Event, _dbContext);
+                entity.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(entity.Event, _dbContext,paymentRequestService,cancellationToken);
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
                 entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")

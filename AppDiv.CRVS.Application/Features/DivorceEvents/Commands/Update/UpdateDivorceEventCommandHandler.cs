@@ -16,6 +16,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
     {
         private readonly IDivorceEventRepository _DivorceEventRepository;
         private readonly IPersonalInfoRepository _personalInfoRepository;
+        private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IEventDocumentService _eventDocumentService;
         private readonly ILookupRepository _lookupRepository;
         private readonly IAddressLookupRepository _addressLookupRepository;
@@ -24,6 +25,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
 
         public UpdateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
                                                 IPersonalInfoRepository personalInfoRepository,
+                                                IEventPaymentRequestService paymentRequestService,
                                                 IEventDocumentService eventDocumentService,
                                                 ILookupRepository lookupRepository,
                                                 IAddressLookupRepository addressLookupRepository,
@@ -32,6 +34,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
         {
             _DivorceEventRepository = DivorceEventRepository;
             _personalInfoRepository = personalInfoRepository;
+            _paymentRequestService = paymentRequestService;
             _eventDocumentService = eventDocumentService;
             _lookupRepository = lookupRepository;
             _addressLookupRepository = addressLookupRepository;
@@ -99,7 +102,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             {
                                 divorceEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
-                            await _DivorceEventRepository.EFUpdate(divorceEvent, cancellationToken);
+                            await _DivorceEventRepository.EFUpdate(divorceEvent, _paymentRequestService, cancellationToken);
                             var personIds = new PersonIdObj
                             {
                                 WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,
@@ -118,7 +121,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             else
                             {
                                 // _DivorceEventRepository.EFUpdate(divorceEvent);
-                                divorceEvent.Event.IsCertified=false;
+                                divorceEvent.Event.IsCertified = false;
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);

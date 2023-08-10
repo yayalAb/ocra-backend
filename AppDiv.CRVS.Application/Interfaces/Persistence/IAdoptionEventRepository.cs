@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<AdoptionEvent> GetWithAsync(Guid id);
         Task InsertOrUpdateAsync(AdoptionEvent entity, CancellationToken cancellationToken);
-        public Task EFUpdate(AdoptionEvent adoptionEvent, CancellationToken cancellationToken);
+        Task EFUpdate(AdoptionEvent adoptionEvent, IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken);
         public DatabaseFacade Database { get; }
 
 
