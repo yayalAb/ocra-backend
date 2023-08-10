@@ -34,13 +34,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task EFUpdateAsync(MarriageEvent marriageEvent, CancellationToken cancellationToken)
         {
-            if (marriageEvent.Event.PaymentExamption != null && (marriageEvent.Event.PaymentExamption.Id == null || marriageEvent.Event.PaymentExamption.Id == Guid.Empty))
-            {
-                var paymentExamption = marriageEvent.Event.PaymentExamption;
-                await dbContext.PaymentExamptions.AddAsync(paymentExamption);
-                marriageEvent.Event.PaymentExamption = null;
+            marriageEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(marriageEvent.Event, dbContext);
 
-            }
             var existingOwner = await dbContext.PersonalInfos.FindAsync(marriageEvent.Event.EventOwener.Id);
             if (existingOwner == null)
             {

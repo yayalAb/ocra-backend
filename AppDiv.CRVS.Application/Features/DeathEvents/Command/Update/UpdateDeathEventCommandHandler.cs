@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // Set the daeth status of the person to true.
                         deathEvent.Event.EventOwener.DeathStatus = true;
                         // Update the Death Event.
-                        _deathEventRepository.UpdateWithNested(deathEvent);
+                        await _deathEventRepository.UpdateWithNested(deathEvent, cancellationToken);
                         // persons id.
                         var personIds = new PersonIdObj
                         {
@@ -91,7 +91,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         }
                         else
                         {
-                              deathEvent.Event.IsCertified=false;
+                            deathEvent.Event.IsCertified = false;
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                             if (userPhotos != null && (userPhotos.Count != 0))

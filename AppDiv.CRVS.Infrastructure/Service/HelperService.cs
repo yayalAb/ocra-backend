@@ -101,6 +101,37 @@ namespace AppDiv.CRVS.Infrastructure.Services
                 return false;
             }
         }
+
+        public static async Task<PaymentExamption?> UpdatePaymentExamption(Event updatedEvent, CRVSDbContext dbContext)
+        {
+            if (updatedEvent.PaymentExamption != null && (updatedEvent.PaymentExamption.Id == null || updatedEvent.PaymentExamption.Id == Guid.Empty))
+            {
+                var examptionExists = await dbContext.PaymentExamptions.Where(p => p.EventId == updatedEvent.Id).AnyAsync();
+                if (!examptionExists)
+                {
+                    var paymentExamption = updatedEvent.PaymentExamption;
+                    paymentExamption.EventId = updatedEvent.Id;
+                    await dbContext.PaymentExamptions.AddAsync(paymentExamption);
+                }
+                updatedEvent.PaymentExamption = null;
+            }
+            else
+            {
+                if (!updatedEvent.IsExampted && updatedEvent.PaymentExamption == null)
+                {
+                    var oldExamption = await dbContext.PaymentExamptions.Where(pe => pe.EventId == updatedEvent.Id).FirstOrDefaultAsync();
+                    if (oldExamption != null)//-- examption status changed from true to false on update
+                    {
+                        var examptionDocIds = await dbContext.SupportingDocuments
+                                .Where(sd => sd.PaymentExamptionId == oldExamption.Id)
+                                .Select(sd => sd.Id).ToListAsync();
+                        //TODO: remove supporting doc files from server
+                        dbContext.PaymentExamptions.Remove(oldExamption);
+                    }
+                }
+            }
+            return updatedEvent.PaymentExamption;
+        }
         public static void IndexPersonalInfo(List<PersonalInfoEntry> personalInfoEntries, CRVSDbContext _dbContext)
         {
             // List<object> addedPersons = new List<object>();

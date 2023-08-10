@@ -38,13 +38,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         // 08db641e-a801-4cb6-8778-eaf20f9cdf41 groom
         public async Task EFUpdate(DivorceEvent DivorceEvent, CancellationToken cancellationToken)
         {
-            if (DivorceEvent.Event.PaymentExamption != null && (DivorceEvent.Event.PaymentExamption.Id == null || DivorceEvent.Event.PaymentExamption.Id == Guid.Empty))
-            {
-                var paymentExamption = DivorceEvent.Event.PaymentExamption;
-                await dbContext.PaymentExamptions.AddAsync(paymentExamption);
-                DivorceEvent.Event.PaymentExamption = null;
+            DivorceEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(DivorceEvent.Event, dbContext);
 
-            }
             var existingOwner = dbContext.PersonalInfos.Find(DivorceEvent.Event.EventOwener.Id);
             if (existingOwner == null)
             {

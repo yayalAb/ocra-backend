@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -144,13 +145,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             try
             {
-                if (entity.Event.PaymentExamption != null && (entity.Event.PaymentExamption.Id == null || entity.Event.PaymentExamption.Id == Guid.Empty))
-                {
-                    var paymentExamption = entity.Event.PaymentExamption;
-                    await _dbContext.PaymentExamptions.AddAsync(paymentExamption);
-                    entity.Event.PaymentExamption = null;
-
-                }
+                entity.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(entity.Event, _dbContext);
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
                 entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")

@@ -96,11 +96,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
                             var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
                             var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
-                            // request.Event.EventSupportingDocuments = null;
-                            // if (request.Event.PaymentExamption != null)
-                            // {
-                            //     request.Event.PaymentExamption.SupportingDocuments = null;
-                            // }
+
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             marriageEvent.Event.EventType = "Marriage";
                             // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
