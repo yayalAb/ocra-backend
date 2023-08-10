@@ -133,7 +133,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             {
                                 marriageEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
-                            await _marriageEventRepository.EFUpdateAsync(marriageEvent, cancellationToken);
+                            await _marriageEventRepository.EFUpdateAsync(marriageEvent,_paymentRequestService, cancellationToken);
                             marriageEvent.Event.IsCertified=false;
                             await _marriageEventRepository.EFUpdateAsync(marriageEvent, _paymentRequestService, cancellationToken);
                             if (!request.IsFromCommand)

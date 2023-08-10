@@ -166,7 +166,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 else
                 {
                     adoptionEvent.Event.IsCertified=false;
-                    await _adoptionEventRepository.EFUpdate(adoptionEvent, cancellationToken);
+                    await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService ,cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
