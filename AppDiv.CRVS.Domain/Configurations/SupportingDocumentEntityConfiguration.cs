@@ -20,7 +20,8 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.PaymentExamption)
                 .WithMany(n => n.SupportingDocuments)
                 .HasForeignKey(m => m.PaymentExamptionId)
-                .IsRequired(false);
+                .IsRequired(false)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(m => m.TypeLookup)
                 .WithMany(n => n.SupportingDocumentTypeNavigation)

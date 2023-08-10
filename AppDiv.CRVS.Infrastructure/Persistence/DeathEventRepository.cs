@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -51,6 +52,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 return selectedperson;
             }
             return null;
+        }
+
+        public async Task UpdateWithNested(DeathEvent deathEvent, CancellationToken cancellationToken)
+        {
+            deathEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(deathEvent.Event, _dbContext);
+
+            base.UpdateWithNested(deathEvent);
+            await base.SaveChangesAsync(cancellationToken);
         }
 
         public async Task InsertOrUpdateAsync(DeathEvent entity, CancellationToken cancellationToken)

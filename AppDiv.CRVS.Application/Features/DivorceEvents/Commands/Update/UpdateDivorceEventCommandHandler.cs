@@ -118,12 +118,14 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             else
                             {
                                 // _DivorceEventRepository.EFUpdate(divorceEvent);
+                                divorceEvent.Event.IsCertified=false;
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                                   if(separatedDocs.userPhotos!=null &&(separatedDocs.userPhotos.Count != 0)){
+                                if (separatedDocs.userPhotos != null && (separatedDocs.userPhotos.Count != 0))
+                                {
                                     _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Divorce");
-                            }
+                                }
 
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Divorce");
                                 //TODO:save fingerprint
@@ -135,12 +137,19 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             updateDivorceEventCommandResponse.Message = "Divorce event Updated successfully";
 
                         }
-                        await transaction?.CommitAsync()!;
+                        if (transaction != null)
+                        {
+
+                            await transaction?.CommitAsync()!;
+                        }
                         return updateDivorceEventCommandResponse;
                     }
                     catch (Exception)
                     {
-                        await transaction?.RollbackAsync()!;
+                        if (transaction != null)
+                        {
+                            await transaction?.RollbackAsync()!;
+                        }
                         throw;
                     }
                 }

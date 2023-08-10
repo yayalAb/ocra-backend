@@ -11,6 +11,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.CouchModels;
 using AppDiv.CRVS.Infrastructure.Service;
 using AppDiv.CRVS.Infrastructure.Services;
+using CouchDB.Driver.Query.Extensions;
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Nest;
@@ -115,11 +116,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Query(q =>
                     q
                     .Wildcard(w => w
-                    .Field(f => f.CertificateSerialNumber).Value($"*{query.SearchString}*")
+                    
+                    .Field(f => f.CertificateSerialNumber).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.ContentStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.ContentStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     )
                     ).Size(50)
                     );

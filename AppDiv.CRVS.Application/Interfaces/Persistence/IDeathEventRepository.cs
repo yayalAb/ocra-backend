@@ -14,5 +14,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 
         Task<DeathEvent> GetIncludedAsync(Guid id);
         Task InsertOrUpdateAsync(DeathEvent entity, CancellationToken cancellationToken);
+        Task UpdateWithNested(DeathEvent deathEvent, CancellationToken cancellationToken);
     }
 }

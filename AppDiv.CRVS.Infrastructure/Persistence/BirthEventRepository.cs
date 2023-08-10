@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -144,6 +145,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             try
             {
+                entity.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(entity.Event, _dbContext);
                 entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father.MiddleName;
                 entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
@@ -209,7 +211,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 //     entity.Mother = selectedperson;
                 // }
                 base.Update(entity);
-               await base.SaveChangesAsync(cancellationToken);
+                await base.SaveChangesAsync(cancellationToken);
 
                 // base.Update(entity);
             }

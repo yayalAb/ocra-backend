@@ -103,22 +103,30 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             else
                             {
                                 // Move the supporting documents form temporary to permenant place.
+                                birthEvent.Event.IsCertified=false;
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
-                                // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                                if(userPhotos!=null &&(userPhotos.Count != 0)){
-                                   _eventDocumentService.MovePhotos(userPhotos, "Birth");
-                            }
+                                if (userPhotos != null && (userPhotos.Count != 0))
+                                {
+                                    _eventDocumentService.MovePhotos(userPhotos, "Birth");
+                                }
+
 
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
                                 //TODO:save fingerprint
                             }
                             // Commit the transaction.
-                            await transaction?.CommitAsync()!;
+                            if (transaction != null)
+                            {
+                                await transaction.CommitAsync();
+
+                            }
                         }
                         catch (System.Exception ex)
                         {
                             response.BadRequest($"Something went wrong.");
+
                             throw new ApplicationException(ex.Message);
                         }
                         // Set response to created.
@@ -130,7 +138,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 catch (Exception)
                 {
                     // Rollback the transaction on exception.
-                    await transaction?.RollbackAsync()!;
+                    if (transaction != null)
+                    {
+                        await transaction.RollbackAsync();
+                    }
                     throw;
                 }
 
@@ -138,3 +149,4 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
         }
     }
 }
+//a9db71f2-7074-4070-be49-13f8f384ed40

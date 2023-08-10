@@ -142,10 +142,10 @@ namespace AppDiv.CRVS.Application.Service
                     try
                     {
                         string? userId = _userRepository.GetAll()
-                                            .Where(u => u.PersonalInfoId == request.CivilRegOfficerId)
+                                            .Where(u => u.PersonalInfoId == _UserResolverService.GetUserPersonalId() )
                                             .Select(u => u.Id).FirstOrDefault();
 
-                        if (userId == null)
+                        if (string.IsNullOrEmpty(userId))
                         {
                             throw new NotFoundException("user not found");
                         }

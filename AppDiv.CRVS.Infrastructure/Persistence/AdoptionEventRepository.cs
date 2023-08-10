@@ -1,6 +1,7 @@
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
+using AppDiv.CRVS.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
@@ -56,6 +57,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task EFUpdate(AdoptionEvent adoptionEvent, CancellationToken cancellationToken)
         {
+            adoptionEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(adoptionEvent.Event, _dbContext);
+
             base.Update(adoptionEvent);
             await base.SaveChangesAsync(cancellationToken);
         }

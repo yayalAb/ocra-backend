@@ -96,11 +96,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
                             var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id != null).ToList();
                             var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id != null).ToList();
-                            // request.Event.EventSupportingDocuments = null;
-                            // if (request.Event.PaymentExamption != null)
-                            // {
-                            //     request.Event.PaymentExamption.SupportingDocuments = null;
-                            // }
+
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             marriageEvent.Event.EventType = "Marriage";
                             // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
@@ -137,7 +133,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             {
                                 marriageEvent.Event.PaymentExamption.SupportingDocuments = null;
                             }
-                            await _marriageEventRepository.EFUpdateAsync(marriageEvent,cancellationToken);
+                            await _marriageEventRepository.EFUpdateAsync(marriageEvent, cancellationToken);
                             if (!request.IsFromCommand)
                             {
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
@@ -149,12 +145,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             }
                             else
                             {
+                                marriageEvent.Event.IsCertified=false;
                                 // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
-                                       if(separatedDocs.userPhotos!=null &&(separatedDocs.userPhotos.Count != 0)){
-                                        _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Marriage");
-                                          }
+                                if (separatedDocs.userPhotos != null && (separatedDocs.userPhotos.Count != 0))
+                                {
+                                    _eventDocumentService.MovePhotos(separatedDocs.userPhotos, "Marriage");
+                                }
 
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Marriage");
                                 //TODO:save fingerprint
@@ -163,14 +161,21 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             // _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             // _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>?)docs.examptionDocs, "Marriage");
                             updateMarriageEventCommandResponse.Message = "Marriage Event Updated Successfully";
-                            await transaction?.CommitAsync()!;
+                            if (transaction != null)
+                            {
+                                await transaction?.CommitAsync()!;
+
+                            }
                         }
                         return updateMarriageEventCommandResponse;
 
                     }
                     catch (Exception)
                     {
-                        await transaction?.RollbackAsync()!;
+                        if (transaction != null)
+                        {
+                            await transaction?.RollbackAsync()!;
+                        }
                         throw;
                     }
                 }
