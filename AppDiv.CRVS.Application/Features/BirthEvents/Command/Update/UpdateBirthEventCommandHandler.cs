@@ -37,6 +37,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 using var transaction = request.IsFromCommand ? null : _birthEventRepository.Database.BeginTransaction();
                 try
                 {
+                   
                     // Create response.
                     var response = new UpdateBirthEventCommandResponse();
                     // Validate the inputs.
@@ -55,6 +56,9 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     }
                     if (response.Success)
                     {
+                        var SelectedEvent= _eventRepository.GetAll()
+                        .AsNoTracking()
+                         .Where(x=>x.Id==request.EventId).FirstOrDefault();
                         if (request.ValidateFirst == true)
                         {
                             response.Updated(entity: "Birth", message: "Valid Input.");
@@ -71,6 +75,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             // Map the reques to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
                             birthEvent.Event.EventType = "Birth";
+                            birthEvent.Event.IsPaid=SelectedEvent.IsPaid;
+                            birthEvent.Event.IsVerified=SelectedEvent.IsVerified;
+                            birthEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
+                            birthEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
+                            birthEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                             if (request.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository))
                             {
                                 birthEvent.Event.HasPendingDocumentApproval = true;

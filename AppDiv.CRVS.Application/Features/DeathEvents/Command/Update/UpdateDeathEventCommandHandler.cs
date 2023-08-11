@@ -33,6 +33,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                 using var transaction = request.IsFromCommand ? null : _deathEventRepository.Database.BeginTransaction();
                 try
                 {
+                   
 
                     var response = new UpdateDeathEventCommandResponse();
                     // validate the request inputs.
@@ -49,8 +50,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             response.ValidationErrors.Add(error.ErrorMessage);
                         response.Message = response.ValidationErrors[0];
                     }
+
                     if (response.Success)
-                    {
+                    { var SelectedEvent= _eventRepository.GetAll()
+                    .AsNoTracking()
+                    .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
                         // Validate the inputs first for the correction request approval.
                         if (request.ValidateFirst == true)
                         {
@@ -65,6 +69,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // Map the reques to model eintity.
                         var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                         deathEvent.Event.EventType = "Death";
+                        deathEvent.Event.IsPaid=SelectedEvent.IsPaid;
+                        deathEvent.Event.IsVerified=SelectedEvent.IsVerified;
+                        deathEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
+                        deathEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
+                        deathEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                         // Set the supporting documents to null.
                         deathEvent.Event.EventSupportingDocuments = null!;
                         if (deathEvent.Event.PaymentExamption != null)

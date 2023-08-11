@@ -52,6 +52,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                     try
                     {
                         var updateDivorceEventCommandResponse = new UpdateDivorceEventCommandResponse();
+                        
 
                         var validator = new UpdateDivorceEventCommandValidator(_personalInfoRepository, _lookupRepository, _addressLookupRepository, _eventRepository, _courtRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -68,7 +69,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                         }
                         if (updateDivorceEventCommandResponse.Success)
                         {
-                            if (request.ValidateFirst == true)
+                              var SelectedEvent= _eventRepository.GetAll()
+                                .AsNoTracking()
+                            .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
+                             if (request.ValidateFirst == true)
                             {
                                 updateDivorceEventCommandResponse.Created(entity: "Death", message: "Valid Input.");
                                 return updateDivorceEventCommandResponse;
@@ -88,6 +92,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             divorceEvent.Event.EventType = "Divorce";
+                            divorceEvent.Event.IsPaid=SelectedEvent.IsPaid;
+                            divorceEvent.Event.IsVerified=SelectedEvent.IsVerified;
+                            divorceEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
+                            divorceEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
+                            divorceEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                             //   await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent,true,cancellationToken);
                             // _DivorceEventRepository.EFUpdate(divorceEvent);
                             // if (!request.IsFromCommand)

@@ -73,6 +73,9 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
         }
         else if (UpdateAdoptionCommandResponse.Success)
         {
+            var SelectedEvent= _eventRepository.GetAll()
+                    .AsNoTracking()
+                   .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
             if (request.ValidateFirst == true)
             {
                 UpdateAdoptionCommandResponse.Created(entity: "Adoption", message: "Valid Input.");
@@ -98,6 +101,11 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
                 adoptionEvent.Event.EventAddressId = adoptionEvent.CourtCase.Court.AddressId;
+                adoptionEvent.Event.IsPaid=SelectedEvent.IsPaid;
+                adoptionEvent.Event.IsVerified=SelectedEvent.IsVerified;
+                adoptionEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
+                adoptionEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
+                adoptionEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
 
                 // if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent.AdoptiveFather?.Id != Guid.Empty)
                 // {

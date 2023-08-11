@@ -86,6 +86,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                         }
                         if (updateMarriageEventCommandResponse.Success)
                         {
+                         var SelectedEvent= _eventRepository.GetAll()
+                                 .AsNoTracking()
+                                 .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
                             if (request.ValidateFirst == true)
                             {
                                 updateMarriageEventCommandResponse.Created(entity: "Death", message: "Valid Input.");
@@ -99,6 +102,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             marriageEvent.Event.EventType = "Marriage";
+                            marriageEvent.Event.IsPaid=SelectedEvent.IsPaid;
+                            marriageEvent.Event.IsVerified=SelectedEvent.IsVerified;
+                            marriageEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
+                            marriageEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
+                            marriageEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                             // await _marriageEventRepository.EFUpdateAsync(marriageEvent);
                             // await _marriageEventRepository.InsertOrUpdateAsync(marriageEvent, true, cancellationToken);
 
