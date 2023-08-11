@@ -67,32 +67,40 @@ namespace AppDiv.CRVS.Application.Service
         {
             var message = new List<string>();
             // repository = repo;
-            return ruleBuilder.ForEach(docs => docs.
-                ChildRules(d =>
-                {
-                    d.RuleFor(d => d.base64String)
-                        .Must(str => string.IsNullOrEmpty(str) || HelperService.IsBase64String(str)).WithMessage("invalid base64string")
-                        .Must(str => string.IsNullOrEmpty(str) || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
-                        .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files");
-                    d.RuleFor(d => d.FingerPrint)
-                       .ForEach(f => f.ChildRules(f =>
-                       {
-                           f.RuleFor(f => f.base64Image)
-                           .NotNull()
-                           .Must(str => HelperService.IsBase64String(str)).WithMessage("invalid base64string")
-                           .Must(str => string.IsNullOrEmpty(str) || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
-                           .WithMessage("invalid file extension in the supporting documents : file types can only be either image file or document files"); ;
-                       }));
-                    d.RuleFor(d => d.Type)
-                        .NotNull()
-                        .Must(t => t != Guid.Empty).WithMessage("type is required");
-                    d.RuleFor(d => d.Label)
-                        .NotNull()
-                        .NotEmpty().WithMessage("type is required");
+            var index1 = 0;
+            var index2 = 0;
+            return ruleBuilder.ForEach(docs =>
+            {
+                docs.
+               ChildRules(d =>
+               {
+                   d.RuleFor(d => d.base64String)
+                       .Must(str => string.IsNullOrEmpty(str) || HelperService.IsBase64String(str)).WithMessage("invalid base64string")
+                       .Must(str => string.IsNullOrEmpty(str) || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                       .WithName(d => d.base64String == null ? "null" : (FileExtractorService.GetMimeType(d.base64String) ?? "null") + " with label - " + d.Label)
+                       .WithMessage("invalid file extension in the supporting documents the extension {PropertyName} is not supported : \nfile types can only be either image file or document file");
+                   d.RuleFor(d => d.FingerPrint)
+                      .ForEach(f => f.ChildRules(f =>
+                      {
+                          f.RuleFor(f => f.base64Image)
+                          .NotNull()
+                          .Must(str => HelperService.IsBase64String(str)).WithMessage("invalid base64string")
+                          .Must(str => string.IsNullOrEmpty(str) || FileExtractorService.GetFileExtensionFromBase64String(str) != null)
+                            .WithName(d => d.base64Image == null ? "null" : (FileExtractorService.GetMimeType(d.base64Image) ?? "null") + " in fingerprints with position - " + d.position)
+                          .WithMessage("invalid file extension in the supporting documents the extension {PropertyName} is not supported : \nfile types can only be either image file or document file"); ;
+                      }));
+                   d.RuleFor(d => d.Type)
+                       .NotNull()
+                       .Must(t => t != Guid.Empty).WithMessage("type is required");
+                   d.RuleFor(d => d.Label)
+                       .NotNull()
+                       .NotEmpty().WithMessage("type is required");
 
 
-                }
-                        ));
+               }
+                       );
+                index1++;
+            });
 
         }
 
