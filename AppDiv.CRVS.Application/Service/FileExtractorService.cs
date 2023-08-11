@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -166,7 +167,7 @@ namespace AppDiv.CRVS.Application.Service
                 }
             }
         }
-        private static string? GetExtensionFromBase64Metadata(string base64String)
+        public static string? GetExtensionFromBase64Metadata(string base64String)
         {
             string[] parts = base64String.Split(',');
             if (parts.Length >= 2 && parts[0].StartsWith("data:") && parts[1].Contains("/"))
@@ -187,5 +188,16 @@ namespace AppDiv.CRVS.Application.Service
             }
             return null;
         }
+        public static string? GetMimeType(string base64String)
+        {
+            string[] parts = base64String.Split(',');
+            if (parts.Length >= 2 && parts[0].StartsWith("data:") && parts[1].Contains("/"))
+            {
+                string mimeType = parts[0].Split(';')[0].Split(":")[1].Trim();
+                return mimeType;
+            }
+            return null;
+        }
+
     }
 }
