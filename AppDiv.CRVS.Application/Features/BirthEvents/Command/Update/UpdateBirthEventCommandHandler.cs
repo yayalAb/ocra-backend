@@ -42,18 +42,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     var response = new UpdateBirthEventCommandResponse();
                     // Validate the inputs.
                     var validator = new UpdateBirthEventCommandValidator(_eventRepository, _lookupRepository);
-                    // var validationResult = await validator.ValidateAsync(request, cancellationToken);
-                    // //Check and log validation errors
-                    // if (validationResult.Errors.Count > 0)
-                    // {
-                    //     response.Success = false;
-                    //     response.Status = 400;
-                    //     response.ValidationErrors = new List<string>();
-                    //     foreach (var error in validationResult.Errors)
-                    //         response.ValidationErrors.Add(error.ErrorMessage);
-                    //     response.Message = response.ValidationErrors[0];
+                    var validationResult = await validator.ValidateAsync(request, cancellationToken);
+                    //Check and log validation errors
+                    if (validationResult.Errors.Count > 0)
+                    {
+                        response.Success = false;
+                        response.Status = 400;
+                        response.ValidationErrors = new List<string>();
+                        foreach (var error in validationResult.Errors)
+                            response.ValidationErrors.Add(error.ErrorMessage);
+                        response.Message = response.ValidationErrors[0];
 
-                    // }
+                    }
                     if (true)
                     {
                         var SelectedEvent= _eventRepository.GetAll()
