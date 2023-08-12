@@ -120,7 +120,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             divorceEvent.Event.IsCertified=false;
                             if (!request.IsFromCommand)
                             {
-                                var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
+                                // var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);

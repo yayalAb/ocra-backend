@@ -1358,5 +1358,11 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 DeathStatus = personalInfo.DeathStatus
             });
         }
+
+        // public Task forgetJob()
+        // {
+        //     Console.WriteLine("this is fire and forget jobbbbbb");
+        //     return Task.CompletedTask;
+        // }
     }
 }

@@ -25,6 +25,7 @@ using Hangfire;
 // using Hangfire.MySql.Core;
 using System.Data;
 using Hangfire.MySql;
+using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
 // using System.Data;
 // using Hangfire.MySqlStorage;
 // using Hangfire.Core;
@@ -225,6 +226,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<ITokenValidatorService, TokenValidatorService>();
             services.AddScoped<IBackgroundJobs, BackgroundJobs>();
             services.AddScoped<IPersonDuplicateRepository, PersonDuplicateRepository>();
+            services.AddScoped<IFireAndForgetJobs , FireAndForgetJobs>();
             services.AddScoped<IEventDuplicateRepository, EventDuplicateRepository>();
             services.AddScoped<IMarriageApplicationCouchRepository, MarriageApplicationCouchRepository>();
 

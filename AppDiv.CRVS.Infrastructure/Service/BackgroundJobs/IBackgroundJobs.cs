@@ -19,5 +19,6 @@ namespace AppDiv.CRVS.Infrastructure.Service
         // public Task UpdateIndex<T>(List<object> entities, string indexName) where T : BaseIndex;
         public Task AddPersonIndex(List<PersonalInfoIndex> entities, string indexName);
         public  Task SyncCertificatesAndPayments();
+        // public Task forgetJob();
     }
 }
