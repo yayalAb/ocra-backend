@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public string CertificateType { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime ModifiedAt { get; set; }
+        public string CreatedAt { get; set; }
+        public string ModifiedAt { get; set; }
     }
 }

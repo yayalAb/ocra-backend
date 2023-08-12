@@ -7,6 +7,8 @@ using AppDiv.CRVS.Application.Extensions;
 using AppDiv.CRVS.Domain.Repositories;
 using AutoMapper;
 using MediatR;
+using AppDiv.CRVS.Utility.Services;
+
 namespace AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetAllCertificateTemplates
 
 {
@@ -29,12 +31,18 @@ namespace AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetA
         }
         public async Task<PaginatedList<FetchCertificateTemplateDTO>> Handle(GetAllCertificateTemplatesQuery request, CancellationToken cancellationToken)
         {
-            return await _CertificateTemplateslookupRepository.GetAllAsync()
-                            .PaginateAsync<CertificateTemplate, FetchCertificateTemplateDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
-            // return await PaginatedList<FetchCertificateTemplateDTO>
-            //             .CreateAsync(
-            //                await _CertificateTemplateslookupRepository.GetAllAsync()
-            //                .ProjectToListAsync<FetchCertificateTemplateDTO>(_mapper.ConfigurationProvider), request.PageCount ?? 1, request.PageSize ?? 10);
+            var CertificateTemplateList= _CertificateTemplateslookupRepository.GetAllAsync();
+
+            return await  PaginatedList<FetchCertificateTemplateDTO>
+                            .CreateAsync(
+                                CertificateTemplateList.Select(x => new FetchCertificateTemplateDTO
+                                {
+                                    Id =x.Id,
+                                    CertificateType =x.CertificateType,
+                                    CreatedAt =new CustomDateConverter(x.CreatedAt).ethiopianDate,
+                                    ModifiedAt =new CustomDateConverter(x.ModifiedAt).ethiopianDate,
+                                })
+                                , request.PageCount ?? 1, request.PageSize ?? 10);
 
         }
     }
