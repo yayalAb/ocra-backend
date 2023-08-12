@@ -1,9 +1,11 @@
 
+using Newtonsoft.Json;
+
 namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
 {
-    public class PersonalInfoIndex:BaseIndex
+    public class PersonalInfoIndex
     {
-        // public Guid Id { get; set; }
+        public Guid PersonId { get; set; }
         public string? FirstNameStr { get; set; }
         public string? FirstNameOr { get; set; }
         public string? FirstNameAm { get; set; }
@@ -15,21 +17,21 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
         public string? LastNameAm { get; set; }
         public string? NationalId { get; set; }
         public string? PhoneNumber { get; set; }
-        public DateTime? BirthDate {get; set;}
+        public DateTime? BirthDate { get; set; }
         public string? GenderOr { get; set; }
         public string? GenderAm { get; set; }
         public string? GenderStr { get; set; }
         public string? TypeOfWorkStr { get; set; }
         public string? TitleStr { get; set; }
         public string? MarriageStatusStr { get; set; }
-        public string? AddressOr { get;set; }
-        public string? AddressAm { get; set;}
-        public bool? DeathStatus {get; set; }
-        public bool? HasCivilMarriage {get; set; }
+        public string? AddressOr { get; set; }
+        public string? AddressAm { get; set; }
+        public bool? DeathStatus { get; set; }
+        public bool? HasCivilMarriage { get; set; }
 
-        
-        
-    
+
+
+
 
 
     }

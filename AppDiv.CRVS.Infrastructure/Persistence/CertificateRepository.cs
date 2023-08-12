@@ -10,6 +10,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Infrastructure.CouchModels;
 using AppDiv.CRVS.Infrastructure.Service;
+using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
 using AppDiv.CRVS.Infrastructure.Services;
 using CouchDB.Driver.Query.Extensions;
 using Hangfire;
@@ -47,8 +48,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                        .Entries()
                        .Where(e => e.Entity is Certificate &&
                                (e.State == EntityState.Added
-                               || e.State == EntityState.Modified
-                               || e.State == EntityState.Deleted));
+                               || e.State == EntityState.Modified));
 
             List<CertificateEntry> certificateEntries = entries.Select(e => new CertificateEntry
             {
@@ -63,7 +63,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             if (saveChangeRes)
             {
-                HelperService.IndexCertificates(certificateEntries, _dbContext);
+                // index add or update changes to elastic search certificate index
+                if (certificateEntries.Any())
+                {
+
+                    BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexCertificate(certificateEntries));
+                }
             }
 
             return saveChangeRes;
@@ -71,19 +76,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
         {
             _elasticClient.Indices.Delete("certificate");
-
-            if (!_elasticClient.Indices.Exists("certificate").Exists)
-            {
-                var indexRes = await indexCertificates();
-                await _elasticClient.Indices.RefreshAsync("certificate");
-
-            }
             var response = _elasticClient.SearchAsync<CertificateIndex>(s => s
                     .Index("certificate")
                     .Source(src => src
                     .Includes(i => i
                         .Fields(
-                            f => f.Id,
+                            f => f.CertificateDbId,
                             f => f.EventId,
                             f => f.NestedEventId,
                             f => f.FirstNameAm,
@@ -127,7 +125,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     );
             return response.Result.Documents.Select(d => new SearchCertificateResponseDTO
             {
-                Id = d.Id,
+                Id = d.CertificateDbId,
                 EventId = d.EventId,
                 NestedEventId = d.NestedEventId,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
@@ -162,7 +160,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                     )
                                    .Select(c => new CertificateIndex
                                    {
-                                       Id = c.Id,
+                                       CertificateDbId = c.Id,
                                        EventId = c.Event.Id,
                                        EventType = c.Event.EventType,
                                        NestedEventId = c.Event.EventType.ToLower() == "birth"

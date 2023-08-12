@@ -1,9 +1,9 @@
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
 {
-    public class CertificateIndex :BaseIndex
+    public class CertificateIndex 
     {
-        // public Guid Id { get; set; }
+        public Guid CertificateDbId { get; set; }
         public Guid EventId { get; set; }
         public Guid? NestedEventId { get; set; }
         public string? EventType {get; set; }

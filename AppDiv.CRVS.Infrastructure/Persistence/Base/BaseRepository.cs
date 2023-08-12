@@ -1182,8 +1182,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 .Entries()
                 .Where(e => e.Entity is PersonalInfo && (
                         e.State == EntityState.Added
-                        || e.State == EntityState.Modified
-                        || e.State == EntityState.Deleted)).ToList();
+                        || e.State == EntityState.Modified)).ToList();
             personalInfoEntries = personEntries.Select(e => new PersonalInfoEntry
             {
                 State = e.State,
@@ -1228,93 +1227,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // we call the base implementation of SaveChangesAsync
             // to actually save our entities in the database
             await _dbContext.SaveChangesAsync(cancellationToken);
-            // HelperService.IndexPersonalInfo(personalInfoEntries, _dbContext);
+            // index add or update changes to elastic search personal_info index
+            if (personalInfoEntries.Any())
+            {
 
-            // BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.AddPersonIndex(personalInfoEntries, "personal_info"));
-            
-            // HelperService.fourth();
+                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonalInfo(personalInfoEntries));
+            }
+
             return true;
         }
 
-        // public Task testJob()
-        // {
-        //     return Task.CompletedTask;
-        // }
-        // public async Task indexPersonalInfo(List<PersonalInfoEntry> personalInfoEntries)
-        // {
-        //     Console.WriteLine("=================== index person  ============== started ==========");
-        //     Console.WriteLine($"=================== {_dbContext.Settings.Count()}");
-
-
-        //     if (personalInfoEntries.Any())
-        //     {
-
-        //         List<object> addedPersons = new List<object>();
-        //         List<PersonalInfoIndex> addedPersonIndexes = new List<PersonalInfoIndex>();
-        //         List<object> updatedPersons = new List<object>();
-        //         List<Guid> deletedPersonIds = new List<Guid>();
-        //         personalInfoEntries.ForEach(e =>
-        //         {
-        //             Console.WriteLine($"-8-8-8-8-8-8- {e.PersonalInfoId}");
-        //             var p =
-        //            _dbContext.PersonalInfos
-        //                 .Where(p => p.Id == e.PersonalInfoId)
-        //                 .Include(p => p.ResidentAddress)
-        //                 .Include(p => p.SexLookup)
-        //                 .Include(p => p.TypeOfWorkLookup)
-        //                 .Include(p => p.TitleLookup)
-        //                 .Include(p => p.MarraigeStatusLookup)
-        //                 .Include(p => p.Events.Where(e => e.EventType == "Marriage"))
-        //                     .ThenInclude(e => e.MarriageEvent)
-        //                         .ThenInclude(m => m.MarriageType)
-        //                 ;
-        //             e.PersonalInfo = p.FirstOrDefault();
-        //             if (e.State == EntityState.Added && e.PersonalInfo != null)
-        //             {
-        //                 addedPersons.Add(e.PersonalInfo);
-        //                 if (p != null)
-        //                 {
-
-        //                     addedPersonIndexes.Add(p.Select(personalInfo => new PersonalInfoIndex
-        //                     {
-        //                         Id = personalInfo.Id,
-        //                         FirstNameStr = personalInfo.FirstNameStr,
-        //                         FirstNameOr = personalInfo.FirstName == null ? null : personalInfo.FirstName.Value<string>("or"),
-        //                         FirstNameAm = personalInfo.FirstName == null ? null : personalInfo.FirstName.Value<string>("am"),
-        //                         MiddleNameStr = personalInfo.MiddleNameStr,
-        //                         MiddleNameOr = personalInfo.MiddleName == null ? null : personalInfo.MiddleName.Value<string>("or"),
-        //                         MiddleNameAm = personalInfo.MiddleName == null ? null : personalInfo.MiddleName.Value<string>("am"),
-        //                         LastNameStr = personalInfo.LastNameStr,
-        //                         LastNameOr = personalInfo.LastName == null ? null : personalInfo.LastName.Value<string>("or"),
-        //                         LastNameAm = personalInfo.LastName == null ? null : personalInfo.LastName.Value<string>("am"),
-        //                         NationalId = personalInfo.NationalId,
-        //                         PhoneNumber = personalInfo.PhoneNumber,
-        //                         BirthDate = personalInfo.BirthDate,
-        //                         GenderOr = personalInfo.SexLookup.Value == null ? null : personalInfo.SexLookup.Value.Value<string>("or"),
-        //                         GenderAm = personalInfo.SexLookup.Value == null ? null : personalInfo.SexLookup.Value.Value<string>("am"),
-        //                         GenderStr = personalInfo.SexLookup.ValueStr,
-        //                         TypeOfWorkStr = personalInfo.TypeOfWorkLookup.ValueStr,
-        //                         TitleStr = personalInfo.TitleLookup.ValueStr,
-        //                         MarriageStatusStr = personalInfo.MarraigeStatusLookup.ValueStr,
-        //                         AddressOr = personalInfo.ResidentAddress.AddressName == null ? null : personalInfo.ResidentAddress.AddressName.Value<string>("or"),
-        //                         AddressAm = personalInfo.ResidentAddress.AddressName == null ? null : personalInfo.ResidentAddress.AddressName.Value<string>("am"),
-        //                         DeathStatus = personalInfo.DeathStatus
-        //                     }).FirstOrDefault()!);
-        //                 }
-        //             }
-        //             else if (e.State == EntityState.Modified && e.PersonalInfo != null)
-        //             {
-        //                 updatedPersons.Add(e.PersonalInfo);
-        //             }
-        //             else if (e.State == EntityState.Deleted && e.PersonalInfo != null)
-        //             {
-        //                 deletedPersonIds.Add(e.PersonalInfo.Id);
-        //             }
-        //         });
-        //     }
-        //     Console.WriteLine("=================== index person  ============== ended ==========");
-
-        // }
         public async Task<T> GetFirstEntryWithAsync(Expression<Func<T, bool>> predicate, Expression<Func<T, object>> orderBy, SortingDirection sorting_direction, params string[] eagerLoadedProperties)
         {
 

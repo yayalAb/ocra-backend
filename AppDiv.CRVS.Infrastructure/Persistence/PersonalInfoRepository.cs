@@ -66,54 +66,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query)
         {
-            // _elasticClient.Indices.Delete("personal_info");
-            // if (!_elasticClient.Indices.Exists("personal_info").Exists)
-            // {
-
-            //     var indexRes = _elasticClient
-            //        .IndexMany<PersonalInfoIndex>(dbContext.PersonalInfos
-            //             .Where(p => p.DeathStatus == false)
-                        
-            //            .Select(p => new PersonalInfoIndex
-            //            {
-            //                Id = p.Id,
-            //                FirstNameStr = p.FirstNameStr,
-            //                FirstNameOr = p.FirstName == null ? null : p.FirstName.Value<string>("or"),
-            //                FirstNameAm = p.FirstName == null ? null : p.FirstName.Value<string>("am"),
-            //                MiddleNameStr = p.MiddleNameStr,
-            //                MiddleNameOr = p.MiddleName == null ? null : p.MiddleName.Value<string>("or"),
-            //                MiddleNameAm = p.MiddleName == null ? null : p.MiddleName.Value<string>("am"),
-            //                LastNameStr = p.LastNameStr,
-            //                LastNameOr = p.LastName == null ? null : p.LastName.Value<string>("or"),
-            //                LastNameAm = p.LastName == null ? null : p.LastName.Value<string>("am"),
-            //                NationalId = p.NationalId,
-            //                PhoneNumber = p.PhoneNumber,
-            //                BirthDate = p.BirthDate,
-            //                GenderOr = p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("or"),
-            //                GenderAm = p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("am"),
-            //                GenderStr = p.SexLookup.ValueStr,
-            //                TypeOfWorkStr = p.TypeOfWorkLookup.ValueStr,
-            //                TitleStr = p.TitleLookup.ValueStr,
-            //                MarriageStatusStr = p.MarraigeStatusLookup.ValueStr,
-            //                AddressOr = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
-            //                AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
-            //                DeathStatus = p.DeathStatus,
-            //                HasCivilMarriage = p.Events.Where(e =>  e.EventType.ToLower() =="marriage"  
-            //                     &&  (EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr.ToLower(), "%seera siivilii%")|| EF.Functions.Like( e.MarriageEvent.MarriageType.ValueStr, "%በመዘጋጃ የተመዘገቡ%"))
-            //                     ).Any()  
-                                
-
-            //            }), "personal_info");
-            //         await _elasticClient.Indices.RefreshAsync("personal_info");
-            // }
-            
-            
             var response = _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
                     .Index("personal_info")
                     .Source(src => src
                     .Includes(i => i
                         .Fields(
-                             f => f.Id,
+                             f => f.PersonId,
                             f => f.FirstNameAm,
                             f => f.FirstNameOr,
                             f => f.MiddleNameAm,
@@ -182,7 +140,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     ).Size(50));
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.Id,
+                Id = d.PersonId,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
@@ -197,53 +155,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task<List<PersonSearchResponse>> SearchSimilarPersons(SearchSimilarPersonalInfoQuery queryParams)
         {
-            // if (isAllNull(queryParams))
-            // {
-            //     return new List<PersonSearchResponse>();
-            // }
-            // _elasticClient.Indices.Delete("personal_info");
-            // if (!_elasticClient.Indices.Exists("personal_info").Exists)
-            // {
-
-            //     var indexRes = _elasticClient
-            //        .IndexMany<PersonalInfoIndex>(dbContext.PersonalInfos
-            //             .Where(p => p.DeathStatus == false)
-            //            .Select(p => new PersonalInfoIndex
-            //            {
-            //                Id = p.Id,
-            //                FirstNameStr = p.FirstNameStr,
-            //                FirstNameOr = p.FirstName == null ? null : p.FirstName.Value<string>("or"),
-            //                FirstNameAm = p.FirstName == null ? null : p.FirstName.Value<string>("am"),
-            //                MiddleNameStr = p.MiddleNameStr,
-            //                MiddleNameOr = p.MiddleName == null ? null : p.MiddleName.Value<string>("or"),
-            //                MiddleNameAm = p.MiddleName == null ? null : p.MiddleName.Value<string>("am"),
-            //                LastNameStr = p.LastNameStr,
-            //                LastNameOr = p.LastName == null ? null : p.LastName.Value<string>("or"),
-            //                LastNameAm = p.LastName == null ? null : p.LastName.Value<string>("am"),
-            //                NationalId = p.NationalId,
-            //                PhoneNumber = p.PhoneNumber,
-            //                BirthDate = p.BirthDate,
-            //                GenderOr = p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("or"),
-            //                GenderAm = p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("am"),
-            //                GenderStr = p.SexLookup.ValueStr,
-            //                TypeOfWorkStr = p.TypeOfWorkLookup.ValueStr,
-            //                TitleStr = p.TitleLookup.ValueStr,
-            //                MarriageStatusStr = p.MarraigeStatusLookup.ValueStr,
-            //                AddressOr = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
-            //                AddressAm = p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
-            //                DeathStatus = p.DeathStatus
-            //            }), "personal_info");
-            //         await _elasticClient.Indices.RefreshAsync("personal_info");
-
-            // }
-
-
+            if (isAllNull(queryParams))
+            {
+                return new List<PersonSearchResponse>();
+            }
             var response = _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
                     .Index("personal_info")
                     .Source(src => src
                     .Includes(i => i
                         .Fields(
-                            f => f.Id,
+                            f => f.PersonId,
                             f => f.FirstNameAm,
                             f => f.FirstNameOr,
                             f => f.MiddleNameAm,
@@ -326,7 +247,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.Id,
+                Id = d.PersonId,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
