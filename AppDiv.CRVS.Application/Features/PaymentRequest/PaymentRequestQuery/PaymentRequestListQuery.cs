@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
 {
@@ -72,7 +73,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentRequest.PaymentRequestQuery
                                         RequestType = x.Reason.Value<string>("en"),
                                         Amount = x.Amount,
                                         RequestedBy = x.Event.EventOwener.FirstNameLang + " " + x.Event.EventOwener.MiddleNameLang + " " + x.Event.EventOwener.LastNameLang,
-                                        RequestedDate = x.CreatedAt,
+                                        RequestedDate =new CustomDateConverter( x.CreatedAt).ethiopianDate,
                                     })
                                , request.PageCount ?? 1, request.PageSize ?? 10);
         }

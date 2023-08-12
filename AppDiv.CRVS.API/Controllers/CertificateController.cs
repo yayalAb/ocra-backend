@@ -195,5 +195,11 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
+
+         [HttpGet("AuthenticatedCertificates")]
+        public async Task<PaginatedList<PaidCertificateDTO>> GetAllOnWaiting([FromQuery] thisMonthAuthenticatedCertificateList query)
+        {
+            return await Mediator.Send(query);
+        }
     }
 }

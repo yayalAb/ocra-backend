@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? RequestedBy { get; set; }
         public string? RequestType { get; set; }
         public Guid? OfficerId { get; set; }
-        public DateTime? RequestDate { get; set; }
+        public string? RequestDate { get; set; }
         public int? CurrentStep { get; set; }
         public int? NextStep { get; set; }
         public Guid? RequestId { get; set; }

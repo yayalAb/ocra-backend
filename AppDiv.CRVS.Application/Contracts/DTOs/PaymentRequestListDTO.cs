@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? RequestType { get; set; }
 
         public string? RequestedBy { get; set; }
-        public DateTime? RequestedDate { get; set; }
+        public string? RequestedDate { get; set; }
         public float? Amount { get; set; }
     }
 }

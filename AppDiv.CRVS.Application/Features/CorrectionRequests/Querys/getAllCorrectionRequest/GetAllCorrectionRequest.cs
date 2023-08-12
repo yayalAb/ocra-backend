@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Utility.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -56,7 +57,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
                 Requestedby = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,
                 RequestType = x.Request.RequestType,
                 EventType = x.Event.EventType,
-                RequestDate = x.CreatedAt,
+                RequestDate = new CustomDateConverter(x.CreatedAt).ethiopianDate,
                 CurrentStatus = x.Request.currentStep,
                 CanEdit = x.Request.currentStep == 0,
             });

@@ -18,6 +18,7 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.Authentication.Querys
 {
@@ -98,7 +99,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                      w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
-                 RequestDate = w.CreatedAt,
+                 RequestDate =new CustomDateConverter(w.CreatedAt).ethiopianDate,
                  CanEdit = ((w.currentStep == 0) && (w.CivilRegOfficerId == userGroup.PersonalInfoId)),
                  CanApprove = userGroup.UserGroups.Select(x => x.Id)
                  .FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep)
