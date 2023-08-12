@@ -14,9 +14,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private static readonly CustomDateConverter convertor = new();
         public static EventInfoArchive GetEventInfo(Event? events, IDateAndAddressService dateAndAddressService)
         {
-            (string am, string or)? address = (events?.EventAddressId == Guid.Empty
-               || events?.EventAddressId == null) ? null :
-               dateAndAddressService.addressFormat(events?.EventAddressId);
+            (string am, string or)? address = (events?.EventRegisteredAddressId == Guid.Empty
+               || events?.EventRegisteredAddressId == null) ? null :
+               dateAndAddressService.addressFormat(events?.EventRegisteredAddressId);
 
             (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or)!;
             // var convertor = new CustomDateConverter();
@@ -36,18 +36,18 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 RegistrationDay = convertor.getSplitted(events?.EventRegDateEt!).day.ToString("D2"),
                 RegistrationYear = convertor.getSplitted(events?.EventRegDateEt!).year.ToString(),
 
-                EventCountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
-                EventCountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
-                EventRegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
-                EventRegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
-                EventZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
-                EventZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
-                EventWoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
-                EventWoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
-                EventCityKetemaOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                EventCityKetemaAm = splitedAddress?.am?.ElementAtOrDefault(4),
-                EventKebeleOr = splitedAddress?.or?.ElementAtOrDefault(5),
-                EventKebeleAm = splitedAddress?.am?.ElementAtOrDefault(5),
+                RegistrationCountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
+                RegistrationCountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
+                RegistrationRegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
+                RegistrationRegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
+                RegistrationZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
+                RegistrationZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
+                RegistrationWoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
+                RegistrationWoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
+                RegistrationCityKetemaOr = splitedAddress?.or?.ElementAtOrDefault(4),
+                RegistrationCityKetemaAm = splitedAddress?.am?.ElementAtOrDefault(4),
+                RegistrationKebeleOr = splitedAddress?.or?.ElementAtOrDefault(5),
+                RegistrationKebeleAm = splitedAddress?.am?.ElementAtOrDefault(5),
             };
         }
         public static Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService //)

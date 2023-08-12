@@ -23,17 +23,17 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? RegistrationDay { get; set; }
         public string? RegistrationYear { get; set; }
 
-        public string? EventCountryOr { get; set; }
-        public string? EventCountryAm { get; set; }
-        public string? EventRegionOr { get; set; }
-        public string? EventRegionAm { get; set; }
-        public string? EventZoneOr { get; set; }
-        public string? EventZoneAm { get; set; }
-        public string? EventWoredaOr { get; set; }
-        public string? EventWoredaAm { get; set; }
-        public string? EventCityKetemaOr { get; set; }
-        public string? EventCityKetemaAm { get; set; }
-        public string? EventKebeleOr { get; set; }
-        public string? EventKebeleAm { get; set; }
+        public string? RegistrationCountryOr { get; set; }
+        public string? RegistrationCountryAm { get; set; }
+        public string? RegistrationRegionOr { get; set; }
+        public string? RegistrationRegionAm { get; set; }
+        public string? RegistrationZoneOr { get; set; }
+        public string? RegistrationZoneAm { get; set; }
+        public string? RegistrationWoredaOr { get; set; }
+        public string? RegistrationWoredaAm { get; set; }
+        public string? RegistrationCityKetemaOr { get; set; }
+        public string? RegistrationCityKetemaAm { get; set; }
+        public string? RegistrationKebeleOr { get; set; }
+        public string? RegistrationKebeleAm { get; set; }
     }
 }
