@@ -7,6 +7,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Math.EC.Rfc7748;
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Query
 {
@@ -44,7 +45,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(x=>x.EventCertificates)
                               .Where(e => e.EventRegisteredAddressId == applicationuser.AddressId|| e.CreatedBy==new Guid(applicationuser.Id));
-            IQueryable<Event> eventsQueriable= eventByCivilReg.Where(e => e.EventCertificates.Where(s=>s.Status).FirstOrDefault().AuthenticationStatus);
+            IQueryable<Event> eventsQueriable= eventByCivilReg.Where(e => e.EventCertificates
+            .Where(s=>s.Status && s.ModifiedAt<DateTime.Now.AddDays(30)).FirstOrDefault().AuthenticationStatus);
             eventsQueriable = eventsQueriable.Include(e => e.EventOwener);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
