@@ -261,6 +261,42 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         }
 
+        public async Task InitializePersonalInfoIndex()
+        {
+            if (!_elasticClient.Indices.Exists("personal_info").Exists)
+            {
+                _elasticClient.IndexMany<PersonalInfoIndex>(
+                   dbContext.PersonalInfos
+                    .Where(p => p.DeathStatus == false)
+                                 .Select(p => new PersonalInfoIndex
+                                 {
+                                     PersonId = p.Id,
+                                     FirstNameStr = p.FirstNameStr,
+                                     FirstNameOr = p.FirstName == null ? null : p.FirstName.Value<string>("or"),
+                                     FirstNameAm = p.FirstName == null ? null : p.FirstName.Value<string>("am"),
+                                     MiddleNameStr = p.MiddleNameStr,
+                                     MiddleNameOr = p.MiddleName == null ? null : p.MiddleName.Value<string>("or"),
+                                     MiddleNameAm = p.MiddleName == null ? null : p.MiddleName.Value<string>("am"),
+                                     LastNameStr = p.LastNameStr,
+                                     LastNameOr = p.LastName == null ? null : p.LastName.Value<string>("or"),
+                                     LastNameAm = p.LastName == null ? null : p.LastName.Value<string>("am"),
+                                     NationalId = p.NationalId,
+                                     PhoneNumber = p.PhoneNumber,
+                                     BirthDate = p.BirthDate,
+                                     GenderOr = p.SexLookup == null || p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("or"),
+                                     GenderAm = p.SexLookup == null || p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("am"),
+                                     GenderStr = p.SexLookup == null ? null : p.SexLookup.ValueStr,
+                                     TypeOfWorkStr = p.TypeOfWorkLookup == null ? null : p.TypeOfWorkLookup.ValueStr,
+                                     TitleStr = p.TitleLookup == null ? null : p.TitleLookup.ValueStr,
+                                     MarriageStatusStr = p.MarraigeStatusLookup == null ? null : p.MarraigeStatusLookup.ValueStr,
+                                     AddressOr = p.ResidentAddress == null || p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("or"),
+                                     AddressAm = p.ResidentAddress == null || p.ResidentAddress.AddressName == null ? null : p.ResidentAddress.AddressName.Value<string>("am"),
+                                     DeathStatus = p.DeathStatus
+                                 })
+               , "personal_info");
+            }
+        }
+
         private bool isAllNull(SearchSimilarPersonalInfoQuery queryParams)
         {
             return queryParams.FirstNameAm == null && queryParams.FirstNameOr == null

@@ -15,8 +15,8 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<IEnumerable<Certificate>> GetByEventAsync(Guid id);
         Task<Certificate> GetByIdAsync(Guid id);
         // Task<Event?>? GetArchive(Guid id);
-         public  Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query);
-        
+        public Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query);
+        public Task InitializeCertificateIndex();
         Task<(BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce)> GetContent(Guid eventId);
     }
 }

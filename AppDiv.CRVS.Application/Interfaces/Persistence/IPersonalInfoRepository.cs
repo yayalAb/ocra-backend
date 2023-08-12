@@ -15,14 +15,15 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<IEnumerable<PersonalInfo>> GetAllAsync();
         Task<PersonalInfo> GetByIdAsync(Guid id);
         Task<List<PersonSearchResponse>> SearchSimilarPersons(SearchSimilarPersonalInfoQuery queryParams);
-        public  Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query);
-        
+        public Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query);
+
         public void EFUpdate(PersonalInfo personalInfo);
         public void Attach(PersonalInfo personalInfo);
         public PersonalInfo GetById(Guid id);
         public bool CheckPerson(Guid id);
         public bool Exists(Guid id);
-         public IQueryable<PersonalInfo> GetAllQueryable();
+        public IQueryable<PersonalInfo> GetAllQueryable();
+        public Task InitializePersonalInfoIndex();
 
     }
 }

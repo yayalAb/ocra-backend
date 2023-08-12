@@ -77,7 +77,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                 if (addedPersonIndexes.Any())
                 {
 
-                    _elasticClient.IndexMany<PersonalInfoIndex>(addedPersonIndexes, "personal_info");
+                    await _elasticClient.IndexManyAsync<PersonalInfoIndex>(addedPersonIndexes, "personal_info");
                 }
 
                 if (updatedPersons.Any())
@@ -143,7 +143,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                 if (addedCertificates.Any())
                 {
 
-                    _elasticClient.IndexMany<CertificateIndex>(addedCertificates, "certificate");
+                    await _elasticClient.IndexManyAsync<CertificateIndex>(addedCertificates, "certificate");
                 }
 
                 if (updatedCertificates.Any())

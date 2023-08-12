@@ -22,8 +22,8 @@ namespace AppDiv.CRVS.Infrastructure
         private readonly IAddressLookupRepository _addressLookupRepository;
         private readonly ISettingRepository _settingRepository;
         private readonly IPaymentRateRepository _paymentRateRepository;
-
-
+        private readonly ICertificateRepository _certificateRepository;
+        private readonly IPersonalInfoRepository _personalInfoRepository;
 
         public CRVSDbContextInitializer(ILogger<CRVSDbContextInitializer> logger,
                                         CRVSDbContext context,
@@ -32,7 +32,10 @@ namespace AppDiv.CRVS.Infrastructure
                                         ILookupRepository lookupRepository,
                                         IAddressLookupRepository addressLookupRepository,
                                         ISettingRepository settingRepository,
-                                        IPaymentRateRepository paymentRateRepository
+                                        IPaymentRateRepository paymentRateRepository,
+                                        ICertificateRepository certificateRepository,
+                                        IPersonalInfoRepository personalInfoRepository
+
                                         )
         {
             _logger = logger;
@@ -43,6 +46,8 @@ namespace AppDiv.CRVS.Infrastructure
             _addressLookupRepository = addressLookupRepository;
             _settingRepository = settingRepository;
             _paymentRateRepository = paymentRateRepository;
+            _certificateRepository = certificateRepository;
+            _personalInfoRepository = personalInfoRepository;
         }
 
         public async Task InitialiseAsync()
@@ -79,10 +84,10 @@ namespace AppDiv.CRVS.Infrastructure
             await SeedSetting();
             await _lookupRepository.InitializeLookupCouch();
             await _addressLookupRepository.InitializeAddressLookupCouch();
-            await _settingRepository.InitializeSettingCouch();  
-            await _paymentRateRepository.InitializePaymentRateCouch();  
-
-
+            await _settingRepository.InitializeSettingCouch();
+            await _paymentRateRepository.InitializePaymentRateCouch();
+            await _certificateRepository.InitializeCertificateIndex();
+            await _personalInfoRepository.InitializePersonalInfoIndex();
         }
         public async Task SeedSetting()
         {
