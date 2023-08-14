@@ -14,6 +14,7 @@ using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create;
 using Newtonsoft.Json;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -24,20 +25,63 @@ namespace AppDiv.CRVS.Application.Service
         {
             this._mediator = mediator;
         }
-        public async Task<object> ImportEvent(string stringItem)
+        public async  Task<object> ImportEvent(JArray Items)
         {
-            if (string.IsNullOrEmpty(stringItem))
-            {
-                return null;
-            }
             BaseResponse response = new BaseResponse();
             string eventType = "";
-            string InnerEventType = "";
             JObject[] ResponseObject = null;
-            //    JObject jObject = //JObject.Parse(var);// JsonConvert.DeserializeObject(var);
-            Console.WriteLine("string  3 : {0}", stringItem);
-            // JArray jArray = JArray.Parse(stringItem);
-            // Console.WriteLine("JArray : {0}", jArray);
+            foreach (JObject item in Items)
+            {
+                if (item.ContainsKey("eventType")){
+                    
+                     eventType = item["eventType"].ToString();
+                     Console.WriteLine("event Type : {0}",eventType);
+                    }
+                try
+                {
+                    switch (eventType.ToLower())
+                    {
+                        case "birth":
+                            var newBirthObject = new
+                            {
+                                birthEvent = item
+                            };
+                            JObject birthEvent = JObject.FromObject(newBirthObject);
+                            CreateBirthEventCommand birthCommand = item.ToObject<CreateBirthEventCommand>();
+                            response = await _mediator.Send(birthCommand);
+                            break;
+                        case "adoption":
+                            var newAdoptionObject = new
+                            {
+                                adoption = item
+                            };
+                            JObject adoption = JObject.FromObject(newAdoptionObject);
+                            CreateAdoptionCommand adoptionCommand = adoption.ToObject<CreateAdoptionCommand>();
+                            response = await _mediator.Send(adoptionCommand);
+                            break;
+                        case "divorce":
+                            CreateDivorceEventCommand divorceCommand = item.ToObject<CreateDivorceEventCommand>();
+                            response = await _mediator.Send(divorceCommand); break;
+                        case "death":
+                            var newDeathObject = new
+                            {
+                                deathEvent = item
+                            };
+                            JObject deathEvent = JObject.FromObject(newDeathObject);
+                            CreateDeathEventCommand deathCommand = deathEvent.ToObject<CreateDeathEventCommand>();
+                            response = await _mediator.Send(deathCommand);
+                            break;
+                        case "marriage":
+                            CreateMarriageEventCommand marriageCommand = item.ToObject<CreateMarriageEventCommand>();
+                            response = await _mediator.Send(marriageCommand); break;
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine("exception : {0}", ex);
+                    throw;
+                }
+            }
 
             return response;
         }
@@ -45,58 +89,3 @@ namespace AppDiv.CRVS.Application.Service
     }
 }
 
-// foreach (JObject item in jArray)
-// {
-//     eventType = (string)item["eventType"];
-//     InnerEventType = (string)item["event"]["eventType"];
-//     if (string.IsNullOrEmpty(eventType))
-//     {
-//         eventType = InnerEventType; ;
-//     }
-//     try
-//     {
-//         switch (eventType.ToLower())
-//         {
-//             case "Birth":
-//                 var newBirthObject = new
-//                 {
-//                     birthEvent = item
-//                 };
-//                 JObject birthEvent = JObject.FromObject(newBirthObject);
-//                 CreateBirthEventCommand birthCommand = item.ToObject<CreateBirthEventCommand>();
-//                 response = await _mediator.Send(birthCommand);
-//                 break;
-//             case "adoption":
-//                 var newAdoptionObject = new
-//                 {
-//                     adoption = item
-//                 };
-//                 JObject adoption = JObject.FromObject(newAdoptionObject);
-//                 CreateAdoptionCommand adoptionCommand = item.ToObject<CreateAdoptionCommand>();
-//                 response = await _mediator.Send(adoptionCommand);
-//                 break;
-//             case "divorce":
-//                 CreateDivorceEventCommand divorceCommand = item.ToObject<CreateDivorceEventCommand>();
-//                 response = await _mediator.Send(divorceCommand); break;
-//             case "death":
-//                 var newDeathObject = new
-//                 {
-//                     deathEvent = item
-//                 };
-//                 JObject deathEvent = JObject.FromObject(newDeathObject);
-//                 Console.WriteLine(deathEvent);
-//                 CreateDeathEventCommand deathCommand = deathEvent.ToObject<CreateDeathEventCommand>();
-//                 response = await _mediator.Send(deathCommand);
-//                 break;
-//             case "marriage":
-//                 CreateMarriageEventCommand marriageCommand = item.ToObject<CreateMarriageEventCommand>();
-//                 response = await _mediator.Send(marriageCommand); break;
-//         }
-
-//     }
-//     catch (System.Exception ex)
-//     {
-//         Console.WriteLine("exception : {0}", ex);
-//         throw;
-//     }
-// }

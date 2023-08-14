@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Cryptography;
 using System.Text;
 using Newtonsoft.Json.Linq;
-using Microsoft.EntityFrameworkCore.Storage;
+
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -106,8 +106,11 @@ namespace AppDiv.CRVS.Application.Service
                     using (StreamReader reader = new StreamReader(item))
                     {
                         string contents = reader.ReadToEnd();
+                        Console.WriteLine("Content encrepted : {0}",contents);
                         string content = Decrypt(contents, "OCRAOCRAOCRAOCRA");
-                        var result = await _eventImportService.ImportEvent(content);
+                        Console.WriteLine("Content decrepted : {0}",content);
+                        JArray jArray = JArray.Parse(content);
+                          await _eventImportService.ImportEvent(jArray);
 
                     }
 
@@ -198,6 +201,32 @@ namespace AppDiv.CRVS.Application.Service
             }
             return null;
         }
+
+    public string DecryptFile(string encryptedText, string decryptionKey = "OCRAOCRAOCRAOCRA")
+    {
+        byte[] encryptedBytes = Convert.FromBase64String(encryptedText);
+        byte[] keyBytes = Encoding.UTF8.GetBytes(decryptionKey);
+
+        using (AesManaged aes = new AesManaged())
+        {
+            aes.Key = keyBytes;
+            aes.Mode = CipherMode.ECB;
+            aes.Padding = PaddingMode.PKCS7;
+
+            ICryptoTransform decryptor = aes.CreateDecryptor();
+
+            using (MemoryStream ms = new MemoryStream(encryptedBytes))
+            {
+                using (CryptoStream cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                {
+                    using (StreamReader reader = new StreamReader(cs))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
+        }
+    }
 
     }
 }

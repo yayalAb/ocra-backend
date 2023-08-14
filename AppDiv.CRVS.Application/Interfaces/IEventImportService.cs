@@ -9,6 +9,6 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface IEventImportService
     {
-        public Task<object> ImportEvent(string eventObj);
+        public   Task<object> ImportEvent(JArray eventObj);
     }
 }

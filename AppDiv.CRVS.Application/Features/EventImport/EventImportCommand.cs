@@ -13,22 +13,20 @@ namespace AppDiv.CRVS.Application.Features.EventImport
     // Customer EventImportCommand with  response
     public class EventImportCommand : IRequest<object>
     {
-        public IFormFile Events { get; set; }
+        public IFormFile Event { get; set; }
 
     }
 
     public class EventImportCommandHandler : IRequestHandler<EventImportCommand, object>
     {
         private readonly IFileExtractorService _importEventService;
-
-
         public EventImportCommandHandler(IFileExtractorService importEventService)
         {
             _importEventService = importEventService;
         }
         public async Task<object> Handle(EventImportCommand request, CancellationToken cancellationToken)
         {
-            var response = _importEventService.ExtractFile(request.Events);
+            var response = _importEventService.ExtractFile(request.Event);
             return response;
         }
     }
