@@ -25,7 +25,7 @@ public class CRVSCouchDbContext : CouchContext
     protected override void OnConfiguring(CouchOptionsBuilder optionsBuilder)
     {
         optionsBuilder
-          .UseEndpoint("https://couch.ocra.gov.et/")
+          .UseEndpoint("https://couchdb.ocra.gov.et/")
           .EnsureDatabaseExists()
           .UseBasicAuthentication(username:"admin", password: "admin");
     }
