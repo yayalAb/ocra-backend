@@ -46,8 +46,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 RegistrationWoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
                 RegistrationCityKetemaOr = splitedAddress?.or?.ElementAtOrDefault(4),
                 RegistrationCityKetemaAm = splitedAddress?.am?.ElementAtOrDefault(4),
-                RegistrationKebeleOr = splitedAddress?.or?.ElementAtOrDefault(5),
-                RegistrationKebeleAm = splitedAddress?.am?.ElementAtOrDefault(5),
+                RegistrationKebeleOr = splitedAddress?.or?.ElementAtOrDefault(4),
+                RegistrationKebeleAm = splitedAddress?.am?.ElementAtOrDefault(4),
             };
         }
         public static Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService //)
