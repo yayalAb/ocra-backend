@@ -18,7 +18,7 @@ public static class ElasticSearchExtension
 
         var settings = new ConnectionSettings(new Uri(baseUrl ?? ""))
                         .PrettyJson()
-                        //.CertificateFingerprint(certificateFingerprint)
+                        .CertificateFingerprint(certificateFingerprint)
                         .BasicAuthentication(username, passowrd)
                         .DefaultIndex(index);
         settings.EnableApiVersioningHeader();
