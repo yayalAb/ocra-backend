@@ -263,7 +263,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task InitializePersonalInfoIndex()
         {
-            if (!_elasticClient.Indices.Exists("personal_info").Exists)
+            if (!_elasticClient.Indices.Exists("personal_info").Exists && dbContext.PersonalInfos.Any())
             {
                 _elasticClient.IndexMany<PersonalInfoIndex>(
                    dbContext.PersonalInfos

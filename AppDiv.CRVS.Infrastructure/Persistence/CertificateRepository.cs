@@ -156,7 +156,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task InitializeCertificateIndex()
         {
-            if (!_elasticClient.Indices.Exists("certificate").Exists)
+            if (!_elasticClient.Indices.Exists("certificate").Exists && _dbContext.Certificates.Any())
             {
                 _elasticClient
                                  .IndexMany<CertificateIndex>(_dbContext.Certificates
