@@ -160,6 +160,7 @@ namespace AppDiv.CRVS.Infrastructure
                 NormalizedEmail = "ADMIN@GMAIL.COM",
                 LockoutEnabled = false,
                 PhoneNumber = "1234567890",
+                PreferedLanguage = "or",
                 Address = new Address
                 {
                     AddressName = new JObject{
