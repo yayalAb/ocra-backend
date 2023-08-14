@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public bool CheckPerson(Guid id);
         public bool Exists(Guid id);
         public IQueryable<PersonalInfo> GetAllQueryable();
-        public Task InitializePersonalInfoIndex();
+        public Task InitializePersonalInfoIndex(bool reIndex = false);
 
     }
 }

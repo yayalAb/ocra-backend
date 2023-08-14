@@ -75,9 +75,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
         public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
         {
-            // await _elasticClient.Indices.DeleteAsync("certificate");
-            // await _elasticClient.Indices.DeleteAsync("personal_info");
-            // return new List<SearchCertificateResponseDTO>();
             var response = _elasticClient.SearchAsync<CertificateIndex>(s => s
                     .Index("certificate")
                     .Source(src => src
@@ -154,8 +151,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
-        public async Task InitializeCertificateIndex()
+        public async Task InitializeCertificateIndex(bool reIndex = false)
         {
+            if (reIndex)
+            {
+            await _elasticClient.Indices.DeleteAsync("certificate");
+
+            }
             if (!_elasticClient.Indices.Exists("certificate").Exists && _dbContext.Certificates.Any())
             {
                 _elasticClient
@@ -228,6 +230,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                          EventRegisteredAddressId = c.Event.EventRegisteredAddressId
 
                                      }), "certificate");
+                await _elasticClient.Indices.RefreshAsync("certificate");
+
             }
         }
 

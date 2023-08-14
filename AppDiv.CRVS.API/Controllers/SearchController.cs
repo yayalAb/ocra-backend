@@ -89,6 +89,20 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(query);
         }
+        [HttpPost]
+        [Route("reIndexPersonalInfo")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> ReIndexPersonalInfo()
+        {
+            return await _mediator.Send(new ReIndexPersonalInfoCommand { });
+        }
+        [HttpPost]
+        [Route("reIndexCertificate")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> ReIndexCertificate()
+        {
+            return await _mediator.Send(new ReIndexCertificateCommand { });
+        }
     }
 }
 

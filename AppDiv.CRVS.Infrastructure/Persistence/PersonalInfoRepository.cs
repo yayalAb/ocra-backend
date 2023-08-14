@@ -261,8 +261,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         }
 
-        public async Task InitializePersonalInfoIndex()
+        public async Task InitializePersonalInfoIndex(bool reIndex = false)
         {
+            if (reIndex)
+            {
+                await _elasticClient.Indices.DeleteAsync("personal_info");
+
+            }
             if (!_elasticClient.Indices.Exists("personal_info").Exists && dbContext.PersonalInfos.Any())
             {
                 _elasticClient.IndexMany<PersonalInfoIndex>(
@@ -294,6 +299,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                      DeathStatus = p.DeathStatus
                                  })
                , "personal_info");
+                await _elasticClient.Indices.RefreshAsync("personal_info");
             }
         }
 
