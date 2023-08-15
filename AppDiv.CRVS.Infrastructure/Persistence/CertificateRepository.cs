@@ -80,7 +80,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Source(src => src
                     .Includes(i => i
                         .Fields(
-                            f => f.CertificateDbId,
+                            f => f.Id,
                             f => f.EventId,
                             f => f.NestedEventId,
                             f => f.FirstNameAm,
@@ -124,7 +124,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     );
             return response.Result.Documents.Select(d => new SearchCertificateResponseDTO
             {
-                Id = d.CertificateDbId,
+                Id = d.Id,
                 EventId = d.EventId,
                 NestedEventId = d.NestedEventId,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
@@ -164,7 +164,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                  .IndexMany<CertificateIndex>(_dbContext.Certificates
                                      .Select(c => new CertificateIndex
                                      {
-                                         CertificateDbId = c.Id,
+                                         Id = c.Id,
                                          EventId = c.Event.Id,
                                          EventType = c.Event.EventType,
                                          NestedEventId = c.Event.EventType.ToLower() == "birth"

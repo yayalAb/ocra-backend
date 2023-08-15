@@ -77,63 +77,64 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                 if (addedPersonIndexes.Any())
                 {
 
-                    await _elasticClient.IndexManyAsync<PersonalInfoIndex>(addedPersonIndexes, "personal_info");
+                    await _elasticClient.IndexManyAsync<PersonalInfoIndex>(addedPersonIndexes, "personal_info_second");
                 }
 
                 if (updatedPersons.Any())
                 {
-            //         var tasks = new List<Task>();
-            //         foreach (var personIndex in updatedPersons)
-            //         {
-            //             var res = await _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
-            //                     .Index("personal_info").Query(q =>
-            //                             q.Bool(b => b.Must(mu => mu.Match(m => m.Field(f => f.Id == personIndex.Id))))).Size(1));
-            //             if (res.Documents.Any() && res.Documents.FirstOrDefault() != null)
-            //             {
-            //                 var existing = res.Documents.First();
+                    var tasks = new List<Task>();
+                    foreach (var personIndex in updatedPersons)
+                    {
+                        var personId = personIndex.Id.ToString();
+                        // var res = await _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
+                        //         .Index("personal_info_second").Query(q =>
+                        //                 q.Match(m => m.Field(f => f.Id).Query(personId))).Size(1));
+                        // if (res.Documents.Any() && res.Documents.FirstOrDefault() != null)
+                        // {
+                        //     var existing = res.Documents.First();
 
-            //                 existing.Id = personIndex.Id;
-            //                 existing.FirstNameStr = personIndex.FirstNameStr;
-            //                 existing.FirstNameOr = personIndex.FirstNameOr;
-            //                 existing.FirstNameAm = personIndex.FirstNameAm;
-            //                 existing.MiddleNameStr = personIndex.MiddleNameStr;
-            //                 existing.MiddleNameOr = personIndex.MiddleNameOr;
-            //                 existing.MiddleNameAm = personIndex.MiddleNameAm;
-            //                 existing.LastNameStr = personIndex.LastNameStr;
-            //                 existing.LastNameOr = personIndex.LastNameOr;
-            //                 existing.LastNameAm = personIndex.LastNameAm;
-            //                 existing.NationalId = personIndex.NationalId;
-            //                 existing.PhoneNumber = personIndex.PhoneNumber;
-            //                 existing.BirthDate = personIndex.BirthDate;
-            //                 existing.GenderOr = personIndex.GenderOr;
-            //                 existing.GenderAm = personIndex.GenderAm;
-            //                 existing.GenderStr = personIndex.GenderStr;
-            //                 existing.TypeOfWorkStr = personIndex.TypeOfWorkStr;
-            //                 existing.TitleStr = personIndex.TitleStr;
-            //                 existing.MarriageStatusStr = personIndex.MarriageStatusStr;
-            //                 existing.AddressOr = personIndex.AddressOr;
-            //                 existing.AddressAm = personIndex.AddressAm;
-            //                 existing.DeathStatus = personIndex.DeathStatus;
-            //                 await _elasticClient.UpdateAsync<PersonalInfoIndex>(existing.Id, p => p.Index("personal_info").Doc(existing));
-            //             }
+                        //     existing.Id = personIndex.Id;
+                        //     existing.FirstNameStr = personIndex.FirstNameStr;
+                        //     existing.FirstNameOr = personIndex.FirstNameOr;
+                        //     existing.FirstNameAm = personIndex.FirstNameAm;
+                        //     existing.MiddleNameStr = personIndex.MiddleNameStr;
+                        //     existing.MiddleNameOr = personIndex.MiddleNameOr;
+                        //     existing.MiddleNameAm = personIndex.MiddleNameAm;
+                        //     existing.LastNameStr = personIndex.LastNameStr;
+                        //     existing.LastNameOr = personIndex.LastNameOr;
+                        //     existing.LastNameAm = personIndex.LastNameAm;
+                        //     existing.NationalId = personIndex.NationalId;
+                        //     existing.PhoneNumber = personIndex.PhoneNumber;
+                        //     existing.BirthDate = personIndex.BirthDate;
+                        //     existing.GenderOr = personIndex.GenderOr;
+                        //     existing.GenderAm = personIndex.GenderAm;
+                        //     existing.GenderStr = personIndex.GenderStr;
+                        //     existing.TypeOfWorkStr = personIndex.TypeOfWorkStr;
+                        //     existing.TitleStr = personIndex.TitleStr;
+                        //     existing.MarriageStatusStr = personIndex.MarriageStatusStr;
+                        //     existing.AddressOr = personIndex.AddressOr;
+                        //     existing.AddressAm = personIndex.AddressAm;
+                        //     existing.DeathStatus = personIndex.DeathStatus;
+                        //   var updateres =   await _elasticClient.UpdateAsync<PersonalInfoIndex>(personId, p => p.Index("personal_info_second").Doc(existing));
+                        // }
 
-            //             //     var task = _elasticClient.UpdateByQueryAsync<PersonalInfoIndex>(c =>
-            //             //    c.Index("personal_info")
-            //             //        .Query(q =>
-            //             //            q.Bool(b => b.Must(mu => mu.Match(m => m.Field(f => f.Id == personIndex.Id))))
-            //             //            ).Size(1)
-            //             //        .Script(script => script
-            //             //            .Source($"ctx._source = params.newDocument")
-            //             //            .Params(p => p.Add("newDocument", personIndex))
-            //             //        )
-            //             //    );
+                        var task = _elasticClient.UpdateByQueryAsync<PersonalInfoIndex>(c =>
+                       c.Index("personal_info_second")
+                           .Query(q =>
+                               q.Match(m => m.Field(f => f.Id.ToString()).Query(personId))
+                               ).Size(1)
+                           .Script(script => script
+                               .Source($"ctx._source = params.newDocument")
+                               .Params(p => p.Add("newDocument", personIndex))
+                           )
+                       );
 
-            //             // tasks.Add(task);
-            //         };
+                        tasks.Add(task);
+                    };
 
-            //         // await Task.WhenAll();
                 }
-                await _elasticClient.Indices.RefreshAsync("personal_info");
+                await Task.WhenAll();
+                await _elasticClient.Indices.RefreshAsync("personal_info_second");
 
             }
             Console.WriteLine("################ ended #######################");
@@ -141,7 +142,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
         }
         public async Task IndexCertificate(List<CertificateEntry> certificateEntries)
         {
-            Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$ started $$$$$$$$$$$$$$$$$$$$");
+            Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$ certificate indexing started $$$$$$$$$$$$$$$$$$$$");
             Console.WriteLine($"=================== {certificateEntries.Count()}");
 
             if (certificateEntries.Any())
@@ -185,12 +186,12 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                     foreach (var certificateIndex in updatedCertificates)
                     {
 
-
+                        var certificateId = certificateIndex.Id.ToString();
                         var task = _elasticClient.UpdateByQueryAsync<CertificateIndex>(c =>
                        c.Index("certificate")
                            .Query(q =>
-                        q.Bool(b => b.Must(
-                               mu => mu.Match(m => m.Field(f => f.CertificateDbId == certificateIndex.CertificateDbId)))))
+                        q.Match(m => m.Field(f => f.Id.ToString()).Query(certificateId)))
+                        .Size(1)
                            .Script(script => script
                                .Source($"ctx._source = params.newDocument")
                                .Params(p => p.Add("newDocument", certificateIndex))
@@ -202,7 +203,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
 
                 }
                 await Task.WhenAll();
-                await _elasticClient.Indices.RefreshAsync("personal_info");
+                await _elasticClient.Indices.RefreshAsync("personal_info_second");
 
             }
             Console.WriteLine("################ ended #######################");
@@ -241,7 +242,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
         {
             return new CertificateIndex
             {
-                CertificateDbId = certificate.Id,
+                Id = certificate.Id,
                 EventId = certificate.Event.Id,
                 EventType = certificate.Event.EventType,
                 NestedEventId = certificate.Event.EventType.ToLower() == "birth"
