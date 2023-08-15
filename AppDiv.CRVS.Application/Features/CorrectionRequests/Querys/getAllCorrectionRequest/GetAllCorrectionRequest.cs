@@ -58,7 +58,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
                 RequestType = x.Request.RequestType,
                 EventType = x.Event.EventType,
                 RequestDate = new CustomDateConverter(x.CreatedAt).ethiopianDate,
-                CurrentStatus = x.Request.currentStep,
+                CurrentStatus = x.Request.currentStep+1,
                 CanEdit = x.Request.currentStep == 0,
             });
             return await PaginatedList<CorrectionRequestListDTO>
