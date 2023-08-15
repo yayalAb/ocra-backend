@@ -85,7 +85,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                          EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.NextStep.ToString()!, "%" + request.SearchString + "%"));
             }
-            var RequestListDto = RequestList.Where(x => (x.RequestType == "change" || x.RequestType == "authentication"))
+            var RequestListDto = RequestList.Where(x => x.RequestType == "change" || x.RequestType == "authentication")
              .OrderByDescending(w => w.CreatedAt)
              .Select(w => new AuthenticationRequestListDTO
              {

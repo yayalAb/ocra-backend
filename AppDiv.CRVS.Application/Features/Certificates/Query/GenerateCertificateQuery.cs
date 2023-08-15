@@ -137,7 +137,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 var Workflow = _WorkflowRepository.GetAll()
                 .Include(x => x.Steps)
                 .Where(wf => wf.workflowName == "verification").FirstOrDefault();
-                if ((Workflow.Id == null || Workflow.Id == Guid.Empty) || (Workflow.Steps.FirstOrDefault() == null))
+                if (Workflow==null|| (Workflow.Steps.FirstOrDefault() == null))
                 {
                     (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, "verification", null, false, false, cancellationToken);
                     if (payment.amount == 0 || payment.amount == 0.0)

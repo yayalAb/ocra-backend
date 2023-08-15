@@ -32,12 +32,10 @@ namespace AppDiv.CRVS.Application.Service
             {
                 throw new NotFoundException("user does not exist");
             }
-            Guid userGroupId = applicationuser.UserGroups.Select(x => x.Id).FirstOrDefault();
+            List <Guid?> userGroupIds = applicationuser.UserGroups.Select(x => (Guid?) x.Id).ToList();
             IQueryable<Event> eventsQueriable;
             eventsQueriable = _eventRepository.GetAllQueryableAsync()
-               .Include(x => x.CivilRegOfficer)
-               .ThenInclude(x => x.ApplicationUser)
-               .ThenInclude(a => a.Address)
+               .Include(x => x.EventRegisteredAddress)
                .ThenInclude(p => p.ParentAddress)
                .ThenInclude(p => p.ParentAddress)
                .ThenInclude(p => p.ParentAddress)
@@ -46,47 +44,48 @@ namespace AppDiv.CRVS.Application.Service
                .ThenInclude(x => x.Request)
                .ThenInclude(x => x.Workflow)
                .ThenInclude(s => s.Steps);
-
              if(isVerfication){
-              eventsQueriable=eventsQueriable.Where(e => (e.IsCertified && !e.IsVerified) && ((e.VerficationRequestNavigation != null)
-               && (e.VerficationRequestNavigation.Request.Workflow.Steps.FirstOrDefault() != null))
-              && (e.VerficationRequestNavigation.Request.Workflow.Steps
-              .Where(s => s.step == e.VerficationRequestNavigation.Request.NextStep && s.UserGroupId == userGroupId).FirstOrDefault() != null
-               ));
+              eventsQueriable=eventsQueriable.Where(e => 
+                e.IsCertified && !e.IsVerified && (e.VerficationRequestNavigation != null)
+                && (e.VerficationRequestNavigation.Request.Workflow.Steps.FirstOrDefault() != null)
+                && (e.VerficationRequestNavigation.Request.Workflow.Steps
+                .Where(s => s.step == e.VerficationRequestNavigation.Request.NextStep && userGroupIds.Contains(s.UserGroupId)).FirstOrDefault() != null
+                )
+                );
              }
              else{
-            eventsQueriable= eventsQueriable.Where(e => e.EventCertificates
-            .Where(s=>s.Status && s.AuthenticationAt<DateTime.Now.AddDays(30)).FirstOrDefault().AuthenticationStatus);
+                 eventsQueriable= eventsQueriable.Where(e => e.EventCertificates
+                .Where(s=>s.Status && s.AuthenticationAt<DateTime.Now.AddDays(30)).FirstOrDefault().AuthenticationStatus);
              }  
 
             if (applicationuser.Address.AdminLevel == 1)
             {
-                eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                eventsQueriable = eventsQueriable.Where(e => (e.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.Id == applicationuser.AddressId));
             }
             else if (applicationuser.Address.AdminLevel == 2)
             {
-                eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                eventsQueriable = eventsQueriable.Where(e => (e.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.Id == applicationuser.AddressId));
             }
             else if (applicationuser.Address.AdminLevel == 3)
             {
-                eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-               || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                eventsQueriable = eventsQueriable.Where(e => (e.EventRegisteredAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.ParentAddress.Id == applicationuser.AddressId)
+               || (e.EventRegisteredAddress.Id == applicationuser.AddressId));
             }
             else if (applicationuser.Address.AdminLevel == 4)
             {
-                eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == applicationuser.AddressId)
-                || (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                eventsQueriable = eventsQueriable.Where(e => (e.EventRegisteredAddress.ParentAddress.Id == applicationuser.AddressId)
+                || (e.EventRegisteredAddress.Id == applicationuser.AddressId));
             }
             else if (applicationuser.Address.AdminLevel == 5)
             {
-                eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.Id == applicationuser.AddressId));
+                eventsQueriable = eventsQueriable.Where(e => e.EventRegisteredAddressId== applicationuser.AddressId);
             }
             return eventsQueriable;
         }
