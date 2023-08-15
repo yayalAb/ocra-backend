@@ -48,10 +48,10 @@ namespace AppDiv.CRVS.Application.Service
                .ThenInclude(s => s.Steps);
 
              if(isVerfication){
-              eventsQueriable=eventsQueriable.Where(e => ((e.IsCertified && !e.IsVerified) && ((e.VerficationRequestNavigation != null)
-               && (e.VerficationRequestNavigation.Request.Workflow.Steps.FirstOrDefault() != null)))
+              eventsQueriable=eventsQueriable.Where(e => (e.IsCertified && !e.IsVerified) && ((e.VerficationRequestNavigation != null)
+               && (e.VerficationRequestNavigation.Request.Workflow.Steps.FirstOrDefault() != null))
               && (e.VerficationRequestNavigation.Request.Workflow.Steps
-              .Where(s => (s.step == e.VerficationRequestNavigation.Request.NextStep && s.UserGroupId == userGroupId)).FirstOrDefault() != null
+              .Where(s => s.step == e.VerficationRequestNavigation.Request.NextStep && s.UserGroupId == userGroupId).FirstOrDefault() != null
                ));
              }
              else{
