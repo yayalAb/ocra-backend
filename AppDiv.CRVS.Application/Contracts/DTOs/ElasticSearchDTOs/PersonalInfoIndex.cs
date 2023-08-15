@@ -1,11 +1,13 @@
 
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
 {
     public class PersonalInfoIndex
     {
-        public Guid PersonId { get; set; }
+
+        public Guid Id { get; set; }
         public string? FirstNameStr { get; set; }
         public string? FirstNameOr { get; set; }
         public string? FirstNameAm { get; set; }
