@@ -49,10 +49,12 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Verify
                 throw new NotFoundException($"verification request for  event with id = {request.EventId} is not found");
             }
             var response = await _WorkflowService.ApproveService(verficationRequest.RequestId, "verification", request.IsApprove, request.Comment, request.ReasonLookupId, false, cancellationToken);
+             Console.WriteLine("Verfied!!!!!!!!!!!!!!!!!!!!!!!!!!: {0}",response.Item1);
             if (response.Item1)
             {
                 try
                 {
+                    Console.WriteLine("Verfied!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     eventObj.IsVerified = true;
                     await _eventRepository.UpdateAsync(eventObj, e => e.Id);
                     await _eventRepository.SaveChangesAsync(cancellationToken);

@@ -111,6 +111,7 @@ namespace AppDiv.CRVS.Application.Service
             .Include(x => x.VerficationRequest)
             .Include(x => x.Notification)
             .Include(x => x.PaymentExamptionRequest)
+            .Include(x => x.VerficationRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
             if (request == null)
             {
@@ -129,6 +130,7 @@ namespace AppDiv.CRVS.Application.Service
                   request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
 
             }
+            
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
@@ -185,9 +187,9 @@ namespace AppDiv.CRVS.Application.Service
             }
             else
             {
-                return (false, ReturnId);
+                return (true, ReturnId);
             }
-            return ((this.GetLastWorkflow(workflowType) == request.currentStep), ReturnId);
+            return (this.GetLastWorkflow(workflowType) == request.currentStep, ReturnId);
 
         }
         public Guid? GetEventId(Guid Id)
