@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class SearchController : ControllerBase
+    public class SearchController : ApiControllerBase
     {
         private readonly ISender _mediator;
         private readonly ILogger<SearchController> _Ilog;

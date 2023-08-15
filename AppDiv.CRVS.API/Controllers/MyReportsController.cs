@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class MyReportsController : ControllerBase
+    public class MyReportsController : ApiControllerBase
     {
         private readonly ISender _mediator;
         public MyReportsController(ISender mediator)

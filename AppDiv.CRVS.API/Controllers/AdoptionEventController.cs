@@ -12,7 +12,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AdoptionEventController : ControllerBase
+    public class AdoptionEventController : ApiControllerBase
     {
         private readonly ISender _mediator;
         private readonly ILogger<AdoptionEventController> _Ilog;

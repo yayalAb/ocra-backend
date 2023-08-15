@@ -10,7 +10,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class DashboardController : ControllerBase
+    public class DashboardController : ApiControllerBase
     {
         private readonly ISender _mediator;
         private readonly ILogger<DashboardController> _Ilog;

@@ -10,11 +10,19 @@ using AppDiv.CRVS.Application.Features.Auth.YourTeam;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Application.Features.Auth.VerifyOtp;
 using Microsoft.AspNetCore.Authorization;
+using MediatR;
 
 namespace AppDiv.CRVS.API.Controllers
 {
-    public class AuthController : ApiControllerBase
+    public class AuthController : ControllerBase
     {
+        private readonly ISender Mediator;
+
+        public AuthController( ISender _mediator)
+        {
+            Mediator=_mediator;
+            
+        }
 
         [HttpPost("Login")]
         [ProducesDefaultResponseType(typeof(AuthResponseDTO))]

@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class WorkflowController : ControllerBase
+    public class WorkflowController : ApiControllerBase
     {
         private readonly ISender _mediator;
         private readonly ILogger<WorkflowController> _Ilog;

@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class PlanController : ControllerBase
+    public class PlanController : ApiControllerBase
     {
         private readonly ISender _mediator;
         private readonly ILogger<PlanController> _Ilog;

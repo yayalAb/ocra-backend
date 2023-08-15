@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.API.Controllers
     [EnableCors("CorsPolicy")]
     [Route("api/[controller]")]
     [ApiController]
-    public class ReportController : ControllerBase
+    public class ReportController : ApiControllerBase
     {
         private readonly ISender _mediator;
         public ReportController(ISender mediator)

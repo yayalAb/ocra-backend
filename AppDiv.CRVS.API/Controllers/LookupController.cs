@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class LookupController : ControllerBase
+    public class LookupController : ApiControllerBase
     {
         private readonly ISender _mediator;
         private readonly ILogger<LookupController> _Ilog;
