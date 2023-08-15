@@ -27,8 +27,7 @@ namespace AppDiv.CRVS.API.Controllers
     [Route("api/[controller]")]
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
-    // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class AddressController : ControllerBase
+    public class AddressController :  ApiControllerBase
     {
         private readonly ISender _mediator;
         private readonly ILogger<AddressController> _Ilog;
