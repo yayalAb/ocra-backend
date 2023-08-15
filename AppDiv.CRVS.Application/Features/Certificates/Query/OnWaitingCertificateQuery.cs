@@ -43,7 +43,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 throw new NotFoundException("edit waiting time does not Set in general setting");
             }
             Guid? CreatedByCivilId = _userResolverService.GetUserPersonalId();
-            Guid? CreatedByUserId = _userResolverService.GetUserPersonalId();
+            Guid? CreatedByUserId =new Guid(_userResolverService.GetUserId());
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(x => x.EventCertificates.OrderByDescending(x => x.CreatedAt))
                               .Where(e => ((e.CivilRegOfficerId ==CreatedByCivilId) || (e.CreatedBy == CreatedByUserId)
