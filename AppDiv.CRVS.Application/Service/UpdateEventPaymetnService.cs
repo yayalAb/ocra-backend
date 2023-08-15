@@ -97,6 +97,7 @@ namespace AppDiv.CRVS.Application.Service
                         .Where(x => x.RequestId == requst.Request.Id).FirstOrDefault();
                         var certificate = _CertificateRepository.GetAll().Where(x => x.Id == AuthRequ.CertificateId).FirstOrDefault();
                         certificate.AuthenticationStatus = true;
+                        certificate.AuthenticationAt=DateTime.Now;
                         _CertificateRepository.Update(certificate);
                     }
                     else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change")

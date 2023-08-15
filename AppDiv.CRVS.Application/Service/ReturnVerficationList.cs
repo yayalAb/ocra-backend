@@ -22,19 +22,16 @@ namespace AppDiv.CRVS.Application.Service
             _userRepository = userRepository;
             _userResolverService = userResolverService;
         }
-        async Task<IQueryable<Event>> IReturnVerficationList.GetVerficationRequestedCertificateList(Guid CivilRegOfficerId)
+        async Task<IQueryable<Event>> IReturnVerficationList.GetVerficationRequestedCertificateList(bool isVerfication=true)
         {
             var applicationuser = _userRepository.GetAll()
            .Include(x => x.Address)
            .Include(x => x.UserGroups)
-           .Where(x => x.PersonalInfoId == CivilRegOfficerId).FirstOrDefault();
+           .Where(x => x.PersonalInfoId == _userResolverService.GetUserPersonalId()).FirstOrDefault();
             if (applicationuser == null)
             {
                 throw new NotFoundException("user does not exist");
             }
-            //      && (e.VerficationRequestNavigation.Request.Workflow.Steps
-            //    .Where(s => s.step == e.VerficationRequestNavigation.Request.NextStep)
-            //    .FirstOrDefault().UserGroupId == applicationuser.UserGroups.FirstOrDefault().Id)
             Guid userGroupId = applicationuser.UserGroups.Select(x => x.Id).FirstOrDefault();
             IQueryable<Event> eventsQueriable;
             eventsQueriable = _eventRepository.GetAllQueryableAsync()
@@ -44,15 +41,24 @@ namespace AppDiv.CRVS.Application.Service
                .ThenInclude(p => p.ParentAddress)
                .ThenInclude(p => p.ParentAddress)
                .ThenInclude(p => p.ParentAddress)
+               .Include(x=>x.EventCertificates)
                .Include(x => x.VerficationRequestNavigation)
                .ThenInclude(x => x.Request)
                .ThenInclude(x => x.Workflow)
-               .ThenInclude(s => s.Steps)
-               .Where(e => ((e.IsCertified && !e.IsVerified) && ((e.VerficationRequestNavigation != null)
+               .ThenInclude(s => s.Steps);
+
+             if(isVerfication){
+              eventsQueriable=eventsQueriable.Where(e => ((e.IsCertified && !e.IsVerified) && ((e.VerficationRequestNavigation != null)
                && (e.VerficationRequestNavigation.Request.Workflow.Steps.FirstOrDefault() != null)))
               && (e.VerficationRequestNavigation.Request.Workflow.Steps
               .Where(s => (s.step == e.VerficationRequestNavigation.Request.NextStep && s.UserGroupId == userGroupId)).FirstOrDefault() != null
                ));
+             }
+             else{
+            eventsQueriable= eventsQueriable.Where(e => e.EventCertificates
+            .Where(s=>s.Status && s.AuthenticationAt<DateTime.Now.AddDays(30)).FirstOrDefault().AuthenticationStatus);
+             }  
+
             if (applicationuser.Address.AdminLevel == 1)
             {
                 eventsQueriable = eventsQueriable.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == applicationuser.AddressId)

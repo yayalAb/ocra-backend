@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 
     public interface IReturnVerficationList
     {
-        public Task<IQueryable<Event>> GetVerficationRequestedCertificateList(Guid CivilRegOfficerId);
+        public Task<IQueryable<Event>> GetVerficationRequestedCertificateList(bool isVerfication=true);
 
     }
 

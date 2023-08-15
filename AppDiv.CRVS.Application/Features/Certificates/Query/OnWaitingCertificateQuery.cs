@@ -42,10 +42,11 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             {
                 throw new NotFoundException("edit waiting time does not Set in general setting");
             }
-            Guid? CreatedBy = _userResolverService.GetUserPersonalId();
+            Guid? CreatedByCivilId = _userResolverService.GetUserPersonalId();
+            Guid? CreatedByUserId = _userResolverService.GetUserPersonalId();
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(x => x.EventCertificates.OrderByDescending(x => x.CreatedAt))
-                              .Where(e => ((e.CivilRegOfficerId == request.CivilRegOfficerId) || (e.CreatedBy == CreatedBy)
+                              .Where(e => ((e.CivilRegOfficerId ==CreatedByCivilId) || (e.CreatedBy == CreatedByUserId)
                               && e.IsCertified) && (e.EventCertificates.Where(x=>x.Status).FirstOrDefault().CreatedAt > DateTime.Now.AddHours(-editWaitingTime)));
 
             eventByCivilReg = eventByCivilReg.Include(e => e.EventOwener);

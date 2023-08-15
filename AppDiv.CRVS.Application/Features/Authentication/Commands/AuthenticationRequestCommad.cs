@@ -73,6 +73,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 if (true)
                 {
                     certificate.AuthenticationStatus = true;
+                    certificate.AuthenticationAt = DateTime.Now;
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
                     await _certificateRepository.SaveChangesAsync(cancellationToken);
                     response.Message = "Requested Certificate  authenticated";

@@ -42,11 +42,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             {
                 throw new NotFoundException("user does not exist");
             }
-            var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
-                              .Include(x=>x.EventCertificates)
-                              .Where(e => e.EventRegisteredAddressId == applicationuser.AddressId|| e.CreatedBy==new Guid(applicationuser.Id));
-            IQueryable<Event> eventsQueriable= eventByCivilReg.Where(e => e.EventCertificates
-            .Where(s=>s.Status && s.ModifiedAt<DateTime.Now.AddDays(30)).FirstOrDefault().AuthenticationStatus);
+            IQueryable<Event> eventsQueriable=  await _ReturnVerficationList.GetVerficationRequestedCertificateList(false);
             eventsQueriable = eventsQueriable.Include(e => e.EventOwener);
             if (!string.IsNullOrEmpty(request.SearchString))
             {
@@ -59,7 +55,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                          EF.Functions.Like(u.EventOwener.MiddleNameStr!, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.EventOwener.LastNameStr!, "%" + request.SearchString + "%"));
             }
-
             return await PaginatedList<PaidCertificateDTO>
                             .CreateAsync(
                                eventsQueriable.Include(e => e.EventOwener)

@@ -43,16 +43,15 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             {
                 throw new NotFoundException("user does not exist");
             }
-            var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
-                              .Where(e => e.EventRegisteredAddressId == applicationuser.AddressId|| e.CreatedBy==new Guid(applicationuser.Id));
+           
             IQueryable<Event> eventsQueriable;
             if (request.isVerification)
             {
-                eventsQueriable = await _ReturnVerficationList.GetVerficationRequestedCertificateList(request.CivilRegOfficerId);
+                eventsQueriable = await _ReturnVerficationList.GetVerficationRequestedCertificateList(true);
             }
             else
-            {
-                eventsQueriable = eventByCivilReg.Where(e => ((!e.IsCertified && (e.IsPaid || e.IsExampted)) || (e.ReprintWaiting)));
+            {   eventsQueriable = _eventRepository.GetAllQueryableAsync()
+                              .Where(e =>(e.EventRegisteredAddressId == applicationuser.AddressId|| e.CreatedBy==new Guid(applicationuser.Id))&&((!e.IsCertified && (e.IsPaid || e.IsExampted)) || e.ReprintWaiting));
             }
             eventsQueriable = eventsQueriable.Include(e => e.EventOwener);
             if (!string.IsNullOrEmpty(request.SearchString))
@@ -83,12 +82,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   IsCertified = e.IsCertified,
                                   HasPendingDocumentApproval = e.HasPendingDocumentApproval,
                                   IsReprint = e.ReprintWaiting,
-                                  //   PaymentDate = e.EventPaymentRequest
-                                  //         .Where(r => r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("certificategeneration")
-                                  //         || r.PaymentRate.PaymentTypeLookup.ValueStr.ToLower().Contains("reprint"))
-                                  //         .FirstOrDefault().Payment.CreatedAt
-
-                              })//.OrderByDescending(e => e.C).ToList()
+                              })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }

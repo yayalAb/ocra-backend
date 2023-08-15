@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string ContentStr { get; set; }
         public bool Status { get; set; }
         public bool AuthenticationStatus { get; set; }
+        public DateTime AuthenticationAt { get; set; }
         public int PrintCount { get; set; }
         public string CertificateSerialNumber { get; set; }
 
