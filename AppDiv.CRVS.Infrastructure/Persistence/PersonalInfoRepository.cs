@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Source(src => src
                     .Includes(i => i
                         .Fields(
-                             f => f.PersonId,
+                             f => f.Id,
                             f => f.FirstNameAm,
                             f => f.FirstNameOr,
                             f => f.MiddleNameAm,
@@ -140,7 +140,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     ).Size(50));
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.PersonId,
+                Id = d.Id,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
@@ -164,7 +164,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Source(src => src
                     .Includes(i => i
                         .Fields(
-                            f => f.PersonId,
+                            f => f.Id,
                             f => f.FirstNameAm,
                             f => f.FirstNameOr,
                             f => f.MiddleNameAm,
@@ -247,7 +247,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.PersonId,
+                Id = d.Id,
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
@@ -275,7 +275,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Where(p => p.DeathStatus == false)
                                  .Select(p => new PersonalInfoIndex
                                  {
-                                     PersonId = p.Id,
+                                     Id = p.Id,
                                      FirstNameStr = p.FirstNameStr,
                                      FirstNameOr = p.FirstName == null ? null : p.FirstName.Value<string>("or"),
                                      FirstNameAm = p.FirstName == null ? null : p.FirstName.Value<string>("am"),
