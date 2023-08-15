@@ -10,7 +10,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.ExamptionReasonLookup)
                .WithMany(n => n.PaymentExamptionNavigation)
-               .HasForeignKey(m => m.ExamptionReasonLookupId);
+               .HasForeignKey(m => m.ExamptionReasonLookupId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 

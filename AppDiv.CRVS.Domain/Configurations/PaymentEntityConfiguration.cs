@@ -12,11 +12,13 @@ namespace AppDiv.CRVS.Domain.Configuration
         {
             builder.HasOne(m =>m.PaymentRequest)
             .WithOne(n => n.Payment )
-            .HasForeignKey<Payment>(m => m.PaymentRequestId);
+            .HasForeignKey<Payment>(m => m.PaymentRequestId)
+             .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.PaymentWayLookup)
             .WithMany(n => n.PaymentNavigation)
-            .HasForeignKey(m => m.PaymentWayLookupId);
+            .HasForeignKey(m => m.PaymentWayLookupId)
+             .OnDelete(DeleteBehavior.Restrict);
 
             
 

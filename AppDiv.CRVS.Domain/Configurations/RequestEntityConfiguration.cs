@@ -10,7 +10,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.CivilRegOfficer)
                .WithMany(n => n.CivilRegOfficerRequests)
-               .HasForeignKey(m => m.CivilRegOfficerId);
+               .HasForeignKey(m => m.CivilRegOfficerId)
+               .OnDelete(DeleteBehavior.Restrict);
 
             // builder.HasOne(m => m.CorrectionRequest)
             //    .WithOne(n => n.Request)
@@ -23,7 +24,8 @@ namespace AppDiv.CRVS.Domain.Configurations
             builder.HasOne(m => m.Workflow)
                .WithMany(n => n.Requests)
                .HasForeignKey(n => n.WorkflowId)
-               .IsRequired(false);
+               .IsRequired(false)
+               .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(m => m.Notification)
                 .WithOne(n => n.Request)
                 .HasForeignKey<Notification>(n => n.RequestId)

@@ -12,7 +12,8 @@ namespace AppDiv.CRVS.Domain.Configuration
         {
             builder.HasOne(m => m.PaymentRate)
             .WithMany(n => n.PaymentRatePaymentRequests)
-            .HasForeignKey(m => m.PaymentRateId);
+            .HasForeignKey(m => m.PaymentRateId)
+             .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -12,14 +12,17 @@ namespace AppDiv.CRVS.Domain.Configuration
         {
             builder.HasOne(n => n.Sender)
                 .WithMany(m => m.SentMessages )
-                .HasForeignKey(n => n.SenderId);
+                .HasForeignKey(n => n.SenderId)
+                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(n => n.Receiver)
                 .WithMany(m => m.ReceivedMessages )
-                .HasForeignKey(n => n.ReceiverId);
+                .HasForeignKey(n => n.ReceiverId)
+                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(n => n.ParentMessage)
                 .WithMany(m => m.ChildMessages )
                 .HasForeignKey(n => n.ParentMessageId)
-                .IsRequired(false);
+                .IsRequired(false)
+                 .OnDelete(DeleteBehavior.Restrict);
             
         }
     }

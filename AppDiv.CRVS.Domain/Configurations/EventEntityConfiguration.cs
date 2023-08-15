@@ -10,11 +10,13 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.CivilRegOfficer)
                .WithMany(n => n.EventCivilRegOfficers)
-               .HasForeignKey(m => m.CivilRegOfficerId);
+               .HasForeignKey(m => m.CivilRegOfficerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.EventOwener)
                 .WithMany(n => n.Events)
-                .HasForeignKey(m => m.EventOwenerId);
+                .HasForeignKey(m => m.EventOwenerId)
+                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.EventAddress)
                .WithMany(n => n.EventAddresses)
@@ -23,18 +25,21 @@ namespace AppDiv.CRVS.Domain.Configurations
                .OnDelete(DeleteBehavior.Restrict);
             builder.HasOne(m => m.PaymentExamption)
             .WithOne(n => n.Event)
-            .HasForeignKey<PaymentExamption>(n => n.EventId);
+            .HasForeignKey<PaymentExamption>(n => n.EventId)
+             .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(m => m.NewEventDuplicatesNavigation)
             .WithOne(m => m.NewEvent)
             .HasForeignKey(m => m.NewEventId)
-            .IsRequired(false);
+            .IsRequired(false)
+             .OnDelete(DeleteBehavior.Restrict);
 
 
             builder.HasMany(m => m.OldEventDuplicatesNavigation)
             .WithOne(m => m.OldEvent)
             .HasForeignKey(m => m.OldEventId)
-            .IsRequired(false);
+            .IsRequired(false)
+             .OnDelete(DeleteBehavior.Restrict);
 
 
         }

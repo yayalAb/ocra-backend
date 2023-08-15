@@ -13,18 +13,21 @@ namespace AppDiv.CRVS.Domain.Configuration
             builder.HasOne(m =>m.Event)
             .WithOne(n => n.MarriageEvent )
             .HasForeignKey<MarriageEvent>(m => m.EventId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Cascade)
+             .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.Application)
             .WithOne(n => n.MarriageEvent)
             .HasForeignKey<MarriageEvent>(n => n.ApplicationId)
             .IsRequired(false)
-            .OnDelete(DeleteBehavior.ClientSetNull);
+            .OnDelete(DeleteBehavior.ClientSetNull)
+             .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(m => m.BrideInfo)
             .WithMany(n => n.MarriageEventBrideInfo)
             .HasForeignKey(n => n.BrideInfoId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .OnDelete(DeleteBehavior.Restrict)
+             .OnDelete(DeleteBehavior.Restrict);
 
 
         }

@@ -10,7 +10,8 @@ namespace AppDiv.CRVS.Domain.Configurations
         {
             builder.HasOne(m => m.RegistrarInfo)
                .WithMany(n => n.RegistrarPersonalInfoNavigation)
-               .HasForeignKey(m => m.RegistrarInfoId);
+               .HasForeignKey(m => m.RegistrarInfoId)
+               .OnDelete(DeleteBehavior.Restrict);
 
         }
     }

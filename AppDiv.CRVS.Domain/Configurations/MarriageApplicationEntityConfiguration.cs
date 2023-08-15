@@ -12,21 +12,25 @@ namespace AppDiv.CRVS.Domain.Configuration
             builder.HasOne(m =>m.ApplicationAddress)
             .WithMany(n => n.MarriageApplications )
             .HasForeignKey(m => m.ApplicationAddressId)
-            .IsRequired(false);
+            .IsRequired(false)
+             .OnDelete(DeleteBehavior.Restrict);
             //with personalInfo table
             builder.HasOne(m =>m.BrideInfo)
             .WithMany(n => n.MarriageApplicationBrideInfo )
-            .HasForeignKey(m => m.BrideInfoId);
+            .HasForeignKey(m => m.BrideInfoId)
+             .OnDelete(DeleteBehavior.Restrict);
 
             //with personalInfo table
             builder.HasOne(m =>m.GroomInfo)
             .WithMany(n => n.MarriageApplicationGroomInfo )
-            .HasForeignKey(m => m.GroomInfoId); 
+            .HasForeignKey(m => m.GroomInfoId)
+             .OnDelete(DeleteBehavior.Restrict); 
 
             //with personalInfo table
             builder.HasOne(m =>m.CivilRegOfficer)
             .WithMany(n => n.MarriageApplicationCivilRegOfficer )
-            .HasForeignKey(m => m.CivilRegOfficerId);
+            .HasForeignKey(m => m.CivilRegOfficerId)
+             .OnDelete(DeleteBehavior.Restrict);
 
 
 
