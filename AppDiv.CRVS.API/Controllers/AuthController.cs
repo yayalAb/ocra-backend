@@ -14,14 +14,16 @@ using MediatR;
 
 namespace AppDiv.CRVS.API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly ISender Mediator;
 
-        public AuthController( ISender _mediator)
+        public AuthController(ISender _mediator)
         {
-            Mediator=_mediator;
-            
+            Mediator = _mediator;
+
         }
 
         [HttpPost("Login")]
