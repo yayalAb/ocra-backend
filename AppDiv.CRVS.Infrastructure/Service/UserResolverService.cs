@@ -33,93 +33,134 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         public string? GetUserId()
         {
-            // Console.WriteLine($"userrrr=============== {httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)}");
-            var userId = httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (userId == null)
+            try
             {
-                var tokenstring = httpContext?.HttpContext?.Request == null ? null :
-                 httpContext?.HttpContext?.Request?.Headers["Authorization"].ToString().Split(" ").Last();
-                if (!string.IsNullOrEmpty(tokenstring) && tokenstring.ToLower() != "undefined" && tokenstring.ToLower() != "null")
+                // Console.WriteLine($"userrrr=============== {httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)}");
+                var userId = httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (userId == null)
                 {
-                    // TODO: readtoken exception handling
-                    var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
 
-                    userId = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                    var tokenstring = httpContext?.HttpContext?.Request == null ? null :
+                     httpContext?.HttpContext?.Request?.Headers["Authorization"].ToString().Split(" ").Last();
+                    if (!string.IsNullOrEmpty(tokenstring) && tokenstring.ToLower() != "undefined" && tokenstring.ToLower() != "null")
+                    {
+                        var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+                        userId = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+
+                    }
+
                 }
+                return userId;
+            }
+            catch (Exception)
+            {
+                return null;
 
             }
-            return userId;
 
         }
         public Guid GetWorkingAddressId()
         {
-            var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
-            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+            try
             {
-                return Guid.Empty;
 
+                var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+                if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+                {
+                    return Guid.Empty;
+
+                }
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+                var addressId = token.Claims.FirstOrDefault(c => c.Type == "addressId")?.Value;
+                if (addressId == null)
+                {
+                    return Guid.Empty;
+                }
+                return new Guid(addressId);
             }
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
-            var addressId = token.Claims.FirstOrDefault(c => c.Type == "addressId")?.Value;
-            if (addressId == null)
+            catch (Exception)
             {
                 return Guid.Empty;
             }
-            return new Guid(addressId);
         }
         public int GetAdminLevel()
         {
-            var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
-            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
-
+            try
             {
+                var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+                if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+
+                {
+                    return -1;
+
+                }
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+                var adminLevel = token.Claims.FirstOrDefault(c => c.Type == "adminLevel")?.Value;
+                if (int.TryParse(adminLevel, out int level))
+                {
+                    return level;
+                }
                 return -1;
 
             }
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
-            var adminLevel = token.Claims.FirstOrDefault(c => c.Type == "adminLevel")?.Value;
-            if (int.TryParse(adminLevel, out int level))
+            catch (Exception)
             {
-                return level;
+                return -1;
             }
-            return -1;
         }
         public Guid GetUserPersonalId()
         {
-            var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
-            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+            try
+            {
 
+                var tokenstring = httpContext?.HttpContext?.Request.Headers["Authorization"].ToString().Split(" ").Last();
+                if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+
+                {
+                    return Guid.Empty;
+
+                }
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+                var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
+                if (personId == null)
+                {
+                    return Guid.Empty;
+                }
+                return new Guid(personId);
+            }
+            catch (Exception e)
             {
                 return Guid.Empty;
-
             }
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
-
-            var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
-            if (personId == null)
-            {
-                return Guid.Empty;
-            }
-            return new Guid(personId);
         }
         public Guid GetUserPersonalIdFromAccessTokenParam()
         {
+            try
+            {
 
-            var tokenstring = httpContext?.HttpContext?.Request.Query["access_token"];
+                var tokenstring = httpContext?.HttpContext?.Request.Query["access_token"];
 
-            if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+                if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+                {
+                    return Guid.Empty;
+
+                }
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+                var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
+                if (personId == null)
+                {
+                    return Guid.Empty;
+                }
+                return new Guid(personId);
+            }
+            catch (Exception)
             {
                 return Guid.Empty;
-
             }
-            var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
-
-            var personId = token.Claims.FirstOrDefault(c => c.Type == "personId")?.Value;
-            if (personId == null)
-            {
-                return Guid.Empty;
-            }
-            return new Guid(personId);
         }
 
 
