@@ -213,11 +213,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
                                     //
 
+                                }else{
+                                    await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
                                 }
-
-                                // await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
-                                // if (amount != 0 || adoptionEvent.Event.IsExampted)
-                                // {
+                               
                                 await transaction.CommitAsync();
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
