@@ -61,16 +61,24 @@ builder.Services.AddAuthentication(x =>
     {
         OnTokenValidated = async context =>
         {
-            // Check if the token is still valid
-            var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
-            var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
+            try
+            {
+                // Check if the token is still valid
+                var tokenValidatorService = context.HttpContext.RequestServices.GetRequiredService<ITokenValidatorService>();
+                var isValid = await tokenValidatorService.ValidateAsync(context.SecurityToken as JwtSecurityToken);
 
-            if (!isValid)
+                if (!isValid)
+                {
+                    context.Fail("Unauthorized Access");
+                }
+
+                return;
+            }
+            catch (Exception e)
             {
                 context.Fail("Unauthorized Access");
-            }
 
-            return;
+            }
         },
 
         OnMessageReceived = context =>
@@ -221,7 +229,7 @@ app.MapControllers();
 // BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
 
 // BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
-RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSyncs",x => x.GetEventJob(), Cron.Hourly());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSyncs", x => x.GetEventJob(), Cron.Hourly());
 RecurringJob.AddOrUpdate<IBackgroundJobs>("marriageApplicationSync", x => x.SyncMarriageApplicationJob(), Cron.Hourly());
 RecurringJob.AddOrUpdate<IBackgroundJobs>("certificateAndPaymentSync", x => x.SyncCertificatesAndPayments(), Cron.Hourly());
 
