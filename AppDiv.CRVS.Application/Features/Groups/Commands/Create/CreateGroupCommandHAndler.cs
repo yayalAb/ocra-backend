@@ -8,6 +8,7 @@ using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.Groups.Commands.Create
 {
@@ -49,11 +50,12 @@ namespace AppDiv.CRVS.Application.Features.Groups.Commands.Create
                 {
                     Id = Guid.NewGuid(),
                     GroupName = request.group.GroupName,
-                    Description = request.group.Description,
+                    Description = request?.group?.Description,
                     Roles = request.group.Roles,
-                    ManagedGroups = request.group.ManagedGroups,
+                    ManagedGroups = (request?.group?.ManagedGroups==null) ? new JArray():request?.group?.ManagedGroups,
                     ManageAll = request.group.ManageAll
                 };
+
                 //
                 await _groupRepository.InsertAsync(group, cancellationToken);
                 await _groupRepository.SaveChangesAsync(cancellationToken);
