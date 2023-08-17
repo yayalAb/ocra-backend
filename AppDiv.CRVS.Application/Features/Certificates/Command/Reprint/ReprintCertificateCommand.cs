@@ -31,7 +31,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
         // public Guid UserId { get; set; } = new Guid("134b4daa-bfac-445d-bd45-a83048eada3b");
         public JObject? Reason { get; set; }
         public Guid? ReasonLookupId { get; set; }
-
         public bool CheckSerialNumber { get; set; } = true;
     }
 

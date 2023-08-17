@@ -116,10 +116,10 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 return errorResponse;
             }
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
-            if (selectedEvent.ReprintWaiting)
-            {
-                throw new NotFoundException("please request it on reprint");
-            }
+            // if (selectedEvent.ReprintWaiting)
+            // {
+            //     throw new NotFoundException("please request it on reprint");
+            // }
 
 
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
