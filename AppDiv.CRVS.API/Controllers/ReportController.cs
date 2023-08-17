@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Features.Report.Commads;
 using AppDiv.CRVS.Application.Features.Report.Commads.Delete;
 using AppDiv.CRVS.Application.Features.Report.Commads.Update;
 using AppDiv.CRVS.Application.Features.Report.Query;
+using AppDiv.CRVS.Application.Features.SaveReports.Query;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -70,7 +71,7 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(result);
 
         }
-        [HttpGet("Delete")]
+        [HttpDelete("Delete")]
         public async Task<ActionResult> Delete([FromQuery] DeleteReportCommand query)
         {
             var result = await _mediator.Send(query);
@@ -78,6 +79,12 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
 
+        [HttpGet("GetColums")]
+        public async Task<ActionResult> GetColums([FromQuery] GetReportColumsQuery query)
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
 
+        }
     }
 }

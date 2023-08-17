@@ -102,9 +102,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
 
-        public async Task<IEnumerable<JObject>> GetReportColums(string viewName)
+        public async Task<IEnumerable<string>> GetReportColums(string viewName)
         {
-            var properties = new List<JObject>();
+            var properties = new List<string>();
             var sql = $"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '{viewName}'";
             var reader = await ConnectDatabase(sql); ;
             while (reader.Item1.Read())
@@ -112,7 +112,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 var jObject = new JObject();
                 string columnName = reader.Item1.GetString(0);
                 jObject["PropertyName"] = columnName;
-                properties.Add(jObject);
+                properties.Add(columnName);
             }
             return properties;
         }
@@ -167,7 +167,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             reader.Item2.Close();
 
             var reportItems = new JArray();
-            var propertyNames = await GetReportColums(reportName);
+            // var propertyNames = await GetReportColums(reportName);
 
             foreach (var dictionary in resultList)
             {

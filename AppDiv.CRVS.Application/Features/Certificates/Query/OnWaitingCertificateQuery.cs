@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             Guid? CreatedByUserId =new Guid(_userResolverService.GetUserId());
             var eventByCivilReg = _eventRepository.GetAllQueryableAsync()
                               .Include(x => x.EventCertificates.OrderByDescending(x => x.CreatedAt))
-                              .Where(e => ((e.CivilRegOfficerId ==CreatedByCivilId) || (e.CreatedBy == CreatedByUserId)
+                              .Where(e => (((e.CivilRegOfficerId ==CreatedByCivilId) || (e.CreatedBy == CreatedByUserId))
                               && e.IsCertified) && (e.EventCertificates.OrderByDescending(x=>x.CreatedAt).FirstOrDefault().CreatedAt > DateTime.Now.AddHours(-editWaitingTime)));
             eventByCivilReg = eventByCivilReg.Include(e => e.EventOwener);
             if (!string.IsNullOrEmpty(request.SearchString))
