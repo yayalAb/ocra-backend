@@ -1,3 +1,4 @@
+using System.Diagnostics.Tracing;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
@@ -12,22 +13,35 @@ namespace AppDiv.CRVS.Application.Service
         private readonly IPaymentRateRepository _paymentRateRepository;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
         private readonly ILookupRepository _lookupRepository;
+        private readonly IPersonalInfoRepository _personalInfoRepo;
         private readonly ISettingRepository _SettinglookupRepository;
 
-        public EventPaymentRequestService(ISettingRepository SettinglookupRepository, IPaymentRateRepository paymentRateRepository, IPaymentRequestRepository paymentRequestRepository, ILookupRepository lookupRepository)
+        public EventPaymentRequestService(ISettingRepository SettinglookupRepository,
+                                          IPaymentRateRepository paymentRateRepository,
+                                          IPaymentRequestRepository paymentRequestRepository,
+                                          ILookupRepository lookupRepository,
+                                          IPersonalInfoRepository personalInfoRepo)
         {
             _paymentRateRepository = paymentRateRepository;
             _paymentRequestRepository = paymentRequestRepository;
             _lookupRepository = lookupRepository;
+            _personalInfoRepo = personalInfoRepo;
             _SettinglookupRepository = SettinglookupRepository;
         }
         public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, string paymentType,
          Guid? RequestId, bool IsUseCamera, bool HasVideo, CancellationToken cancellationToken)
         {
-            var nationalityLookup = _lookupRepository.GetAll().Where(x => x.Id == Event.EventOwener.NationalityLookupId).FirstOrDefault();
+            if (Event.EventOwener == null)
+            {
+                Event.EventOwener = _personalInfoRepo.GetAll().Where(p => p.Id == Event.EventOwenerId).FirstOrDefault();
+            }
+            var nationalityLookupId = Event.EventOwener != null
+                            ? Event.EventOwener.NationalityLookupId
+                            : _personalInfoRepo.GetAll().Where(p => p.Id == Event.EventOwenerId).Select(p => p.Id).FirstOrDefault();
+            var nationalityLookup = _lookupRepository.GetAll().Where(x => nationalityLookupId != null && x.Id == nationalityLookupId).FirstOrDefault();
             if (nationalityLookup == null)
             {
-                throw new NotFoundException($"nationality with id = {Event.EventOwener.NationalityLookupId} is not found");
+                throw new NotFoundException($"nationality with id = {nationalityLookupId} is not found");
             }
             var isForeign = !(nationalityLookup.ValueStr.ToLower().Contains("ethiopia")
                                  || nationalityLookup.ValueStr.ToLower().Contains("ኢትዮጵያ")
@@ -98,7 +112,7 @@ namespace AppDiv.CRVS.Application.Service
 
         public async Task RemovePaymentRequest(Guid eventId)
         {
-            
+
 
         }
 
