@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly ILookupRepository _lookupRepository;
         private readonly ISmsService _smsService;
         private readonly IAddressLookupRepository _addressRepostory;
+        private readonly IFingerprintService _fingerprintService;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
@@ -28,7 +29,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                               IEventPaymentRequestService paymentRequestService,
                                               ILookupRepository lookupRepository,
                                               ISmsService smsService,
-                                              IAddressLookupRepository addressRepostory
+                                              IAddressLookupRepository addressRepostory,
+                                              IFingerprintService fingerprintService
                                               )
         {
             _eventDocumentService = eventDocumentService;
@@ -38,6 +40,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _lookupRepository = lookupRepository;
             _smsService = smsService;
             _addressRepostory = addressRepostory;
+            _fingerprintService=fingerprintService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -102,9 +105,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             };
                             // Separate profile photos from supporting documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
-                            // Save the profile photos.
+                            //  await _fingerprintService.RegisterfingerPrintService(fingerprints);
                             _eventDocumentService.savePhotos(userPhotos);
-                            // Save Other supporting documents and payment exemption documents.
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                             _eventDocumentService.saveFingerPrints(fingerprints);
 

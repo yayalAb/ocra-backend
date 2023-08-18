@@ -267,6 +267,44 @@ namespace AppDiv.CRVS.Application.Service
                     }
 
                     supportingDocs.ToList().Remove(doc);
+                }else if (idObj.MotherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Mother)!.ToLower())
+                {
+                    if (doc.Type == _webCamTypeLookupId)
+                    {
+                        userPhotos.Add(idObj.MotherId.ToString()!, doc.base64String);
+                    }
+                    else
+                    {
+                        fingerPrint.Add(idObj.MotherId?.ToString()!, doc.FingerPrint);
+                    }
+
+                    supportingDocs.ToList().Remove(doc);
+                }
+                else if (idObj.FatherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Father)!.ToLower())
+                {
+                    if (doc.Type == _webCamTypeLookupId)
+                    {
+                        userPhotos.Add(idObj.FatherId.ToString()!, doc.base64String);
+                    }
+                    else
+                    {
+                        fingerPrint.Add(idObj.FatherId?.ToString()!, doc.FingerPrint);
+                    }
+
+                    supportingDocs.ToList().Remove(doc);
+                }
+                 else if (idObj.ChildId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
+                {
+                    if (doc.Type == _webCamTypeLookupId)
+                    {
+                        userPhotos.Add(idObj.ChildId.ToString()!, doc.base64String);
+                    }
+                    else
+                    {
+                        fingerPrint.Add(idObj.ChildId?.ToString()!, doc.FingerPrint);
+                    }
+
+                    supportingDocs.ToList().Remove(doc);
                 }
                 else if (idObj.HusbandId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Husband)!.ToLower())
                 {
