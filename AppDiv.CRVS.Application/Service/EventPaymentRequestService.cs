@@ -31,13 +31,10 @@ namespace AppDiv.CRVS.Application.Service
         public async Task<(float amount, string code)> CreatePaymentRequest(string eventType, Event Event, string paymentType,
          Guid? RequestId, bool IsUseCamera, bool HasVideo, CancellationToken cancellationToken)
         {
-            if (Event.EventOwener == null)
-            {
-                Event.EventOwener = _personalInfoRepo.GetAll().Where(p => p.Id == Event.EventOwenerId).FirstOrDefault();
-            }
+        
             var nationalityLookupId = Event.EventOwener != null
                             ? Event.EventOwener.NationalityLookupId
-                            : _personalInfoRepo.GetAll().Where(p => p.Id == Event.EventOwenerId).Select(p => p.Id).FirstOrDefault();
+                            : _personalInfoRepo.GetAll().Where(p => p.Id == Event.EventOwenerId).Select(p => p.NationalityLookupId).FirstOrDefault();
             var nationalityLookup = _lookupRepository.GetAll().Where(x => nationalityLookupId != null && x.Id == nationalityLookupId).FirstOrDefault();
             if (nationalityLookup == null)
             {
