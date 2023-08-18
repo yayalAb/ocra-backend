@@ -196,6 +196,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                                .Source($"ctx._source = params.newDocument")
                                .Params(p => p.Add("newDocument", certificateIndex))
                            )
+
                    );
 
                         tasks.Add(task);
@@ -203,7 +204,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
 
                 }
                 await Task.WhenAll();
-                await _elasticClient.Indices.RefreshAsync("personal_info_second");
+                await _elasticClient.Indices.RefreshAsync("certificate");
 
             }
             Console.WriteLine("################ ended #######################");
