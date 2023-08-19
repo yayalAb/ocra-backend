@@ -97,22 +97,23 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                                 hasWorkflow = false;
                             }
                         }
+                        if(hasWorkflow){
                         var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
                         if (validationResponse.Status != 200)
                         {
                             return validationResponse;
                         }
-                        if (!hasWorkflow)
-                        {
-                            await transaction.CommitAsync();
-
-                            return response;
-                        }
+                        }  
                         var supportingDocuments = GetSupportingDocumentsMe(CorrectionRequest.Content, "eventSupportingDocuments");
                         var examptionDocuments = GetSupportingDocumentsMe(supportingDocuments.Item1, "paymentExamption");
                         _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments.Item2, examptionDocuments.Item2, events?.EventType);
                         CorrectionRequest.Content = examptionDocuments.Item1;
+                        if(!hasWorkflow){
+                        var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
+                        await transaction.CommitAsync();
 
+                            return response;
+                        }
                         await _CorrectionRepository.InsertAsync(CorrectionRequest, cancellationToken);
                         var result = await _CorrectionRepository.SaveChangesAsync(cancellationToken);
                         string? userId = _userRepository.GetAll()
