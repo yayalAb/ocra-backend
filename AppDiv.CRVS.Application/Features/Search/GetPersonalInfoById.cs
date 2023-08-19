@@ -55,6 +55,7 @@ namespace AppDiv.CRVS.Application.Features.Search
                 ResidentAddressId = an.ResidentAddressId,
                 NationLookupId = an.NationLookupId,
                 ContactInfoId = an.ContactInfoId,
+                PhoneNumber = an.PhoneNumber
             }).FirstOrDefault();
             SelectedPerson.BirthAddressResponseDTO = await _AddressService?.FormatedAddress(SelectedPerson?.BirthAddressId);
             SelectedPerson.ResidentAddressResponseDTO = await _AddressService?.FormatedAddress(SelectedPerson?.ResidentAddressId);

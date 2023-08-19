@@ -28,6 +28,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
 
         public Guid? NationLookupId { get; set; }
         public Guid? ContactInfoId { get; set; }
+        public string? PhoneNumber {get;set;}
         public AddressResponseDTOE? BirthAddressResponseDTO { get; set; }
         public AddressResponseDTOE? ResidentAddressResponseDTO { get; set; }
 
