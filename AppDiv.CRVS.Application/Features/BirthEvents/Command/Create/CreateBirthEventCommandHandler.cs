@@ -105,7 +105,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             };
                             // Separate profile photos from supporting documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
-                             await _fingerprintService.RegisterfingerPrintService(fingerprints);
+                            //  await _fingerprintService.RegisterfingerPrintService(fingerprints);
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                             _eventDocumentService.saveFingerPrints(fingerprints);
