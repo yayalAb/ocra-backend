@@ -75,7 +75,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         request.CorrectionRequest.Request.RequestType = "change";
                         request.CorrectionRequest.Request.currentStep = 0;
                         var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
-                        var events = await _eventRepository.GetAsync(request.CorrectionRequest.EventId);
+                        var events = await _eventRepository.GetAll().Where(e => e.Id == request.CorrectionRequest.EventId).FirstOrDefaultAsync();
+                        if (events == null)
+                        {
+                            throw new NotFoundException($"event with id {request.CorrectionRequest.EventId} is not found");
+                        }
                         var Workflow = _WorkflowRepository.GetAll()
                         .Include(x => x.Steps)
                            .Where(wf => wf.workflowName == "change").FirstOrDefault();
@@ -146,40 +150,42 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 
             });
         }
-       
 
-        private (JObject,List<AddSupportingDocumentRequest>) GetSupportingDocumentsMe(JObject content, string type)
+
+        private (JObject, List<AddSupportingDocumentRequest>) GetSupportingDocumentsMe(JObject content, string type)
         {
 
             var supportingDocuments = new List<AddSupportingDocumentRequest>();
             try
             {
-                var contentList = type switch 
+                var contentList = type switch
                 {
                     "eventSupportingDocuments" => content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments"),
                     "paymentExamption" => content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")
                 };
-                if(contentList!=null){
-                foreach (JObject item in contentList.ToList())
+                if (contentList != null)
                 {
-                    if 
-                    (item["id"] == null)
+                    foreach (JObject item in contentList.ToList())
                     {
-                        item["id"] = Guid.NewGuid().ToString();
-                        supportingDocuments.Add(item.ToObject<AddSupportingDocumentRequest>());
-                        item["base64String"]="";
-                    }
-                    else{
-                      contentList.Remove(item);  
+                        if
+                        (item["id"] == null)
+                        {
+                            item["id"] = Guid.NewGuid().ToString();
+                            supportingDocuments.Add(item.ToObject<AddSupportingDocumentRequest>());
+                            item["base64String"] = "";
+                        }
+                        else
+                        {
+                            contentList.Remove(item);
+                        }
                     }
                 }
-                }
-            } 
+            }
             catch (System.Exception)
             {
                 throw;
             }
-            return( content,supportingDocuments);
+            return (content, supportingDocuments);
         }
 
 
