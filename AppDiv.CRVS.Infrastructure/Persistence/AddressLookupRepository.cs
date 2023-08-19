@@ -16,8 +16,14 @@ using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Infrastructure.CouchModels;
 using AutoMapper.QueryableExtensions;
-
-
+using System.Text.Json;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Localization;
+using System.Data.SqlClient;
+using System.Data.Common;
+using System.Data;
+using AppDiv.CRVS.Domain.Enums;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -83,7 +89,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
 
             var saveChangeRes = await base.SaveChangesAsync(cancellationToken);
-        
+
 
 
             if (saveChangeRes)
@@ -101,7 +107,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         switch (entry.State)
                         {
                             case EntityState.Added:
-                                
+
                                 await addressLookupCouchRepo.InserAsync(entry.Address);
                                 break;
                             case EntityState.Deleted:
@@ -119,18 +125,53 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return saveChangeRes;
         }
-        public async Task InitializeAddressLookupCouch()
+        public async Task<(DbDataReader, DbConnection)> ConnectDatabase(string sql)
         {
-            var empty = await addressLookupCouchRepo.IsEmpty();
-            if (empty)
+            var connectionString = _DbContext.Database.GetDbConnection();
+            connectionString.Open();
+            using var command = connectionString.CreateCommand();
+            command.CommandText = sql;
+            command.CommandType = CommandType.Text;
+            return (await command.ExecuteReaderAsync(), connectionString);
+
+        }
+        public async Task<object> InitializeAddressLookupCouch()
+        {
+            // var empty = await addressLookupCouchRepo.IsEmpty();
+            // if (empty)
+            // {
+            //     await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
+            //     .Include(a => a.AdminTypeLookup)
+            //     .Include(a => a.ParentAddress)
+            //     );
+
+
+            // }
+            var sql = "SELECT * FROM addressFetch";
+            var result = new List<object>();
+            var viewReader = await ConnectDatabase(sql);
+            while (viewReader.Item1.Read())
             {
-                await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
-                .Include(a => a.AdminTypeLookup)
-                .Include(a => a.ParentAddress)
-                );
-
-
+                result.Add(new
+                {
+                    id = viewReader.Item1["Id"],
+                    nameAm = viewReader.Item1["nameAm"],
+                    nameOr = viewReader.Item1["nameOr"],
+                    adminLevel = viewReader.Item1["AdminLevel"],
+                    adminTypeAm = viewReader.Item1["adminTypeAm"],
+                    adminTypeOr = viewReader.Item1["adminTypeOr"],
+                    addresses = JsonConvert.DeserializeObject<JArray>(viewReader.Item1["addresses"].ToString()),
+                    cou = viewReader.Item1["cou"]
+                });
             }
+
+            return result;
+
+
+            // return await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
+            //     .Include(a => a.AdminTypeLookup)
+            //     .Include(a => a.ParentAddress)
+            //     );
         }
     }
 }
