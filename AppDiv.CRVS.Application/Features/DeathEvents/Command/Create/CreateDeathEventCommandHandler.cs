@@ -18,12 +18,14 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         private readonly ISmsService _smsService;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepostory;
+        private readonly IFingerprintService _fingerprintService;
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
                                               ISmsService smsService,
                                               IEventPaymentRequestService paymentRequestService,
-                                              IAddressLookupRepository addressRepostory)
+                                              IAddressLookupRepository addressRepostory,
+                                              IFingerprintService fingerprintService)
 
         {
             _deathEventRepository = deathEventRepository;
@@ -32,6 +34,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _smsService = smsService;
             _paymentRequestService = paymentRequestService;
             _addressRepostory = addressRepostory;
+            _fingerprintService=fingerprintService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -87,6 +90,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             // Save the supporting documents and payment exemption documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(userPhotos);
+                            await _fingerprintService.RegisterfingerPrintService(fingerprints);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
                             _eventDocumentService.saveFingerPrints(fingerprints);
                             if (!deathEvent.Event.IsExampted)

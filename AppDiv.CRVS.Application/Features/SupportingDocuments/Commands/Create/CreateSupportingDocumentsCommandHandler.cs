@@ -86,23 +86,23 @@ namespace AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create
             {
                 if (BiometricInfo.ContainsKey(p.Key))
                 {
-                    BiometricInfo[p.Key].face = new List<BiometricImagesAtt>{
-                       new BiometricImagesAtt{
-                        position = 0,
-                        base64Image = p.Value
-                       }
-                    };
+                    // BiometricInfo[p.Key].face = new List<BiometricImagesAtt>{
+                    //    new BiometricImagesAtt{
+                    //     position = 0,
+                    //     base64Image = p.Value
+                    //    }
+                    // };
                 }
                 else
                 {
                     BiometricInfo.Add(p.Key, new BiometricImages
                     {
-                        face = new List<BiometricImagesAtt>{
-                            new BiometricImagesAtt{
-                                position = 0 ,
-                                base64Image = p.Value
-                            }
-                        }
+                        // face = new List<BiometricImagesAtt>{
+                        //     new BiometricImagesAtt{
+                        //         position = 0 ,
+                        //         base64Image = p.Value
+                        //     }
+                        // }
                     });
                 }
             });

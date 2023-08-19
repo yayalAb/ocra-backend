@@ -11,6 +11,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using Newtonsoft.Json.Linq;
+using System.Drawing;
 // using Newtonsoft.Json;
 // using Newtonsoft.Json.Linq;
 
@@ -52,6 +53,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             var res = response.EnsureSuccessStatusCode();
             var responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine("Response yyyyyyyyyyyyyyyy : {0}",responseBody);
             return responseBody;
         }
 

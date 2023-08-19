@@ -36,8 +36,9 @@ namespace AppDiv.CRVS.Application.Service
                                                 } ).ToList()
                                               }
 
-                    };
-           await _requestApiService.post("Register", Create); 
+                                };
+
+              var responseBody= await _requestApiService.post("Register", Create); 
            }
            return "";
 
