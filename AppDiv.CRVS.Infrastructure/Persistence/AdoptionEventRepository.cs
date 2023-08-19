@@ -59,7 +59,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public async Task EFUpdate(AdoptionEvent adoptionEvent,IEventPaymentRequestService paymentRequestService, CancellationToken cancellationToken)
         {
             adoptionEvent.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(adoptionEvent.Event, _dbContext, paymentRequestService,cancellationToken);
-
             base.UpdateWithNested(adoptionEvent);
             await base.SaveChangesAsync(cancellationToken);
         }
