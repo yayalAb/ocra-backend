@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
     // Customer create command with BaseResponse response
     public class DeleteCorrectionRequestCommad : IRequest<BaseResponse>
     {
-        public Guid Id { get; set; }
+        public Guid[] Ids { get; set; }
 
     }
 
@@ -30,8 +30,10 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
         {
             var response = new BaseResponse();
             try
-            {
-                await _correctionRequestRepository.DeleteAsync(request.Id);
+            {   foreach(Guid id in request.Ids){
+                 await _correctionRequestRepository.DeleteAsync(id);
+            }
+                
                 await _correctionRequestRepository.SaveChangesAsync(cancellationToken);
 
                 response.Deleted("Correctoon Request");

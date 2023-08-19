@@ -112,13 +112,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(query);
         }
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<BaseResponse> DeleteLookup(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<BaseResponse> DeleteLookup([FromBody] DeleteCorrectionRequestCommad command)
         {
             try
             {
                 string result = string.Empty;
-                return await _mediator.Send(new DeleteCorrectionRequestCommad { Id = id });
+                return await _mediator.Send(command);
             }
             catch (Exception exp)
             {
