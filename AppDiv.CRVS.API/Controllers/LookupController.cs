@@ -42,7 +42,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<LookupForGridDTO>> Get([FromQuery] GetAllLookupQuery query)
+        public async Task<List<LookupForGridDTO>> Get([FromQuery] GetAllLookupQuery query)
         {
             return await _mediator.Send(query);
         }

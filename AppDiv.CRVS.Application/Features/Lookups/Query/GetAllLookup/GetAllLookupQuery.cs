@@ -16,13 +16,11 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
 
 {
     // Customer query with List<Customer> response
-    public record GetAllLookupQuery : IRequest<PaginatedList<LookupForGridDTO>>
+    public record GetAllLookupQuery : IRequest<List<LookupForGridDTO>>
     {
-        public int? PageCount { set; get; } = 1!;
-        public int? PageSize { get; set; } = 10!;
     }
 
-    public class GetAllLookupQueryHandler : IRequestHandler<GetAllLookupQuery, PaginatedList<LookupForGridDTO>>
+    public class GetAllLookupQueryHandler : IRequestHandler<GetAllLookupQuery, List<LookupForGridDTO>>
     {
         private readonly ILookupRepository _lookupRepository;
 
@@ -30,22 +28,21 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
         {
             _lookupRepository = lookupQueryRepository;
         }
-        public async Task<PaginatedList<LookupForGridDTO>> Handle(GetAllLookupQuery request, CancellationToken cancellationToken)
+        public async Task<List<LookupForGridDTO>> Handle(GetAllLookupQuery request, CancellationToken cancellationToken)
         {
+            var LookupCouch= _lookupRepository.GetAll()
+                                    .Select(lo => new LookupForGridDTO
+                                    {
+                                        id = lo.Id,
+                                        Key = lo.Key,
+                                        ValueAm = lo.Value.Value<string>("am"),
+                                        ValueOr = lo.Value.Value<string>("or"),
+                                        StatisticCode = lo.StatisticCode,
+                                        Code = lo.Code
+                                    }).ToList();
 
 
-            return await PaginatedList<LookupForGridDTO>
-                            .CreateAsync(
-                                 _lookupRepository.GetAll()
-                                .Select(lo => new LookupForGridDTO
-                                {
-                                    id = lo.Id,
-                                    Key = lo.Key,
-                                    Value = lo.ValueLang,
-                                    StatisticCode = lo.StatisticCode,
-                                    Code = lo.Code
-                                })
-                                , request.PageCount ?? 1, request.PageSize ?? 10);
+            return LookupCouch;
         }
     }
 }
