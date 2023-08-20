@@ -35,8 +35,8 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup
                                     {
                                         id = lo.Id,
                                         Key = lo.Key,
-                                        ValueAm = lo.Value.Value<string>("am"),
-                                        ValueOr = lo.Value.Value<string>("or"),
+                                        ValueAm =string.IsNullOrEmpty(lo.Value.Value<string>("am"))? "": lo.Value.Value<string>("am"),
+                                        ValueOr = string.IsNullOrEmpty(lo.Value.Value<string>("or"))? "": lo.Value.Value<string>("or"),
                                         StatisticCode = lo.StatisticCode,
                                         Code = lo.Code
                                     }).ToList();
