@@ -135,18 +135,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (await command.ExecuteReaderAsync(), connectionString);
 
         }
-        public async Task<object> InitializeAddressLookupCouch()
+        public async Task<object> GetAllAddressFromView()
         {
-            // var empty = await addressLookupCouchRepo.IsEmpty();
-            // if (empty)
-            // {
-            //     await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
-            //     .Include(a => a.AdminTypeLookup)
-            //     .Include(a => a.ParentAddress)
-            //     );
-
-
-            // }
             var sql = "SELECT * FROM addressFetch";
             var result = new List<object>();
             var viewReader = await ConnectDatabase(sql);
@@ -166,12 +156,20 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
 
             return result;
+        }
+        public async Task InitializeAddressLookupCouch()
+        {
+            var empty = await addressLookupCouchRepo.IsEmpty();
+            if (empty)
+            {
+                await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
+                .Include(a => a.AdminTypeLookup)
+                .Include(a => a.ParentAddress)
+                );
 
 
-            // return await addressLookupCouchRepo.BulkInsertAsync(_DbContext.Addresses
-            //     .Include(a => a.AdminTypeLookup)
-            //     .Include(a => a.ParentAddress)
-            //     );
+            }
+
         }
     }
 }

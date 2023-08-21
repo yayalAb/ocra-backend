@@ -9,6 +9,8 @@ public interface IAddressLookupCouchRepository
     public Task<bool> RemoveAsync(AddressCouchDTO Address);
     public Task<bool> BulkInsertAsync(IQueryable<Address> Address);
     public Task<bool> IsEmpty();
+    public Task<object?> GetAlllAddressCouches();
+
 
 
 

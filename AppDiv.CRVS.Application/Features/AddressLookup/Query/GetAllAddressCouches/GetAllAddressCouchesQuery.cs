@@ -33,9 +33,9 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAllAddress
             this.addressRepo = addressRepo;
         }
         public async Task<object> Handle(GetAllAddressCouchesQuery request, CancellationToken cancellationToken)
-        {  
+        {
 
-            return  addressRepo.InitializeAddressLookupCouch().Result;
+            return addressRepo.GetAllAddressFromView().Result;
 
             // return (List<Customer>)await _customerQueryRepository.GetAllAsync();
         }
