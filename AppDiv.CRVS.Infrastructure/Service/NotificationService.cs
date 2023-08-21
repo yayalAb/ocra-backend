@@ -88,6 +88,21 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
 
         }
+        public async Task updateSeenStatusByRequest(Guid requestId, Guid groupId, string type)
+        {
+            var notifications = await _context.Notifications
+                                    .Where(n => n.RequestId == requestId && n.GroupId == groupId && n.Type == type)
+                                    .ToListAsync();
+            notifications.ForEach(n =>
+            {
+                n.Seen = true;
+            });
+            _context.Notifications.UpdateRange(notifications);
+            await _context.SaveChangesAsync();
+
+
+        }
+
         public async Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds)
         {
 

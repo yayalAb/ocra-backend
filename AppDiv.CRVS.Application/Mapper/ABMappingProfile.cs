@@ -176,6 +176,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
             CreateMap<CreateMarriageApplicationCommand, MarriageApplication>();
             CreateMap<MarriageApplication, MarriageApplicationGridDTO>();
+            CreateMap<AddMarriageApplicationRequest, MarriageApplication>().ReverseMap();
             CreateMap<UpdateMarriageApplicationCommand, MarriageApplication>().ReverseMap();
 
             CreateMap<AddEventRequest, Event>().ReverseMap();
