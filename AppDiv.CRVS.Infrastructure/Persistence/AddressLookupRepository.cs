@@ -161,7 +161,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     adminTypeAm = viewReader.Item1["adminTypeAm"],
                     adminTypeOr = viewReader.Item1["adminTypeOr"],
                     addresses = JsonConvert.DeserializeObject<JArray>(viewReader.Item1["addresses"].ToString()),
-                    cou = viewReader.Item1["cou"]
+                    // cou = viewReader.Item1["cou"]
                 });
             }
 
