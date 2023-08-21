@@ -18,6 +18,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         public Guid Id { get; set; }
         public Guid MarriageTypeId { get; set; }
         public Guid? ApplicationId { get; set; }
+        public AddMarriageApplicationRequest? Application { get; set; }
+
         public bool HasCamera { get; set; } = false;
         public virtual BrideInfoDTO BrideInfo { get; set; }
         public virtual AddEventForMarriageRequest Event { get; set; }

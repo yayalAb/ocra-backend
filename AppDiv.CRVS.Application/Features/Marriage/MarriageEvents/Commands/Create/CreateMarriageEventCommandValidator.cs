@@ -206,11 +206,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                 RuleFor(e => e.ApplicationId)
                 .NotNull().WithMessage("marriage application id is required for 'civil' marriage type")
                 .NotEmpty().WithMessage("marriage application id cannot be empty for 'civil' marriage type")
-                .MustAsync(async (e, applicationId, CancellationToken) =>
-                    BeFoundInMarriageApplicationTable(applicationId)
-                        || ((e.Event.EventRegisteredAddressId != null)
-                            && await (BeFoundInMarriageApplicationCouch(applicationId, (Guid)e.Event.EventRegisteredAddressId, CancellationToken))
-                        )
+                .Must((e, applicationId, CancellationToken) =>
+                    BeFoundInMarriageApplicationTable(applicationId) || e.Application != null
+                    // || ((e.Event.EventRegisteredAddressId != null)
+                    //     && await (BeFoundInMarriageApplicationCouch(applicationId, (Guid)e.Event.EventRegisteredAddressId, CancellationToken))
+                    // )
                     )
                     .WithMessage("marriage application with the provided id not found ,")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");

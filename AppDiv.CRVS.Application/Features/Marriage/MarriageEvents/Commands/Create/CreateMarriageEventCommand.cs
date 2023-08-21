@@ -10,9 +10,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
     // Customer create command with CustomerResponse
     public record CreateMarriageEventCommand : IRequest<CreateMarriageEventCommandResponse>
     {
-        public Guid? Id {get;set;}
+        public Guid? Id { get; set; }
         public Guid MarriageTypeId { get; set; }
         public Guid? ApplicationId { get; set; }
+        public AddMarriageApplicationRequest? Application { get; set; }
         public string? BirthCertificateGroomId { get; set; }
         public string? BirthCertificateBrideId { get; set; }
         public bool HasCamera { get; set; } = false;
@@ -20,7 +21,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         public virtual BrideInfoDTO BrideInfo { get; set; }
         public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
-        public DateTime? CreatedAt {get; set; }
-        public Guid? CreatedBy {get; set; }
+        public DateTime? CreatedAt { get; set; }
+        public Guid? CreatedBy { get; set; }
     }
 }
