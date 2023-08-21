@@ -75,9 +75,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                         if (createDivorceEventCommandResponse.Success)
                         {
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
-                            request.Event.EventAddressId = request?.CourtCase?.Court?.AddressId!;
-
-
+                           // request.Event.EventAddressId = request?.CourtCase?.Court?.AddressId!;
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
