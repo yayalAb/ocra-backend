@@ -107,19 +107,21 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             f => f.MotherMiddleNameOr,
                             f => f.MotherLastNameAm,
                             f => f.MotherLastNameOr,
-                            f => f.EventRegisteredAddressId
+                            f => f.EventRegisteredAddressId,
+                            f => f.Status
                         )
                     ))
                     .Query(q =>
-                    q
-                    .Wildcard(w => w
+                    q.Match(m => m.Field(f => f.Status).Query("true"))
+                     &&
+                    (q.Wildcard(w => w
 
                     .Field(f => f.CertificateSerialNumber).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
                     .Field(f => f.ContentStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
-                    )
+                    ))
                     ).Size(50)
                     );
             return response.Result.Documents.Select(d => new SearchCertificateResponseDTO
@@ -155,13 +157,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             if (reIndex)
             {
-            await _elasticClient.Indices.DeleteAsync("certificate");
+                await _elasticClient.Indices.DeleteAsync("certificate");
 
             }
             if (!_elasticClient.Indices.Exists("certificate").Exists && _dbContext.Certificates.Any())
             {
                 _elasticClient
                                  .IndexMany<CertificateIndex>(_dbContext.Certificates
+                                 .Where(c => c.Status)
                                      .Select(c => new CertificateIndex
                                      {
                                          Id = c.Id,
@@ -227,8 +230,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                          LastNameAm = c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am"),
                                          EventAddressAm = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("am"),
                                          EventAddressOr = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("or"),
-                                         EventRegisteredAddressId = c.Event.EventRegisteredAddressId
-
+                                         EventRegisteredAddressId = c.Event.EventRegisteredAddressId,
+                                         Status = c.Status
                                      }), "certificate");
                 await _elasticClient.Indices.RefreshAsync("certificate");
 
