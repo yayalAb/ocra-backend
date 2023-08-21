@@ -9,7 +9,9 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<Address> GetByIdAsync(Guid id);
         Task<Address> GetAddressByKey(string key);
         Task<Address> GetAddressAdminstrativeLevel(Guid id);
-         Task<object> InitializeAddressLookupCouch();
+        Task InitializeAddressLookupCouch();
+        Task<object> GetAllAddressFromView();
+
         Task Import(ICollection<Address> addresses, CancellationToken cancellationToken);
         // Task<string> DeleteAsync(Address entities);
 

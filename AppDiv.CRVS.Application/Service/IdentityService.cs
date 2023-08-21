@@ -124,7 +124,7 @@ namespace AppDiv.CRVS.Application.Service
                 // UserGroupId = userGroupId,
                 PersonalInfoId = personalInfoId
             };
-            string password = GeneratePassword();
+            string password = HelperService.GeneratePassword();
             newUser.Otp = password;
             newUser.OtpExpiredDate = null;
             newUser.CreatedAt = DateTime.UtcNow;
@@ -148,7 +148,7 @@ namespace AppDiv.CRVS.Application.Service
             {
                 return (Result.Failure(new string[] { "username is already taken" }), string.Empty, string.Empty);
             }
-            string password = GeneratePassword();
+            string password = HelperService.GeneratePassword();
             user.Otp = password;
             user.OtpExpiredDate = null;
             user.CreatedAt = DateTime.UtcNow;
@@ -351,64 +351,7 @@ namespace AppDiv.CRVS.Application.Service
             return (await _userManager.FindByNameAsync(arg)) != null;
         }
 
-        public string GeneratePassword()
-        {
-            var policySetting = _helperService.getPasswordPolicySetting();
-            var options = _userManager.Options.Password;
-            int max = 0;
-            bool digit;
-            bool nonAlphanumeric = false;
-            bool lowerCase = false;
-            bool upperCase = false;
-            if (policySetting != null)
-            {
-                max = policySetting.Max;
-                digit = policySetting.Number;
-                nonAlphanumeric = !(policySetting.Number && (policySetting.LowerCase || policySetting.UpperCase || policySetting.OtherChar));
-                lowerCase = policySetting.LowerCase;
-                upperCase = policySetting.UpperCase;
-            }
-            else
-            {
-                max = options.RequiredLength;
-                nonAlphanumeric = options.RequireNonAlphanumeric;
-                digit = options.RequireDigit;
-                lowerCase = options.RequireLowercase;
-                upperCase = options.RequireUppercase;
 
-            }
-
-            StringBuilder password = new StringBuilder();
-            Random random = new Random();
-
-            while (password.Length < max)
-            {
-                char c = (char)random.Next(32, 126);
-
-                password.Append(c);
-
-                if (char.IsDigit(c))
-                    digit = false;
-                else if (char.IsLower(c))
-                    lowerCase = false;
-                else if (char.IsUpper(c))
-                    upperCase = false;
-                else if (!char.IsLetterOrDigit(c))
-                    nonAlphanumeric = false;
-            }
-
-            if (nonAlphanumeric)
-                password.Append((char)random.Next(33, 48));
-            if (digit)
-                password.Append((char)random.Next(48, 58));
-            if (lowerCase)
-                password.Append((char)random.Next(97, 123));
-            if (upperCase)
-                password.Append((char)random.Next(65, 91));
-
-
-            return password.ToString();
-        }
         public IQueryable<ApplicationUser> AllUsers()
         {
             return _userManager.Users;
@@ -467,7 +410,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             user.ModifiedAt = DateTime.UtcNow;
             user.ModifiedBy = _userResolverService.GetUserId() != null ? new Guid(_userResolverService.GetUserId()!) : Guid.Empty;
-            
+
             await _userManager.UpdateAsync(user);
         }
 

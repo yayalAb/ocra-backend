@@ -34,7 +34,6 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task<Result> VerifyOtp(string userName, string otp);
         public Task<(Result result, string? email, string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry);
         Task<bool> Exists(string arg, string searchBy);
-        public string GeneratePassword();
         // string GetUserGroupId(string userId);
     }
 }

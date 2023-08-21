@@ -254,7 +254,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                                                         ? certificate.Event.MarriageEvent.Id
                                                         : certificate.Event.EventType.ToLower() == "adoption"
                                                         ? certificate.Event.AdoptionEvent.Id
-                                                        : certificate.Event.EventType == "divorce"
+                                                        : certificate.Event.EventType.ToLower() == "divorce"
                                                         ? certificate.Event.DivorceEvent.Id : null,
                 MotherFirstNameAm = certificate.Event.EventType.ToLower() == "birth"
                                                          ? (certificate.Event.BirthEvent.Mother.FirstName == null ? null : certificate.Event.BirthEvent.Mother.FirstName.Value<string>("am"))

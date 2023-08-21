@@ -107,7 +107,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
             var otpCode = await _smsService.SendOtpAsync(user.PhoneNumber, "", "is your password reset code ", expirySecond, codeLength, codeType);
             if (otpCode == null)
             {
-                otpCode = _identityService.GeneratePassword();
+                otpCode = HelperService.GeneratePassword();
             }
             var updateResponse = await _identityService.UpdateResetOtp(user.Id, otpCode?.ToString(), DateTime.Now.AddSeconds(expirySecond));
             if (!updateResponse.Succeeded)

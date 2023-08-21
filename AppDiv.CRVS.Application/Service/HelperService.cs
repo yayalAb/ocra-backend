@@ -78,6 +78,15 @@ namespace AppDiv.CRVS.Application.Service
 
             };
         }
+        public static string GeneratePassword()
+        {
+            string chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+            Random random = new Random();
+            char[] code = chars.OrderBy(c => random.Next()).Take(6).ToArray();
+            Console.WriteLine("code ===========   " + new string(code));
+
+            return new string(code);
+        }
     }
 }
 

@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             // otp expired , generate new otp 
             if (response.status == AuthStatus.OtpExpired)
             {
-                var newOtp = _identityService.GeneratePassword();
+                var newOtp = HelperService.GeneratePassword();
                 var newOtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
                 var res = await _identityService.ReGenerateOtp(response.userId, newOtp, newOtpExpiredDate);
                 if (!res.result.Succeeded)
