@@ -104,26 +104,40 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 await lookupCouchRepo.BulkInsertAsync(dbContext.Lookups.ToList());
             }
         }
-        public async Task<(object lookups, DateTime date)> GetLastModifiedLookups(DateTime since)
+        public async Task<(object createdLookups, object updatedLookups, DateTime date)> GetLastModifiedLookups(DateTime since)
         {
             var timestamp = since.ToString("yyyy-MM-dd HH:mm:ss");
             var sql = $"SELECT * FROM lookupWithDate where CreatedAt > '{timestamp}' or ModifiedAt > '{timestamp}';";
-            var result = new List<object>();
+            var updated = new List<object>();
+            var created = new List<object>();
             var viewReader = await HelperService.ConnectDatabase(sql, dbContext);
             while (viewReader.Item1.Read())
             {
-                result.Add(new
+                if ((DateTime)viewReader.Item1["CreatedAt"] > since)
                 {
-                    id = viewReader.Item1["Id"],
-                    ValueAm = viewReader.Item1["ValueAm"],
-                    ValueOr = viewReader.Item1["ValueOr"],
-                    Key = viewReader.Item1["Key"],
-                    status = (DateTime)viewReader.Item1["CreatedAt"] > since ? "created" : "updated"
-                });
+                    created.Add(new
+                    {
+                        id = viewReader.Item1["Id"],
+                        ValueAm = viewReader.Item1["ValueAm"],
+                        ValueOr = viewReader.Item1["ValueOr"],
+                        Key = viewReader.Item1["Key"],
+                    });
+                }
+                else
+                {
+
+                    updated.Add(new
+                    {
+                        id = viewReader.Item1["Id"],
+                        ValueAm = viewReader.Item1["ValueAm"],
+                        ValueOr = viewReader.Item1["ValueOr"],
+                        Key = viewReader.Item1["Key"],
+                    });
+                }
             }
             await viewReader.Item2.CloseAsync();
 
-            return (lookups: result, date: DateTime.Now);
+            return (createdLookups: created, updatedLookups: updated, date: DateTime.Now);
 
         }
     }

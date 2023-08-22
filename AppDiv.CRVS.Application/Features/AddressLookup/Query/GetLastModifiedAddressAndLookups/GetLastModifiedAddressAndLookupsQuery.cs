@@ -41,9 +41,11 @@ namespace AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress
             return new
             {
                 checkedTimeStamp = timestamp,
-                lookups = lookupRes.lookups,
+                createdLookups = lookupRes.createdLookups,
+                updatedLookups = lookupRes.updatedLookups,
                 deletedLookupIds = deletedIds.Where(i => i.type.ToLower() == "lookup").Select(i => i.id).ToList(),
-                addresses = addressRes.addresses,
+                createdAddresses = addressRes.createdAddresses,
+                updatedAddresses = addressRes.updatedAddresses,
                 deletedAddressIds = deletedIds.Where(i => i.type.ToLower() == "address").Select(i => i.id).ToList(),
 
             };

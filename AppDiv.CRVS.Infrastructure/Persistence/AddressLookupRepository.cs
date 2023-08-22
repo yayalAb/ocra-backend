@@ -152,29 +152,46 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return result;
         }
-        public async Task<(object addresses, DateTime date)> GetLastUpdatedAddresses(DateTime since)
+        public async Task<(object createdAddresses, object updatedAddresses, DateTime date)> GetLastUpdatedAddresses(DateTime since)
         {
             var timestamp = since.ToString("yyyy-MM-dd HH:mm:ss");
             var sql = $"SELECT * FROM addressWithDate where CreatedAt > '{timestamp}' or ModifiedAt > '{timestamp}';";
-            var result = new List<object>();
+            var created = new List<object>();
+            var updated = new List<object>();
             var viewReader = await HelperService.ConnectDatabase(sql, _DbContext);
             while (viewReader.Item1.Read())
             {
-                result.Add(new
+                if ((DateTime)viewReader.Item1["CreatedAt"] > since)
                 {
-                    id = viewReader.Item1["Id"],
-                    nameAm = viewReader.Item1["nameAm"],
-                    nameOr = viewReader.Item1["nameOr"],
-                    adminLevel = viewReader.Item1["AdminLevel"],
-                    adminTypeAm = viewReader.Item1["adminTypeAm"],
-                    adminTypeOr = viewReader.Item1["adminTypeOr"],
-                    mergeStatus = viewReader.Item1["status"],
-                    status = (DateTime)viewReader.Item1["CreatedAt"] > since ? "created" : "updated"
-                });
+
+                    created.Add(new
+                    {
+                        id = viewReader.Item1["Id"],
+                        nameAm = viewReader.Item1["nameAm"],
+                        nameOr = viewReader.Item1["nameOr"],
+                        adminLevel = viewReader.Item1["AdminLevel"],
+                        adminTypeAm = viewReader.Item1["adminTypeAm"],
+                        adminTypeOr = viewReader.Item1["adminTypeOr"],
+                        mergeStatus = viewReader.Item1["status"],
+                    });
+                }
+                else
+                {
+                    updated.Add(new
+                    {
+                        id = viewReader.Item1["Id"],
+                        nameAm = viewReader.Item1["nameAm"],
+                        nameOr = viewReader.Item1["nameOr"],
+                        adminLevel = viewReader.Item1["AdminLevel"],
+                        adminTypeAm = viewReader.Item1["adminTypeAm"],
+                        adminTypeOr = viewReader.Item1["adminTypeOr"],
+                        mergeStatus = viewReader.Item1["status"],
+                    });
+                }
             }
             await viewReader.Item2.CloseAsync();
 
-            return (addresses: result, date: DateTime.Now);
+            return (createdAddresses: created, updatedAddresses: updated, date: DateTime.Now);
 
         }
         public async Task InitializeAddressLookupCouch()
