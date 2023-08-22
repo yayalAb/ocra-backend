@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Cors;
 
 
 namespace AppDiv.CRVS.Infrastructure.Hub.ChatHub;
-[EnableCors("CorsPolicy")]
+[EnableCors("socketPolicy")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 
 public class ChatHub : Hub<IChatHubClient>

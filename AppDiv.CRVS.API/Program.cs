@@ -115,15 +115,17 @@ builder.Services.AddCors(c =>
       .AllowAnyHeader()
       .AllowCredentials()
       );
-    // c.AddPolicy("specificPolicy",  
-    //                       policy  =>  
-    //                       {  
-    //                           policy.WithOrigins("http://localhost:4200",  
-    //                                               "http://192.168.1.32:4200" , "http://192.168.1.30:4200")
-    //                                                   .AllowAnyMethod()
-    //       .AllowAnyHeader()
-    //       .AllowCredentials(); // add the allowed origins  
-    //                       });  
+    c.AddPolicy("socketPolicy",  
+                          policy  =>  
+                          {  
+                              policy.WithOrigins("http://localhost:4200",  
+                                                  "https://app.ocra.gov.et" , "http://192.168.1.30:4200")
+                                                      .WithMethods("POST","GET","PUT")
+                                                      .AllowCredentials()
+                                                      
+          .AllowAnyHeader()
+          .AllowCredentials(); // add the allowed origins  
+                          });  
 
 });
 

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Cors;
 namespace AppDiv.CRVS.Infrastructure.Hub;
-[EnableCors("CorsPolicy")]
+[EnableCors("socketPolicy")]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 
 public class MessageHub : Hub<IMessageHubClient>
