@@ -14,6 +14,10 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Infrastructure.CouchModels;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Infrastructure.Services;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Google.Protobuf.WellKnownTypes;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -51,7 +55,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         // {
         //     return dbContext.Lookups.Where(p => p.Id == id).Any();
         // }
-        public virtual async Task< (Guid Id , string _Id)> SaveChangesAsync(CancellationToken cancellationToken)
+        public virtual async Task<(Guid Id, string _Id)> SaveChangesAsync(CancellationToken cancellationToken)
         {
 
             var entries = dbContext.ChangeTracker
@@ -66,7 +70,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }).ToList();
 
             bool saveRes = await base.SaveChangesAsync(cancellationToken);
-            (Guid Id , string _Id) couchResponse =(Id:Guid.Empty , _Id: string.Empty ) ;
+            (Guid Id, string _Id) couchResponse = (Id: Guid.Empty, _Id: string.Empty);
             if (saveRes)
             {
                 foreach (var entry in lookupEntries)
@@ -74,7 +78,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     switch (entry.State)
                     {
                         case EntityState.Added:
-                          couchResponse =  await lookupCouchRepo.InsertLookupAsync(entry.Lookup);
+                            couchResponse = await lookupCouchRepo.InsertLookupAsync(entry.Lookup);
                             break;
                         case EntityState.Modified:
                             await lookupCouchRepo.UpdateLookupAsync(entry.Lookup);
@@ -99,6 +103,42 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 await lookupCouchRepo.BulkInsertAsync(dbContext.Lookups.ToList());
             }
+        }
+        public async Task<(object createdLookups, object updatedLookups, DateTime date)> GetLastModifiedLookups(DateTime since)
+        {
+            var timestamp = since.ToString("yyyy-MM-dd HH:mm:ss");
+            var sql = $"SELECT * FROM lookupWithDate where CreatedAt > '{timestamp}' or ModifiedAt > '{timestamp}';";
+            var updated = new List<object>();
+            var created = new List<object>();
+            var viewReader = await HelperService.ConnectDatabase(sql, dbContext);
+            while (viewReader.Item1.Read())
+            {
+                if ((DateTime)viewReader.Item1["CreatedAt"] > since)
+                {
+                    created.Add(new
+                    {
+                        id = viewReader.Item1["Id"],
+                        ValueAm = viewReader.Item1["ValueAm"],
+                        ValueOr = viewReader.Item1["ValueOr"],
+                        Key = viewReader.Item1["Key"],
+                    });
+                }
+                else
+                {
+
+                    updated.Add(new
+                    {
+                        id = viewReader.Item1["Id"],
+                        ValueAm = viewReader.Item1["ValueAm"],
+                        ValueOr = viewReader.Item1["ValueOr"],
+                        Key = viewReader.Item1["Key"],
+                    });
+                }
+            }
+            await viewReader.Item2.CloseAsync();
+
+            return (createdLookups: created, updatedLookups: updated, date: DateTime.Now);
+
         }
     }
 }

@@ -21,6 +21,7 @@ using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByKeyForDropDown;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByParentId;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Import;
 using AppDiv.CRVS.Application.Features.Lookups.Query.Validation;
+using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -43,6 +44,12 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<List<LookupForGridDTO>> Get([FromQuery] GetAllLookupQuery query)
+        {
+            return await _mediator.Send(query);
+        }
+        [HttpGet("GetLastModified")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> GetChanged([FromQuery] GetLastModifiedAddressAndLookupsQuery query)
         {
             return await _mediator.Send(query);
         }
