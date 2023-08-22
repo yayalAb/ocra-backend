@@ -109,6 +109,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 var personIds = new PersonIdObj();
                 adoptionEvent.Event.IsCertified=false;
                 await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
+
                 if (!request.IsFromCommand)
                 {
                     adoptionEvent.Event.EventSupportingDocuments = null;
@@ -146,7 +147,6 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     {
                         _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                     }
-                   await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                 }
                 // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
                 UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
