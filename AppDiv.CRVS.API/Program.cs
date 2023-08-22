@@ -109,7 +109,7 @@ builder.Services.AddCors(c =>
      options =>
       options
         .WithOrigins(new string[] { "http://192.168.1.17:4200", "https://app.ocra.gov.et", "http://192.168.1.30:4200", "http://localhost:4200" })
-      .SetIsOriginAllowed((host) => true)
+    //   .SetIsOriginAllowed((host) => true)
       //   .AllowAnyOrigin()
       .AllowAnyMethod()
       .AllowAnyHeader()
