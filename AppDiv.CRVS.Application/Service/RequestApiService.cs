@@ -25,6 +25,7 @@ namespace AppDiv.CRVS.Application.Service
         private readonly HttpClient _client;
         private readonly IFingerprintApiKeyRepostory _apikeyRepository;
         private readonly ISettingRepository _settingRepository;
+        public int retryCount=0;
 
         public RequestApiService(IFingerprintApiKeyRepostory apikeyRepository, ISettingRepository settingRepository)
         {
@@ -47,10 +48,17 @@ namespace AppDiv.CRVS.Application.Service
             using (var content = new StringContent(jsonData, Encoding.UTF8, "application/json"))
                     {
                         var response = await _client.PostAsync(Baseurl + url, content);
-                        if (response.StatusCode.ToString() == "Unauthorized")
-                        {
-                            await refrashToken();
+                       while (response.StatusCode.ToString() == "Unauthorized" && retryCount<=5)
+                        {   await refrashToken();
+                            retryCount++;
+                            var token = _settingRepository.GetAll().Where(x => x.Key == "passwordPolicy").FirstOrDefault();
+                            authorizationToken = token.Value?.Value<string>("token");
+                            _client.DefaultRequestHeaders.Clear();
+                            _client.DefaultRequestHeaders.Add("Authorization", "Bearer " + authorizationToken);
                             response = await _client.PostAsync(Baseurl + url, content);
+                        }
+                        if(retryCount>=5){
+                            throw new NotFoundException("Unauthorized Request Please Check API Key Or Contact your Admin");
                         }
                         var res = response.EnsureSuccessStatusCode();
                         var responseBody = await response.Content.ReadAsStringAsync();
