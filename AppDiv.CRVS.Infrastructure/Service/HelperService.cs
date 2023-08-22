@@ -1,5 +1,7 @@
 
 
+using System.Data;
+using System.Data.Common;
 using System.Reflection;
 using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Exceptions;
@@ -151,6 +153,17 @@ namespace AppDiv.CRVS.Infrastructure.Services
                 }
             }
             return updatedEvent.PaymentExamption;
+        }
+
+        public static async Task<(DbDataReader, DbConnection)> ConnectDatabase(string sql, CRVSDbContext _DbContext)
+        {
+            var connectionString = _DbContext.Database.GetDbConnection();
+            connectionString.Open();
+            using var command = connectionString.CreateCommand();
+            command.CommandText = sql;
+            command.CommandType = CommandType.Text;
+            return (await command.ExecuteReaderAsync(), connectionString);
+
         }
 
     }

@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<Address> GetAddressAdminstrativeLevel(Guid id);
         Task InitializeAddressLookupCouch();
         Task<object> GetAllAddressFromView();
-
+        Task<(object addresses, DateTime date)> GetLastUpdatedAddresses(DateTime since);
         Task Import(ICollection<Address> addresses, CancellationToken cancellationToken);
         // Task<string> DeleteAsync(Address entities);
 

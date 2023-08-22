@@ -10,6 +10,8 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task<Lookup> GetLookupByKey(string key);
         Task<Lookup?> GetLookupById(Guid id);
         Task InitializeLookupCouch();
+        Task<(object lookups , DateTime date)> GetLastModifiedLookups(DateTime since);
+
         Task Import(ICollection<Lookup> lookups, CancellationToken cancellationToken);
          Task<(Guid Id, string _Id)> SaveChangesAsync(CancellationToken cancellationToken);
     }

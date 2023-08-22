@@ -24,6 +24,7 @@ using System.Data.SqlClient;
 using System.Data.Common;
 using System.Data;
 using AppDiv.CRVS.Domain.Enums;
+using AppDiv.CRVS.Infrastructure.Services;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -125,21 +126,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return saveChangeRes;
         }
-        public async Task<(DbDataReader, DbConnection)> ConnectDatabase(string sql)
-        {
-            var connectionString = _DbContext.Database.GetDbConnection();
-            connectionString.Open();
-            using var command = connectionString.CreateCommand();
-            command.CommandText = sql;
-            command.CommandType = CommandType.Text;
-            return (await command.ExecuteReaderAsync(), connectionString);
 
-        }
         public async Task<object> GetAllAddressFromView()
         {
             var sql = "SELECT * FROM addressFetch";
             var result = new List<object>();
-            var viewReader = await ConnectDatabase(sql);
+            var viewReader = await HelperService.ConnectDatabase(sql, _DbContext);
             while (viewReader.Item1.Read())
             {
                 result.Add(new
@@ -150,12 +142,40 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     adminLevel = viewReader.Item1["AdminLevel"],
                     adminTypeAm = viewReader.Item1["adminTypeAm"],
                     adminTypeOr = viewReader.Item1["adminTypeOr"],
+                    mergeStatus = viewReader.Item1["status"],
                     addresses = JsonConvert.DeserializeObject<JArray>(viewReader.Item1["addresses"].ToString()),
                     // cou = viewReader.Item1["cou"]
                 });
             }
+            await viewReader.Item2.CloseAsync();
+
 
             return result;
+        }
+        public async Task<(object addresses, DateTime date)> GetLastUpdatedAddresses(DateTime since)
+        {
+            var timestamp = since.ToString("yyyy-MM-dd HH:mm:ss");
+            var sql = $"SELECT * FROM addressWithDate where CreatedAt > '{timestamp}' or ModifiedAt > '{timestamp}';";
+            var result = new List<object>();
+            var viewReader = await HelperService.ConnectDatabase(sql, _DbContext);
+            while (viewReader.Item1.Read())
+            {
+                result.Add(new
+                {
+                    id = viewReader.Item1["Id"],
+                    nameAm = viewReader.Item1["nameAm"],
+                    nameOr = viewReader.Item1["nameOr"],
+                    adminLevel = viewReader.Item1["AdminLevel"],
+                    adminTypeAm = viewReader.Item1["adminTypeAm"],
+                    adminTypeOr = viewReader.Item1["adminTypeOr"],
+                    mergeStatus = viewReader.Item1["status"],
+                    status = (DateTime)viewReader.Item1["CreatedAt"] > since ? "created" : "updated"
+                });
+            }
+            await viewReader.Item2.CloseAsync();
+
+            return (addresses: result, date: DateTime.Now);
+
         }
         public async Task InitializeAddressLookupCouch()
         {
