@@ -54,7 +54,6 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.Query
                 ApiResponse = JsonSerializer.Deserialize<IdentifayFingerDto>(responseBody);
                 if (ApiResponse.operationResult == "MATCH_FOUND")
                 {
-                    Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx : {0}",ApiResponse.bestResult.id);
                     PersonalInfo = _personalInfoRepo.GetAll()
                     .Include(a=>a.ResidentAddress)
                     .Where(x => x.Id == new Guid(ApiResponse.bestResult.id)).Select(x=>new PersonSearchResponse {
