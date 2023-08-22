@@ -54,14 +54,15 @@ namespace AppDiv.CRVS.Application.Features.Fingerprint.Query
                 ApiResponse = JsonSerializer.Deserialize<IdentifayFingerDto>(responseBody);
                 if (ApiResponse.operationResult == "MATCH_FOUND")
                 {
-                    var person = _personalInfoRepo.GetAll()
+                    Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx : {0}",ApiResponse.bestResult.id);
+                    PersonalInfo = _personalInfoRepo.GetAll()
                     .Include(a=>a.ResidentAddress)
                     .Where(x => x.Id == new Guid(ApiResponse.bestResult.id)).Select(x=>new PersonSearchResponse {
                      Id =x.Id,
-                     FullName =x.FirstNameLang+x.MiddleNameLang+x.LastNameLang,
+                     FullName =x.FirstNameLang+" " +x.MiddleNameLang+" "+x.LastNameLang,
                      Address =x.ResidentAddress.AddressNameLang,
                      NationalId =x.NationalId
-                    });
+                    }).ToList();
                 }
             }
             catch (Exception exp)
