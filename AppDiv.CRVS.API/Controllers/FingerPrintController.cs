@@ -62,6 +62,12 @@ namespace AppDiv.CRVS.API.Controllers
             var result = await _mediator.Send(command, token);
             return Ok(result);
         }
+          [HttpPost("searchPerson")]
+        public async Task<ActionResult> searchPerson([FromBody] PersonSearchByFingerPrint command, CancellationToken token)
+        {
+            var result = await _mediator.Send(command, token);
+            return Ok(result);
+        }
 
 
     }
