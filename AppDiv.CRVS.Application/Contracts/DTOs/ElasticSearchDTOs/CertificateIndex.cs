@@ -34,6 +34,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
         public string? EventAddressAm {get; set; }
         public string? EventAddressOr {get; set; }
         public Guid? EventRegisteredAddressId {get; set; }
+        public bool? Status {get;set;}
 
 
         

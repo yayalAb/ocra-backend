@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task CreateNotification(Guid notificationObjId,  string type, string message, Guid groupId, Guid? requestId, string senderId);
         public Task updateSeenStatus(Guid notificationId);
         public Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds);
+        public Task updateSeenStatusByRequest(Guid requestId, Guid groupId, string type);
 
     }
 }

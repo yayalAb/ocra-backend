@@ -130,7 +130,7 @@ namespace AppDiv.CRVS.Application.Service
                   request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
 
             }
-            
+
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
@@ -144,7 +144,7 @@ namespace AppDiv.CRVS.Application.Service
                     try
                     {
                         string? userId = _userRepository.GetAll()
-                                            .Where(u => u.PersonalInfoId == _UserResolverService.GetUserPersonalId() )
+                                            .Where(u => u.PersonalInfoId == _UserResolverService.GetUserPersonalId())
                                             .Select(u => u.Id).FirstOrDefault();
 
                         if (string.IsNullOrEmpty(userId))
@@ -174,9 +174,31 @@ namespace AppDiv.CRVS.Application.Service
                         };
 
                         await _TransactionService.CreateTransaction(NewTranscation);
-                        // await notificationService.CreateNotification(request.Id, workflowType, Remark,
-                        //    this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                        //  userId);
+
+                        //send notification
+                        Guid? notificationObjId = request.CorrectionRequest != null
+                                               ? request.CorrectionRequest.Id
+                                               : request.AuthenticationRequest != null
+                                               ? request.AuthenticationRequest.Id
+                                               : request.VerficationRequest != null
+                                               ? request.VerficationRequest.Id
+                                               : request.PaymentExamptionRequest?.Id;
+
+                        if (notificationObjId != null)
+                        {
+                            await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark??"",
+                                            this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
+                                          userId);
+
+                        }
+
+                        //update old notification seen status to true
+                        if (request.Notification?.Id != null)
+                        {
+                            await notificationService.updateSeenStatus(request.Notification.Id);
+
+                        }
+
 
                     }
                     catch (Exception exp)

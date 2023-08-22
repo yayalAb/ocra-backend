@@ -189,7 +189,9 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                 RuleFor(e => e.ApplicationId)
                 .NotNull().WithMessage("marriage application id is required for 'civil' marriage type")
                 .NotEmpty().WithMessage("marriage application id cannot be empty for 'civil' marriage type")
-                .Must(BeFoundInMarriageApplicationTable).WithMessage("marriage application with the provided id not found")
+                .Must((e, applicationId, CancellationToken) =>
+                    BeFoundInMarriageApplicationTable(applicationId) || e.Application != null
+                    ).WithMessage("marriage application with the provided id not found")
                 .Must(BeUniqueApplicationId).WithMessage($"Duplicate MarriageApplicationID :  only one marriage event can be registered with one marriage application");
 
                 RuleFor(e => e.Event.EventRegDateEt)
