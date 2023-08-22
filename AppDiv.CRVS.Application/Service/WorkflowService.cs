@@ -134,13 +134,15 @@ namespace AppDiv.CRVS.Application.Service
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
+                bool nextStep1=false;
                 if (this.WorkflowHasPayment(workflowType, nextStep, RequestId) && !paymentAdded)
                 {
-                    string res = await this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
-                    return (false, Guid.Empty);
+                    (float?,string) res = await this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
+                    if(res.Item1!=0||res.Item1!=0.0){
+                       return (false, Guid.Empty);
+                    }
+                    
                 }
-                else
-                {
                     try
                     {
                         string? userId = _userRepository.GetAll()
@@ -205,7 +207,6 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         throw new NotFoundException(exp.Message);
                     }
-                }
             }
             else
             {
@@ -239,7 +240,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             return false;
         }
-        public async Task<string> CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
+        public async Task<(float?, string)> CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
         {
             var request = _requestRepostory.GetAll()
             .Include(x => x.AuthenticationRequest)
@@ -248,7 +249,7 @@ namespace AppDiv.CRVS.Application.Service
             .Where(x => x.Id == RequestId).FirstOrDefault();
             if (request == null)
             {
-                return "Request Does not Found";
+               throw new NotFoundException ("Request Does not Found");
             }
 
             if ((request.RequestType == "authentication" || request.RequestType == "change") && (request?.PaymentRequest?.Id == null || request?.PaymentRequest?.Id == Guid.Empty))
@@ -260,10 +261,7 @@ namespace AppDiv.CRVS.Application.Service
                     .Include(x => x.EventOwener)
                     .Where(x => x.Id == EventId).FirstOrDefault();
                     (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, false, false, cancellationToken);
-                    // if (response.amount == 0)
-                    // {
-                    //     throw new NotFoundException("Payment Rate not Found");
-                    // }
+                     return response;
                 }
                 catch (Exception ex)
                 {
@@ -273,9 +271,9 @@ namespace AppDiv.CRVS.Application.Service
             }
             else
             {
-                return "Request Type Does not Found";
+                return (0,"11111");
             }
-            return "Payment Request Setnt Sucessfully";
+
         }
     }
 }
