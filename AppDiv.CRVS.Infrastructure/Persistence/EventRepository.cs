@@ -98,8 +98,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(e => e.BirthEvent.Mother)
                             .Include(e => e.BirthEvent.Father)
                             .Include(e => e.EventRegistrar.RegistrarInfo)
+                            .ThenInclude(r=>r.ResidentAddress)
                             .Include(e => e.EventRegistrar.RegistrarInfo.BirthAddress)
-                            .Include(e => e.EventRegistrar.RegistrarInfo.ResidentAddress)
                             .Include(e => e.EventRegistrar.RegistrarInfo.SexLookup)
                             .Include(e => e.EventRegistrar.RelationshipLookup)
                             .FirstOrDefaultAsync();
@@ -113,6 +113,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                 .Include(e => e.DeathEventNavigation.DeathNotification.CauseOfDeathInfoTypeLookup)
                                 .Include(e => e.DeathEventNavigation.DuringDeathLookup)
                                 .Include(e => e.EventRegistrar.RegistrarInfo)
+                                .Include(e => e.EventRegistrar.RegistrarInfo.ResidentAddress)
                                 .Include(e => e.EventRegistrar.RelationshipLookup)
                                 .FirstOrDefaultAsync();
         }
