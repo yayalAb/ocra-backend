@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
+using System.Text.Json;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {

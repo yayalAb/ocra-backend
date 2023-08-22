@@ -31,6 +31,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly ISettingRepository _settingRepository;
         private readonly IEventRepository _eventRepository;
         private readonly IMarriageApplicationCouchRepository _marriageApplicationCouchRepo;
+        private readonly IFingerprintService _fingerprintService;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
         private readonly IAddressLookupRepository _addressRepostory;
 
@@ -48,7 +49,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                                  IEventRepository eventRepository,
                                                  IMarriageApplicationCouchRepository marriageApplicationCouchRepo,
                                                  ILogger<CreateMarriageEventCommandHandler> logger,
-                                                 IAddressLookupRepository addressRepostory)
+                                                 IAddressLookupRepository addressRepostory,
+                                                 IFingerprintService fingerprintService)
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -65,6 +67,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _marriageApplicationCouchRepo = marriageApplicationCouchRepo;
             this.logger = logger;
             _addressRepostory = addressRepostory;
+            _fingerprintService=fingerprintService;
         }
 
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
@@ -137,6 +140,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+                        //    await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
+
 
                             // create payment request for the event if it is not exempted
                             if (!marriageEvent.Event.IsExampted)

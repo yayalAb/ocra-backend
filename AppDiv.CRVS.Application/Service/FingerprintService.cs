@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces;
@@ -25,18 +26,32 @@ namespace AppDiv.CRVS.Application.Service
 
            foreach (var item in fingerPrint)
            {
-
              var Create = new FingerPrintApiRequestDto
                     {
                         registrationID = item.Key,
                         images = new BiometricImages {
                               fingerprint= item.Value.Select(x=> new BiometricImagesAtt{
                                         position=x.position,
-                                        base64Image=x.base64Image
+                                        base64Image=x.base64Image.Replace(",", "")
                                                 } ).ToList()
                                               }
 
                                 };
+              var Create1 = new FingerPrintApiRequestDto
+                    {
+                        registrationID = Create.registrationID,
+                        images = new BiometricImages {
+                              fingerprint= Create.images.fingerprint.Select(x=> new BiometricImagesAtt{
+                                        position=x.position,
+                                        base64Image=""
+                                                } ).ToList()
+                                              }
+
+                                };
+                string json = JsonSerializer.Serialize(Create1);
+                Console.WriteLine("################################################################");
+                Console.WriteLine(json);
+
 
               var responseBody= await _requestApiService.post("Register", Create); 
            }

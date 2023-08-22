@@ -44,17 +44,19 @@ namespace AppDiv.CRVS.Application.Service
         {
             request.clientKey = clientKey;
             var jsonData = JsonSerializer.Serialize(request);
-            var content = new StringContent(jsonData, Encoding.UTF8, "application/json");
-            var response = await _client.PostAsync(Baseurl + url, content);
-            if (response.StatusCode.ToString() == "Unauthorized")
-            {
-                await refrashToken();
-                response = await _client.PostAsync(Baseurl + url, content);
-            }
-            var res = response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Console.WriteLine("Response yyyyyyyyyyyyyyyy : {0}",responseBody);
-            return responseBody;
+            using (var content = new StringContent(jsonData, Encoding.UTF8, "application/json"))
+                    {
+                        var response = await _client.PostAsync(Baseurl + url, content);
+                        if (response.StatusCode.ToString() == "Unauthorized")
+                        {
+                            await refrashToken();
+                            response = await _client.PostAsync(Baseurl + url, content);
+                        }
+                        var res = response.EnsureSuccessStatusCode();
+                        var responseBody = await response.Content.ReadAsStringAsync();
+                        return responseBody;
+                    }
+
         }
 
         private async Task<string> refrashToken()

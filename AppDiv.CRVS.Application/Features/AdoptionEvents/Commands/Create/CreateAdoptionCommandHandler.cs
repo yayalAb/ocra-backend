@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IEventRepository _EventRepository;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepostory;
+        private readonly IFingerprintService _fingerprintService;
 
         private readonly ISmsService _smsService;
 
@@ -42,7 +43,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         IEventRepository EventRepository,
                                         IEventPaymentRequestService paymentRequestService,
                                         ISmsService smsService,
-                                        IAddressLookupRepository addressRepostory)
+                                        IAddressLookupRepository addressRepostory,
+                                        IFingerprintService fingerprintService)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -57,6 +59,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _paymentRequestService = paymentRequestService;
             _smsService = smsService;
             _addressRepostory = addressRepostory;
+            _fingerprintService= fingerprintService;
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
@@ -185,7 +188,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                                 _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-
+                                //    await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
                                 if (!adoptionEvent.Event.IsExampted)
                                 {
                                     //--create payment request and send sms notification to the users

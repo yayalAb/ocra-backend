@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly IEventRepository _eventRepository;
         private readonly ICourtRepository _courtRepository;
         private readonly IAddressLookupRepository _addressRepostory;
+        private readonly IFingerprintService _fingerprintService;
 
         public CreateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
                                                 IPersonalInfoRepository personalInfoRepository,
@@ -33,7 +34,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                                 ISmsService smsService,
                                                 IEventRepository eventRepository,
                                                 ICourtRepository courtRepository,
-                                                IAddressLookupRepository addressRepostory)
+                                                IAddressLookupRepository addressRepostory,
+                                                IFingerprintService fingerprintService
+                                                )
         {
             _DivorceEventRepository = DivorceEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -45,6 +48,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _eventRepository = eventRepository;
             _courtRepository = courtRepository;
             _addressRepostory = addressRepostory;
+            _fingerprintService=fingerprintService;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
@@ -102,7 +106,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
                             _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-
+                            // await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
                             // create payment request for the event if it is not exempted
                             if (!divorceEvent.Event.IsExampted)
                             {
