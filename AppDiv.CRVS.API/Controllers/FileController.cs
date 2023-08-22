@@ -1,6 +1,7 @@
 
 
 using AppDiv.CRVS.Application.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 
@@ -16,6 +17,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [AllowAnonymous]
         public async Task<IActionResult> Get([FromQuery] Guid id, [FromQuery] string fileType, [FromQuery] string? eventType, [FromQuery] string? fingerPrintIndex)
         {
 
