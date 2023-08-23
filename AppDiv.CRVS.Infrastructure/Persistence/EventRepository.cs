@@ -170,6 +170,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         .Include(h => h.EventOwener)
                         .Include(h => h.EventOwener.BirthAddress)
                         .Include(h => h.EventOwener.ResidentAddress)
+                        .Include(h => h.EventOwener.NationLookup)
                         .Include(e => e.DivorceEvent.DivorcedWife)
                         .Include(e => e.DivorceEvent.DivorcedWife.ResidentAddress)
                         .Include(e => e.DivorceEvent.DivorcedWife.BirthAddress)
