@@ -238,5 +238,80 @@
     },
     "statisticCode": "1017",
     "code": "1017"
+  },
+  {
+    "key": "event",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "Adoption"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1018",
+    "code": "1018"
+  },
+  {
+    "key": "event",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "Birth"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1019",
+    "code": "1019"
+  },
+  {
+    "key": "event",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "Divorce"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1020",
+    "code": "1020"
+  },
+  {
+    "key": "event",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "Marriage"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1021",
+    "code": "1021"
+  },
+  {
+    "key": "event",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "Death"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1021",
+    "code": "1021"
   }
 ]
