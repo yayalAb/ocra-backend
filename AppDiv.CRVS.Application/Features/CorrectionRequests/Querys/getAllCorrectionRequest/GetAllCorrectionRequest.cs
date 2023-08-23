@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             .Include(x => x.Request)
             .Include(x => x.Event)
             .ThenInclude(x => x.CivilRegOfficer)
-            .Where(x => x.Request.CivilRegOfficerId == request.CivilRegOfficerId);
+            .Where(x => (x.Request.CivilRegOfficerId == request.CivilRegOfficerId)&&(x.Request.currentStep!=x.Request.NextStep));
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 CorrectionRequest = CorrectionRequest.Where(

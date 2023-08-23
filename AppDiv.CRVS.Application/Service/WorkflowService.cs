@@ -234,7 +234,7 @@ namespace AppDiv.CRVS.Application.Service
             .ThenInclude(x => x.Payment)
             .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
             ).FirstOrDefault();
-            if (requestHaspayment != null && (requestHaspayment?.PaymentRequest?.Payment?.Id == null || requestHaspayment?.PaymentRequest?.Payment?.Id == Guid.Empty))
+            if (requestHaspayment != null && requestHaspayment?.PaymentRequest?.Payment == null)
             {
                 return true;
             }
