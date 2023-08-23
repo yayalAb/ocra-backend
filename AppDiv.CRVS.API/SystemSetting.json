@@ -1,0 +1,242 @@
+[
+  {
+    "key": "payment-type",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "change"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": "change paymnet"
+    },
+    "statisticCode": "1001",
+    "code": "1001"
+  },
+  {
+    "key": "payment-type",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "authentication"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": "authentication Payment"
+    },
+    "statisticCode": "1002",
+    "code": "1002"
+  },
+  {
+    "key": "payment-type",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "certificategeneration"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": "certificategeneration"
+    },
+    "statisticCode": "1003",
+    "code": "1003"
+  },
+  {
+    "key": "payment-type",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "verification"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": "verification payment"
+    },
+    "statisticCode": "1004",
+    "code": "1004"
+  },
+  {
+    "key": "payment-type",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "Reprint"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": "Reprint payment"
+    },
+    "statisticCode": "1005",
+    "code": "1005"
+  },
+  {
+    "key": "nationality",
+    "value": {
+      "am": "ኢትዮጵያ",
+      "or": "itoophiyaa",
+      "en": "ethiopia"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1006",
+    "code": "1006"
+  },
+  {
+    "key": "sex",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "male"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1007",
+    "code": "1007"
+  },
+  {
+    "key": "sex",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "Female"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1008",
+    "code": "1008"
+  },
+  {
+    "key": "supporting-document-type",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "fingerprint"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1009",
+    "code": "1009"
+  },
+  {
+    "key": "supporting-document-type",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "webcam"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1010",
+    "code": "1010"
+  },
+  {
+    "key": "marital-status-male",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "divorced"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1012",
+    "code": "1012"
+  },
+  {
+    "key": "marital-status-male",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "widow"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1013",
+    "code": "1013"
+  },
+  {
+    "key": "marital-status-male",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "married"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1014",
+    "code": "1014"
+  },
+  {
+    "key": "marital-status-female",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "divorced"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1015",
+    "code": "1015"
+  },
+  {
+    "key": "marital-status-female",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "widow"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1016",
+    "code": "1016"
+  },
+  {
+    "key": "marital-status-female",
+    "value": {
+      "am": "",
+      "or": "",
+      "en": "married"
+    },
+    "description": {
+      "am": "",
+      "or": "",
+      "en": ""
+    },
+    "statisticCode": "1017",
+    "code": "1017"
+  }
+]

@@ -173,7 +173,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
             }
-            if (selectedEvent.EventType == "Marriage" || content.marriage != null)
+            if (selectedEvent.EventType.ToLower() == "marriage" || content.marriage != null)
             {
                 (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage();
                 response.Images = new EventImagesDTO
