@@ -124,19 +124,21 @@ namespace AppDiv.CRVS.Application.Service
             }
             else
             {
-
                 ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
                   (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
                   request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
-
             }
 
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
                 bool nextStep1=false;
-                if (this.WorkflowHasPayment(workflowType, nextStep, RequestId) && !paymentAdded)
+                var checkPayment=this.WorkflowHasPayment(workflowType, nextStep, RequestId);
+                if (checkPayment.Item1 && !paymentAdded)
                 {
+                if(checkPayment.Item2){
+                         return (false, Guid.Empty);
+                           }
                     (float?,string) res = await this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
                     if(res.Item1!=0||res.Item1!=0.0){
                        return (false, Guid.Empty);
@@ -225,7 +227,7 @@ namespace AppDiv.CRVS.Application.Service
             return eventId.EventId;
         }
 
-        public bool WorkflowHasPayment(string workflow, int Step, Guid RequestId)
+        public (bool,bool) WorkflowHasPayment(string workflow, int Step, Guid RequestId)
         {
             var requestHaspayment = _requestRepostory.GetAll()
             .Include(x => x.Workflow)
@@ -234,11 +236,16 @@ namespace AppDiv.CRVS.Application.Service
             .ThenInclude(x => x.Payment)
             .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
             ).FirstOrDefault();
-            if (requestHaspayment != null && requestHaspayment?.PaymentRequest?.Payment == null)
+            if (requestHaspayment != null)
             {
-                return true;
+                if(requestHaspayment?.PaymentRequest == null){
+                   return (true,false);
+                }
+                else if(requestHaspayment?.PaymentRequest!=null&&requestHaspayment?.PaymentRequest.status==false){
+                    return (true,true);
+                }
             }
-            return false;
+            return( false,false);
         }
         public async Task<(float?, string)> CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
         {
