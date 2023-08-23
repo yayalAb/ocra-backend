@@ -80,6 +80,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             birthEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
                             birthEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
                             birthEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
+                            if(birthEvent.Father!=null){
+                                birthEvent.Event.EventOwener.MiddleName=birthEvent.Father.FirstName;
+                                birthEvent.Event.EventOwener.LastName=birthEvent.Father.MiddleName;
+                            }
                             if (request.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository))
                             {
                                 birthEvent.Event.HasPendingDocumentApproval = true;

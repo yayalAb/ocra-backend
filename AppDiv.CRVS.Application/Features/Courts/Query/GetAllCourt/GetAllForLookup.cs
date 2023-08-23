@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,10 +33,11 @@ namespace AppDiv.CRVS.Application.Features.Courts.Query.GetAllCourt
         public async Task<List<CourtListDTO>> Handle(GetAllForLookup request, CancellationToken cancellationToken)
         {
             var lookuplist = _courtRepository.GetAll()
+            .Include(a=>a.Address)
                                 .Select(co => new CourtListDTO
                                 {
                                     id = co.Id,
-                                    Name = co.NameLang,
+                                    Name = co.NameLang+", " + co.Address.AddressNameLang,
                                     Description = co.DescriptionLang,
                                 });
 

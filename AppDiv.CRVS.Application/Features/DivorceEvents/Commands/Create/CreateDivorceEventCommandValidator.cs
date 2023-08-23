@@ -99,7 +99,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                 .NotNull().WithMessage("civilRegOfficerId cannot be null")
                 .NotEmpty().WithMessage("civilRegOfficerId cannot be empty")
                 .Must(BeFoundInPersonalInfoTable).WithMessage("civilRegistrar officer with the provided id is not found");
-            When(e => e.CourtCase.Court.Id == null, () =>
+            When(e => e.CourtCase?.CourtId == null, () =>
            {
                RuleFor(e => e.CourtCase.Court)
                    .Cascade(CascadeMode.StopOnFirstFailure)
@@ -107,9 +107,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                    .NotNull().WithMessage("court cannot be null if courtId is null");
 
            });
-            When(e => e.CourtCase.Court == null, () =>
+            When(e => e.CourtCase?.Court == null, () =>
             {
-                RuleFor(e => e.CourtCase.Court.Id)
+                RuleFor(e => e.CourtCase.CourtId)
                     .Cascade(CascadeMode.StopOnFirstFailure)
                     .NotEmpty().WithMessage("court cannot be empty if courtId is null")
                     .NotNull().WithMessage("court cannot be null if courtId is null")
