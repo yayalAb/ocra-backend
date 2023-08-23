@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 }
                                 birthEvent.Event.EventRegisteredAddressId = request.BirthEvent?.Event.EventRegisteredAddressId;
                             }
-                            if (request.BirthEvent.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.BirthEvent.Event.EventSupportingDocuments, _lookupRepository))
+                            if (request.BirthEvent.Event.InformantType == "guardian")
                             {
                                 birthEvent.Event.HasPendingDocumentApproval = true;
                             }
