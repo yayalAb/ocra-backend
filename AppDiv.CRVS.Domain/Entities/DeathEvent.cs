@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? DeathPlaceId { get; set; }
         public string? PlaceOfFuneral { get; set; }
         public Guid EventId { get; set; }
+        public int? Age { get; set; }
+        public string? AgeUnit { get; set; }
 
         public virtual Lookup FacilityTypeLookup { get; set; }
         public virtual Lookup FacilityLookup { get; set; }

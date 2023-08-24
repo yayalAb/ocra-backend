@@ -268,6 +268,7 @@ namespace AppDiv.CRVS.Application.Service
             existingUser.SelectedAdminType = user.SelectedAdminType;
             existingUser.PreferedLanguage = user.PreferedLanguage;
             existingUser.AddressId = user.AddressId;
+            existingUser.CanRegisterEvent = user.CanRegisterEvent;
             //if the user was locked and status is updated to true
             if (user.Status && existingUser.LockoutEnd > DateTime.Now && existingUser.LockoutEnabled)
             {
