@@ -90,23 +90,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                                                 .Where(s => s.EventId == death.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList()
             };
-            if(death.EventDate!=null&&death.EventOwener.BirthDate!=null){
-                DateTime BirthDate=death.EventOwener.BirthDate ?? DateTime.Now;
-                if( death.EventDate.Year>BirthDate.Year){
-                     deathInfo.Deceased.Age=death.EventDate.AddYears(-BirthDate.Year).Year.ToString();
-                }else if(death.EventDate.Month>BirthDate.Month){
-                deathInfo.Deceased.Age=death.EventDate.AddMonths(-BirthDate.Month).Month.ToString()+" month";
-
-                 }
-                else if(death.EventDate.Day>BirthDate.Day){
-                   deathInfo.Deceased.Age= death.EventDate.AddDays(-BirthDate.Day).Day.ToString()+" day";
-                }
-                else {
-                    deathInfo.Deceased.Age=death.EventDate.AddHours(-BirthDate.Hour).Hour.ToString()+" hours";
-                 }
-            }
-            
-
             deathInfo.PaymentExamptionSupportingDocuments = death?.PaymentExamption?.Id == null ? null
                 : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == death.PaymentExamption.Id)
                         .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();

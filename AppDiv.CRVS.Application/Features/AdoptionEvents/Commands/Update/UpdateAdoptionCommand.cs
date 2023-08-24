@@ -95,11 +95,11 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                                                             || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                                             || EF.Functions.Like(l.ValueStr, "%Female%"))
                                                         .Select(l => l.Id).FirstOrDefault();
-                request.Event.EventDateEt = request.CourtCase.ConfirmedDateEt;
+                request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt;
                 var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
                 var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
-                adoptionEvent.Event.EventAddressId = adoptionEvent.CourtCase.Court.AddressId;
+                adoptionEvent.Event.EventAddressId = adoptionEvent?.CourtCase?.Court?.AddressId;
                 adoptionEvent.Event.IsPaid=SelectedEvent.IsPaid;
                 adoptionEvent.Event.IsVerified=SelectedEvent.IsVerified;
                 adoptionEvent.Event.IsCertified=false;
@@ -123,7 +123,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 }
                 else
                 { 
-                   var docs = await _eventDocumentService.createSupportingDocumentsAsync(CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event.EventSupportingDocuments), CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event.PaymentExamption.SupportingDocuments), adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
+                   var docs = await _eventDocumentService.createSupportingDocumentsAsync(CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event?.EventSupportingDocuments), CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event?.PaymentExamption?.SupportingDocuments), adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,

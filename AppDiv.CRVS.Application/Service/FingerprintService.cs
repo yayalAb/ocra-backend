@@ -32,27 +32,10 @@ namespace AppDiv.CRVS.Application.Service
                         images = new BiometricImages {
                               fingerprint= item.Value.Select(x=> new BiometricImagesAtt{
                                         position=x.position,
-                                        base64Image=x.base64Image.Replace(",", "")
+                                        base64Image=x.base64Image.Replace("data:image/jpeg;base64,", "")
                                                 } ).ToList()
                                               }
-
                                 };
-              var Create1 = new FingerPrintApiRequestDto
-                    {
-                        registrationID = Create.registrationID,
-                        images = new BiometricImages {
-                              fingerprint= Create.images.fingerprint.Select(x=> new BiometricImagesAtt{
-                                        position=x.position,
-                                        base64Image=""
-                                                } ).ToList()
-                                              }
-
-                                };
-                string json = JsonSerializer.Serialize(Create1);
-                Console.WriteLine("################################################################");
-                Console.WriteLine(json);
-
-
               var responseBody= await _requestApiService.post("Register", Create); 
            }
            return "";
