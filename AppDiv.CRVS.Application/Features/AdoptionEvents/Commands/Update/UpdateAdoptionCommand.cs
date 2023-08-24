@@ -107,16 +107,14 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 adoptionEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
                 adoptionEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                 var personIds = new PersonIdObj();
-                await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
-
-                if (!request.IsFromCommand)
+                adoptionEvent.Event.EventSupportingDocuments = null;
+                if (adoptionEvent.Event.PaymentExamption != null)
                 {
-                    adoptionEvent.Event.EventSupportingDocuments = null;
-                    if (adoptionEvent.Event.PaymentExamption != null)
-                    {
-                        adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
-                    }
-                    
+                    adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
+                }
+                 await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
+                if (!request.IsFromCommand)
+                { 
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,

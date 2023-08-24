@@ -74,9 +74,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         }
         private CourtArchive GetCourt(CourtCase court)
         {
-            (string am, string or)? courtAddress = (court.Court.AddressId == Guid.Empty
-               || court.Court?.Address == null) ? null :
-               _DateAndAddressService.addressFormat(court.Court.AddressId);
+            (string am, string or)? courtAddress = (court?.Court?.AddressId == Guid.Empty
+               || court.Court == null) ? null :
+               _DateAndAddressService.addressFormat(court?.Court?.AddressId);
             return new CourtArchive
             {
                 CourtNameOr = court?.Court?.Name?.Value<string>("or"),
@@ -85,12 +85,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 CourtAddressOr = courtAddress?.or,
                 CourtAddressAm = courtAddress?.am,
 
-                CourtConfirmationMonthOr = new EthiopicDateTime(_convertor.getSplitted(court.ConfirmedDateEt).month, "or").month,
-                CourtConfirmationMonthAm = new EthiopicDateTime(_convertor.getSplitted(court.ConfirmedDateEt).month, "am").month,
+                CourtConfirmationMonthOr = new EthiopicDateTime(_convertor.getSplitted(court?.ConfirmedDateEt).month, "or").month,
+                CourtConfirmationMonthAm = new EthiopicDateTime(_convertor.getSplitted(court?.ConfirmedDateEt).month, "am").month,
                 CourtConfirmationDay = _convertor.getSplitted(court?.ConfirmedDateEt).day.ToString(),
                 CourtConfirmationYear = _convertor.getSplitted(court?.ConfirmedDateEt).year.ToString(),
 
-                CourtCaseNumber = court.CourtCaseNumber,
+                CourtCaseNumber = court?.CourtCaseNumber,
             };
         }
         public AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo)
@@ -98,16 +98,16 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             var adoptionInfo = new AdoptionArchiveDTO()
             {
-                Child = GetChild(adoption.EventOwener),
-                Mother = GetMother(adoption.AdoptionEvent.AdoptiveMother),
-                Father = GetFather(adoption.AdoptionEvent.AdoptiveFather),
-                Court = GetCourt(adoption.AdoptionEvent.CourtCase),
+                Child = GetChild(adoption?.EventOwener),
+                Mother = GetMother(adoption?.AdoptionEvent?.AdoptiveMother),
+                Father = GetFather(adoption?.AdoptionEvent?.AdoptiveFather),
+                Court = GetCourt(adoption?.AdoptionEvent?.CourtCase),
                 EventInfo = GetEventInfo(adoption),
-                CivilRegistrarOfficer = GetOfficer(adoption.CivilRegOfficer),
+                CivilRegistrarOfficer = GetOfficer(adoption?.CivilRegOfficer),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == adoption.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
             };
-            adoptionInfo.PaymentExamptionSupportingDocuments = adoption?.PaymentExamption?.Id == null ? null
+            adoptionInfo.PaymentExamptionSupportingDocuments = adoption?.PaymentExamption == null ? null
                     : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == adoption.PaymentExamption.Id)
                                     .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();
             return adoptionInfo;
