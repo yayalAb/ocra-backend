@@ -7,7 +7,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.DeathArchive
 {
     public class DeceasedPerson : Person
     {
-        public int? Age { get; set; }
+        public string? Age { get; set; }
         public string? TitileAm { get; set; }
         public string? TitileOr { get; set; }
     }

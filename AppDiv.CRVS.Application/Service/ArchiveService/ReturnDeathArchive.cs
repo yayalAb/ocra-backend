@@ -13,6 +13,8 @@ using AppDiv.CRVS.Application.Mapper;
 using Newtonsoft.Json.Linq;
 using AutoMapper.QueryableExtensions;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using Org.BouncyCastle.Asn1.Cms;
+using System.ComponentModel;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -41,6 +43,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             deathInfo.DuringDeathOr = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupAm(death?.DeathEventNavigation?.DuringDeathId);
             deathInfo.FacilityTypeAm = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupOr(death?.DeathEventNavigation?.FacilityTypeLookupId);
             deathInfo.FacilityTypeOr = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupAm(death?.DeathEventNavigation?.FacilityTypeLookupId);
+           
             return deathInfo;
 
         }
@@ -68,7 +71,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private DeceasedPerson GetDeceased(PersonalInfo deceased)
         {
             DeceasedPerson deceasedInfo = CustomMapper.Mapper.Map<DeceasedPerson>(ReturnPerson.GetPerson(deceased, _dateAndAddressService, _lookupService));
-            deceasedInfo.Age = DateTime.Today.Year - deceased?.BirthDate?.Year;
             deceasedInfo.TitileAm = deceased?.TitleLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(deceased?.TitleLookupId);
             deceasedInfo.TitileOr = deceased?.TitleLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(deceased?.TitleLookupId);
             return deceasedInfo;
@@ -88,6 +90,23 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                                                 .Where(s => s.EventId == death.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList()
             };
+            if(death.EventDate!=null&&death.EventOwener.BirthDate!=null){
+                DateTime BirthDate=death.EventOwener.BirthDate ?? DateTime.Now;
+                if( death.EventDate.Year>BirthDate.Year){
+                     deathInfo.Deceased.Age=death.EventDate.AddYears(-BirthDate.Year).Year.ToString();
+                }else if(death.EventDate.Month>BirthDate.Month){
+                deathInfo.Deceased.Age=death.EventDate.AddMonths(-BirthDate.Month).Month.ToString()+" month";
+
+                 }
+                else if(death.EventDate.Day>BirthDate.Day){
+                   deathInfo.Deceased.Age= death.EventDate.AddDays(-BirthDate.Day).Day.ToString()+" day";
+                }
+                else {
+                    deathInfo.Deceased.Age=death.EventDate.AddHours(-BirthDate.Hour).Hour.ToString()+" hours";
+                 }
+            }
+            
+
             deathInfo.PaymentExamptionSupportingDocuments = death?.PaymentExamption?.Id == null ? null
                 : _supportingDocument.GetAll().Where(s => s.PaymentExamptionId == death.PaymentExamption.Id)
                         .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();
