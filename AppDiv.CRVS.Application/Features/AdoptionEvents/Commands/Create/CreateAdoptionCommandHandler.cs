@@ -221,6 +221,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 }
                                
                                 await transaction.CommitAsync();
+                                _AdoptionEventRepository.TriggerPersonalInfoIndex();
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
                                     Success = true,

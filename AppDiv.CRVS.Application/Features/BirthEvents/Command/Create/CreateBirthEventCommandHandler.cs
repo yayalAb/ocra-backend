@@ -8,6 +8,7 @@ using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 {
@@ -40,7 +41,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _lookupRepository = lookupRepository;
             _smsService = smsService;
             _addressRepostory = addressRepostory;
-            _fingerprintService=fingerprintService;
+            _fingerprintService = fingerprintService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -48,6 +49,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             float amount = 0;
             // Create an execution strategy for the current database.
             var executionStrategy = _birthEventRepository.Database.CreateExecutionStrategy();
+            List<PersonalInfoEntry> personalInfoEntries = new List<PersonalInfoEntry>();
 
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -95,6 +97,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             }
                             // Insert to the database.
                             await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
+                           
+
                             // store the persons id from the request
                             var personIds = new PersonIdObj
                             {
@@ -150,6 +154,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                         response.Message = "Birth Event created Successfully";
                         response.Status = 200;
                         await transaction.CommitAsync();
+                        _birthEventRepository.TriggerPersonalInfoIndex();
 
                     }
 

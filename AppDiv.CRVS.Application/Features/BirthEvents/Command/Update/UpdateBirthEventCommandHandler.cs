@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                 using var transaction = request.IsFromCommand ? null : _birthEventRepository.Database.BeginTransaction();
                 try
                 {
-                   
+
                     // Create response.
                     var response = new UpdateBirthEventCommandResponse();
                     // Validate the inputs.
@@ -56,9 +56,9 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                     }
                     if (true)
                     {
-                        var SelectedEvent= _eventRepository.GetAll()
+                        var SelectedEvent = _eventRepository.GetAll()
                         .AsNoTracking()
-                         .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
+                         .Where(x => x.Id == request.Event.Id).FirstOrDefault();
                         if (request.ValidateFirst == true)
                         {
                             response.Updated(entity: "Birth", message: "Valid Input.");
@@ -75,14 +75,15 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             // Map the reques to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
                             birthEvent.Event.EventType = "Birth";
-                            birthEvent.Event.IsPaid=SelectedEvent.IsPaid;
-                            birthEvent.Event.IsVerified=SelectedEvent.IsVerified;
-                            birthEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
-                            birthEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
-                            birthEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
-                            if(birthEvent.Father!=null){
-                                birthEvent.Event.EventOwener.MiddleName=birthEvent.Father.FirstName;
-                                birthEvent.Event.EventOwener.LastName=birthEvent.Father.MiddleName;
+                            birthEvent.Event.IsPaid = SelectedEvent.IsPaid;
+                            birthEvent.Event.IsVerified = SelectedEvent.IsVerified;
+                            birthEvent.Event.EventRegisteredAddressId = SelectedEvent.EventRegisteredAddressId;
+                            birthEvent.Event.HasPendingDocumentApproval = SelectedEvent.HasPendingDocumentApproval;
+                            birthEvent.Event.IsOfflineReg = SelectedEvent.IsOfflineReg;
+                            if (birthEvent.Father != null)
+                            {
+                                birthEvent.Event.EventOwener.MiddleName = birthEvent.Father.FirstName;
+                                birthEvent.Event.EventOwener.LastName = birthEvent.Father.MiddleName;
                             }
                             if (request.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository))
                             {
@@ -105,7 +106,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null ? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
                             // for requests not from correction request
-                            birthEvent.Event.IsCertified=false;
+                            birthEvent.Event.IsCertified = false;
                             if (!request.IsFromCommand)
                             {
                                 // Save the newly added supporting documents and exemption documents.
@@ -138,7 +139,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             {
                                 await transaction.CommitAsync();
 
+
                             }
+                                _birthEventRepository.TriggerPersonalInfoIndex();
+
                         }
                         catch (System.Exception ex)
                         {

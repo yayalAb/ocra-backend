@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                 using var transaction = request.IsFromCommand ? null : _deathEventRepository.Database.BeginTransaction();
                 try
                 {
-                   
+
 
                     var response = new UpdateDeathEventCommandResponse();
                     // validate the request inputs.
@@ -52,9 +52,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                     }
 
                     if (response.Success)
-                    { var SelectedEvent= _eventRepository.GetAll()
+                    {
+                        var SelectedEvent = _eventRepository.GetAll()
                     .AsNoTracking()
-                    .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
+                    .Where(x => x.Id == request.Event.Id).FirstOrDefault();
                         // Validate the inputs first for the correction request approval.
                         if (request.ValidateFirst == true)
                         {
@@ -69,11 +70,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // Map the reques to model eintity.
                         var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                         deathEvent.Event.EventType = "Death";
-                        deathEvent.Event.IsPaid=SelectedEvent.IsPaid;
-                        deathEvent.Event.IsVerified=SelectedEvent.IsVerified;
-                        deathEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
-                        deathEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
-                        deathEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
+                        deathEvent.Event.IsPaid = SelectedEvent.IsPaid;
+                        deathEvent.Event.IsVerified = SelectedEvent.IsVerified;
+                        deathEvent.Event.EventRegisteredAddressId = SelectedEvent.EventRegisteredAddressId;
+                        deathEvent.Event.HasPendingDocumentApproval = SelectedEvent.HasPendingDocumentApproval;
+                        deathEvent.Event.IsOfflineReg = SelectedEvent.IsOfflineReg;
                         // Set the supporting documents to null.
                         deathEvent.Event.EventSupportingDocuments = null!;
                         if (deathEvent.Event.PaymentExamption != null)
@@ -83,7 +84,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // Set the daeth status of the person to true.
                         deathEvent.Event.EventOwener.DeathStatus = true;
                         // Update the Death Event.
-                        await _deathEventRepository.UpdateWithNested(deathEvent,_paymentRequestService,cancellationToken);
+                        await _deathEventRepository.UpdateWithNested(deathEvent, _paymentRequestService, cancellationToken);
                         // persons id.
                         var personIds = new PersonIdObj
                         {
@@ -111,7 +112,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                             {
                                 _eventDocumentService.MovePhotos(userPhotos, "Death");
                             }
-                             _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+                            _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
 
                         }
                         // Set the response to Updated.
@@ -120,7 +121,9 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         if (!request.IsFromCommand)
                         {
                             await transaction?.CommitAsync()!;
+
                         }
+                        _deathEventRepository.TriggerPersonalInfoIndex();
 
 
                     }

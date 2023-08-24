@@ -125,6 +125,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                         response.Created("Death Event");
                         // Commit the transaction.
                         await transaction.CommitAsync();
+                        _deathEventRepository.TriggerPersonalInfoIndex();
                     }
                     return response;
                 }

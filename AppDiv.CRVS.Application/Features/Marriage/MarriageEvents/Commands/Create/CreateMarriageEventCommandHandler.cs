@@ -174,6 +174,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
                             // }
                             await transaction.CommitAsync();
+                            _marriageEventRepository.TriggerPersonalInfoIndex();
 
                         }
                         return CreateMarriageEventCommandResponse;

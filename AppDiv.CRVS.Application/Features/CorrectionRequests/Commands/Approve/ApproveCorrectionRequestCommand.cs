@@ -123,6 +123,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Approve
                             Message = request.IsApprove ? "Correction Request Approved Successfuly" : "Correction Request Rejected Successfuly",
                         };
                         await transaction.CommitAsync();
+                        _CorrectionRequestRepostory.TriggerPersonalInfoIndex();
                         return Response;
                     }
                     catch (Exception)

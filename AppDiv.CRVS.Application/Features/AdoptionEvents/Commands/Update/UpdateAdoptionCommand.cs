@@ -73,9 +73,9 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
         }
         else if (UpdateAdoptionCommandResponse.Success)
         {
-            var SelectedEvent= _eventRepository.GetAll()
+            var SelectedEvent = _eventRepository.GetAll()
                     .AsNoTracking()
-                   .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
+                   .Where(x => x.Id == request.Event.Id).FirstOrDefault();
             if (request.ValidateFirst == true)
             {
                 UpdateAdoptionCommandResponse.Created(entity: "Adoption", message: "Valid Input.");
@@ -108,7 +108,13 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 adoptionEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                 var personIds = new PersonIdObj();
                 if (!request.IsFromCommand)
-                { 
+                {
+                    adoptionEvent.Event.EventSupportingDocuments = null;
+                    if (adoptionEvent.Event.PaymentExamption != null)
+                    {
+                        adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
+                    }
+
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
@@ -147,6 +153,7 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
                await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                 // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
+                _adoptionEventRepository.TriggerPersonalInfoIndex();
                 UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
             }
             catch (Exception ex)

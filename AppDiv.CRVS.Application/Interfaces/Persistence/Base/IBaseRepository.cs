@@ -1,4 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Domain.Base;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
@@ -17,7 +18,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence.Base
         Task DeleteAsync(object id);
         Task DeleteAsync(object[] id);
         Task<IEnumerable<T>> GetAllAsync();
-         IQueryable<T> GetAll();
+        IQueryable<T> GetAll();
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>> predicate = null);
         Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, object>> orderBy, int skip, int limit);
         Task<IEnumerable<T>> GetAllWithAsync(Expression<Func<T, bool>> predicate = null, params string[] eagerLoadedProperties);
@@ -51,6 +52,8 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence.Base
         Task InsertAsync(IEnumerable<T> entities, CancellationToken cancellationToken);
         Task InsertAsync(T entity, CancellationToken cancellationToken);
         bool SaveChanges();
+        bool TriggerPersonalInfoIndex();
+        bool TriggerPersonalInfoIndex(List<PersonalInfoEntry> personEntries);
         Task<bool> SaveChangesAsync(CancellationToken cancellationToken);
         void Update(IEnumerable<T> entities);
         void Update(T entity);
