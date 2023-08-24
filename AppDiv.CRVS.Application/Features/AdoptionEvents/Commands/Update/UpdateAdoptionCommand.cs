@@ -109,12 +109,6 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 var personIds = new PersonIdObj();
                 if (!request.IsFromCommand)
                 {
-                    adoptionEvent.Event.EventSupportingDocuments = null;
-                    if (adoptionEvent.Event.PaymentExamption != null)
-                    {
-                        adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
-                    }
-
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
