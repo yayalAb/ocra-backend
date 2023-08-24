@@ -107,12 +107,6 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 adoptionEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
                 adoptionEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                 var personIds = new PersonIdObj();
-                adoptionEvent.Event.EventSupportingDocuments = null;
-                if (adoptionEvent.Event.PaymentExamption != null)
-                {
-                    adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
-                }
-                 await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
                 if (!request.IsFromCommand)
                 { 
                     personIds = new PersonIdObj
@@ -128,7 +122,8 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
 
                 }
                 else
-                {
+                { 
+                   var docs = await _eventDocumentService.createSupportingDocumentsAsync(CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event.EventSupportingDocuments), CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event.PaymentExamption.SupportingDocuments), adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
@@ -144,7 +139,12 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     {
                         _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                     }
+                } adoptionEvent.Event.EventSupportingDocuments = null;
+                if (adoptionEvent.Event.PaymentExamption != null)
+                {
+                    adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
                 }
+                await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
                await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                 // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
                 UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
