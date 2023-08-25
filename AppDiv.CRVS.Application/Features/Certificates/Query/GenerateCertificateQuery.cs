@@ -122,10 +122,14 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             // }
 
 
-            var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
+            var birthCertificateNo = _IBirthEventRepository
+                                    .GetAll()
+                                    .Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId)
+                                    .Select(x => x.Event.CertificateId)
+                                    .FirstOrDefault();
             var content = await _certificateRepository.GetContent(request.Id);
-            var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo?.Event?.CertificateId);
-            var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType).FirstOrDefault();
+            var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo);
+            var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType).Select(c => c.Id).FirstOrDefault();
             if (request.IsPrint && !string.IsNullOrEmpty(request.CertificateSerialNumber))
             {
                 var findPerCertificates = _certificateRepository.GetAll().Where(x => x.EventId == request.Id).ToList();
@@ -183,7 +187,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 };
             }
             response.Content = certificate.Content;
-            response.TemplateId = certificateTemplateId?.Id;
+            response.TemplateId = certificateTemplateId;
             return response;
         }
 

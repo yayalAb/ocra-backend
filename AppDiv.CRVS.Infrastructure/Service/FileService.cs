@@ -78,8 +78,8 @@ namespace AppDiv.CRVS.Infrastructure.Services
                 string myString = base64String.Substring(base64String.IndexOf(',') + 1);
                 byte[] bytes = Convert.FromBase64String(myString);
 
-                var extension = FileExtractorService.GetFileExtensionFromBase64String(base64String) ?? ".bin";
-                var fullPath = Path.Combine(pathToSave, fileName + extension);
+                var extension = FileExtractorService.GetFileExtensionFromBase64String(base64String) ?? "bin";
+                var fullPath = Path.Combine(pathToSave, fileName + "."+extension);
                 var matchingFiles = Directory.GetFiles(pathToSave, fileName + "*");
                 //removing file with the same id but different extension 
                 matchingFiles.ToList().ForEach(file =>
