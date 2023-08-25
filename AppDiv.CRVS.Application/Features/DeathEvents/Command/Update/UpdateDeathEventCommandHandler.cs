@@ -75,11 +75,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         deathEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
                         deathEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
                         // Set the supporting documents to null.
-                        deathEvent.Event.EventSupportingDocuments = null!;
-                        if (deathEvent.Event.PaymentExamption != null)
-                        {
-                            deathEvent.Event.PaymentExamption.SupportingDocuments = null!;
-                        }
+                       
                         // Set the daeth status of the person to true.
                         deathEvent.Event.EventOwener.DeathStatus = true;
                         // Update the Death Event.
@@ -95,6 +91,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         // if the update not from the corection request.
                         if (!request.IsFromCommand)
                         {
+                             deathEvent.Event.EventSupportingDocuments = null!;
+                            if (deathEvent.Event.PaymentExamption != null)
+                            {
+                                deathEvent.Event.PaymentExamption.SupportingDocuments = null!;
+                            }
                             // Save the supporting documents.
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
@@ -105,7 +106,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         }
                         else
                         {
-                            var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
+                            var docs = await _eventDocumentService.createSupportingDocumentsAsync(request.Event?.EventSupportingDocuments!, request.Event?.PaymentExamption?.SupportingDocuments!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
                             var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                             if (userPhotos != null && (userPhotos.Count != 0))
                             {

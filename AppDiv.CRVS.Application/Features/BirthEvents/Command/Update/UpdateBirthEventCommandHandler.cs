@@ -89,11 +89,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 birthEvent.Event.HasPendingDocumentApproval = true;
                             }
                             // Set the supporting documents and exemption documents null
-                            birthEvent.Event.EventSupportingDocuments = null!;
-                            if (birthEvent.Event.PaymentExamption != null)
-                            {
-                                birthEvent.Event.PaymentExamption.SupportingDocuments = null!;
-                            }
+                          
                             // Update the birth event.
                             await _birthEventRepository.UpdateAll(birthEvent, _paymentRequestService, cancellationToken);
                             // person ids
@@ -108,6 +104,11 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             birthEvent.Event.IsCertified=false;
                             if (!request.IsFromCommand)
                             {
+                                  birthEvent.Event.EventSupportingDocuments = null!;
+                                    if (birthEvent.Event.PaymentExamption != null)
+                                    {
+                                        birthEvent.Event.PaymentExamption.SupportingDocuments = null!;
+                                    }
                                 // Save the newly added supporting documents and exemption documents.
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
@@ -121,15 +122,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             {
                                 // Move the supporting documents form temporary to permenant place.
                                 birthEvent.Event.IsCertified = false;
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs!, correctionExamptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(request.Event?.EventSupportingDocuments!, request.Event?.PaymentExamption?.SupportingDocuments!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 if (userPhotos != null && (userPhotos.Count != 0))
                                 {
                                     _eventDocumentService.MovePhotos(userPhotos, "Birth");
                                 }
-
-
                                 _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
                                 //TODO:save fingerprint
                             }

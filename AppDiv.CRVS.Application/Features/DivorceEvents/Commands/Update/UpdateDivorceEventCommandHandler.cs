@@ -106,11 +106,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             // }
 
                             // var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
-                            divorceEvent.Event.EventSupportingDocuments = null;
-                            if (divorceEvent.Event.PaymentExamption != null)
-                            {
-                                divorceEvent.Event.PaymentExamption.SupportingDocuments = null;
-                            }
+                           
                             await _DivorceEventRepository.EFUpdate(divorceEvent, _paymentRequestService, cancellationToken);
                             var personIds = new PersonIdObj
                             {
@@ -120,6 +116,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             divorceEvent.Event.IsCertified=false;
                             if (!request.IsFromCommand)
                             {
+                                 divorceEvent.Event.EventSupportingDocuments = null;
+                                    if (divorceEvent.Event?.PaymentExamption != null)
+                                    {
+                                        divorceEvent.Event.PaymentExamption.SupportingDocuments = null;
+                                    }
                                 // var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
@@ -132,7 +133,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             {
                                 // _DivorceEventRepository.EFUpdate(divorceEvent);
                                 divorceEvent.Event.IsCertified = false;
-                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(correctionSupportingDocs, correctionExamptionsupportingDocs, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(request.Event?.EventSupportingDocuments, request.Event?.PaymentExamption?.SupportingDocuments, divorceEvent.EventId, divorceEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                                 var separatedDocs = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 if (separatedDocs.userPhotos != null && (separatedDocs.userPhotos.Count != 0))
