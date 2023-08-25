@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                     try
                     {
                         var updateDivorceEventCommandResponse = new UpdateDivorceEventCommandResponse();
-                        
+
 
                         var validator = new UpdateDivorceEventCommandValidator(_personalInfoRepository, _lookupRepository, _addressLookupRepository, _eventRepository, _courtRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
@@ -69,10 +69,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                         }
                         if (updateDivorceEventCommandResponse.Success)
                         {
-                              var SelectedEvent= _eventRepository.GetAll()
-                                .AsNoTracking()
-                            .Where(x=>x.Id==request.Event.Id).FirstOrDefault();
-                             if (request.ValidateFirst == true)
+                            var SelectedEvent = _eventRepository.GetAll()
+                              .AsNoTracking()
+                          .Where(x => x.Id == request.Event.Id).FirstOrDefault();
+                            if (request.ValidateFirst == true)
                             {
                                 updateDivorceEventCommandResponse.Created(entity: "Death", message: "Valid Input.");
                                 return updateDivorceEventCommandResponse;
@@ -92,11 +92,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             divorceEvent.Event.EventType = "Divorce";
-                            divorceEvent.Event.IsPaid=SelectedEvent.IsPaid;
-                            divorceEvent.Event.IsVerified=SelectedEvent.IsVerified;
-                            divorceEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
-                            divorceEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
-                            divorceEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
+                            divorceEvent.Event.IsPaid = SelectedEvent.IsPaid;
+                            divorceEvent.Event.IsVerified = SelectedEvent.IsVerified;
+                            divorceEvent.Event.EventRegisteredAddressId = SelectedEvent.EventRegisteredAddressId;
+                            divorceEvent.Event.HasPendingDocumentApproval = SelectedEvent.HasPendingDocumentApproval;
+                            divorceEvent.Event.IsOfflineReg = SelectedEvent.IsOfflineReg;
                             //   await _DivorceEventRepository.InsertOrUpdateAsync(divorceEvent,true,cancellationToken);
                             // _DivorceEventRepository.EFUpdate(divorceEvent);
                             // if (!request.IsFromCommand)
@@ -113,7 +113,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                                 WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,
                                 HusbandId = divorceEvent.Event.EventOwener != null ? divorceEvent.Event.EventOwener.Id : divorceEvent.Event.EventOwenerId
                             };
-                            divorceEvent.Event.IsCertified=false;
+                            divorceEvent.Event.IsCertified = false;
                             if (!request.IsFromCommand)
                             {
                                  divorceEvent.Event.EventSupportingDocuments = null;
@@ -155,7 +155,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                         {
 
                             await transaction?.CommitAsync()!;
+
                         }
+                        _DivorceEventRepository.TriggerPersonalInfoIndex();
                         return updateDivorceEventCommandResponse;
                     }
                     catch (Exception)

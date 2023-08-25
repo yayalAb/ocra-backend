@@ -10,7 +10,9 @@ using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
 using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Utility.Contracts;
 using Audit.EntityFramework;
+using CouchDB.Driver.Types;
 using Hangfire;
+using Hangfire.Storage.Monitoring;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Nest;
@@ -30,7 +32,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
            .Where(method => method.Name == "OrderByDescending")
            .Where(method => method.GetParameters().Length == 2)
            .Single();
-        private List<PersonalInfoEntry> personalInfoEntries;
+        private static List<PersonalInfoEntry> personalInfoEntries = new List<PersonalInfoEntry>();
 
         private readonly CRVSDbContext _dbContext;
         public BaseRepository(CRVSDbContext dbContext)
@@ -1168,7 +1170,28 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             this._dbContext.SaveChanges();
             return true;
         }
+        public virtual bool TriggerPersonalInfoIndex()
+        {
+            // index add or update changes to elastic search personal_info index
+            if (personalInfoEntries.Any())
+            {
+                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonalInfo(personalInfoEntries));
+                personalInfoEntries = new List<PersonalInfoEntry>();
 
+            }
+            return true;
+        }
+       public virtual bool TriggerPersonalInfoIndex(List<PersonalInfoEntry> personEntries)
+        {
+            // index add or update changes to elastic search personal_info index
+            if (personEntries.Any())
+            {
+                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonalInfo(personEntries));
+                personalInfoEntries = new List<PersonalInfoEntry>();
+
+            }
+            return true;
+        }
         public virtual async Task<bool> SaveChangesAsync(CancellationToken cancellationToken)
         {
             // Get all the entities that inherit from AuditableEntity
@@ -1183,11 +1206,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 .Where(e => e.Entity is PersonalInfo && (
                         e.State == EntityState.Added
                         || e.State == EntityState.Modified)).ToList();
-            personalInfoEntries = personEntries.Select(e => new PersonalInfoEntry
+
+            var localPersonalInfoEntries = personEntries.Select(e => new PersonalInfoEntry
             {
                 State = e.State,
                 PersonalInfoId = ((PersonalInfo)e.Entity).Id
             }).ToList();
+            
 
 
 
@@ -1227,12 +1252,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // we call the base implementation of SaveChangesAsync
             // to actually save our entities in the database
             await _dbContext.SaveChangesAsync(cancellationToken);
-            // index add or update changes to elastic search personal_info index
-            if (personalInfoEntries.Any())
-            {
-
-                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonalInfo(personalInfoEntries));
-            }
 
             return true;
         }

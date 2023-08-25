@@ -5,10 +5,12 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Transactions;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
@@ -42,18 +44,21 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         private readonly IFileService _fileService;
         private readonly ILogger<UpdateUserCommandHandler> logger;
         private readonly IWorkHistoryTracker _tracker;
+        private readonly IBaseRepository<PersonalInfo> personBaseRepo;
 
         public UpdateUserCommandHandler(
             IIdentityService identityService,
             IGroupRepository groupRepository,
             IFileService fileService,
             ILogger<UpdateUserCommandHandler> logger,
-            IWorkHistoryTracker tracker
+            IWorkHistoryTracker tracker,
+            IBaseRepository<PersonalInfo> personBaseRepo
             )
         {
             this._fileService = fileService;
             this.logger = logger;
             this._tracker = tracker;
+            this.personBaseRepo = personBaseRepo;
             this._groupRepository = groupRepository;
             _identityService = identityService;
         }
@@ -154,6 +159,13 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
 
                         };
                         await transaction.CommitAsync();
+                        var personEntries = new List<PersonalInfoEntry>{
+                            new PersonalInfoEntry{
+                                PersonalInfoId = user.PersonalInfo.Id,
+                                State = EntityState.Modified
+                                }
+                        };
+                        personBaseRepo.TriggerPersonalInfoIndex(personEntries);
                         return userResponse;
                     }
                     catch (Exception ex)
