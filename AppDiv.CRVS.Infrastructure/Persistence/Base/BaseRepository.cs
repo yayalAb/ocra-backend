@@ -1187,8 +1187,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             if (personEntries.Any())
             {
                 BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonalInfo(personEntries));
-                personalInfoEntries = new List<PersonalInfoEntry>();
-
             }
             return true;
         }

@@ -75,7 +75,7 @@ namespace AppDiv.CRVS.Application.Service
             }
 
 
-            string[] errors = new string[] { "Invalid login" };
+            string[] errors = new string[] { "Invalid username or password" };
 
             return (Result.Failure(errors), null, null, AuthStatus.UnAuthenticated);
 

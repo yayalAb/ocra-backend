@@ -68,6 +68,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             try
             {
                 entity.Event.EventType = "Death";
+                entity.Event.EventOwener.DeathStatus = true;
                 if (!string.IsNullOrEmpty(entity.Event.EventOwener.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 {
                     PersonalInfo selectedperson = this.UpdatePerson(entity.Event.EventOwener);
