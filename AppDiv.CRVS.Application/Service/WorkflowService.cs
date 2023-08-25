@@ -155,6 +155,9 @@ namespace AppDiv.CRVS.Application.Service
                         {
                             throw new NotFoundException("user not found");
                         }
+                        if(!IsApprove && request.currentStep==0){
+                           request.IsRejected=true;
+                        }
                         request.currentStep = nextStep;
                         request.NextStep = this.GetNextStep(workflowType, nextStep, true);
                         if (request.Notification != null)

@@ -38,13 +38,15 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
         public async Task<BaseResponse> Handle(updateCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
             var correctionRequestData = _CorrectionRequestRepostory.GetAll()
-            .Include(x => x.Request).Where(x => x.Id == request.Id).FirstOrDefault();
+            .Include(x => x.Request)
+            .Where(x => x.Id == request.Id).FirstOrDefault();
             if (correctionRequestData.Request.currentStep != 0)
             {
                 throw new NotFoundException("you can not edit this request it is Approved");
             }
             correctionRequestData.Description = request.Description;
             correctionRequestData.Content = request.Content;
+            correctionRequestData.Request.IsRejected = false;
             var response = new BaseResponse();
             try
             {

@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public int currentStep { get; set; }
         public int? NextStep { get; set; }
         public Guid WorkflowId { get; set; }
+        public bool? IsRejected { get; set; }=false;
         public virtual PersonalInfo CivilRegOfficer { get; set; }
         public virtual CorrectionRequest CorrectionRequest { get; set; }
         public virtual AuthenticationRequest AuthenticationRequest { get; set; }
