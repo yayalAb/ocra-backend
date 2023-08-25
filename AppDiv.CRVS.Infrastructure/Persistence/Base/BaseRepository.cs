@@ -1212,6 +1212,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 State = e.State,
                 PersonalInfoId = ((PersonalInfo)e.Entity).Id
             }).ToList();
+
+            personalInfoEntries.AddRange(localPersonalInfoEntries);
+            
             
 
 

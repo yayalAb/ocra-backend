@@ -83,9 +83,9 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                 if (updatedPersons.Any())
                 {
                     var tasks = new List<Task>();
-                    foreach (var personIndex in updatedPersons)
+                    foreach (var updatedPersonIndex in updatedPersons)
                     {
-                        var personId = personIndex.Id.ToString();
+                        var personId = updatedPersonIndex.Id.ToString();
                         // var res = await _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
                         //         .Index("personal_info_second").Query(q =>
                         //                 q.Match(m => m.Field(f => f.Id).Query(personId))).Size(1));
@@ -117,6 +117,8 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                         //     existing.DeathStatus = personIndex.DeathStatus;
                         //   var updateres =   await _elasticClient.UpdateAsync<PersonalInfoIndex>(personId, p => p.Index("personal_info_second").Doc(existing));
                         // }
+                        //   var updateres =   await _elasticClient.UpdateAsync<PersonalInfoIndex>(personId, p => p.Index("personal_info_second").Doc(personIndex));
+
 
                         var task = _elasticClient.UpdateByQueryAsync<PersonalInfoIndex>(c =>
                        c.Index("personal_info_second")
@@ -125,7 +127,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                                ).Size(1)
                            .Script(script => script
                                .Source($"ctx._source = params.newDocument")
-                               .Params(p => p.Add("newDocument", personIndex))
+                               .Params(p => p.Add("newDocument", updatedPersonIndex))
                            )
                        );
 
