@@ -188,7 +188,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                                 _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-                                // var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
+                                // var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                                 // if(!FingerPrintResponse.Success){ 
                                 //     CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 // {

@@ -91,7 +91,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             // Save the supporting documents and payment exemption documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(userPhotos);
-                            //  var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(fingerprints);
+                            //  var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(fingerprints,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
                             //         response.Message="Duplicated Fingerprint";
                             //         response.Success=false; 

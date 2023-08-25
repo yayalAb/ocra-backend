@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces
 {
     public interface IFingerprintService
     {
-     public Task<BaseResponse> RegisterfingerPrintService(Dictionary<string, List<BiometricImagesAtt>?> fingerPrint);
+     public Task<BaseResponse> RegisterfingerPrintService(Dictionary<string, List<BiometricImagesAtt>?> fingerPrint,CancellationToken cancellationToken);
    
     }
 }

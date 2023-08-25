@@ -18,12 +18,16 @@ namespace AppDiv.CRVS.Application.Service
     {
 
       private readonly IRequestApiService _requestApiService;
-        public FingerprintService(IRequestApiService requestApiService)
+      private readonly IPersonDuplicateRepository _personDuplicationRepo;
+      private readonly IUserResolverService _userResolver;
+        public FingerprintService(IUserResolverService userResolver,IPersonDuplicateRepository personDuplicationRepo,IRequestApiService requestApiService)
         {
           _requestApiService=requestApiService;
+          _personDuplicationRepo=personDuplicationRepo;
+          _userResolver=userResolver;
         }
 
-        public async Task<BaseResponse>  RegisterfingerPrintService(Dictionary<string, List<BiometricImagesAtt>?> fingerPrint)
+        public async Task<BaseResponse>  RegisterfingerPrintService(Dictionary<string, List<BiometricImagesAtt>?> fingerPrint, CancellationToken cancellationToken)
         {
           
 
@@ -40,11 +44,18 @@ namespace AppDiv.CRVS.Application.Service
                                               }
                                 };
               var responseBody= await _requestApiService.post("Register", Create);
-             var ApiResponse = JsonSerializer.Deserialize<FingerPrintResponseDto>(responseBody);
+             var ApiResponse = JsonSerializer.Deserialize<IdentifyFingerDuplicationDto>(responseBody);
                     if (ApiResponse.operationResult == "MATCH_FOUND")
                     { 
+                    //     var Duplcated=new PersonDuplicate{
+                    //         OldPersonId=new Guid(ApiResponse.bestResult.id),
+                    //         NewPersonId=new Guid(Create.registrationID),
+                    //         FoundWith="Fingerprint",
+                    //         CorrectedBy =_userResolver.GetUserId()
+                    //   };
+                    //  await _personDuplicationRepo.InsertAsync(Duplcated,cancellationToken);
                       return new BaseResponse{
-                        Message="Duplicated Finger print",
+                        Message="Duplicated Fingerprint",
                         Success=false,
                         Status=204
                         

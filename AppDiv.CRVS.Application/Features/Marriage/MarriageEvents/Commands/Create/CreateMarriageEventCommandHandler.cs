@@ -140,7 +140,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-                            //   var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
+                            //   var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
                             //         CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse
                             //     {
