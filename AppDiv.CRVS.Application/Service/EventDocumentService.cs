@@ -251,11 +251,8 @@ namespace AppDiv.CRVS.Application.Service
         {
             Dictionary<string, string> userPhotos = new Dictionary<string, string>();
             Dictionary<string, List<BiometricImagesAtt>?> fingerPrint = new Dictionary<string, List<BiometricImagesAtt>?>();
-           Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ fingerprint Id {0}",_fingerprintTypeLookupId);
-            supportingDocs.Where(d => d.Type == _webCamTypeLookupId || d.Type == _fingerprintTypeLookupId).ToList().ForEach(doc =>
+            supportingDocs.Where(d => d.Type == _webCamTypeLookupId || d.Type == _fingerprintTypeLookupId||d.Type==new Guid("8f735355-8ee8-43a7-8c09-c50b40497152")).ToList().ForEach(doc =>
             {
-               Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ webcam or finger print");
-
                 if (idObj.WifeId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
                 {
                     if (doc.Type == _webCamTypeLookupId)

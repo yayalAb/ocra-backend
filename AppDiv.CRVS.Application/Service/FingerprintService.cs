@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
@@ -21,8 +23,9 @@ namespace AppDiv.CRVS.Application.Service
           _requestApiService=requestApiService;
         }
 
-        public async Task<object>  RegisterfingerPrintService(Dictionary<string, List<BiometricImagesAtt>?> fingerPrint)
+        public async Task<BaseResponse>  RegisterfingerPrintService(Dictionary<string, List<BiometricImagesAtt>?> fingerPrint)
         {
+          
 
            foreach (var item in fingerPrint)
            {
@@ -40,11 +43,20 @@ namespace AppDiv.CRVS.Application.Service
              var ApiResponse = JsonSerializer.Deserialize<FingerPrintResponseDto>(responseBody);
                     if (ApiResponse.operationResult == "MATCH_FOUND")
                     { 
-                      
+                      return new BaseResponse{
+                        Message="Duplicated Finger print",
+                        Success=false,
+                        Status=204
+                        
+                      };
                     }
           
            }
-           return "";
+          return new BaseResponse{
+                        Message="Successfuly Registerd",
+                        Success=true,
+                        Status=200
+                      };
 
         }       
     }

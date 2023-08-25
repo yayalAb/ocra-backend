@@ -106,8 +106,12 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
                             _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-                            // await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
-                            // create payment request for the event if it is not exempted
+                            //    var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
+                            //     if(!FingerPrintResponse.Success){ 
+                            //         createDivorceEventCommandResponse.Message ="Duplicated Fingerprint";
+                            //         createDivorceEventCommandResponse.Success=false; 
+                            //         return createDivorceEventCommandResponse;
+                            //         }
                             if (!divorceEvent.Event.IsExampted)
                             {
                                 (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);

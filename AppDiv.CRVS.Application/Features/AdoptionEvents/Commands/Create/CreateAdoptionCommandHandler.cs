@@ -188,7 +188,15 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 _eventDocumentService.savePhotos(separatedDocs.userPhotos);
                                 _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                                 _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
-                                //    await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
+                                // var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint);
+                                // if(!FingerPrintResponse.Success){ 
+                                //     CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
+                                // {
+                                //     Success = true,
+                                //     Message = "Duplicated Fingerprint"
+                                // };
+                                //     return CreateAdoptionCommandResponse;
+                                //     }
                                 if (!adoptionEvent.Event.IsExampted)
                                 {
                                     //--create payment request and send sms notification to the users
