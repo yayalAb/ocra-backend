@@ -19,6 +19,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
         public Guid Id { get; set; }
         public virtual DivorcePartnersInfoDTO DivorcedWife { get; set; }
         public string DateOfMarriageEt { get; set; }
+        public string? WifeBirthCertificateId { get; set; }
+        public string? HusbandBirthCertificate { get; set; }
         public JObject? DivorceReason { get; set; }
         public virtual AddCourtCaseRequest CourtCase { get; set; }
         public int? NumberOfChildren { get; set; }
