@@ -115,6 +115,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                 .Include(e => e.EventRegistrar.RegistrarInfo)
                                 .Include(e => e.EventRegistrar.RegistrarInfo.ResidentAddress)
                                 .Include(e => e.EventRegistrar.RelationshipLookup)
+                                .Include(e => e.EventRegistrar.RegistrarInfo)
                                 .FirstOrDefaultAsync();
         }
         private Task<Event?> AdoptionIncludes(IQueryable<Event> adoption)
