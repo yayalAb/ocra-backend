@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Infrastructure.Migrations
             migrationBuilder.AlterDatabase()
                 .Annotation("MySql:CharSet", "utf8mb4");
 
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
