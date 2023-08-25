@@ -97,8 +97,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             }
                             // Insert to the database.
                             await _birthEventRepository.InsertOrUpdateAsync(birthEvent, cancellationToken);
-                           
-
                             // store the persons id from the request
                             var personIds = new PersonIdObj
                             {

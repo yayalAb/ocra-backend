@@ -36,7 +36,13 @@ namespace AppDiv.CRVS.Application.Service
                                                 } ).ToList()
                                               }
                                 };
-              var responseBody= await _requestApiService.post("Register", Create); 
+              var responseBody= await _requestApiService.post("Register", Create);
+             var ApiResponse = JsonSerializer.Deserialize<FingerPrintResponseDto>(responseBody);
+                    if (ApiResponse.operationResult == "MATCH_FOUND")
+                    { 
+                      
+                    }
+          
            }
            return "";
 

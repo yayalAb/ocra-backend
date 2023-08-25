@@ -60,9 +60,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private AdoptionInfo GetEventInfo(Event adoption)
         {
             AdoptionInfo adoptionInfo = CustomMapper.Mapper.Map<AdoptionInfo>(ReturnPerson.GetEventInfo(adoption, _DateAndAddressService));
-            adoptionInfo.ReasonOr = adoption.AdoptionEvent.Reason?.Value<string>("or");
-            adoptionInfo.ReasonAm = adoption.AdoptionEvent.Reason?.Value<string>("am");
-            adoptionInfo.BirthCertificateId = adoption.AdoptionEvent.BirthCertificateId;
+            adoptionInfo.ReasonOr = adoption.AdoptionEvent?.Reason?.Value<string>("or");
+            adoptionInfo.ReasonAm = adoption.AdoptionEvent?.Reason?.Value<string>("am");
+            adoptionInfo.BirthCertificateId = adoption.AdoptionEvent?.BirthCertificateId;
             return adoptionInfo;
         }
         private AdoptionInfo GetEventInfoPreview(AdoptionEvent adoption)
@@ -74,9 +74,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         }
         private CourtArchive GetCourt(CourtCase court)
         {
-            (string am, string or)? courtAddress = (court?.Court?.AddressId == Guid.Empty
-               || court.Court == null) ? null :
+            Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx {0}",court?.Court?.AddressId);
+            (string am, string or)? courtAddress 
+            = (court?.Court?.AddressId == Guid.Empty
+               || court?.Court?.AddressId == null) ? null :
                _DateAndAddressService.addressFormat(court?.Court?.AddressId);
+               Console.WriteLine("Confffffffffffffffffffff date {0}",court?.ConfirmedDateEt);
+
             return new CourtArchive
             {
                 CourtNameOr = court?.Court?.Name?.Value<string>("or"),
@@ -84,11 +88,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
                 CourtAddressOr = courtAddress?.or,
                 CourtAddressAm = courtAddress?.am,
-
-                CourtConfirmationMonthOr = new EthiopicDateTime(_convertor.getSplitted(court?.ConfirmedDateEt).month, "or").month,
-                CourtConfirmationMonthAm = new EthiopicDateTime(_convertor.getSplitted(court?.ConfirmedDateEt).month, "am").month,
-                CourtConfirmationDay = _convertor.getSplitted(court?.ConfirmedDateEt).day.ToString(),
-                CourtConfirmationYear = _convertor.getSplitted(court?.ConfirmedDateEt).year.ToString(),
+                
+                CourtConfirmationMonthOr =!string.IsNullOrEmpty(court?.ConfirmedDateEt)? new EthiopicDateTime(_convertor.getSplitted(court?.ConfirmedDateEt).month, "or").month:null,
+                CourtConfirmationMonthAm = !string.IsNullOrEmpty(court?.ConfirmedDateEt)?new EthiopicDateTime(_convertor.getSplitted(court?.ConfirmedDateEt).month, "am").month:null,
+                CourtConfirmationDay =!string.IsNullOrEmpty(court?.ConfirmedDateEt)?_convertor.getSplitted(court?.ConfirmedDateEt).day.ToString():null,
+                CourtConfirmationYear =!string.IsNullOrEmpty(court?.ConfirmedDateEt)?_convertor.getSplitted(court?.ConfirmedDateEt).year.ToString():null,
 
                 CourtCaseNumber = court?.CourtCaseNumber,
             };
