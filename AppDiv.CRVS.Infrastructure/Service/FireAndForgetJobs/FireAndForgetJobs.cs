@@ -233,6 +233,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                 BirthDate = personalInfo.BirthDate,
                 GenderOr = personalInfo.SexLookup?.Value == null ? null : personalInfo.SexLookup.Value.Value<string>("or"),
                 GenderAm = personalInfo.SexLookup?.Value == null ? null : personalInfo.SexLookup.Value.Value<string>("am"),
+                GenderEn = personalInfo.SexLookup?.Value == null ? null : personalInfo.SexLookup.Value.Value<string>("en"),
                 GenderStr = personalInfo.SexLookup?.ValueStr,
                 TypeOfWorkStr = personalInfo.TypeOfWorkLookup?.ValueStr,
                 TitleStr = personalInfo.TitleLookup?.ValueStr,

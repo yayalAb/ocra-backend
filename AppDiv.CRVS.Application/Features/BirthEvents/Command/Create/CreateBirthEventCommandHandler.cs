@@ -85,7 +85,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId);
+                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                                 if(address==null){
                                         throw new NotFoundException("Invalid user working address");
                                     }

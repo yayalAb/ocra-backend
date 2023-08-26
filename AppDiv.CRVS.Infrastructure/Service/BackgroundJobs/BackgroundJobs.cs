@@ -77,6 +77,9 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 {
 
                     Console.WriteLine($"creating  ---  {marraigeApplication.Id} ");
+                    var uid = _userRepository.GetAll()
+                                         .Where(u => u.PersonalInfoId == marraigeApplication.CivilRegOfficerId)
+                                         .Select(u => u.Id).FirstOrDefault();
                     var marriageApplicationCommand
                      = new CreateMarriageApplicationCommand
                      {
@@ -85,7 +88,11 @@ namespace AppDiv.CRVS.Infrastructure.Service
                          ApplicationAddressId = marraigeApplication.ApplicationAddressId,
                          BrideInfo = marraigeApplication.BrideInfo,
                          GroomInfo = marraigeApplication.GroomInfo,
-                         CivilRegOfficerId = marraigeApplication.CivilRegOfficerId
+                         CivilRegOfficerId = marraigeApplication.CivilRegOfficerId,
+                         CreatedAt = marraigeApplication.CreatedDateGorg,
+                         CreatedBy = uid != null ? new Guid(uid) : null
+
+
                      };
 
                     var res = await _mediator.Send(marriageApplicationCommand);
@@ -190,27 +197,27 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                     BrideInfo = marriageEventCouch.BrideInfo,
                                     Event = marriageEventCouch.Event,
                                     Witnesses = marriageEventCouch.Witnesses,
-                                    CreatedAt = marriageEventCouch.CreatedDate
+                                    CreatedAt = marriageEventCouch.CreatedDateGorg
                                 };
-                                marriageEventCommand.BrideInfo.CreatedAt = marriageEventCouch.CreatedDate;
+                                marriageEventCommand.BrideInfo.CreatedAt = marriageEventCouch.CreatedDateGorg;
                                 marriageEventCommand.BrideInfo.CreatedBy = officerUserId;
 
-                                marriageEventCommand.Event.CreatedAt = marriageEventCouch.CreatedDate;
+                                marriageEventCommand.Event.CreatedAt = marriageEventCouch.CreatedDateGorg;
                                 marriageEventCommand.Event.CreatedBy = officerUserId;
 
-                                marriageEventCommand.Event.EventOwener.CreatedAt = marriageEventCouch.CreatedDate;
+                                marriageEventCommand.Event.EventOwener.CreatedAt = marriageEventCouch.CreatedDateGorg;
                                 marriageEventCommand.Event.EventOwener.CreatedBy = officerUserId;
                                 if (marriageEventCommand.Event.PaymentExamption != null)
                                 {
-                                    marriageEventCommand.Event.PaymentExamption.CreatedAt = marriageEventCouch.CreatedDate;
+                                    marriageEventCommand.Event.PaymentExamption.CreatedAt = marriageEventCouch.CreatedDateGorg;
                                     marriageEventCommand.Event.PaymentExamption.CreatedBy = officerUserId;
                                 }
 
                                 marriageEventCommand.Witnesses.ToList().ForEach(w =>
                                 {
-                                    w.CreatedAt = marriageEventCouch.CreatedDate;
+                                    w.CreatedAt = marriageEventCouch.CreatedDateGorg;
                                     w.CreatedBy = officerUserId;
-                                    w.WitnessPersonalInfo.CreatedAt = marriageEventCouch.CreatedDate;
+                                    w.WitnessPersonalInfo.CreatedAt = marriageEventCouch.CreatedDateGorg;
                                     w.WitnessPersonalInfo.CreatedBy = officerUserId;
                                 });
 
@@ -326,42 +333,42 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                     Event = birthEventCouch.Event,
                                     BirthNotification = birthEventCouch.BirthNotification,
                                 });
-                                birthEventCommand.BirthEvent.CreatedAt = birthEventCouch.CreatedDate;
+                                birthEventCommand.BirthEvent.CreatedAt = birthEventCouch.CreatedDateGorg;
                                 birthEventCommand.BirthEvent.CreatedBy = officerUserId;
                                 if (birthEventCommand.BirthEvent.Father != null)
                                 {
-                                    birthEventCommand.BirthEvent.Father.CreatedAt = birthEventCouch.CreatedDate;
+                                    birthEventCommand.BirthEvent.Father.CreatedAt = birthEventCouch.CreatedDateGorg;
                                     birthEventCommand.BirthEvent.Father.CreatedBy = officerUserId;
                                 }
                                 if (birthEventCommand.BirthEvent.Mother != null)
                                 {
-                                    birthEventCommand.BirthEvent.Mother.CreatedAt = birthEventCouch.CreatedDate;
+                                    birthEventCommand.BirthEvent.Mother.CreatedAt = birthEventCouch.CreatedDateGorg;
                                     birthEventCommand.BirthEvent.Mother.CreatedBy = officerUserId;
                                 }
-                                birthEventCommand.BirthEvent.Event.CreatedAt = birthEventCouch.CreatedDate;
+                                birthEventCommand.BirthEvent.Event.CreatedAt = birthEventCouch.CreatedDateGorg;
                                 birthEventCommand.BirthEvent.Event.CreatedBy = officerUserId;
-                                birthEventCommand.BirthEvent.Event.EventOwener.CreatedAt = birthEventCouch.CreatedDate;
+                                birthEventCommand.BirthEvent.Event.EventOwener.CreatedAt = birthEventCouch.CreatedDateGorg;
                                 birthEventCommand.BirthEvent.Event.EventOwener.CreatedBy = officerUserId;
 
                                 if (birthEventCommand.BirthEvent.Event.PaymentExamption != null)
                                 {
-                                    birthEventCommand.BirthEvent.Event.PaymentExamption.CreatedAt = birthEventCouch.CreatedDate;
+                                    birthEventCommand.BirthEvent.Event.PaymentExamption.CreatedAt = birthEventCouch.CreatedDateGorg;
                                     birthEventCommand.BirthEvent.Event.PaymentExamption.CreatedBy = officerUserId;
                                 }
 
 
                                 if (birthEventCommand.BirthEvent.Event.EventRegistrar != null)
                                 {
-                                    birthEventCommand.BirthEvent.Event.EventRegistrar.CreatedAt = birthEventCouch.CreatedDate;
+                                    birthEventCommand.BirthEvent.Event.EventRegistrar.CreatedAt = birthEventCouch.CreatedDateGorg;
                                     birthEventCommand.BirthEvent.Event.EventRegistrar.CreatedBy = officerUserId;
-                                    birthEventCommand.BirthEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = birthEventCouch.CreatedDate;
+                                    birthEventCommand.BirthEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = birthEventCouch.CreatedDateGorg;
                                     birthEventCommand.BirthEvent.Event.EventRegistrar.RegistrarInfo.CreatedBy = officerUserId;
 
                                 }
 
                                 if (birthEventCommand.BirthEvent.BirthNotification != null)
                                 {
-                                    birthEventCommand.BirthEvent.BirthNotification.CreatedAt = birthEventCouch.CreatedDate;
+                                    birthEventCommand.BirthEvent.BirthNotification.CreatedAt = birthEventCouch.CreatedDateGorg;
                                     birthEventCommand.BirthEvent.BirthNotification.CreatedBy = officerUserId;
 
                                 }
@@ -474,26 +481,26 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                     PlaceOfFuneral = deathEventCouch.PlaceOfFuneral,
                                     Event = deathEventCouch.Event,
                                     DeathNotification = deathEventCouch.DeathNotification,
-                                    CreatedAt = deathEventCouch.CreatedDate,
+                                    CreatedAt = deathEventCouch.CreatedDateGorg,
                                     CreatedBy = officerUserId
                                 });
                                 if (deathEventCommand.DeathEvent.DeathNotification != null)
                                 {
-                                    deathEventCommand.DeathEvent.DeathNotification.CreatedAt = deathEventCouch.CreatedDate;
+                                    deathEventCommand.DeathEvent.DeathNotification.CreatedAt = deathEventCouch.CreatedDateGorg;
                                     deathEventCommand.DeathEvent.DeathNotification.CreatedBy = officerUserId;
 
                                 }
-                                deathEventCommand.DeathEvent.Event.CreatedAt = deathEventCouch.CreatedDate;
+                                deathEventCommand.DeathEvent.Event.CreatedAt = deathEventCouch.CreatedDateGorg;
                                 deathEventCommand.DeathEvent.Event.CreatedBy = officerUserId;
-                                deathEventCommand.DeathEvent.Event.EventOwener.CreatedAt = deathEventCouch.CreatedDate;
+                                deathEventCommand.DeathEvent.Event.EventOwener.CreatedAt = deathEventCouch.CreatedDateGorg;
                                 deathEventCommand.DeathEvent.Event.EventOwener.CreatedBy = officerUserId;
-                                deathEventCommand.DeathEvent.Event.EventRegistrar.CreatedAt = deathEventCouch.CreatedDate;
+                                deathEventCommand.DeathEvent.Event.EventRegistrar.CreatedAt = deathEventCouch.CreatedDateGorg;
                                 deathEventCommand.DeathEvent.Event.EventRegistrar.CreatedBy = officerUserId;
-                                deathEventCommand.DeathEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = deathEventCouch.CreatedDate;
+                                deathEventCommand.DeathEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = deathEventCouch.CreatedDateGorg;
                                 deathEventCommand.DeathEvent.Event.EventRegistrar.RegistrarInfo.CreatedBy = officerUserId;
                                 if (deathEventCommand.DeathEvent.Event.PaymentExamption != null)
                                 {
-                                    deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedAt = deathEventCouch.CreatedDate;
+                                    deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedAt = deathEventCouch.CreatedDateGorg;
                                     deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedBy = officerUserId;
                                 }
                                 var res3 = await _mediator.Send(deathEventCommand);
@@ -603,35 +610,35 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                     AdoptiveFather = adoptionEventCouch.AdoptiveFather,
                                     Event = adoptionEventCouch.Event,
                                     CourtCase = adoptionEventCouch.CourtCase,
-                                    CreatedAt = adoptionEventCouch.CreatedDate,
+                                    CreatedAt = adoptionEventCouch.CreatedDateGorg,
                                     CreatedBy = officerUserId
                                 });
                                 if (adoptionEventCommand.Adoption.AdoptiveMother != null)
                                 {
 
-                                    adoptionEventCommand.Adoption.AdoptiveMother.CreatedAt = adoptionEventCouch.CreatedDate;
+                                    adoptionEventCommand.Adoption.AdoptiveMother.CreatedAt = adoptionEventCouch.CreatedDateGorg;
                                     adoptionEventCommand.Adoption.AdoptiveMother.CreatedBy = officerUserId;
                                 }
                                 if (adoptionEventCommand.Adoption.AdoptiveFather != null)
                                 {
 
-                                    adoptionEventCommand.Adoption.AdoptiveFather.CreatedAt = adoptionEventCouch.CreatedDate;
+                                    adoptionEventCommand.Adoption.AdoptiveFather.CreatedAt = adoptionEventCouch.CreatedDateGorg;
                                     adoptionEventCommand.Adoption.AdoptiveFather.CreatedBy = officerUserId;
                                 }
-                                adoptionEventCommand.Adoption.CourtCase.CreatedAt = adoptionEventCouch.CreatedDate;
+                                adoptionEventCommand.Adoption.CourtCase.CreatedAt = adoptionEventCouch.CreatedDateGorg;
                                 adoptionEventCommand.Adoption.CourtCase.CreatedBy = officerUserId;
                                 if (adoptionEventCommand.Adoption.CourtCase.Court != null)
                                 {
-                                    adoptionEventCommand.Adoption.CourtCase.Court.CreatedAt = adoptionEventCouch.CreatedDate;
+                                    adoptionEventCommand.Adoption.CourtCase.Court.CreatedAt = adoptionEventCouch.CreatedDateGorg;
                                     adoptionEventCommand.Adoption.CourtCase.Court.CreatedBy = officerUserId;
                                 }
-                                adoptionEventCommand.Adoption.Event.CreatedAt = adoptionEventCouch.CreatedDate;
+                                adoptionEventCommand.Adoption.Event.CreatedAt = adoptionEventCouch.CreatedDateGorg;
                                 adoptionEventCommand.Adoption.Event.CreatedBy = officerUserId;
-                                adoptionEventCommand.Adoption.Event.EventOwener.CreatedAt = adoptionEventCouch.CreatedDate;
+                                adoptionEventCommand.Adoption.Event.EventOwener.CreatedAt = adoptionEventCouch.CreatedDateGorg;
                                 adoptionEventCommand.Adoption.Event.EventOwener.CreatedBy = officerUserId;
                                 if (adoptionEventCommand.Adoption.Event.PaymentExamption != null)
                                 {
-                                    adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedAt = adoptionEventCouch.CreatedDate;
+                                    adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedAt = adoptionEventCouch.CreatedDateGorg;
                                     adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedBy = officerUserId;
 
                                 }
@@ -743,24 +750,24 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                     CourtCase = divorceEventCouch.CourtCase,
                                     NumberOfChildren = divorceEventCouch.NumberOfChildren,
                                     Event = divorceEventCouch.Event,
-                                    CreatedAt = divorceEventCouch.CreatedDate,
+                                    CreatedAt = divorceEventCouch.CreatedDateGorg,
                                     CreatedBy = officerUserId
                                 };
 
-                                divorceEventCommand.CourtCase.CreatedAt = divorceEventCouch.CreatedDate;
+                                divorceEventCommand.CourtCase.CreatedAt = divorceEventCouch.CreatedDateGorg;
                                 divorceEventCommand.CourtCase.CreatedBy = officerUserId;
                                 if (divorceEventCommand.CourtCase.Court != null)
                                 {
-                                    divorceEventCommand.CourtCase.Court.CreatedAt = divorceEventCouch.CreatedDate;
+                                    divorceEventCommand.CourtCase.Court.CreatedAt = divorceEventCouch.CreatedDateGorg;
                                     divorceEventCommand.CourtCase.Court.CreatedBy = officerUserId;
                                 }
-                                divorceEventCommand.Event.CreatedAt = divorceEventCouch.CreatedDate;
+                                divorceEventCommand.Event.CreatedAt = divorceEventCouch.CreatedDateGorg;
                                 divorceEventCommand.Event.CreatedBy = officerUserId;
-                                divorceEventCommand.Event.EventOwener.CreatedAt = divorceEventCouch.CreatedDate;
+                                divorceEventCommand.Event.EventOwener.CreatedAt = divorceEventCouch.CreatedDateGorg;
                                 divorceEventCommand.Event.EventOwener.CreatedBy = officerUserId;
                                 if (divorceEventCommand.Event.PaymentExamption != null)
                                 {
-                                    divorceEventCommand.Event.PaymentExamption.CreatedAt = divorceEventCouch.CreatedDate;
+                                    divorceEventCommand.Event.PaymentExamption.CreatedAt = divorceEventCouch.CreatedDateGorg;
                                     divorceEventCommand.Event.PaymentExamption.CreatedBy = officerUserId;
 
                                 }
