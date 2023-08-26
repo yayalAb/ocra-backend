@@ -28,6 +28,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
+        private readonly IUserResolverService _userResolverService;
 
         private readonly ISmsService _smsService;
 
@@ -44,7 +45,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         IEventPaymentRequestService paymentRequestService,
                                         ISmsService smsService,
                                         IAddressLookupRepository addressRepostory,
-                                        IFingerprintService fingerprintService)
+                                        IFingerprintService fingerprintService,
+                                        IUserResolverService userResolverService)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -60,6 +62,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _smsService = smsService;
             _addressRepostory = addressRepostory;
             _fingerprintService= fingerprintService;
+            _userResolverService=userResolverService;
+
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
         {
@@ -110,7 +114,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
                                 if (request?.Adoption?.Event?.EventRegisteredAddressId != null && request?.Adoption?.Event?.EventRegisteredAddressId != Guid.Empty)
                                 {
-                                    var address = await _addressRepostory.GetAsync(request.Adoption.Event.EventRegisteredAddressId);
+                                    var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId);
+                                    if(address==null){
+                                        throw new NotFoundException("Invalid user working address");
+                                    }
                                     if (address != null && address.AdminLevel != 5)
                                     {
                                         adoptionEvent.Event.IsCertified = true;

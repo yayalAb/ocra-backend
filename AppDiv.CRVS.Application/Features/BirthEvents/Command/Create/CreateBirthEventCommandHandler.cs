@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly ISmsService _smsService;
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
+        private readonly IUserResolverService _userResolverService;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
@@ -31,7 +32,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                               ILookupRepository lookupRepository,
                                               ISmsService smsService,
                                               IAddressLookupRepository addressRepostory,
-                                              IFingerprintService fingerprintService
+                                              IFingerprintService fingerprintService,
+                                              IUserResolverService userResolverService
                                               )
         {
             _eventDocumentService = eventDocumentService;
@@ -42,6 +44,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _smsService = smsService;
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
+            _userResolverService=userResolverService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -82,7 +85,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(request.BirthEvent.Event.EventRegisteredAddressId);
+                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId);
+                                if(address==null){
+                                        throw new NotFoundException("Invalid user working address");
+                                    }
                                 if (address != null && address.AdminLevel != 5)
                                 {
                                     birthEvent.Event.IsCertified = true;

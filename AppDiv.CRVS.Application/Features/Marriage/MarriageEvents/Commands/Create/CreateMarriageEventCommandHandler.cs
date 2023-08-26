@@ -34,6 +34,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly IFingerprintService _fingerprintService;
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
         private readonly IAddressLookupRepository _addressRepostory;
+        private readonly IUserResolverService _userResolverService;
 
         public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
                                                  IPersonalInfoRepository personalInfoRepository,
@@ -50,7 +51,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                                  IMarriageApplicationCouchRepository marriageApplicationCouchRepo,
                                                  ILogger<CreateMarriageEventCommandHandler> logger,
                                                  IAddressLookupRepository addressRepostory,
-                                                 IFingerprintService fingerprintService)
+                                                 IFingerprintService fingerprintService,
+                                                 IUserResolverService userResolverService)
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -68,6 +70,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             this.logger = logger;
             _addressRepostory = addressRepostory;
             _fingerprintService=fingerprintService;
+            _userResolverService=userResolverService;
         }
 
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
@@ -104,8 +107,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(request.Event.EventRegisteredAddressId);
-                                if (address != null && address.AdminLevel != 5)
+                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId);
+                                if(address==null){
+                                        throw new NotFoundException("Invalid user working address");
+                                    }         
+                                 if (address != null && address.AdminLevel != 5)
                                 {
                                     marriageEvent.Event.IsCertified = true;
                                     marriageEvent.Event.IsPaid = true;

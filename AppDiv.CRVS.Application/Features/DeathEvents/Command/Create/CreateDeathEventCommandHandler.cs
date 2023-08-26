@@ -7,6 +7,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
 using System.Text.Json;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {
@@ -20,13 +21,15 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
+        private readonly IUserResolverService _userResolverService;
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
                                               ISmsService smsService,
                                               IEventPaymentRequestService paymentRequestService,
                                               IAddressLookupRepository addressRepostory,
-                                              IFingerprintService fingerprintService)
+                                              IFingerprintService fingerprintService,
+                                              IUserResolverService userResolverService)
 
         {
             _deathEventRepository = deathEventRepository;
@@ -36,6 +39,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _paymentRequestService = paymentRequestService;
             _addressRepostory = addressRepostory;
             _fingerprintService=fingerprintService;
+            _userResolverService=userResolverService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -71,7 +75,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(request.DeathEvent.Event.EventRegisteredAddressId);
+                                 var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId);
+                                if(address==null){
+                                        throw new NotFoundException("Invalid user working address");
+                                    }
                                 if (address != null && address.AdminLevel != 5)
                                 {
                                     deathEvent.Event.IsCertified = true;

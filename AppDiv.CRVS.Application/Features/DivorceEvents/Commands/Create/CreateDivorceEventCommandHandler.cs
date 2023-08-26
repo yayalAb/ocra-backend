@@ -7,6 +7,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 {
@@ -24,6 +25,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly ICourtRepository _courtRepository;
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
+        private readonly IUserResolverService _userResolverService;
 
         public CreateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
                                                 IPersonalInfoRepository personalInfoRepository,
@@ -35,7 +37,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                                 IEventRepository eventRepository,
                                                 ICourtRepository courtRepository,
                                                 IAddressLookupRepository addressRepostory,
-                                                IFingerprintService fingerprintService
+                                                IFingerprintService fingerprintService,
+                                                IUserResolverService userResolverService
                                                 )
         {
             _DivorceEventRepository = DivorceEventRepository;
@@ -49,6 +52,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _courtRepository = courtRepository;
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
+            _userResolverService=userResolverService;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
@@ -83,7 +87,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(request.Event.EventRegisteredAddressId);
+                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId);
+                                if(address==null){
+                                        throw new NotFoundException("Invalid user working address");
+                                    }
                                 if (address != null && address.AdminLevel != 5)
                                 {
                                     divorceEvent.Event.IsCertified = true;
