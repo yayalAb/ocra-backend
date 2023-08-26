@@ -88,6 +88,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Query(q =>
                     q.Bool(b =>
                      b.Must(
+                        
                          query.age != 0 ?
                         mu => mu.DateRange(r => r
                         .Field(f => f.BirthDate)
