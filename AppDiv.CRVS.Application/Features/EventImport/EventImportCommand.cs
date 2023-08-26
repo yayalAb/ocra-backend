@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.EventImport
         }
         public async Task<object> Handle(EventImportCommand request, CancellationToken cancellationToken)
         {
+            
             var response = _importEventService.ExtractFile(request.Event);
             return response;
         }

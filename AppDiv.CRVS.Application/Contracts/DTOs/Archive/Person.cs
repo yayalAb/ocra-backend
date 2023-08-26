@@ -59,6 +59,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? BirthZoneAm { get; set; }
         public string? BirthWoredaOr { get; set; }
         public string? BirthWoredaAm { get; set; }
+         public string? BirthSubcityOr { get; set; }
+        public string? BirthSubcityAm { get; set; }
         public string? BirthCityKetemaOr { get; set; }
         public string? BirthCityKetemaAm { get; set; }
         public string? BirthKebeleOr { get; set; }
@@ -70,6 +72,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? ResidentRegionAm { get; set; }
         public string? ResidentZoneOr { get; set; }
         public string? ResidentZoneAm { get; set; }
+        public string? ResidentSubcityOr { get; set; }
+        public string? ResidentSubcityAm { get; set; }
         public string? ResidentWoredaOr { get; set; }
         public string? ResidentWoredaAm { get; set; }
         public string? ResidentCityKetemaOr { get; set; }

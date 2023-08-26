@@ -10,6 +10,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public string[] SplitedAddressByLang(Guid? id);
         public Task<AddressResponseDTOE>? FormatedAddress(Guid? id);
         public string GetFullAddress(Address address);
+        public bool IsCityAdmin(Guid? Id);
 
 
 

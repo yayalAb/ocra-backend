@@ -37,6 +37,8 @@ namespace AppDiv.CRVS.Application.Service
 
         }
 
+
+
         public async Task<AddressResponseDTOE>? FormatedAddress(Guid? id)
         {
             if (id == null || id == Guid.Empty)
@@ -87,19 +89,19 @@ namespace AppDiv.CRVS.Application.Service
             string addressString = "";
             if (address != null)
             {
-                addressString += address.AddressNameLang;
-                if (address.ParentAddress != null)
+                addressString += address?.AddressNameLang;
+                if (address?.ParentAddress != null)
                 {
-                    addressString = address.ParentAddress.AddressNameLang + "/" + addressString;
+                    addressString = address?.ParentAddress?.AddressNameLang + "/" + addressString;
                     if (address.ParentAddress.ParentAddress != null)
                     {
-                        addressString = address.ParentAddress.ParentAddress.AddressNameLang + "/" + addressString;
-                        if (address.ParentAddress.ParentAddress.ParentAddress != null)
+                        addressString = address?.ParentAddress?.ParentAddress?.AddressNameLang + "/" + addressString;
+                        if (address.ParentAddress?.ParentAddress?.ParentAddress != null)
                         {
-                            addressString = address.ParentAddress.ParentAddress.ParentAddress.AddressNameLang + "/" + addressString;
-                            if (address.ParentAddress.ParentAddress.ParentAddress.ParentAddress != null)
+                            addressString = address?.ParentAddress?.ParentAddress?.ParentAddress?.AddressNameLang + "/" + addressString;
+                            if (address.ParentAddress?.ParentAddress?.ParentAddress?.ParentAddress != null)
                             {
-                                addressString = address.ParentAddress.ParentAddress.ParentAddress.ParentAddress.AddressNameLang + "/" + addressString;
+                                addressString = address.ParentAddress?.ParentAddress?.ParentAddress?.ParentAddress?.AddressNameLang + "/" + addressString;
                             }
                         }
                     }
@@ -126,6 +128,19 @@ namespace AppDiv.CRVS.Application.Service
             return address;
         }
 
+        public bool IsCityAdmin(Guid? Id)
+        {
+            var Address = _AddresslookupRepository.GetAll()
+                                   .Include(x=>x.ParentAddress)
+                                   .ThenInclude(x=>x.ParentAddress)
+                                   .ThenInclude(x=>x.ParentAddress)
+                                   .ThenInclude(x=>x.ParentAddress)
+                                   .Where(a => a.Id == Id).FirstOrDefault();
+             if(Address?.ParentAddress?.ParentAddress?.ParentAddress?.ParentAddress==null){
+                  return true;
+             }                      
+            return false;
+        }
     }
 
     public class LookupFromId : ILookupFromId
@@ -155,9 +170,6 @@ namespace AppDiv.CRVS.Application.Service
             var lookup = _lookupRepository.GetSingle(id);
             return lookup?.Value?.Value<string>("am");
         }
-
-
-
     }
 }
 

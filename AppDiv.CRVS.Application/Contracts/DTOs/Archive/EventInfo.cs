@@ -29,11 +29,13 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive
         public string? RegistrationRegionAm { get; set; }
         public string? RegistrationZoneOr { get; set; }
         public string? RegistrationZoneAm { get; set; }
+        public string? RegistrationSubcityOr { get; set; }
+        public string? RegistrationSubcityAm { get; set; }
         public string? RegistrationWoredaOr { get; set; }
         public string? RegistrationWoredaAm { get; set; }
-        public string? RegistrationCityKetemaOr { get; set; }
-        public string? RegistrationCityKetemaAm { get; set; }
         public string? RegistrationKebeleOr { get; set; }
         public string? RegistrationKebeleAm { get; set; }
+        public string? RegistrationCityKetemaOr { get; set; }
+        public string? RegistrationCityKetemaAm { get; set; }
     }
 }
