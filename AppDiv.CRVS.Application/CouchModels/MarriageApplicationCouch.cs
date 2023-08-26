@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Utility.Services;
 using CouchDB.Driver.Types;
 using Newtonsoft.Json;
 
@@ -24,12 +25,26 @@ namespace AppDiv.CRVS.Application.CouchModels
 
         public bool Certified { get; set; }
         [NotMapped]
-
-        public DateTime CreatedDate { get; set; }
+        public bool? Updated { get; set; }
         [NotMapped]
 
-        public bool? Updated { get; set; }
+        public string CreatedDate { get; set; }
+        [NotMapped]
 
+        public DateTime CreatedDateGorg { get; set; }
+
+
+        [NotMapped]
+        public string? _CreatedDate
+        {
+            get { return CreatedDate; }
+            set
+            {
+                // this.CreatedDate = value;
+
+                CreatedDateGorg = new CustomDateConverter(CreatedDate).gorgorianDate;
+            }
+        }
 
 
     }
