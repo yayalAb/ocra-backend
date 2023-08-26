@@ -22,6 +22,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs
         public DateTime? BirthDate { get; set; }
         public string? GenderOr { get; set; }
         public string? GenderAm { get; set; }
+        public string? GenderEn { get; set; }
         public string? GenderStr { get; set; }
         public string? TypeOfWorkStr { get; set; }
         public string? TitleStr { get; set; }

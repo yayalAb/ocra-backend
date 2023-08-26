@@ -94,9 +94,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         .LessThanOrEquals(DateTime.Now.AddYears(-query.age)
                         )) : null,
                         query.gender != "null" && query.gender != null && query.gender != string.Empty ?
-                        mu => mu.Wildcard(w => w
-                    .Field(f => f.GenderStr).Value($"*{query.gender}*")
-                    ) : null
+                        mu => mu.Match(w => w
+                    .Field(f => f.GenderOr).Query(query.gender)
+                    ) || mu.Match(w => w.Field(f => f.GenderAm).Query(query.gender)) 
+                      || mu.Match(w => w.Field(f => f.GenderEn).Query(query.gender))
+                    : null
                         ))
                     && (
                         q
@@ -292,6 +294,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                        BirthDate = p.BirthDate,
                                        GenderOr = p.SexLookup == null || p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("or"),
                                        GenderAm = p.SexLookup == null || p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("am"),
+                                       GenderEn = p.SexLookup == null || p.SexLookup.Value == null ? null : p.SexLookup.Value.Value<string>("en"),
                                        GenderStr = p.SexLookup == null ? null : p.SexLookup.ValueStr,
                                        TypeOfWorkStr = p.TypeOfWorkLookup == null ? null : p.TypeOfWorkLookup.ValueStr,
                                        TitleStr = p.TitleLookup == null ? null : p.TitleLookup.ValueStr,
