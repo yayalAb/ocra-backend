@@ -50,8 +50,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         Type = n.Type,
                         EventId = n.Type.ToLower() == Enum.GetName<NotificationType>(NotificationType.change)
                                             ? n.Request.CorrectionRequest.EventId
-                                  : n.Type.ToLower() == Enum.GetName<NotificationType>(NotificationType.change)
+                                  : n.Type.ToLower() == Enum.GetName<NotificationType>(NotificationType.authentication)
                                   ? n.Request.AuthenticationRequest.Certificate.EventId
+                                  : n.Type.ToLower() == Enum.GetName<NotificationType>(NotificationType.verification)
+                                  ? n.Request.VerficationRequest.EventId
                                   : null,
                         MessageStr = n.MessageStr,
                         NotificationObjId = n.NotificationObjId,

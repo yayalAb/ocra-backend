@@ -132,86 +132,88 @@ namespace AppDiv.CRVS.Application.Service
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
             {
                 var nextStep = this.GetNextStep(workflowType, request.currentStep, IsApprove);
-                bool nextStep1=false;
-                var checkPayment=this.WorkflowHasPayment(workflowType, nextStep, RequestId);
+                bool nextStep1 = false;
+                var checkPayment = this.WorkflowHasPayment(workflowType, nextStep, RequestId);
                 if (checkPayment.Item1 && !paymentAdded)
                 {
-                if(checkPayment.Item2){
-                         return (false, Guid.Empty);
-                           }
-                    (float?,string) res = await this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
-                    if(res.Item1!=0||res.Item1!=0.0){
-                       return (false, Guid.Empty);
+                    if (checkPayment.Item2)
+                    {
+                        return (false, Guid.Empty);
                     }
-                    
+                    (float?, string) res = await this.CreatePaymentRequest(workflowType, RequestId, cancellationToken);
+                    if (res.Item1 != 0 || res.Item1 != 0.0)
+                    {
+                        return (false, Guid.Empty);
+                    }
+
                 }
-                    try
+                try
+                {
+                    string? userId = _userRepository.GetAll()
+                                        .Where(u => u.PersonalInfoId == _UserResolverService.GetUserPersonalId())
+                                        .Select(u => u.Id).FirstOrDefault();
+
+                    if (string.IsNullOrEmpty(userId))
                     {
-                        string? userId = _userRepository.GetAll()
-                                            .Where(u => u.PersonalInfoId == _UserResolverService.GetUserPersonalId())
-                                            .Select(u => u.Id).FirstOrDefault();
+                        throw new NotFoundException("user not found");
+                    }
+                    if (!IsApprove && request.currentStep == 0)
+                    {
+                        request.IsRejected = true;
+                    }
+                    request.currentStep = nextStep;
+                    request.NextStep = this.GetNextStep(workflowType, nextStep, true);
+                    if (request.Notification != null)
+                    {
+                        request.Notification.MessageStr = Remark;
+                        request.Notification.GroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
+                        request.Notification.SenderId = userId;
+                    }
 
-                        if (string.IsNullOrEmpty(userId))
-                        {
-                            throw new NotFoundException("user not found");
-                        }
-                        if(!IsApprove && request.currentStep==0){
-                           request.IsRejected=true;
-                        }
-                        request.currentStep = nextStep;
-                        request.NextStep = this.GetNextStep(workflowType, nextStep, true);
-                        if (request.Notification != null)
-                        {
-                            request.Notification.MessageStr = Remark;
-                            request.Notification.GroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
-                            request.Notification.SenderId = userId;
-                        }
+                    _requestRepostory.Update(request);
+                    _requestRepostory.SaveChanges();
+                    var NewTranscation = new TransactionRequestDTO
+                    {
+                        CurrentStep = 0,
+                        ApprovalStatus = true,
+                        WorkflowId = request.WorkflowId,
+                        RequestId = request.Id,
+                        CivilRegOfficerId = userId,
+                        Remark = Remark,
+                        ReasonLookupId = ReasonLookupId
+                    };
 
-                        _requestRepostory.Update(request);
-                        _requestRepostory.SaveChanges();
-                        var NewTranscation = new TransactionRequestDTO
-                        {
-                            CurrentStep = 0,
-                            ApprovalStatus = true,
-                            WorkflowId = request.WorkflowId,
-                            RequestId = request.Id,
-                            CivilRegOfficerId = userId,
-                            Remark = Remark,
-                            ReasonLookupId = ReasonLookupId
-                        };
+                    await _TransactionService.CreateTransaction(NewTranscation);
 
-                        await _TransactionService.CreateTransaction(NewTranscation);
+                    //send notification
+                    Guid? notificationObjId = request.CorrectionRequest != null
+                                           ? request.CorrectionRequest.Id
+                                           : request.AuthenticationRequest != null
+                                           ? request.AuthenticationRequest.Certificate.EventId
+                                           : request.VerficationRequest.EventId;
 
-                        //send notification
-                        Guid? notificationObjId = request.CorrectionRequest != null
-                                               ? request.CorrectionRequest.Id
-                                               : request.AuthenticationRequest != null
-                                               ? request.AuthenticationRequest.Id
-                                               : request.VerficationRequest != null
-                                               ? request.VerficationRequest.Id
-                                               : request.PaymentExamptionRequest?.Id;
 
-                        if (notificationObjId != null)
-                        {
-                            await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark??"",
-                                            this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                          userId);
-
-                        }
-
-                        //update old notification seen status to true
-                        if (request.Notification?.Id != null)
-                        {
-                            await notificationService.updateSeenStatus(request.Notification.Id);
-
-                        }
-
+                    if (notificationObjId != null)
+                    {
+                        await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
+                                        this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
+                                      userId);
 
                     }
-                    catch (Exception exp)
+
+                    //update old notification seen status to true
+                    if (request.Notification?.Id != null)
                     {
-                        throw new NotFoundException(exp.Message);
+                        await notificationService.updateSeenStatus(request.Notification.Id);
+
                     }
+
+
+                }
+                catch (Exception exp)
+                {
+                    throw new NotFoundException(exp.Message);
+                }
             }
             else
             {
@@ -230,7 +232,7 @@ namespace AppDiv.CRVS.Application.Service
             return eventId.EventId;
         }
 
-        public (bool,bool) WorkflowHasPayment(string workflow, int Step, Guid RequestId)
+        public (bool, bool) WorkflowHasPayment(string workflow, int Step, Guid RequestId)
         {
             var requestHaspayment = _requestRepostory.GetAll()
             .Include(x => x.Workflow)
@@ -241,14 +243,16 @@ namespace AppDiv.CRVS.Application.Service
             ).FirstOrDefault();
             if (requestHaspayment != null)
             {
-                if(requestHaspayment?.PaymentRequest == null){
-                   return (true,false);
+                if (requestHaspayment?.PaymentRequest == null)
+                {
+                    return (true, false);
                 }
-                else if(requestHaspayment?.PaymentRequest!=null&&requestHaspayment?.PaymentRequest.status==false){
-                    return (true,true);
+                else if (requestHaspayment?.PaymentRequest != null && requestHaspayment?.PaymentRequest.status == false)
+                {
+                    return (true, true);
                 }
             }
-            return( false,false);
+            return (false, false);
         }
         public async Task<(float?, string)> CreatePaymentRequest(string workflowType, Guid RequestId, CancellationToken cancellationToken)
         {
@@ -259,7 +263,7 @@ namespace AppDiv.CRVS.Application.Service
             .Where(x => x.Id == RequestId).FirstOrDefault();
             if (request == null)
             {
-               throw new NotFoundException ("Request Does not Found");
+                throw new NotFoundException("Request Does not Found");
             }
 
             if ((request.RequestType == "authentication" || request.RequestType == "change") && (request?.PaymentRequest?.Id == null || request?.PaymentRequest?.Id == Guid.Empty))
@@ -271,7 +275,7 @@ namespace AppDiv.CRVS.Application.Service
                     .Include(x => x.EventOwener)
                     .Where(x => x.Id == EventId).FirstOrDefault();
                     (float? amount, string? code) response = await _paymentRequestService.CreatePaymentRequest(selectedEvent.EventType, selectedEvent, workflowType, RequestId, false, false, cancellationToken);
-                     return response;
+                    return response;
                 }
                 catch (Exception ex)
                 {
@@ -281,7 +285,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             else
             {
-                return (0,"11111");
+                return (0, "11111");
             }
 
         }

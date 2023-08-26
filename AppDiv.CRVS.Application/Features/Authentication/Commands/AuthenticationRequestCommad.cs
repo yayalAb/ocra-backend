@@ -52,8 +52,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         public async Task<BaseResponse> Handle(AuthenticationRequestCommad request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse();
-            var Workflow= _WorkflowRepository.GetAll()
-            .Include(x=>x.Steps)
+            var Workflow = _WorkflowRepository.GetAll()
+            .Include(x => x.Steps)
             .Where(wf => wf.workflowName == "authentication").FirstOrDefault();
 
             if (Workflow == null || Workflow?.Steps.Count == 0)
@@ -122,13 +122,19 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
                 Remark = request.Remark
             };
-
             await _transactionService.CreateTransaction(NewTranscation);
-            await _notificationService.CreateNotification(AuthenticationRequest.Request.Id, "Authentication", request.Remark,
-                               _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
-                             userId);
+            var eventId = _certificateRepository.GetAll()
+                           .Where(x => x.Id == request.CertificateId).Select(c => c.EventId).FirstOrDefault();
+            if (eventId != null)
+            {
+
+                await _notificationService.CreateNotification(eventId, "Authentication", request.Remark,
+                                   _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
+                                 userId);
+            }
+
             response.Message = "Authentication Request Sent Sucessfully";
-            response.Success = true; ;
+            response.Success = true;
 
             return response;
         }
