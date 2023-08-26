@@ -13,8 +13,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
         public BrideInfoDTO BrideInfo { get; set;}
         public GroomInfoDTO GroomInfo { get; set;}
         public Guid CivilRegOfficerId { get; set; }
-        // public DateTime? CreatedAt {get;set;}
-        // public Guid? CreatedBy {get;set;}
+        public DateTime? CreatedAt {get;set;}
+        public Guid? CreatedBy {get;set;}
 
        
     }

@@ -75,7 +75,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                 var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId);
+                                 var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                                 if(address==null){
                                         throw new NotFoundException("Invalid user working address");
                                     }
