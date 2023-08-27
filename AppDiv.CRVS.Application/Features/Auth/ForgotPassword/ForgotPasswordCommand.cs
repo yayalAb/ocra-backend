@@ -87,7 +87,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.ForgotPassword
             var user = await _identityService.GetUserByName(request.UserName);
             if (user == null)
             {
-                throw new NotFoundException("user not found");
+                // throw new NotFoundException("user not found");
+                return true;
             }
             int expirySecond = 120;
             //send sms and get otp code

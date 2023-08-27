@@ -189,7 +189,11 @@ namespace AppDiv.CRVS.Application.Service
                     Guid? notificationObjId = request.CorrectionRequest != null
                                            ? request.CorrectionRequest.Id
                                            : request.AuthenticationRequest != null
-                                           ? request.AuthenticationRequest.Certificate.EventId
+                                           ?
+                                           _CertificateRepository
+                                           .GetAll()
+                                           .Where(c => c.Id == request.AuthenticationRequest.CertificateId)
+                                           .Select(c => c.EventId).FirstOrDefault()
                                            : request.VerficationRequest.EventId;
 
 
