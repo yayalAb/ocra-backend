@@ -63,7 +63,7 @@ namespace AppDiv.CRVS.Api.Middleware
                 BadRequestException => StatusCodes.Status400BadRequest,
                 NotFoundException => StatusCodes.Status404NotFound,
                 ValidationException => StatusCodes.Status422UnprocessableEntity,
-                AuthenticationException => StatusCodes.Status401Unauthorized,
+                AuthenticationException => StatusCodes.Status403Forbidden,
                 _ => StatusCodes.Status500InternalServerError
             };
 
