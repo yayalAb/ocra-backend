@@ -1,8 +1,10 @@
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllLookup;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using System;
@@ -29,16 +31,22 @@ namespace AppDiv.CRVS.Application.Features.Courts.Query.GetById
     {
 
         private readonly ICourtRepository _courtRepository;
+        private readonly IDateAndAddressService _addressService;
 
-        public CourtGetByIdQueryHandler(ICourtRepository courtRepository)
+        public CourtGetByIdQueryHandler(ICourtRepository courtRepository,IDateAndAddressService addressService)
         {
             _courtRepository = courtRepository;
+            _addressService=addressService;
         }
         public async Task<CourtDTO> Handle(CourtGetByIdQuery request, CancellationToken cancellationToken)
         {
             // var lookups = await _mediator.Send(new GetAllLookupQuery());
             var selectedlookup = await _courtRepository.GetAsync(request.Id);
-            return CustomMapper.Mapper.Map<CourtDTO>(selectedlookup);
+            var court=CustomMapper.Mapper.Map<CourtDTO>(selectedlookup);
+            court.CourtAddress = await _addressService.FormatedAddress(court?.AddressId);
+
+
+            return court;
             // return selectedCustomer;
         }
     }
