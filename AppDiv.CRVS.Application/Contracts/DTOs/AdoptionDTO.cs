@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid Id { get; set; }
         public Guid? BeforeAdoptionAddressId { get; set; }
+        public string? BirthCertificateId { get; set; }
         public JObject ApprovedName { get; set; }
         public JObject? Reason { get; set; }
         public virtual AdoptionEventPersonalInfoDTO AdoptiveMother { get; set; }
