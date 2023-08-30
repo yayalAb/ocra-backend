@@ -23,6 +23,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public ICollection<Guid> UserGroups { get; set; }
         public int SelectedAdminType { get; set; } = 0;
         public bool? CanRegisterEvent { get; set; }
+        public string FingerPrintApiUrl { get; set; } = "localhost";
+
 
 
         // public Guid PersonalInfoId { get; set; }

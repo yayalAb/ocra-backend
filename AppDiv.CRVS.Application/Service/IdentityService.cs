@@ -269,6 +269,7 @@ namespace AppDiv.CRVS.Application.Service
             existingUser.PreferedLanguage = user.PreferedLanguage;
             existingUser.AddressId = user.AddressId;
             existingUser.CanRegisterEvent = user.CanRegisterEvent;
+            existingUser.FingerPrintApiUrl = user.FingerPrintApiUrl;
             //if the user was locked and status is updated to true
             if (user.Status && existingUser.LockoutEnd > DateTime.Now && existingUser.LockoutEnabled)
             {

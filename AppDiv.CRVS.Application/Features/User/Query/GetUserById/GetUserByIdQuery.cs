@@ -61,7 +61,9 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 UserGroups = u.UserGroups.Select(u => u.Id).ToList(),
                 PersonalInfo = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(u.PersonalInfo),
                 PreferedLanguage = u.PreferedLanguage,
+                FingerPrintApiUrl = u.FingerPrintApiUrl,
                 CanRegisterEvent = u.CanRegisterEvent,
+
                 CreatedBy = u.CreatedBy
             }).FirstOrDefaultAsync();
 

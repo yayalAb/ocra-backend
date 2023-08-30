@@ -33,6 +33,8 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public List<Guid> UserGroups { get; set; }
         public int SelectedAdminType { get; set; }
         public bool? CanRegisterEvent { get; set; } = null;
+        public string FingerPrintApiUrl { get; set; } = "localhost";
+
 
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
     }
@@ -129,6 +131,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                             Status = request.Status,
                             PreferedLanguage = request.PreferedLanguage,
                             SelectedAdminType = request.SelectedAdminType,
+                            FingerPrintApiUrl = request.FingerPrintApiUrl,
                             CanRegisterEvent = request.CanRegisterEvent
                         };
 
