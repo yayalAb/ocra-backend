@@ -19,6 +19,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public bool isFirstTime { get; set; } = false;
         public bool isOtpExpired { get; set; } = false;
         public bool isOtpUnverified { get; set; } = false;
+        public string FingerPrintApiUrl { get; set; }
         public int? AdminLevel { get; set; }
         public Guid? AddressId { get; set; }
         public string? AddressCode { get; set; }

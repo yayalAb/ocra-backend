@@ -22,7 +22,7 @@ namespace AppDiv.CRVS.Domain
         public DateTime? PasswordResetOtpExpiredDate { get; set; }
         public int SelectedAdminType { get; set; } = 0;
         public bool? CanRegisterEvent {get;set;} = null;
-
+        public string FingerPrintApiUrl {get; set; } = "localhost";
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual Address Address { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }

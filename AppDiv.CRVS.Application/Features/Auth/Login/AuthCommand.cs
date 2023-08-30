@@ -203,6 +203,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 MiddleName = userData.PersonalInfo?.MiddleName,
                 LastName = userData.PersonalInfo?.LastName,
                 CanRegisterEvent = userData.CanRegisterEvent,
+                FingerPrintApiUrl = userData.FingerPrintApiUrl,
                 Address = await _addressService.FormatedAddress(userData.AddressId)!
             };
         }
