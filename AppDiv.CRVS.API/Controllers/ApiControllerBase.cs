@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-   [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+//    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 
     public abstract class ApiControllerBase : ControllerBase
     {

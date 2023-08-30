@@ -113,12 +113,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             };
                             // Separate profile photos from supporting documents.
                             var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
-                            // var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(fingerprints,cancellationToken);
-                            // if(!FingerPrintResponse.Success){ 
-                            //       response.Message="Duplicated Fingerprint";
-                            //       response.Success=false; 
-                            //       return response;
-                            //     }
+                            var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(fingerprints,cancellationToken);
+                            if(!FingerPrintResponse.Success){ 
+                                  response.Message="Duplicated Fingerprint";
+                                  response.Success=false; 
+                                  return response;
+                                }
                             _eventDocumentService.savePhotos(userPhotos);
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                             _eventDocumentService.saveFingerPrints(fingerprints);

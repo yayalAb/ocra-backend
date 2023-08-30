@@ -40,7 +40,6 @@ namespace AppDiv.CRVS.Application.Features.Courts.Query.GetById
         }
         public async Task<CourtDTO> Handle(CourtGetByIdQuery request, CancellationToken cancellationToken)
         {
-            // var lookups = await _mediator.Send(new GetAllLookupQuery());
             var selectedlookup = await _courtRepository.GetAsync(request.Id);
             var court=CustomMapper.Mapper.Map<CourtDTO>(selectedlookup);
             court.CourtAddress = await _addressService.FormatedAddress(court?.AddressId);
