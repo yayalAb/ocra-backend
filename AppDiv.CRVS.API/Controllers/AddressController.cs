@@ -223,7 +223,7 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(command);
         }
          [HttpGet]
-        [Route("GetAllCountrCouch")]
+        [Route("GetAllCountryCouch")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<List<AllCountryDto>> GetAllCountryCouch([FromQuery] GetAllCountryForpouch query)
         {
