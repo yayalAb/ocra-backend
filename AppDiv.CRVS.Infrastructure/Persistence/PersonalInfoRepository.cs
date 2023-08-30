@@ -105,39 +105,39 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     && (
                         q
                     .Wildcard(w => w
-                    .Field(f => f.FirstNameStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.FirstNameStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.MiddleNameStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.MiddleNameStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.LastNameStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.LastNameStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.NationalId).Value($"*{query.SearchString}*")
+                    .Field(f => f.NationalId).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                     q
                     .Wildcard(w => w
-                    .Field(f => f.TypeOfWorkStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.TypeOfWorkStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                     q
                     .Wildcard(w => w
-                    .Field(f => f.TitleStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.TitleStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                     q
                     .Wildcard(w => w
-                    .Field(f => f.MarriageStatusStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.MarriageStatusStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     )
                     )
 
