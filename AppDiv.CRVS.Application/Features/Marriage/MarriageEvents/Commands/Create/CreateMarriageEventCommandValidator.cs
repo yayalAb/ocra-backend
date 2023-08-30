@@ -154,19 +154,19 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             // RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull()
             // .When(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId) != null);
 
-            RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true, e.Event.EventSupportingDocuments))
-            .WithMessage("the bride cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
-            RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false, e.Event.EventSupportingDocuments))
-            .WithMessage("the Groom cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
+            // RuleFor(e => e.BrideInfo.BirthDateEt)
+            // .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true, e.Event.EventSupportingDocuments))
+            // .WithMessage("the bride cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
+            // RuleFor(e => e.Event.EventOwener.BirthDateEt)
+            // .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false, e.Event.EventSupportingDocuments))
+            // .WithMessage("the Groom cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
 
             WhenAsync(async (e, CancellationToken) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
 
-                RuleFor(e => e.BrideInfo.Id)
-                .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt, e.Event.EventSupportingDocuments))
-                .WithMessage("divorced bride must wait month limit set in setting to marry again or attach pregnancy free certificate");
+                // RuleFor(e => e.BrideInfo.Id)
+                // .Must((e, brideId) => meetMinimumDivorceMarriageGapLimit(brideId, e.Event.EventDateEt, e.Event.EventSupportingDocuments))
+                // .WithMessage("divorced bride must wait month limit set in setting to marry again or attach pregnancy free certificate");
 
                 // RuleFor(e => e.Event.EventSupportingDocuments)
                 // .NotNull()

@@ -76,7 +76,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var convertor = new CustomDateConverter();
             // var CreatedAtEt = convertor.GregorianToEthiopic(birth.CreatedAt);
 
-            (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
+            // (string[]? am, string[]? or)? splitedAddress = _dateAndAddressService.SplitedAddress(address?.am, address?.or);
             var birthInfo = new BirthArchiveDTO()
             {
                 Child = CustomMapper.Mapper.Map<Child>

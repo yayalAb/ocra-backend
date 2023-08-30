@@ -143,46 +143,46 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
             //only resident address is required
             // RuleFor(e => e.Witnesses.Select(w => w.WitnessPersonalInfo.ResidentAddressId)).NotEmpty().NotNull();
 
-            RuleFor(e => e.BrideInfo.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true, e.Event.EventSupportingDocuments))
-            .WithMessage("the bride cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
-            RuleFor(e => e.Event.EventOwener.BirthDateEt)
-            .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false, e.Event.EventSupportingDocuments))
-            .WithMessage("the Groom cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
+            // RuleFor(e => e.BrideInfo.BirthDateEt)
+            // .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, true, e.Event.EventSupportingDocuments))
+            // .WithMessage("the bride cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
+            // RuleFor(e => e.Event.EventOwener.BirthDateEt)
+            // .Must((e, birthDate) => BeAboveTheAgeLimit(birthDate, e.Event.EventDateEt, false, e.Event.EventSupportingDocuments))
+            // .WithMessage("the Groom cannot be below the age limit set in setting or must attach underage marriage approval supporting document");
 
 
 
             WhenAsync(async (e, c) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
             {
-                RuleFor(e => e.Event.EventSupportingDocuments)
-                .Cascade(CascadeMode.StopOnFirstFailure)
-                .NotNull()
-                .NotEmpty()
-                .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.BrideInfo.Id, "wife")).WithMessage("divorce paper document should be attached if bride is a divorcee");
+                // RuleFor(e => e.Event.EventSupportingDocuments)
+                // .Cascade(CascadeMode.StopOnFirstFailure)
+                // .NotNull()
+                // .NotEmpty()
+                // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.BrideInfo.Id, "wife")).WithMessage("divorce paper document should be attached if bride is a divorcee");
             });
             WhenAsync(async (e, c) => await isDivorcee(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
-                RuleFor(e => e.Event.EventSupportingDocuments)
-                .Cascade(CascadeMode.StopOnFirstFailure)
-                .NotNull()
-                .NotEmpty()
-                .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.Event.EventOwener.Id, "husband")).WithMessage("divorce paper document should be attached if eventOwner(Groom) is a divorcee");
+                // RuleFor(e => e.Event.EventSupportingDocuments)
+                // .Cascade(CascadeMode.StopOnFirstFailure)
+                // .NotNull()
+                // .NotEmpty()
+                // .MustAsync(async (model, supportingDocs, CancellationToken) => await haveDevorceCertificateAttachementAsync(supportingDocs, model.Event.EventOwener.Id, "husband")).WithMessage("divorce paper document should be attached if eventOwner(Groom) is a divorcee");
             });
             WhenAsync(async (e, c) => await isWidowed(e.Event.EventOwener.MarriageStatusLookupId), () =>
             {
-                RuleFor(e => e.Event.EventSupportingDocuments)
-                .Cascade(CascadeMode.StopOnFirstFailure)
-                .NotNull()
-                .NotEmpty()
-                .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
+                // RuleFor(e => e.Event.EventSupportingDocuments)
+                // .Cascade(CascadeMode.StopOnFirstFailure)
+                // .NotNull()
+                // .NotEmpty()
+                // .Must(haveDeathCertificateAttachement).WithMessage("Death Certificate document should be attached if eventOwner(Groom) is a Widowed");
             });
             WhenAsync(async (e, c) => await isDivorcee(e.BrideInfo.MarriageStatusLookupId), () =>
            {
-               RuleFor(e => e.Event.EventSupportingDocuments)
-               .Cascade(CascadeMode.StopOnFirstFailure)
-               .NotNull()
-               .NotEmpty()
-               .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
+            //    RuleFor(e => e.Event.EventSupportingDocuments)
+            //    .Cascade(CascadeMode.StopOnFirstFailure)
+            //    .NotNull()
+            //    .NotEmpty()
+            //    .Must(haveDeathCertificateAttachement).WithMessage("death certificate paper document should be attached if bride is a divorcee");
            });
             WhenAsync(async (e, c) => await isCivilMarriage(e.MarriageTypeId), () =>
             {

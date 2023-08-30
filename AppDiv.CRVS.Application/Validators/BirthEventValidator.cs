@@ -29,10 +29,10 @@ namespace AppDiv.CRVS.Application.Validators
             // RuleFor(p => p.Event.CertificateId).NotEmpty().NotNull().ValidCertificate(repo, "Event.CertificateId");
             RuleFor(p => p.Event.CivilRegOfficerId.ToString()).NotEmpty().NotNull().ForeignKeyWithPerson(_repo, "CivilRegOfficerId");
 
-            RuleFor(p => p.Event.EventSupportingDocuments)
-            .Must((e, p) => ValidationService.HaveGuardianSupportingDoc(p , _lookupRepo))
-            .WithMessage("guardian supporting document must be attached if informant type is legal guardian ")
-            .When(p => p.Event.InformantType == "guardian");
+            // RuleFor(p => p.Event.EventSupportingDocuments)
+            // .Must((e, p) => ValidationService.HaveGuardianSupportingDoc(p , _lookupRepo))
+            // .WithMessage("guardian supporting document must be attached if informant type is legal guardian ")
+            // .When(p => p.Event.InformantType == "guardian");
 
         }
 
