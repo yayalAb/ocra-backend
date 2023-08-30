@@ -66,6 +66,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query)
         {
+            query.SearchString = query.SearchString.ToLower();
             var response = _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
                     .Index("personal_info_second")
                     .Source(src => src
