@@ -298,6 +298,78 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return output;
         }
 
+   public async Task<object> ReturnPerson(string Id)
+        {
+            var sql = $"CALL Person_procedure ('{Id}')";
+            Console.WriteLine("Person_procedure : {0}",sql);
+            var result = new List<object>();
+            var viewReader = await ConnectDatabase(sql);
+            while (viewReader.Item1.Read())
+            {
+                result.Add(new
+                {
+                    FirstNameAm = viewReader.Item1["FirstNameAm"],
+                    FirstNameOr=viewReader.Item1["FirstNameOr"],
+                    MiddleNameAm =viewReader.Item1["MiddleNameAm"],
+                    MiddleNameOr=viewReader.Item1["MiddleNameOr"],
+                    LastNameAm=viewReader.Item1["LastNameAm"],
+                    LastNameOr=viewReader.Item1["LastNameOr"],
+                    BirthMonthOr=viewReader.Item1["BirthMonthOr"],
+                    BirthMonthAm=viewReader.Item1["BirthMonthAm"],
+                    BirthDay=viewReader.Item1["BirthDay"],
+                    BirthYear=viewReader.Item1["BirthYear"],
+                    GenderAm=viewReader.Item1["GenderAm"],
+                    GenderOr=viewReader.Item1["GenderOr"],
+                    NationalId=viewReader.Item1["NationalId"],
+                    NationalityOr=viewReader.Item1["NationalityOr"],
+                    NationalityAm=viewReader.Item1["NationalityAm"],
+                    MarriageStatusOr=viewReader.Item1["MarriageStatusOr"],
+                    MarriageStatusAm=viewReader.Item1["MarriageStatusAm"],
+                    ReligionOr=viewReader.Item1["ReligionOr"],
+                    ReligionAm=viewReader.Item1["ReligionAm"],
+                    NationOr=viewReader.Item1["NationOr"],
+                    NationAm=viewReader.Item1["NationAm"],
+                    EducationalStatusOr=viewReader.Item1["EducationalStatusOr"],
+                    EducationalStatusAm=viewReader.Item1["EducationalStatusAm"],
+                    TypeOfWorkOr=viewReader.Item1["TypeOfWorkOr"],
+                    TypeOfWorkAm=viewReader.Item1["TypeOfWorkAm"]
+                });
+            }
+            await viewReader.Item2.CloseAsync();
+
+
+            return result;
+        }
+
+public async Task<object> ReturnAddress(string Id)
+        {
+            var sql = $"CALL Address_procedure ('{Id}')";
+            var result = new List<object>();
+            var viewReader = await ConnectDatabase(sql);
+            while (viewReader.Item1.Read())
+            {
+                result.Add(new
+                {
+                        CountryOr= viewReader.Item1["CountryOr"],
+                        CountryAm= viewReader.Item1["CountryAm"],
+                        RegionOr= viewReader.Item1["RegionOr"],
+                        RegionAm= viewReader.Item1["RegionAm"],
+                        ZoneOr= viewReader.Item1["ZoneOr"],
+                        ZoneAm= viewReader.Item1["ZoneAm"],
+                        WoredaOr= viewReader.Item1["WoredaOr"],
+                        WoredaAm = viewReader.Item1["WoredaAm"],
+                        KebeleOr= viewReader.Item1["KebeleOr"],
+                        KebeleAm= viewReader.Item1["KebeleAm"]
+                });
+            }
+            await viewReader.Item2.CloseAsync();
+
+
+            return result;
+        }
+
+        
+
 
 
     }

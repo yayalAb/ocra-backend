@@ -17,21 +17,24 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private readonly ILookupFromId _lookupService;
         private readonly IPersonalInfoRepository _person;
         private readonly ISupportingDocumentRepository _supportingDocument;
+        private readonly IReportRepostory _reportRepostory;
         public ReturnBirthArchive(IDateAndAddressService DateAndAddressService,
                                 ILookupFromId lookupService,
                                 IPersonalInfoRepository person,
-                                ISupportingDocumentRepository supportingDocument)
+                                ISupportingDocumentRepository supportingDocument,
+                                IReportRepostory reportRepostory)
         {
             _dateAndAddressService = DateAndAddressService;
             _lookupService = lookupService;
             _supportingDocument = supportingDocument;
             _person = person;
+            _reportRepostory=reportRepostory;
             // _convertor = new CustomDateConverter();
         }
 
         private BirthInfo GetEventInfo(Event? birth)
         {
-            BirthInfo birthInfo = CustomMapper.Mapper.Map<BirthInfo>(ReturnPerson.GetEventInfo(birth, _dateAndAddressService));
+            BirthInfo birthInfo = CustomMapper.Mapper.Map<BirthInfo>(ReturnPerson.GetEventInfo(birth, _dateAndAddressService, _reportRepostory));
             birthInfo.TypeOfBirthOr = birth?.BirthEvent?.TypeOfBirthLookup?.Value?.Value<string>("or");
             birthInfo.TypeOfBirthAm = birth?.BirthEvent?.TypeOfBirthLookup?.Value?.Value<string>("am");
             birthInfo.BirthPlaceOr = birth?.BirthEvent?.BirthPlace?.Value?.Value<string>("or");
@@ -56,7 +59,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         {
             if (reg != null)
             {
-                RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService));
+                RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService,_reportRepostory));
                 regInfo.RelationShipOr = reg?.RelationshipLookup?.Value?.Value<string>("or");
                 regInfo.RelationShipAm = reg?.RelationshipLookup?.Value?.Value<string>("am");
                 return regInfo;
@@ -70,9 +73,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         public BirthArchiveDTO GetBirthArchive(Event? birth, string? BirthCertNo)
         {
-            (string am, string or)? address = (birth?.EventAddressId == Guid.Empty
-               || birth?.EventAddressId == null) ? null :
-               _dateAndAddressService.addressFormat(birth?.EventAddressId);
+            // (string am, string or)? address = (birth?.EventAddressId == Guid.Empty
+            //    || birth?.EventAddressId == null) ? null :
+            //    _dateAndAddressService.addressFormat(birth?.EventAddressId);
             var convertor = new CustomDateConverter();
             // var CreatedAtEt = convertor.GregorianToEthiopic(birth.CreatedAt);
 
@@ -80,14 +83,14 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var birthInfo = new BirthArchiveDTO()
             {
                 Child = CustomMapper.Mapper.Map<Child>
-                                            (ReturnPerson.GetPerson(birth?.EventOwener, _dateAndAddressService, _lookupService)),
-                Mother = ReturnPerson.GetPerson(birth?.BirthEvent?.Mother, _dateAndAddressService, _lookupService),
-                Father = ReturnPerson.GetPerson(birth?.BirthEvent?.Father, _dateAndAddressService, _lookupService),
+                                            (ReturnPerson.GetPerson(birth?.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory)),
+                Mother = ReturnPerson.GetPerson(birth?.BirthEvent?.Mother, _dateAndAddressService, _lookupService,_reportRepostory),
+                Father = ReturnPerson.GetPerson(birth?.BirthEvent?.Father, _dateAndAddressService, _lookupService,_reportRepostory),
                 EventInfo = GetEventInfo(birth),
                 Notification = GetNotification(birth?.BirthEvent?.BirthNotification!),
                 Registrar = GetRegistrar(birth?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(birth?.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                                        (ReturnPerson.GetPerson(birth?.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == birth!.Id)
                                                     .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
 
@@ -110,14 +113,14 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return new BirthArchiveDTO()
             {
                 Child = CustomMapper.Mapper.Map<Child>
-                                            (ReturnPerson.GetPerson(birth?.Event?.EventOwener, _dateAndAddressService, _lookupService)),
-                Mother = ReturnPerson.GetPerson(birth?.Mother, _dateAndAddressService, _lookupService),
-                Father = ReturnPerson.GetPerson(birth?.Father, _dateAndAddressService, _lookupService),
+                                            (ReturnPerson.GetPerson(birth?.Event?.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory)),
+                Mother = ReturnPerson.GetPerson(birth?.Mother, _dateAndAddressService, _lookupService,_reportRepostory),
+                Father = ReturnPerson.GetPerson(birth?.Father, _dateAndAddressService, _lookupService,_reportRepostory),
                 EventInfo = GetEventInfo(birth?.Event),
                 Notification = GetNotification(birth?.BirthNotification),
                 Registrar = GetRegistrar(birth?.Event?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(birth?.Event?.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                                        (ReturnPerson.GetPerson(birth?.Event?.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
                 EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(birth?.Event?.EventSupportingDocuments),
                 PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(birth?.Event?.PaymentExamption?.SupportingDocuments),
             };

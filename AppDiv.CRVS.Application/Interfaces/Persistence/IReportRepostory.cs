@@ -18,5 +18,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public Task<BaseResponse> DeleteReport(string Viewname);
         public string SanitizeString(string StringToSanitize);
          public  Task<IEnumerable<string>> GetReportColums(string viewName);
+         public  Task<object> ReturnPerson(string Id);
+         public  Task<object> ReturnAddress(string Id);
     }
 }

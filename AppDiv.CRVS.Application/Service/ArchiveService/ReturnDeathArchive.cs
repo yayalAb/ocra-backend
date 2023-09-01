@@ -24,19 +24,22 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private readonly ILookupFromId _lookupService;
         private readonly IPersonalInfoRepository _person;
         private readonly ISupportingDocumentRepository _supportingDocument;
+        private readonly IReportRepostory _reportRepostory;
         public ReturnDeathArchive(IDateAndAddressService DateAndAddressService,
                                 ILookupFromId lookupService,
                                 IPersonalInfoRepository person,
-                                ISupportingDocumentRepository supportingDocument)
+                                ISupportingDocumentRepository supportingDocument,
+                                IReportRepostory reportRepostory)
         {
             _dateAndAddressService = DateAndAddressService;
             _lookupService = lookupService;
             _supportingDocument = supportingDocument;
             _person = person;
+            _reportRepostory=reportRepostory;
         }
         private DeathInfo GetEventInfo(Event death)
         {
-            DeathInfo deathInfo = CustomMapper.Mapper.Map<DeathInfo>(ReturnPerson.GetEventInfo(death, _dateAndAddressService));
+            DeathInfo deathInfo = CustomMapper.Mapper.Map<DeathInfo>(ReturnPerson.GetEventInfo(death, _dateAndAddressService,_reportRepostory));
             deathInfo.BirthCertificateId = death?.DeathEventNavigation?.BirthCertificateId;
             deathInfo.PlaceOfFuneral = death?.DeathEventNavigation?.PlaceOfFuneral;
             deathInfo.DuringDeathAm = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupOr(death?.DeathEventNavigation?.DuringDeathId);
@@ -63,14 +66,14 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         private RegistrarArchive GetRegistrar(Registrar reg)
         {
-            RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService));
+            RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService,_reportRepostory));
             regInfo.RelationShipOr = reg?.RelationshipLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(reg?.RelationshipLookupId);
             regInfo.RelationShipAm = reg?.RelationshipLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(reg?.RelationshipLookupId);
             return regInfo;
         }
         private DeceasedPerson GetDeceased(PersonalInfo deceased)
         {
-            DeceasedPerson deceasedInfo = CustomMapper.Mapper.Map<DeceasedPerson>(ReturnPerson.GetPerson(deceased, _dateAndAddressService, _lookupService));
+            DeceasedPerson deceasedInfo = CustomMapper.Mapper.Map<DeceasedPerson>(ReturnPerson.GetPerson(deceased, _dateAndAddressService, _lookupService,_reportRepostory));
             deceasedInfo.TitileAm = deceased?.TitleLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(deceased?.TitleLookupId);
             deceasedInfo.TitileOr = deceased?.TitleLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(deceased?.TitleLookupId);
             return deceasedInfo;
@@ -85,7 +88,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Notification = GetNotification(death.DeathEventNavigation.DeathNotification),
                 Registrar = GetRegistrar(death?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                                        (ReturnPerson.GetPerson(death.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
                 EventSupportingDocuments = _supportingDocument.GetAll()
                                                 .Where(s => s.EventId == death.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList()
@@ -125,7 +128,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 Notification = GetNotification(death.DeathNotification),
                 Registrar = GetRegistrar(death?.Event?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(death.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                                        (ReturnPerson.GetPerson(death.Event.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
                 EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(death.Event?.EventSupportingDocuments),
                 PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(death?.Event?.PaymentExamption?.SupportingDocuments),
             };

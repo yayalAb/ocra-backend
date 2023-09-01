@@ -22,16 +22,19 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private readonly ILookupFromId _lookupService;
         private readonly IPersonalInfoRepository _person;
         private readonly ISupportingDocumentRepository _supportingDocument;
+        private readonly IReportRepostory _reportRepostory;
         public ReturnDivorceArchive(IDateAndAddressService DateAndAddressService,
                                     ILookupFromId lookupService,
                                     IPersonalInfoRepository person,
-                                    ISupportingDocumentRepository supportingDocument)
+                                    ISupportingDocumentRepository supportingDocument,
+                                    IReportRepostory reportRepostory)
         {
             _dateAndAddressService = DateAndAddressService;
             _lookupService = lookupService;
             _supportingDocument = supportingDocument;
             _person = person;
             convertor = new CustomDateConverter();
+            _reportRepostory=reportRepostory;
         }
 
         private CourtArchive GetCourt(CourtCase court)
@@ -58,7 +61,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         private DivorceInfo GetEventInfo(Event divorce)
         {
-            DivorceInfo divorceInfo = CustomMapper.Mapper.Map<DivorceInfo>(ReturnPerson.GetEventInfo(divorce, _dateAndAddressService));
+            DivorceInfo divorceInfo = CustomMapper.Mapper.Map<DivorceInfo>(ReturnPerson.GetEventInfo(divorce, _dateAndAddressService,_reportRepostory));
             // marriageInfo.MarriageAddressOr = divorce.MarriageEvent.MarriageAddress.Value?.Value<string>("or");
             // marriageInfo.MarriageAddressAm = divorce.MarriageEvent.MarriageAddress.Value?.Value<string>("am");
 
@@ -85,12 +88,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             var divorceInfo = new DivorceArchiveDTO()
             {
-                Husband = ReturnPerson.GetPerson(divorce.EventOwener, _dateAndAddressService, _lookupService),
-                Wife = ReturnPerson.GetPerson(divorce.DivorceEvent.DivorcedWife, _dateAndAddressService, _lookupService),
+                Husband = ReturnPerson.GetPerson(divorce.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory),
+                Wife = ReturnPerson.GetPerson(divorce.DivorceEvent.DivorcedWife, _dateAndAddressService, _lookupService,_reportRepostory),
                 EventInfo = GetEventInfo(divorce),
                 Court = GetCourt(divorce?.DivorceEvent?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                                        (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == divorce.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
             };
@@ -109,12 +112,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             }
             return new DivorceArchiveDTO()
             {
-                Husband = ReturnPerson.GetPerson(divorce.Event.EventOwener, _dateAndAddressService, _lookupService),
-                Wife = ReturnPerson.GetPerson(divorce.DivorcedWife, _dateAndAddressService, _lookupService),
+                Husband = ReturnPerson.GetPerson(divorce.Event.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory),
+                Wife = ReturnPerson.GetPerson(divorce.DivorcedWife, _dateAndAddressService, _lookupService,_reportRepostory),
                 EventInfo = GetEventInfo(divorce.Event),
                 Court = GetCourt(divorce?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(divorce.Event.CivilRegOfficer, _dateAndAddressService, _lookupService)),
+                                        (ReturnPerson.GetPerson(divorce.Event.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
                 EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(divorce?.Event?.EventSupportingDocuments),
                 PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(divorce?.Event?.PaymentExamption?.SupportingDocuments),
 

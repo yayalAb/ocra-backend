@@ -88,8 +88,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private Task<Event?> BirthIncludes(IQueryable<Event> birth)
         {
             return birth.Include(e => e.BirthEvent)
-                            .Include(m => m.EventOwener.ResidentAddress)
-                            .Include(m => m.EventOwener.BirthAddress)
+                            .Include(m => m.EventOwener)
                             .Include(e => e.BirthEvent.BirthPlace)
                             .Include(e => e.BirthEvent.TypeOfBirthLookup)
                             .Include(e => e.BirthEvent.BirthNotification)
@@ -98,10 +97,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(e => e.BirthEvent.Mother)
                             .Include(e => e.BirthEvent.Father)
                             .Include(e => e.EventRegistrar.RegistrarInfo)
-                            .ThenInclude(r=>r.ResidentAddress)
-                            .Include(e => e.EventRegistrar.RegistrarInfo.BirthAddress)
-                            .Include(e => e.EventRegistrar.RegistrarInfo.SexLookup)
-                            .Include(e => e.EventRegistrar.RelationshipLookup)
                             .FirstOrDefaultAsync();
         }
         private Task<Event?> DeathIncludes(IQueryable<Event> death)

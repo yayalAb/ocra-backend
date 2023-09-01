@@ -11,6 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task<AddressResponseDTOE>? FormatedAddress(Guid? id);
         public string GetFullAddress(Address address);
         public bool IsCityAdmin(Guid? Id);
+        public (string?,string?) stringAddress(FormatedAddressDto? address);
 
 
 

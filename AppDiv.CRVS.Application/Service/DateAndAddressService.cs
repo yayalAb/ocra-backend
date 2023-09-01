@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Domain.Entities;
+using System.Text.RegularExpressions;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -140,6 +141,22 @@ namespace AppDiv.CRVS.Application.Service
                   return true;
              }                      
             return false;
+        }
+
+
+
+
+   public (string?,string?) stringAddress(FormatedAddressDto? address)
+        {   
+            string addressAm = string.Join("/", address?.CountryAm, address?.RegionAm,address?.ZoneAm,address?.WoredaAm,address?.KebeleAm);
+
+            string addressOr = string.Join("/", address?.CountryOr, address?.RegionOr,address?.ZoneOr,address?.WoredaOr,address?.KebeleOr);
+
+            addressAm = Regex.Replace(addressAm, "/+", "/").TrimEnd('/');
+
+            addressOr = Regex.Replace(addressOr, "/+", "/").TrimEnd('/');;
+            
+            return (addressAm,addressOr);
         }
     }
 

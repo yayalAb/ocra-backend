@@ -23,43 +23,46 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private readonly ILookupFromId _lookupService;
         private readonly IPersonalInfoRepository _person;
         private readonly ISupportingDocumentRepository _supportingDocument;
+        private readonly IReportRepostory _reportRepostory;
         public ReturnAdoptionArchive(IDateAndAddressService DateAndAddressService,
                                     ILookupFromId lookupService,
                                     IPersonalInfoRepository person,
-                                    ISupportingDocumentRepository supportingDocument)
+                                    ISupportingDocumentRepository supportingDocument,
+                                    IReportRepostory reportRepostory)
         {
             _DateAndAddressService = DateAndAddressService;
             _lookupService = lookupService;
             _person = person;
             _supportingDocument = supportingDocument;
             _convertor = new CustomDateConverter();
+            _reportRepostory=reportRepostory;
         }
 
         private AdoptedChild GetChild(PersonalInfo adoptedChild)
         {
-            AdoptedChild? child = CustomMapper.Mapper.Map<AdoptedChild>(ReturnPerson.GetPerson(adoptedChild, _DateAndAddressService, _lookupService));
+            AdoptedChild? child = CustomMapper.Mapper.Map<AdoptedChild>(ReturnPerson.GetPerson(adoptedChild, _DateAndAddressService, _lookupService, _reportRepostory));
             return child;
         }
 
         private Officer GetOfficer(PersonalInfo adoptionOfficer)
         {
-            Officer? officer = CustomMapper.Mapper.Map<Officer>(ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService, _lookupService));
+            Officer? officer = CustomMapper.Mapper.Map<Officer>(ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService, _lookupService, _reportRepostory));
             return officer;
         }
 
         private Person GetMother(PersonalInfo adoptiveMother)
         {
-            Person? mother = ReturnPerson.GetPerson(adoptiveMother, _DateAndAddressService, _lookupService);
+            Person? mother = ReturnPerson.GetPerson(adoptiveMother, _DateAndAddressService, _lookupService, _reportRepostory);
             return mother;
         }
         private Person GetFather(PersonalInfo adoptiveFather)
         {
-            Person? father = ReturnPerson.GetPerson(adoptiveFather, _DateAndAddressService, _lookupService);
+            Person? father = ReturnPerson.GetPerson(adoptiveFather, _DateAndAddressService, _lookupService, _reportRepostory);
             return father;
         }
         private AdoptionInfo GetEventInfo(Event adoption)
         {
-            AdoptionInfo adoptionInfo = CustomMapper.Mapper.Map<AdoptionInfo>(ReturnPerson.GetEventInfo(adoption, _DateAndAddressService));
+            AdoptionInfo adoptionInfo = CustomMapper.Mapper.Map<AdoptionInfo>(ReturnPerson.GetEventInfo(adoption, _DateAndAddressService, _reportRepostory));
             adoptionInfo.ReasonOr = adoption.AdoptionEvent?.Reason?.Value<string>("or");
             adoptionInfo.ReasonAm = adoption.AdoptionEvent?.Reason?.Value<string>("am");
             adoptionInfo.BirthCertificateId = adoption.AdoptionEvent?.BirthCertificateId;
@@ -67,19 +70,17 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         }
         private AdoptionInfo GetEventInfoPreview(AdoptionEvent adoption)
         {
-            AdoptionInfo adoptionInfo = CustomMapper.Mapper.Map<AdoptionInfo>(ReturnPerson.GetEventInfo(adoption.Event, _DateAndAddressService));
+            AdoptionInfo adoptionInfo = CustomMapper.Mapper.Map<AdoptionInfo>(ReturnPerson.GetEventInfo(adoption.Event, _DateAndAddressService, _reportRepostory));
             adoptionInfo.ReasonOr = adoption?.Reason?.Value<string>("or");
             adoptionInfo.ReasonAm = adoption?.Reason?.Value<string>("am");
             return adoptionInfo;
         }
         private CourtArchive GetCourt(CourtCase court)
         {
-            Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx {0}",court?.Court?.AddressId);
             (string am, string or)? courtAddress 
             = (court?.Court?.AddressId == Guid.Empty
                || court?.Court?.AddressId == null) ? null :
                _DateAndAddressService.addressFormat(court?.Court?.AddressId);
-               Console.WriteLine("Confffffffffffffffffffff date {0}",court?.ConfirmedDateEt);
 
             return new CourtArchive
             {
