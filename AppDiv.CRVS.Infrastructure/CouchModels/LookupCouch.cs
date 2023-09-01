@@ -12,5 +12,6 @@ public class LookupCouch : CouchDocument
     public string? Key { get; set; }
     public string? ValueAm { get; set; }
     public string? ValueOr { get; set; }
+    public string? ValueEn {get; set;}
     public bool? status { get; set; }
 }

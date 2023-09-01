@@ -23,6 +23,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence.Couch
                 Key = lookup.Key,
                 ValueAm = lookup.Value?.Value<string>("am"),
                 ValueOr = lookup.Value?.Value<string>("or"),
+                ValueEn = lookup.Value?.Value<string>("en"),
+
                 status = true,
             };
             try
@@ -47,6 +49,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence.Couch
                  Key = l.Key,
                  ValueAm = l.Value.Value<string>("am"),
                  ValueOr = l.Value.Value<string>("or"),
+                 ValueEn = l.Value?.Value<string>("en"),
                  status = true
              }
             ).ToList());
@@ -62,6 +65,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence.Couch
                 existing.Key = lookup.Key;
                 existing.ValueAm = lookup.Value?.Value<string>("am");
                 existing.ValueOr = lookup.Value?.Value<string>("or");
+                existing.ValueEn = lookup.Value?.Value<string>("en");
 
                 var res = await _couchContext.Lookups.AddOrUpdateAsync(existing);
             }

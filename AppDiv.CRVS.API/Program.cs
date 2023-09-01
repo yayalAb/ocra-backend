@@ -109,23 +109,23 @@ builder.Services.AddCors(c =>
      options =>
       options
         .WithOrigins(new string[] { "http://192.168.1.17:4200", "https://app.ocra.gov.et", "http://192.168.1.30:4200", "http://localhost:4200" })
-    //   .SetIsOriginAllowed((host) => true)
+      //   .SetIsOriginAllowed((host) => true)
       //   .AllowAnyOrigin()
       .AllowAnyMethod()
       .AllowAnyHeader()
       .AllowCredentials()
       );
-    c.AddPolicy("socketPolicy",  
-                          policy  =>  
-                          {  
-                              policy.WithOrigins("http://localhost:4200",  
-                                                  "https://app.ocra.gov.et" , "http://192.168.1.30:4200")
-                                                      .WithMethods("POST","GET","PUT")
+    c.AddPolicy("socketPolicy",
+                          policy =>
+                          {
+                              policy.WithOrigins("http://localhost:4200",
+                                                  "https://app.ocra.gov.et", "http://192.168.1.30:4200")
+                                                      .WithMethods("POST", "GET", "PUT")
                                                       .AllowCredentials()
-                                                      
+
           .AllowAnyHeader()
           .AllowCredentials(); // add the allowed origins  
-                          });  
+                          });
 
 });
 
@@ -231,9 +231,9 @@ app.MapControllers();
 // BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
 
 // BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
-RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSyncs", x => x.GetEventJob(), Cron.Hourly());
-RecurringJob.AddOrUpdate<IBackgroundJobs>("marriageApplicationSync", x => x.SyncMarriageApplicationJob(), Cron.Hourly());
-RecurringJob.AddOrUpdate<IBackgroundJobs>("certificateAndPaymentSync", x => x.SyncCertificatesAndPayments(), Cron.Hourly());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSyncs", x => x.GetEventJob(), Cron.Monthly());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("marriageApplicationSync", x => x.SyncMarriageApplicationJob(), Cron.Monthly());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("certificateAndPaymentSync", x => x.SyncCertificatesAndPayments(), Cron.Monthly());
 
 
 

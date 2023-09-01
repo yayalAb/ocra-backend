@@ -100,14 +100,13 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
 
-        [HttpDelete("Delete/{id}")]
-        public async Task<BaseResponse> DeleteLookup(Guid id)
+        [HttpDelete("Delete")]
+        public async Task<BaseResponse> DeleteLookup(DeleteWorkFlowCommad command)
         {
             try
             {
-                _Ilog.LogCritical(id.ToString());
-                string result = string.Empty;
-                return await _mediator.Send(new DeleteWorkFlowCommad { Id = id });
+
+                return await _mediator.Send(command);
 
             }
             catch (Exception exp)

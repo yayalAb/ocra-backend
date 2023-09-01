@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
     // Customer create command with BaseResponse response
     public class DeleteWorkFlowCommad : IRequest<BaseResponse>
     {
-        public Guid Id { get; set; }
+        public Guid[] Ids { get; set; }
     }
 
     // Customer delete command handler with BaseResponse response as output
@@ -34,10 +34,14 @@ namespace AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete
             var res = new BaseResponse();
             try
             {
-                var workFlowEntity = await _workflowRepository.GetByIdAsync(request.Id);
-
-                await _workflowRepository.DeleteAsync(request.Id);
+                IEnumerable<Guid> ids = request.Ids;
+                foreach (Guid x in ids)
+                {
+                    await _workflowRepository.DeleteAsync(x); ;
+                }
                 await _workflowRepository.SaveChangesAsync(cancellationToken);
+
+
                 res.Deleted("Workflow");
 
             }

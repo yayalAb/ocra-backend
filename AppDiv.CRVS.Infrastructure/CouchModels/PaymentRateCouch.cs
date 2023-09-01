@@ -13,6 +13,8 @@ namespace AppDiv.CRVS.Infrastructure.CouchModels
         public string? EventLookupOr {get;set;}
         public string? PaymentTypeLookupAm {get; set; }
         public string? PaymentTypeLookupOr {get; set; }
+        public string? PaymentTypeLookupEn {get; set; }
+
         public float Amount { get; set; } =0;
         public float Backlog { get; set; } = 0;
         public float HasCamera { get; set; } = 0;

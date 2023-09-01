@@ -66,6 +66,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
         public async Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query)
         {
+            query.SearchString = query.SearchString.ToLower();
             var response = _elasticClient.SearchAsync<PersonalInfoIndex>(s => s
                     .Index("personal_info_second")
                     .Source(src => src
@@ -88,7 +89,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Query(q =>
                     q.Bool(b =>
                      b.Must(
-                        
+
                          query.age != 0 ?
                         mu => mu.DateRange(r => r
                         .Field(f => f.BirthDate)
@@ -97,53 +98,53 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         query.gender != "null" && query.gender != null && query.gender != string.Empty ?
                         mu => mu.Match(w => w
                     .Field(f => f.GenderOr).Query(query.gender)
-                    ) || mu.Match(w => w.Field(f => f.GenderAm).Query(query.gender)) 
+                    ) || mu.Match(w => w.Field(f => f.GenderAm).Query(query.gender))
                       || mu.Match(w => w.Field(f => f.GenderEn).Query(query.gender))
                     : null
                         ))
                     && (
                         q
                     .Wildcard(w => w
-                    .Field(f => f.FirstNameStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.FirstNameStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.MiddleNameStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.MiddleNameStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.LastNameStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.LastNameStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.NationalId).Value($"*{query.SearchString}*")
+                    .Field(f => f.NationalId).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                      q
                     .Wildcard(w => w
-                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.GenderStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                     q
                     .Wildcard(w => w
-                    .Field(f => f.TypeOfWorkStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.TypeOfWorkStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                     q
                     .Wildcard(w => w
-                    .Field(f => f.TitleStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.TitleStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     ) ||
                     q
                     .Wildcard(w => w
-                    .Field(f => f.MarriageStatusStr).Value($"*{query.SearchString}*")
+                    .Field(f => f.MarriageStatusStr).Value($"*{query.SearchString}*").CaseInsensitive(true)
                     )
                     )
 
                     ).Size(50));
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.Id,
+                Id = new Guid(d.Id),
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
@@ -250,7 +251,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.Id,
+                Id = new Guid(d.Id),
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
@@ -280,7 +281,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                       .Where(p => p.DeathStatus == false)
                                    .Select(p => new PersonalInfoIndex
                                    {
-                                       Id = p.Id,
+                                       Id = p.Id.ToString(),
                                        FirstNameStr = p.FirstNameStr,
                                        FirstNameOr = p.FirstName == null ? null : p.FirstName.Value<string>("or"),
                                        FirstNameAm = p.FirstName == null ? null : p.FirstName.Value<string>("am"),
