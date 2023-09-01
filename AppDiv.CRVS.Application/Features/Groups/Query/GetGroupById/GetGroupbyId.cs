@@ -45,7 +45,8 @@ namespace AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById
                 GroupName = selectedGroup.GroupName,
                 Description = selectedGroup.Description,
                 Roles = selectedGroup.Roles,
-                ManagedGroups = selectedGroup.ManagedGroups
+                ManagedGroups = selectedGroup.ManagedGroups,
+                ManageAll = selectedGroup.ManageAll   
             };
             return group;
         }
