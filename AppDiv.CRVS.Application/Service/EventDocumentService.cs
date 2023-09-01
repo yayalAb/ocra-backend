@@ -251,7 +251,7 @@ namespace AppDiv.CRVS.Application.Service
         {
             Dictionary<string, string> userPhotos = new Dictionary<string, string>();
             Dictionary<string, List<BiometricImagesAtt>?> fingerPrint = new Dictionary<string, List<BiometricImagesAtt>?>();
-            supportingDocs.Where(d => d.Type == _webCamTypeLookupId || d.Type == _fingerprintTypeLookupId||d.Type==new Guid("8f735355-8ee8-43a7-8c09-c50b40497152")).ToList().ForEach(doc =>
+            supportingDocs.Where(d => d.Type == _webCamTypeLookupId || d.Type == _fingerprintTypeLookupId || d.Type == new Guid("8f735355-8ee8-43a7-8c09-c50b40497152")).ToList().ForEach(doc =>
             {
                 if (idObj.WifeId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
                 {
@@ -265,7 +265,8 @@ namespace AppDiv.CRVS.Application.Service
                     }
 
                     supportingDocs.ToList().Remove(doc);
-                }else if (idObj.MotherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Mother)!.ToLower())
+                }
+                else if (idObj.MotherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Mother)!.ToLower())
                 {
                     if (doc.Type == _webCamTypeLookupId)
                     {
@@ -291,7 +292,7 @@ namespace AppDiv.CRVS.Application.Service
 
                     supportingDocs.ToList().Remove(doc);
                 }
-                 else if (idObj.ChildId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
+                else if (idObj.ChildId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
                 {
                     if (doc.Type == _webCamTypeLookupId)
                     {
@@ -449,14 +450,14 @@ namespace AppDiv.CRVS.Application.Service
             List<string> fingerPrintUrls = new List<string>();
             personIds.ForEach(id =>
             {
-                fingerPrintUrls.AddRange(_fileService.GetFileNamesInfolder("Resources/fingerprints/" + id));
+                fingerPrintUrls.AddRange(_fileService.GetFileNamesInfolder(Path.Combine("Resources", "fingerprints", id)));
             });
             return fingerPrintUrls;
         }
         public List<Dictionary<string, string>> getSingleFingerprintUrls(string? personId)
         {
             return personId == null ? new List<Dictionary<string, string>>()
-                        : _fileService.GetFileNamesInfolder("Resources/fingerprints/" + personId)
+                        : _fileService.GetFileNamesInfolder(Path.Combine("Resources", "fingerprints", personId))
                         .Select(url => new Dictionary<string, string>{
                                 {
                                     Path.GetFileNameWithoutExtension(url)
