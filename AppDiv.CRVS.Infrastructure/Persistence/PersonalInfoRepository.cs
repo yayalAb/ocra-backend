@@ -89,7 +89,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Query(q =>
                     q.Bool(b =>
                      b.Must(
-                        
+
                          query.age != 0 ?
                         mu => mu.DateRange(r => r
                         .Field(f => f.BirthDate)
@@ -98,7 +98,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         query.gender != "null" && query.gender != null && query.gender != string.Empty ?
                         mu => mu.Match(w => w
                     .Field(f => f.GenderOr).Query(query.gender)
-                    ) || mu.Match(w => w.Field(f => f.GenderAm).Query(query.gender)) 
+                    ) || mu.Match(w => w.Field(f => f.GenderAm).Query(query.gender))
                       || mu.Match(w => w.Field(f => f.GenderEn).Query(query.gender))
                     : null
                         ))
@@ -144,7 +144,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     ).Size(50));
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.Id,
+                Id = new Guid(d.Id),
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
@@ -251,7 +251,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return response.Result.Documents.Select(d => new PersonSearchResponse
             {
-                Id = d.Id,
+                Id = new Guid(d.Id),
                 FullName = HelperService.getCurrentLanguage().ToLower() == "am"
                     ? d.FirstNameAm + " " + d.MiddleNameAm + " " + d.LastNameAm
                     : d.FirstNameOr + " " + d.MiddleNameOr + " " + d.LastNameOr,
@@ -281,7 +281,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                       .Where(p => p.DeathStatus == false)
                                    .Select(p => new PersonalInfoIndex
                                    {
-                                       Id = p.Id,
+                                       Id = p.Id.ToString(),
                                        FirstNameStr = p.FirstNameStr,
                                        FirstNameOr = p.FirstName == null ? null : p.FirstName.Value<string>("or"),
                                        FirstNameAm = p.FirstName == null ? null : p.FirstName.Value<string>("am"),
