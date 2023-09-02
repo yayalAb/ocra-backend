@@ -1175,7 +1175,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // index add or update changes to elastic search personal_info index
             if (personalInfoEntries.Any())
             {
-                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonalInfo(personalInfoEntries));
+                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonInfo(personalInfoEntries));
                 personalInfoEntries = new List<PersonalInfoEntry>();
 
             }
@@ -1186,7 +1186,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             // index add or update changes to elastic search personal_info index
             if (personEntries.Any())
             {
-                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonalInfo(personEntries));
+                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexPersonInfo(personEntries));
             }
             return true;
         }

@@ -278,7 +278,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 var resposne = await _elasticClient.IndexManyAsync<PersonalInfoIndex>(
                      dbContext.PersonalInfos
-                      .Where(p => p.DeathStatus == false)
+                                   //   .Where(p => p.DeathStatus == false)
                                    .Select(p => new PersonalInfoIndex
                                    {
                                        Id = p.Id.ToString(),
