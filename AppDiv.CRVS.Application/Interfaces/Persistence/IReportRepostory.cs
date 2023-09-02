@@ -20,5 +20,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
          public  Task<IEnumerable<string>> GetReportColums(string viewName);
          public  Task<object> ReturnPerson(string Id);
          public  Task<object> ReturnAddress(string Id);
+         public  Task<object> ReturnAddressIds(string Id);
     }
 }

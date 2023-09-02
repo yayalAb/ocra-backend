@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using AppDiv.CRVS.Domain.Entities;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -13,10 +14,12 @@ namespace AppDiv.CRVS.Application.Service
     {
         private readonly IAddressLookupRepository _AddresslookupRepository;
         private readonly ILogger<DateAndAddressService> _Ilogger;
-        public DateAndAddressService(IAddressLookupRepository AddresslookupRepository, ILogger<DateAndAddressService> Ilogger)
+        private readonly IReportRepostory _reportRepostory;
+        public DateAndAddressService(IAddressLookupRepository AddresslookupRepository, ILogger<DateAndAddressService> Ilogger, IReportRepostory reportRepostory)
         {
             _AddresslookupRepository = AddresslookupRepository;
             _Ilogger = Ilogger;
+            _reportRepostory=reportRepostory;
         }
         public (string, string) addressFormat(Guid? id)
         {
@@ -46,34 +49,16 @@ namespace AppDiv.CRVS.Application.Service
             {
                 return null;
             }
-            string addessSt = "";
-            var Address = _AddresslookupRepository.GetAll()
-                                   .Where(a => a.Id == id).FirstOrDefault();
-            if (Address == null)
+            var Address=  _reportRepostory.ReturnAddressIds(id.ToString()).Result;
+            JArray jsonObject = JArray.FromObject(Address);
+            AddressResponseDTOE addressResponse = jsonObject.ToObject<List<AddressResponseDTOE>>().FirstOrDefault();
+             var FormatAddress = new AddressResponseDTOE
             {
-                return null;
-            }
-            addessSt = Address?.Id.ToString();
-            while (Address?.ParentAddressId != null)
-            {
-                Address = _AddresslookupRepository.GetAll()
-                                    .Where(a => a.Id == Address.ParentAddressId).FirstOrDefault();
-                addessSt = Address?.Id.ToString() + "/" + addessSt;
-
-            };
-            if (string.IsNullOrEmpty(addessSt))
-            {
-                return null;
-            }
-            string[] address = addessSt.Split("/");
-
-            var FormatAddress = new AddressResponseDTOE
-            {
-                Country = address.ElementAtOrDefault(0),
-                Region = address.ElementAtOrDefault(1),
-                Zone = address.ElementAtOrDefault(2),
-                Woreda = address.ElementAtOrDefault(3),
-                Kebele = address.ElementAtOrDefault(4),
+                Country = addressResponse?.Country,
+                Region = addressResponse?.Region,
+                Zone = addressResponse?.Zone,
+                Woreda = addressResponse?.Woreda,
+                Kebele = addressResponse?.Kebele,
             };
             return FormatAddress;
         }

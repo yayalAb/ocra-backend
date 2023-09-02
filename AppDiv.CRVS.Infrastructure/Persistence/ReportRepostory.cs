@@ -368,6 +368,28 @@ public async Task<object> ReturnAddress(string Id)
             return result;
         }
 
+        public async Task<object> ReturnAddressIds(string Id)
+        {
+            var sql = $"CALL AddressIds_procedure ('{Id}')";
+            var result = new List<object>();
+            var viewReader = await ConnectDatabase(sql);
+            while (viewReader.Item1.Read())
+            {
+                result.Add(new
+                {
+                        Country= viewReader.Item1["CountryId"],
+                        Region= viewReader.Item1["RegionId"],
+                        Zone= viewReader.Item1["ZoneId"],
+                        Woreda= viewReader.Item1["WoredaId"],
+                        Kebele= viewReader.Item1["KebeleId"],
+                });
+            }
+            await viewReader.Item2.CloseAsync();
+
+
+            return result;
+        }
+
         
 
 
