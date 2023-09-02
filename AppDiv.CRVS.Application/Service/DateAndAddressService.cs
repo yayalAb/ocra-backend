@@ -43,16 +43,16 @@ namespace AppDiv.CRVS.Application.Service
 
 
 
-        public async Task<AddressResponseDTOE>? FormatedAddress(Guid? id)
+        public async Task<AddressResponseDTOE?> FormatedAddress(Guid? id)
         {
             if (id == null || id == Guid.Empty)
             {
-                return null;
+                return new AddressResponseDTOE();
             }
             var Address=  _reportRepostory.ReturnAddressIds(id.ToString()).Result;
             JArray jsonObject = JArray.FromObject(Address);
             AddressResponseDTOE addressResponse = jsonObject.ToObject<List<AddressResponseDTOE>>().FirstOrDefault();
-             var FormatAddress = new AddressResponseDTOE
+            var FormatAddress = new AddressResponseDTOE
             {
                 Country = addressResponse?.Country,
                 Region = addressResponse?.Region,
@@ -143,7 +143,18 @@ namespace AppDiv.CRVS.Application.Service
             
             return (addressAm,addressOr);
         }
+         public FormatedAddressDto?  AddressfromProcedure(Guid? Id)
+            { 
+
+            var Address=  _reportRepostory.ReturnAddress(Id.ToString()).Result;
+            JArray AddressjsonObject = JArray.FromObject(Address);
+            FormatedAddressDto AddressResponse = AddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            bool iscityadmin=IsCityAdmin(Id);
+            return AddressResponse;
+            }
     }
+
+
 
     public class LookupFromId : ILookupFromId
     {

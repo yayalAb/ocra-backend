@@ -12,6 +12,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public string GetFullAddress(Address address);
         public bool IsCityAdmin(Guid? Id);
         public (string?,string?) stringAddress(FormatedAddressDto? address);
+         public FormatedAddressDto?  AddressfromProcedure(Guid? Id);
 
 
 

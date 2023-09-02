@@ -38,29 +38,30 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
         {
 
             var adoptionEvent = await _adoptionEventRepository
-                    .GetAll().Where(m => m.Id == request.Id)
-                    .Include(m => m.AdoptiveFather)
-                    .ThenInclude(b => b.ContactInfo)
-                    .Include(m => m.AdoptiveMother)
-                    .Include(m => m.Event)
-                    .Include(m => m.Event.EventOwener).ThenInclude(e => e.ContactInfo)
-                    .Include(m => m.Event.EventSupportingDocuments)
-                    .Include(m => m.Event.PaymentExamption).ThenInclude(p => p.SupportingDocuments)
-                    .ProjectTo<AdoptionDTO>(_mapper.ConfigurationProvider)
-                    .FirstOrDefaultAsync();
+                            .GetAll().Where(m => m.Id == request.Id)
+                            .Include(m => m.AdoptiveFather)
+                            .ThenInclude(b => b.ContactInfo)
+                            .Include(m => m.AdoptiveMother)
+                            .Include(m => m.Event)
+                            .Include(m => m.Event.EventOwener)
+                            .ThenInclude(e => e.ContactInfo)
+                            .Include(m => m.Event.EventSupportingDocuments)
+                            .Include(m => m.Event.PaymentExamption)
+                            .ThenInclude(p => p.SupportingDocuments)
+                            .ProjectTo<AdoptionDTO>(_mapper.ConfigurationProvider)
+                            .FirstOrDefaultAsync(cancellationToken);
             if (adoptionEvent == null)
             {
                 throw new NotFoundException($"Adoption Event with id {request.Id} not found");
             }
-            adoptionEvent.BeforeAdoptionAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.BeforeAdoptionAddressId);
-            adoptionEvent.AdoptiveFather.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveFather.BirthAddressId);
-            adoptionEvent.AdoptiveFather.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveFather.ResidentAddressId);
-            adoptionEvent.AdoptiveMother.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveMother.BirthAddressId);
-            adoptionEvent.AdoptiveMother.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.AdoptiveMother.ResidentAddressId);
-            adoptionEvent.Event.EventOwener.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.BirthAddressId);
-            adoptionEvent.Event.EventOwener.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent.Event.EventOwener.ResidentAddressId);
-            adoptionEvent.CourtCase.Court.CourtAddress = await _AddressService.FormatedAddress(adoptionEvent.CourtCase.Court.AddressId);
-
+            adoptionEvent.BeforeAdoptionAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent?.BeforeAdoptionAddressId);
+            adoptionEvent.AdoptiveFather.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent?.AdoptiveFather?.BirthAddressId);
+            adoptionEvent.AdoptiveFather.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent?.AdoptiveFather?.ResidentAddressId);
+            adoptionEvent.AdoptiveMother.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent?.AdoptiveMother?.BirthAddressId);
+            adoptionEvent.AdoptiveMother.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent?.AdoptiveMother?.ResidentAddressId);
+            adoptionEvent.Event.EventOwener.BirthAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent?.Event?.EventOwener?.BirthAddressId);
+            adoptionEvent.Event.EventOwener.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(adoptionEvent?.Event?.EventOwener?.ResidentAddressId);
+            adoptionEvent.CourtCase.Court.CourtAddress = await _AddressService.FormatedAddress(adoptionEvent?.CourtCase?.Court?.AddressId);
 
             adoptionEvent.Event.fingerPrints = new
             {

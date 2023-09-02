@@ -61,6 +61,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public static  Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService //)
         , ILookupFromId lookupService, IReportRepostory _reportRepostory)
         {
+            if(person==null){
+                return null;
+            }
              var personalInfo=  _reportRepostory.ReturnPerson(person.Id.ToString()).Result;
              JArray jsonObject = JArray.FromObject(personalInfo);
             PersonalInfoDtoPero personResponse = jsonObject.ToObject<List<PersonalInfoDtoPero>>().FirstOrDefault();
