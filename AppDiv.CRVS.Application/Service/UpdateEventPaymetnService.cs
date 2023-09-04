@@ -78,7 +78,11 @@ namespace AppDiv.CRVS.Application.Service
                 throw new NotFoundException(ex.Message);
             }
 
-            if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change" || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")
+            if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change"
+             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication"
+             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "verfication"
+             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "reprint"
+             )
             {
                 if (requst.Request == null)
                 {
@@ -89,6 +93,7 @@ namespace AppDiv.CRVS.Application.Service
                 .Where(x => x.workflowName == requst.Request.RequestType).FirstOrDefault();
 
                 var response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, true, cancellationToken);
+                
                 if (response.Item1 || workflow?.Steps?.FirstOrDefault() == null)
                 {
                     if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")
@@ -115,18 +120,17 @@ namespace AppDiv.CRVS.Application.Service
                         selectedEvent.IsVerified = true;
                         await _eventRepostory.UpdateAsync(selectedEvent, x => x.Id);
                     }
+                     else if (requst?.Request?.RequestType == "reprint")
+                    {
+                         await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
+                    }
                     // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
             }
-            else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "certificategeneration" ||
-            requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "reprint")
+            else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "certificategeneration")
             {
 
                 await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
-            }
-            else
-            {
-                throw new NotFoundException("Unkown Payment Added");
             }
         }
     }
