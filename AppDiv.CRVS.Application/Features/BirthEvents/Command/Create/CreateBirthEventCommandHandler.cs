@@ -79,13 +79,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                     }
                     else if (response.Success)
                     {
-                        try
-                        {
+                        try{       
+                             var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                                 if(address==null){
                                         throw new NotFoundException("Invalid user working address");
                                     }
@@ -94,6 +93,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                     birthEvent.Event.IsCertified = true;
                                     birthEvent.Event.IsPaid = true;
                                     birthEvent.Event.IsOfflineReg = true;
+                                    birthEvent.Event.ReprintWaiting = false;
                                 }
                                 birthEvent.Event.EventRegisteredAddressId = request.BirthEvent?.Event.EventRegisteredAddressId;
                             }
@@ -124,7 +124,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             _eventDocumentService.saveFingerPrints(fingerprints);
 
                             // For non exempted documents 
-                            if (!birthEvent.Event.IsExampted)
+                            if ((!birthEvent.Event.IsExampted)&&(address != null && address?.AdminLevel == 5))
                             {
                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                 if (payment.amount == 0)

@@ -71,11 +71,11 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                     {
                         try
                         {
+                            var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                             // Map the request to the model entity.
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                 var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                                 if(address==null){
                                         throw new NotFoundException("Invalid user working address");
                                     }
@@ -84,6 +84,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                     deathEvent.Event.IsCertified = true;
                                     deathEvent.Event.IsPaid = true;
                                     deathEvent.Event.IsOfflineReg = true;
+                                    deathEvent.Event.ReprintWaiting = false;
                                 }
                                 deathEvent.Event.EventRegisteredAddressId = request.DeathEvent?.Event.EventRegisteredAddressId;
                             }
@@ -106,7 +107,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             //         }
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
                             _eventDocumentService.saveFingerPrints(fingerprints);
-                            if (!deathEvent.Event.IsExampted)
+                            if ((!deathEvent.Event.IsExampted)&&(address != null && address?.AdminLevel ==5 ))
                             {
                                 // Get Payment rate for death certificate.
                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);

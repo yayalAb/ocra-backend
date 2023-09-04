@@ -123,6 +123,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         adoptionEvent.Event.IsCertified = true;
                                         adoptionEvent.Event.IsPaid = true;
                                         adoptionEvent.Event.IsOfflineReg = true;
+                                        adoptionEvent.Event.ReprintWaiting = false;
                                     }
                                     adoptionEvent.Event.EventRegisteredAddressId = request?.Adoption?.Event?.EventRegisteredAddressId;
                                 }

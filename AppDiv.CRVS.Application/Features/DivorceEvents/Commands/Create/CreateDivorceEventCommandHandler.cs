@@ -82,12 +82,12 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                         }
                         if (createDivorceEventCommandResponse.Success)
                         {
+                             var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             // request.Event.EventAddressId = request?.CourtCase?.Court?.AddressId!;
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                                 if(address==null){
                                         throw new NotFoundException("Invalid user working address");
                                     }
@@ -96,6 +96,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                     divorceEvent.Event.IsCertified = true;
                                     divorceEvent.Event.IsPaid = true;
                                     divorceEvent.Event.IsOfflineReg = true;
+                                    divorceEvent.Event.ReprintWaiting = false;
                                 }
                                 divorceEvent.Event.EventRegisteredAddressId = request?.Event?.EventRegisteredAddressId;
                             }
@@ -119,7 +120,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             //         createDivorceEventCommandResponse.Success=false; 
                             //         return createDivorceEventCommandResponse;
                             //         }
-                            if (!divorceEvent.Event.IsExampted)
+                            if ((!divorceEvent.Event.IsExampted)&&(address != null && address?.AdminLevel ==5 ))
                             {
                                 (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                 amount = response.amount;
@@ -142,7 +143,6 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                     await _smsService.SendBulkSMS(msgRecepients, message);
 
                                 }
-
                             }
                             await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
                             // if (amount != 0 || divorceEvent.Event.IsExampted)

@@ -101,13 +101,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             CreateMarriageEventCommandResponse.Message = CreateMarriageEventCommandResponse.ValidationErrors[0];
                             CreateMarriageEventCommandResponse.Status = 400;
                         }
+                        var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                         if (CreateMarriageEventCommandResponse.Success)
                         {
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                                 if(address==null){
                                         throw new NotFoundException("Invalid user working address");
                                     }         
@@ -116,6 +116,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                     marriageEvent.Event.IsCertified = true;
                                     marriageEvent.Event.IsPaid = true;
                                     marriageEvent.Event.IsOfflineReg = true;
+                                    marriageEvent.Event.ReprintWaiting = false;
                                 }
                                 marriageEvent.Event.EventRegisteredAddressId = request?.Event.EventRegisteredAddressId;
                             }
@@ -156,7 +157,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             //         return CreateMarriageEventCommandResponse;
                             //         }
                             // create payment request for the event if it is not exempted
-                            if (!marriageEvent.Event.IsExampted)
+                            if ((!marriageEvent.Event.IsExampted )&&(address != null && address?.AdminLevel == 5))
                             {
                                 (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, "CertificateGeneration", null, marriageEvent.HasCamera, marriageEvent.HasVideo, cancellationToken);
                                 amount = response.amount;
