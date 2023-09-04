@@ -40,15 +40,17 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         private readonly IRequestRepostory _RequestRepostory;
         private readonly IUserRepository _UserRepo;
         private readonly IUserResolverService _ResolverService;
+        private readonly IDateAndAddressService _dateAndAddressService;
 
 
-        public GetAuthentcationRequestListHandler(IUserRepository UserRepo, IUserResolverService ResolverService, IWorkflowRepository WorkflowRepo, IRequestRepostory RequestRepostory, IWorkflowService WorkflowService)
+        public GetAuthentcationRequestListHandler(IDateAndAddressService dateAndAddressService, IUserRepository UserRepo, IUserResolverService ResolverService, IWorkflowRepository WorkflowRepo, IRequestRepostory RequestRepostory, IWorkflowService WorkflowService)
         {
             _WorkflowService = WorkflowService;
             _RequestRepostory = RequestRepostory;
             _WorkflowRepo = WorkflowRepo;
             _UserRepo = UserRepo;
             _ResolverService = ResolverService;
+            _dateAndAddressService=dateAndAddressService;
         }
         public async Task<object> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
@@ -63,8 +65,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             {
                 throw new NotFoundException("user does not found");
             }
+            var address=await _dateAndAddressService.FormatedAddress(_ResolverService.GetWorkingAddressId());
             var RequestList = _RequestRepostory.GetAll()
                  .Include(x => x.CivilRegOfficer)
+                 .ThenInclude(x=>x.ApplicationUser)
                  .Include(x => x.AuthenticationRequest)
                  .ThenInclude(x => x.Certificate)
                  .Include(x => x.CorrectionRequest)
@@ -74,7 +78,14 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
-              .Where(wf => (wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)&&(wf.PaymentRequest==null));
+              .Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
+               &&(wf.PaymentRequest==null))
+               &&(address.Country==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
+               ||address.Region==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
+               ||address.Zone==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
+               ||address.Woreda==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
+               ||address.Kebele==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString())
+              );
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 RequestList = RequestList.Where(
