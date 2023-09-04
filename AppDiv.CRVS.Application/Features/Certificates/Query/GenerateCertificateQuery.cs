@@ -116,17 +116,18 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 return errorResponse;
             }
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
-            // if (selectedEvent.ReprintWaiting)
-            // {
-            //     throw new NotFoundException("please request it on reprint");
-            // }
-
-
-            var birthCertificateNo = _IBirthEventRepository
+            if (selectedEvent==null)
+            {
+                throw new NotFoundException("event with the given id is does't found");
+            }
+            string? birthCertificateNo="";
+            if(selectedEvent?.EventType?.ToLower()!="birth"){
+            birthCertificateNo = _IBirthEventRepository
                                     .GetAll()
                                     .Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId)
                                     .Select(x => x.Event.CertificateId)
                                     .FirstOrDefault();
+            }
             var content = await _certificateRepository.GetContent(request.Id);
             var certificate = _CertificateGenerator.GetCertificate(request, content, birthCertificateNo);
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType).Select(c => c.Id).FirstOrDefault();
@@ -169,7 +170,6 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                     await _VerficationRequestRepository.InsertAsync(verficationRequest, cancellationToken);
 
                 }
-
                 selectedEvent.IsCertified = true;
                 selectedEvent.OnReprintPaymentRequest = false;
                 selectedEvent.ReprintWaiting = false;
