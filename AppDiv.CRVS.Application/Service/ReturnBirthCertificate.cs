@@ -3,26 +3,31 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
     public class ReturnBirthCertificate : IReturnBirthCertificate
     {
         IDateAndAddressService _DateAndAddressService;
-        public ReturnBirthCertificate(IDateAndAddressService DateAndAddressService)
+        private readonly IReportRepostory _reportRepostory;
+        public ReturnBirthCertificate(IReportRepostory reportRepostory,IDateAndAddressService DateAndAddressService)
         {
             _DateAndAddressService = DateAndAddressService;
+            _reportRepostory = reportRepostory;
         }
 
         public BirthCertificateDTO GetBirthCertificate(BirthEvent birth, string? BirthCertNo)
         {
-            (string am, string or)? address = (birth.Event?.EventAddressId == Guid.Empty
-               || birth.Event?.EventAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(birth?.Event?.EventAddressId);
+              var BirthAddress=  _reportRepostory.ReturnAddress(birth?.Event?.EventAddressId.ToString()).Result;
+            JArray BirthAddressjsonObject = JArray.FromObject(BirthAddress);
+            FormatedAddressDto BirthAddressResponse = BirthAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            
+            (string? am, string? or)? address = _DateAndAddressService.stringAddress(BirthAddressResponse);
+            
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(birth.Event.CreatedAt);
 
-            (string[]? am, string[]? or)? splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new BirthCertificateDTO()
             {
                 CertifcateId = birth.Event.CertificateId,
@@ -84,18 +89,16 @@ namespace AppDiv.CRVS.Application.Service
                                            + birth.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + birth.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
 
-                CountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
-                CountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
-                RegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
-                RegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
-                ZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
-                ZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
-                WoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
-                WoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
-                CityOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                CityAm = splitedAddress?.am?.ElementAtOrDefault(4),
-                KebeleOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                KebeleAm = splitedAddress?.am?.ElementAtOrDefault(4),
+                CountryOr = BirthAddressResponse?.CountryOr,
+                CountryAm = BirthAddressResponse?.CountryAm,
+                RegionOr = BirthAddressResponse?.RegionOr,
+                RegionAm = BirthAddressResponse?.RegionAm,
+                ZoneOr = BirthAddressResponse?.ZoneOr,
+                ZoneAm = BirthAddressResponse?.ZoneAm,
+                WoredaOr = BirthAddressResponse?.WoredaOr,
+                WoredaAm = BirthAddressResponse?.WoredaOr,
+                KebeleOr = BirthAddressResponse?.KebeleOr,
+                KebeleAm = BirthAddressResponse?.KebeleAm,
 
             };
         }

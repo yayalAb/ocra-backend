@@ -1,27 +1,30 @@
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
-
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
     public class ReturnAdoptionCertfcate : IReturnAdoptionCertfcate
     {
         IDateAndAddressService _DateAndAddressService;
-        public ReturnAdoptionCertfcate(IDateAndAddressService DateAndAddressService)
+        private readonly IReportRepostory _reportRepostory;
+        public ReturnAdoptionCertfcate( IReportRepostory reportRepostory,IDateAndAddressService DateAndAddressService)
         {
             _DateAndAddressService = DateAndAddressService;
+            _reportRepostory=reportRepostory;
         }
         AdoptionCertificateDTO IReturnAdoptionCertfcate.GetAdoptionCertificate(AdoptionEvent adoption, string? BirthCertNo)
         {
-            (string am, string or)? address = (adoption.Event?.EventOwener?.BirthAddressId == Guid.Empty
-               || adoption.Event?.EventOwener?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(adoption.Event.EventOwener.BirthAddressId);
-
-            (string[]? am, string[]? or)? splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
-
+            var BirthAddress=  _reportRepostory.ReturnAddress(adoption?.Event?.EventOwener?.BirthAddressId.ToString()).Result;
+            JArray BirthAddressjsonObject = JArray.FromObject(BirthAddress);
+            FormatedAddressDto BirthAddressResponse = BirthAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            
+            (string? am, string? or)? address = _DateAndAddressService.stringAddress(BirthAddressResponse);
+            
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(DateTime.Now);
 
@@ -79,18 +82,16 @@ namespace AppDiv.CRVS.Application.Service
                 CivileRegOfficerFullNameAm = adoption.Event.CivilRegOfficer?.FirstName?.Value<string>("am")
                     + " " + adoption.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " " + adoption.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
                 //splited address
-                CountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
-                CountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
-                RegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
-                RegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
-                ZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
-                ZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
-                WoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
-                WoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
-                CityOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                CityAm = splitedAddress?.am?.ElementAtOrDefault(4),
-                KebeleOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                KebeleAm = splitedAddress?.am?.ElementAtOrDefault(4),
+                CountryOr = BirthAddressResponse?.CountryOr,
+                CountryAm = BirthAddressResponse?.CountryAm,
+                RegionOr = BirthAddressResponse?.RegionOr,
+                RegionAm = BirthAddressResponse?.RegionAm,
+                ZoneOr = BirthAddressResponse?.ZoneOr,
+                ZoneAm = BirthAddressResponse?.ZoneAm,
+                WoredaOr = BirthAddressResponse?.WoredaOr,
+                WoredaAm = BirthAddressResponse?.WoredaOr,
+                KebeleOr = BirthAddressResponse?.KebeleOr,
+                KebeleAm = BirthAddressResponse?.KebeleAm,
 
             };
         }

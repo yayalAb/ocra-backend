@@ -1,29 +1,32 @@
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
     public class ReturnDeathCertificate : IReturnDeathCertificate
     {
         IDateAndAddressService _DateAndAddressService;
-        public ReturnDeathCertificate(IDateAndAddressService DateAndAddressService)
+        private readonly IReportRepostory _reportRepostory;
+        public ReturnDeathCertificate(IReportRepostory reportRepostory,IDateAndAddressService DateAndAddressService)
         {
             _DateAndAddressService = DateAndAddressService;
+            _reportRepostory=reportRepostory;
         }
 
         public DeathCertificateDTO GetDeathCertificate(DeathEvent death, string? BirthCertNo)
         {
-            (string am, string or)? address = (death.Event?.EventAddressId == Guid.Empty
-               || death.Event?.EventAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(death.Event.EventAddressId);
+            var deathAddress=  _reportRepostory.ReturnAddress(death.Event?.EventAddressId .ToString()).Result;
+            JArray deathAddressjsonObject = JArray.FromObject(deathAddress);
+            FormatedAddressDto deathAddressResponse = deathAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            (string? am, string? or)? address = _DateAndAddressService.stringAddress(deathAddressResponse);
 
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(death.Event.CreatedAt);
-
-            (string[]? am, string[]? or)? splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new DeathCertificateDTO()
             {
                 CertifcateId = death.Event.CertificateId,
@@ -80,18 +83,16 @@ namespace AppDiv.CRVS.Application.Service
                                            + death.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + death.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
 
-                CountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
-                CountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
-                RegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
-                RegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
-                ZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
-                ZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
-                WoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
-                WoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
-                CityOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                CityAm = splitedAddress?.am?.ElementAtOrDefault(4),
-                KebeleOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                KebeleAm = splitedAddress?.am?.ElementAtOrDefault(4),
+                 CountryOr = deathAddressResponse?.CountryOr,
+                CountryAm = deathAddressResponse?.CountryAm,
+                RegionOr = deathAddressResponse?.RegionOr,
+                RegionAm = deathAddressResponse?.RegionAm,
+                ZoneOr = deathAddressResponse?.ZoneOr,
+                ZoneAm = deathAddressResponse?.ZoneAm,
+                WoredaOr = deathAddressResponse?.WoredaOr,
+                WoredaAm = deathAddressResponse?.WoredaOr,
+                KebeleOr = deathAddressResponse?.KebeleOr,
+                KebeleAm = deathAddressResponse?.KebeleAm,
 
 
             };

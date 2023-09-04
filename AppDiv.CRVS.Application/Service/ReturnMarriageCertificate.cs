@@ -1,29 +1,33 @@
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
     public class ReturnMarriageCertificate : IReturnMarriageCertificate
     {
         IDateAndAddressService _DateAndAddressService;
-        public ReturnMarriageCertificate(IDateAndAddressService DateAndAddressService)
+        private readonly IReportRepostory  _reportRepostory;
+        public ReturnMarriageCertificate(IReportRepostory reportRepostory,IDateAndAddressService DateAndAddressService)
         {
             _DateAndAddressService = DateAndAddressService;
+            _reportRepostory=reportRepostory;
         }
 
         public MarriageCertificateDTO GetMarriageCertificate(MarriageEvent marriage, string? BirthCertNo)
         {
-            (string am, string or)? address = (marriage.Event?.EventAddressId == Guid.Empty
-               || marriage.Event?.EventAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(marriage.Event.EventAddressId);
+             var eventAddress=  _reportRepostory.ReturnAddress(marriage.Event?.EventAddressId.ToString()).Result;
+            JArray eventAddressjsonObject = JArray.FromObject(eventAddress);
+            FormatedAddressDto eventAddressResponse = eventAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            (string? am, string? or)? address = _DateAndAddressService.stringAddress(eventAddressResponse);
 
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(marriage.Event.CreatedAt);
 
-            (string[]? am, string[]? or)? splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new MarriageCertificateDTO()
             {
                 CertifcateId = marriage.Event?.CertificateId,
@@ -88,18 +92,16 @@ namespace AppDiv.CRVS.Application.Service
                                            + marriage.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + marriage.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
 
-                CountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
-                CountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
-                RegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
-                RegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
-                ZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
-                ZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
-                WoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
-                WoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
-                CityOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                CityAm = splitedAddress?.am?.ElementAtOrDefault(4),
-                KebeleOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                KebeleAm = splitedAddress?.am?.ElementAtOrDefault(4),
+                CountryOr = eventAddressResponse?.CountryOr,
+                CountryAm = eventAddressResponse?.CountryAm,
+                RegionOr = eventAddressResponse?.RegionOr,
+                RegionAm = eventAddressResponse?.RegionAm,
+                ZoneOr = eventAddressResponse?.ZoneOr,
+                ZoneAm = eventAddressResponse?.ZoneAm,
+                WoredaOr = eventAddressResponse?.WoredaOr,
+                WoredaAm = eventAddressResponse?.WoredaOr,
+                KebeleOr = eventAddressResponse?.KebeleOr,
+                KebeleAm = eventAddressResponse?.KebeleAm,
 
             };
         }

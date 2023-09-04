@@ -72,18 +72,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
              JArray BirthAddressjsonObject = JArray.FromObject(BirthAddress);
             FormatedAddressDto BirthAddressResponse = BirthAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
             (string? am, string? or)? BirthStringAddress = dateAndAddressService.stringAddress(BirthAddressResponse);
+            
             var ResidentAddress=  _reportRepostory.ReturnAddress(person.ResidentAddressId.ToString()).Result;
             JArray ResidentAddressjsonObject = JArray.FromObject(ResidentAddress);
             FormatedAddressDto ResidentAddressResponse = ResidentAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
-           
-            // (string am, string or)? birthAddress = (person?.BirthAddressId == Guid.Empty
-            //    || person?.BirthAddress == null) ? null :
-            //    dateAndAddressService.addressFormat(person.BirthAddressId);
-            // (string[]? am, string[]? or)? birthSplitedAddress = dateAndAddressService.SplitedAddress(birthAddress?.am, birthAddress?.or);
-            // (string am, string or)? residentAddress = (person?.ResidentAddressId == Guid.Empty
-            //    || person?.ResidentAddress == null) ? null :
-            //    dateAndAddressService.addressFormat(person.ResidentAddressId);
-            
             (string? am, string? or)? residentSplitedAddress = dateAndAddressService.stringAddress(ResidentAddressResponse);
             
             bool BirthisCityAdmin=dateAndAddressService.IsCityAdmin(person.BirthAddressId);

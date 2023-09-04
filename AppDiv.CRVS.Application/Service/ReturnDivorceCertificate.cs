@@ -1,37 +1,46 @@
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Services;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
     public class ReturnDivorceCertificate : IReturnDivorceCertificate
     {
         IDateAndAddressService _DateAndAddressService;
-        public ReturnDivorceCertificate(IDateAndAddressService DateAndAddressService)
+        private readonly IReportRepostory _reportRepostory;
+        public ReturnDivorceCertificate(IReportRepostory reportRepostory,IDateAndAddressService DateAndAddressService)
         {
             _DateAndAddressService = DateAndAddressService;
+            _reportRepostory=reportRepostory;
         }
 
         public DivorceCertificateDTO GetDivorceCertificate(DivorceEvent divorce, string? BirthCertNo)
         {
-            (string am, string or)? address = (divorce.Event?.EventAddressId == Guid.Empty
-               || divorce.Event?.EventAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(divorce.Event.EventAddressId);
-            // wife birth address
-            (string am, string or)? wifeBirthAddress = (divorce.DivorcedWife?.BirthAddressId == Guid.Empty
-               || divorce.DivorcedWife?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(divorce.DivorcedWife?.BirthAddressId);
-            // husband birth address
-            (string am, string or)? husbandBirthAddress = (divorce.Event.EventOwener?.BirthAddressId == Guid.Empty
-               || divorce.Event?.EventOwener?.BirthAddressId == null) ? null :
-               _DateAndAddressService.addressFormat(divorce.Event.EventOwener?.BirthAddressId);
+            var eventAddress=  _reportRepostory.ReturnAddress(divorce.Event?.EventAddressId.ToString()).Result;
+            JArray eventAddressjsonObject = JArray.FromObject(eventAddress);
+            FormatedAddressDto eventAddressResponse = eventAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            (string? am, string? or)? address = _DateAndAddressService.stringAddress(eventAddressResponse);
 
+            // wife birth address
+            var wifeBirthAddressRes=  _reportRepostory.ReturnAddress(divorce.DivorcedWife?.BirthAddressId .ToString()).Result;
+            JArray wifeBirthAddressjsonObject = JArray.FromObject(wifeBirthAddressRes);
+            FormatedAddressDto wifeBirthAddressResponse = wifeBirthAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            (string? am, string? or)? wifeBirthAddress = _DateAndAddressService.stringAddress(wifeBirthAddressResponse);
+
+            // husband birth address
+            var husbandBirthAddressRes=  _reportRepostory.ReturnAddress(divorce.Event.EventOwener?.BirthAddressId.ToString()).Result;
+            JArray husbandBirthAddressjsonObject = JArray.FromObject(husbandBirthAddressRes);
+            FormatedAddressDto husbandBirthAddressResponse = husbandBirthAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
+            
+            (string? am, string? or)? husbandBirthAddress = _DateAndAddressService.stringAddress(husbandBirthAddressResponse);
+     
             var convertor = new CustomDateConverter();
             var CreatedAtEt = convertor.GregorianToEthiopic(divorce.Event.CreatedAt);
 
-            (string[]? am, string[]? or)? splitedAddress = _DateAndAddressService.SplitedAddress(address?.am, address?.or);
             return new DivorceCertificateDTO()
             {
                 CertifcateId = divorce.Event?.CertificateId,
@@ -100,18 +109,16 @@ namespace AppDiv.CRVS.Application.Service
                                            + divorce.Event.CivilRegOfficer?.MiddleName?.Value<string>("am") + " "
                                            + divorce.Event.CivilRegOfficer?.LastName?.Value<string>("am"),
 
-                CountryOr = splitedAddress?.or?.ElementAtOrDefault(0),
-                CountryAm = splitedAddress?.am?.ElementAtOrDefault(0),
-                RegionOr = splitedAddress?.or?.ElementAtOrDefault(1),
-                RegionAm = splitedAddress?.am?.ElementAtOrDefault(1),
-                ZoneOr = splitedAddress?.or?.ElementAtOrDefault(2),
-                ZoneAm = splitedAddress?.am?.ElementAtOrDefault(2),
-                WoredaOr = splitedAddress?.or?.ElementAtOrDefault(3),
-                WoredaAm = splitedAddress?.am?.ElementAtOrDefault(3),
-                CityOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                CityAm = splitedAddress?.am?.ElementAtOrDefault(4),
-                KebeleOr = splitedAddress?.or?.ElementAtOrDefault(4),
-                KebeleAm = splitedAddress?.am?.ElementAtOrDefault(4),
+                CountryOr = eventAddressResponse?.CountryOr,
+                CountryAm = eventAddressResponse?.CountryAm,
+                RegionOr = eventAddressResponse?.RegionOr,
+                RegionAm = eventAddressResponse?.RegionAm,
+                ZoneOr = eventAddressResponse?.ZoneOr,
+                ZoneAm = eventAddressResponse?.ZoneAm,
+                WoredaOr = eventAddressResponse?.WoredaOr,
+                WoredaAm = eventAddressResponse?.WoredaOr,
+                KebeleOr = eventAddressResponse?.KebeleOr,
+                KebeleAm = eventAddressResponse?.KebeleAm,
 
             };
         }
