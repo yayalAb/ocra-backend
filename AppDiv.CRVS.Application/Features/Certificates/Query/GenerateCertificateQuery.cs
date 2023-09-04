@@ -118,7 +118,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             if (selectedEvent==null)
             {
-                throw new NotFoundException("event with the given id is does't found");
+                throw new NotFoundException("event with the given id does't found");
             }
             string? birthCertificateNo="";
             if(selectedEvent?.EventType?.ToLower()!="birth"){

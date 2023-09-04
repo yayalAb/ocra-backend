@@ -6,6 +6,10 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface IRequestRepostory : IBaseRepository<Request>
     {
         public Task<IQueryable<Request>> GetAllRequest();
+        public IQueryable<Request> GetAllQueryableAsync();
+        
+
+    
 
     }
 }

@@ -42,21 +42,22 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<object> Handle(GetAuthentcationRequestList request, CancellationToken cancellationToken)
         {
-            if (request.UserId == null || request.UserId == Guid.Empty)
-            {
-                throw new NotFoundException("Please provide User Id");
-            }
             var userGroup = _UserRepo.GetAll()
             .Include(g => g.UserGroups)
-            .Where(x => x.Id == request.UserId.ToString()).FirstOrDefault();
+            .Include(x=>x.Address)
+            .Where(x => x.Id == _ResolverService.GetUserId()).FirstOrDefault();
             if (userGroup == null)
             {
                 throw new NotFoundException("user does not found");
             }
             var address=await _dateAndAddressService.FormatedAddress(_ResolverService.GetWorkingAddressId());
-            var RequestList = _RequestRepostory.GetAll()
+            var RequestList = _RequestRepostory.GetAllQueryableAsync()
                  .Include(x => x.CivilRegOfficer)
                  .ThenInclude(x=>x.ApplicationUser)
+                 .ThenInclude(x=>x.Address)
+                 .ThenInclude(x=>x.ParentAddress)
+                 .ThenInclude(x=>x.ParentAddress)
+                 .ThenInclude(x=>x.ParentAddress)
                  .Include(x => x.AuthenticationRequest)
                  .ThenInclude(x => x.Certificate)
                  .Include(x => x.CorrectionRequest)
@@ -67,13 +68,36 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
               .Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
-               &&(wf.PaymentRequest==null))
-               &&(address.Country==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
-               ||address.Region==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
-               ||address.Zone==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
-               ||address.Woreda==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString()
-               ||address.Kebele==wf.CivilRegOfficer.ApplicationUser.AddressId.ToString())
-              );
+               &&(wf.PaymentRequest==null)));
+             if (userGroup.Address.AdminLevel == 1)
+            {
+                RequestList=RequestList.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
+            }
+            else if (userGroup.Address.AdminLevel == 2)
+            {
+                RequestList=RequestList.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
+            }
+            else if (userGroup.Address.AdminLevel == 3)
+            {
+                RequestList=RequestList.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
+               || (e.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
+            }
+            else if (userGroup.Address.AdminLevel == 4)
+            {
+                RequestList=RequestList.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
+                || (e.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
+            }
+            else if (userGroup.Address.AdminLevel == 5)
+            {
+                RequestList=RequestList.Where(e => e.CivilRegOfficer.ApplicationUser.AddressId== userGroup.AddressId);
+            }
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 RequestList = RequestList.Where(
