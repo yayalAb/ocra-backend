@@ -58,97 +58,142 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 RegistrationKebeleAm = EventAddressResponse?.KebeleAm,
             };
         }
-        public static  Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService //)
-        , ILookupFromId lookupService, IReportRepostory _reportRepostory)
-        {
-            if(person==null){
-                return null;
-            }
-             var personalInfo=  _reportRepostory.ReturnPerson(person.Id.ToString()).Result;
-             JArray jsonObject = JArray.FromObject(personalInfo);
-            PersonalInfoDtoPero personResponse = jsonObject.ToObject<List<PersonalInfoDtoPero>>().FirstOrDefault();
-
-            var BirthAddress=  _reportRepostory.ReturnAddress(person.BirthAddressId.ToString()).Result;
-             JArray BirthAddressjsonObject = JArray.FromObject(BirthAddress);
+         public static  Person GetPersonBirthAddrress(Person? person,IReportRepostory _reportRepostory, Guid? BirthAddressId,IDateAndAddressService dateAndAddressService){
+           
+            var BirthAddress=  _reportRepostory.ReturnAddress(BirthAddressId.ToString()).Result;
+            JArray BirthAddressjsonObject = JArray.FromObject(BirthAddress);
             FormatedAddressDto BirthAddressResponse = BirthAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
             (string? am, string? or)? BirthStringAddress = dateAndAddressService.stringAddress(BirthAddressResponse);
-            
-            var ResidentAddress=  _reportRepostory.ReturnAddress(person.ResidentAddressId.ToString()).Result;
+            bool BirthisCityAdmin=dateAndAddressService.IsCityAdmin(BirthAddressId);
+            person.BirthCountryOr = BirthAddressResponse?.CountryOr;
+            person.BirthCountryAm = BirthAddressResponse?.CountryAm;
+            person.BirthRegionOr = BirthAddressResponse?.RegionOr;
+            person.BirthRegionAm = BirthAddressResponse?.RegionAm;
+            person.BirthZoneOr =!BirthisCityAdmin?BirthAddressResponse?.ZoneOr:null;
+            person.BirthZoneAm =!BirthisCityAdmin? BirthAddressResponse?.ZoneAm:null;
+            person.BirthSubcityOr =BirthisCityAdmin?BirthAddressResponse?.WoredaOr:null;
+            person.BirthSubcityAm =BirthisCityAdmin? BirthAddressResponse?.WoredaAm:null;
+            person.BirthWoredaOr = BirthAddressResponse?.WoredaOr;
+            person.BirthWoredaAm = BirthAddressResponse?.WoredaAm;
+            person.BirthKebeleOr = BirthAddressResponse?.KebeleOr;
+            person.BirthKebeleAm = BirthAddressResponse?.KebeleAm;
+            person.BirthAddressAm =BirthStringAddress?.am;
+            person.BirthAddressOr =BirthStringAddress?.or;
+            return person;
+         }
+          public static  Person GetPersonResidentAddrress(Person? person,IReportRepostory _reportRepostory, Guid? ResidentAddressId,IDateAndAddressService dateAndAddressService){
+            var ResidentAddress=  _reportRepostory.ReturnAddress(ResidentAddressId.ToString()).Result;
             JArray ResidentAddressjsonObject = JArray.FromObject(ResidentAddress);
             FormatedAddressDto ResidentAddressResponse = ResidentAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();           
             (string? am, string? or)? residentSplitedAddress = dateAndAddressService.stringAddress(ResidentAddressResponse);
             
-            bool BirthisCityAdmin=dateAndAddressService.IsCityAdmin(person.BirthAddressId);
-            bool ResidentisCityAdmin=dateAndAddressService.IsCityAdmin(person.ResidentAddressId);
+            bool ResidentisCityAdmin=dateAndAddressService.IsCityAdmin(ResidentAddressId);
+                person.ResidentCountryOr = ResidentAddressResponse?.CountryOr;
+                person.ResidentCountryAm = ResidentAddressResponse?.CountryAm;
+                person.ResidentRegionOr = ResidentAddressResponse?.RegionOr;
+                person.ResidentRegionAm = ResidentAddressResponse?.RegionAm;
+                person.ResidentZoneOr =!ResidentisCityAdmin?ResidentAddressResponse?.ZoneOr:null;
+                person.ResidentZoneAm =!ResidentisCityAdmin? ResidentAddressResponse?.ZoneAm:null;
+                person.ResidentSubcityOr =ResidentisCityAdmin?ResidentAddressResponse?.WoredaOr:null;
+                person.ResidentSubcityAm =ResidentisCityAdmin? ResidentAddressResponse?.WoredaAm:null;
+                person.ResidentWoredaOr = ResidentAddressResponse?.WoredaOr;
+                person.ResidentWoredaAm = ResidentAddressResponse?.WoredaAm;
+                person.ResidentKebeleOr = ResidentAddressResponse?.KebeleOr;
+                person.ResidentKebeleAm = ResidentAddressResponse?.KebeleAm;
 
+                person.ResidentAddressAm = residentSplitedAddress?.am;
+                person.ResidentAddressOr = residentSplitedAddress?.or;
+            return person;
+         }
+
+
+            public static  Person GetCorrectionRequestPerson(Person? person,PersonalInfo? personInfo){
+                person.FirstNameAm =personInfo?.FirstName?.Value<string>("am");
+                person.MiddleNameAm =personInfo?.MiddleName?.Value<string>("am");
+                person.LastNameAm = personInfo?.LastName?.Value<string>("am");
+
+                person.FirstNameOr = personInfo?.FirstName?.Value<string>("or");
+                person.MiddleNameOr = personInfo?.MiddleName?.Value<string>("or");
+                person.LastNameOr = personInfo?.LastName?.Value<string>("or");
+
+                person.GenderAm = personInfo?.SexLookup?.Value?.Value<string>("am");
+                person.GenderOr = personInfo?.SexLookup?.Value?.Value<string>("or");
+
+                person.NationalId = personInfo?.NationalId;
+                person.NationalityOr = personInfo?.NationalityLookup?.Value?.Value<string>("am");
+                person.NationalityAm = personInfo?.NationalityLookup?.Value?.Value<string>("am");
+
+                person.MarriageStatusOr = personInfo?.MarraigeStatusLookup?.Value?.Value<string>("am");
+                person.MarriageStatusAm = personInfo?.MarraigeStatusLookup?.Value?.Value<string>("am");
+
+                person.ReligionOr =  personInfo?.ReligionLookup?.Value?.Value<string>("am");
+                person.ReligionAm =  personInfo?.ReligionLookup?.Value?.Value<string>("am");
+
+                person.NationOr = personInfo?.NationLookup?.Value?.Value<string>("or");
+                person.NationAm =  personInfo?.NationLookup?.Value?.Value<string>("am");
+
+                person.EducationalStatusOr = personInfo?.EducationalStatusLookup?.Value?.Value<string>("or");
+                person.EducationalStatusAm = personInfo?.EducationalStatusLookup?.Value?.Value<string>("am");
+
+                person.TypeOfWorkOr =personInfo?.TypeOfWorkLookup?.Value?.Value<string>("or");
+                person.TypeOfWorkAm =personInfo?.TypeOfWorkLookup?.Value?.Value<string>("am");
+            return person;
+         }
+          public static  Person GetEventPerson(Person? person,PersonalInfo? personInfo,IReportRepostory _reportRepostory){
+                var personalInfo=  _reportRepostory.ReturnPerson(personInfo.Id.ToString()).Result;
+                JArray jsonObject = JArray.FromObject(personalInfo);
+                PersonalInfoDtoPero personResponse = jsonObject.ToObject<List<PersonalInfoDtoPero>>().FirstOrDefault();
+                person.FirstNameAm = personResponse?.FirstNameAm;
+                person.MiddleNameAm = personResponse?.MiddleNameAm;
+                person.LastNameAm = personResponse?.LastNameAm;
+
+                person.FirstNameOr = personResponse?.FirstNameOr;
+                person.MiddleNameOr = personResponse?.MiddleNameOr;
+                person.LastNameOr = personResponse?.LastNameOr;
+
+                person.GenderAm = personResponse?.GenderAm;
+                person.GenderOr = personResponse?.GenderOr;
+
+                person.NationalId = personResponse?.NationalId;
+
+
+                person.NationalityOr = personResponse?.NationalityOr;
+                person.NationalityAm = personResponse?.NationalityAm;
+
+                person.MarriageStatusOr = personResponse?.MarriageStatusOr;
+                person.MarriageStatusAm = personResponse?.MarriageStatusAm;
+
+                person.ReligionOr =  personResponse?.ReligionOr;
+                person.ReligionAm =  personResponse?.ReligionAm;
+
+                person.NationOr = personResponse?.NationOr;
+                person.NationAm =  personResponse?.NationAm;
+
+                person.EducationalStatusOr = personResponse?.EducationalStatusOr;
+                person.EducationalStatusAm = personResponse?.EducationalStatusAm;
+
+                person.TypeOfWorkOr =personResponse?.TypeOfWorkOr;
+                person.TypeOfWorkAm = personResponse?.TypeOfWorkAm;
+            return person;
+         }
+
+        
+        public static  Person GetPerson(PersonalInfo? person, IDateAndAddressService dateAndAddressService //)
+        , ILookupFromId lookupService, IReportRepostory _reportRepostory, bool IsCorrection=false)
+        {
+            if(person==null){
+                return null;
+            }
+            var personInfo = new Person();
+            if(IsCorrection){
+             personInfo=GetCorrectionRequestPerson(personInfo,person);
+            }
+            else{
+                personInfo=GetEventPerson(personInfo,person , _reportRepostory);
+            }
             
-            var personInfo = new Person
-            {
-                FirstNameAm = personResponse?.FirstNameAm,
-                MiddleNameAm = personResponse?.MiddleNameAm,
-                LastNameAm = personResponse?.LastNameAm,
-
-                FirstNameOr = personResponse?.FirstNameOr,
-                MiddleNameOr = personResponse?.MiddleNameOr,
-                LastNameOr = personResponse?.LastNameOr,
-
-                GenderAm = personResponse?.GenderAm,
-                GenderOr = personResponse?.GenderOr,
-
-                NationalId = personResponse?.NationalId,
-
-                BirthAddressAm = BirthStringAddress?.am,
-                BirthAddressOr = BirthStringAddress?.or,
-
-                BirthCountryOr = BirthAddressResponse?.CountryOr,
-                BirthCountryAm = BirthAddressResponse?.CountryAm,
-                BirthRegionOr = BirthAddressResponse?.RegionOr,
-                BirthRegionAm = BirthAddressResponse?.RegionAm,
-                BirthZoneOr =!BirthisCityAdmin?BirthAddressResponse?.ZoneOr:null,
-                BirthZoneAm =!BirthisCityAdmin? BirthAddressResponse?.ZoneAm:null,
-                BirthSubcityOr =BirthisCityAdmin?BirthAddressResponse?.WoredaOr:null,
-                BirthSubcityAm =BirthisCityAdmin? BirthAddressResponse?.WoredaAm:null,
-                BirthWoredaOr = BirthAddressResponse?.WoredaOr,
-                BirthWoredaAm = BirthAddressResponse?.WoredaAm,
-                BirthKebeleOr = BirthAddressResponse?.KebeleOr,
-                BirthKebeleAm = BirthAddressResponse?.KebeleAm,
-
-                ResidentCountryOr = ResidentAddressResponse?.CountryOr,
-                ResidentCountryAm = ResidentAddressResponse?.CountryAm,
-                ResidentRegionOr = ResidentAddressResponse?.RegionOr,
-                ResidentRegionAm = ResidentAddressResponse?.RegionAm,
-                ResidentZoneOr =!ResidentisCityAdmin?ResidentAddressResponse?.ZoneOr:null,
-                ResidentZoneAm =!ResidentisCityAdmin? ResidentAddressResponse?.ZoneAm:null,
-                ResidentSubcityOr =ResidentisCityAdmin?ResidentAddressResponse?.WoredaOr:null,
-                ResidentSubcityAm =ResidentisCityAdmin? ResidentAddressResponse?.WoredaAm:null,
-                ResidentWoredaOr = ResidentAddressResponse?.WoredaOr,
-                ResidentWoredaAm = ResidentAddressResponse?.WoredaAm,
-                ResidentKebeleOr = ResidentAddressResponse?.KebeleOr,
-                ResidentKebeleAm = ResidentAddressResponse?.KebeleAm,
-
-                ResidentAddressAm = residentSplitedAddress?.am,
-                ResidentAddressOr = residentSplitedAddress?.or,
-
-                NationalityOr = personResponse?.NationalityOr,
-                NationalityAm = personResponse?.NationalityAm,
-
-                MarriageStatusOr = personResponse?.MarriageStatusOr,
-                MarriageStatusAm = personResponse?.MarriageStatusAm,
-
-                ReligionOr = personResponse?.ReligionOr,
-                ReligionAm = personResponse?.ReligionAm,
-
-                NationOr =personResponse?.NationOr,
-                NationAm = personResponse?.NationAm,
-
-                EducationalStatusOr = personResponse?.EducationalStatusOr,
-                EducationalStatusAm = personResponse?.EducationalStatusAm,
-
-                TypeOfWorkOr =personResponse?.TypeOfWorkOr,
-                TypeOfWorkAm = personResponse?.TypeOfWorkAm,
-
-
-            };
+            personInfo=GetPersonBirthAddrress(personInfo, _reportRepostory, person?.BirthAddressId,dateAndAddressService);
+            personInfo=GetPersonResidentAddrress(personInfo, _reportRepostory, person?.ResidentAddressId,dateAndAddressService);
             if (!string.IsNullOrEmpty(person?.BirthDateEt))
             {
                 personInfo.BirthMonthOr = new EthiopicDateTime(convertor.getSplitted(person?.BirthDateEt!).month, "or")?.month;
