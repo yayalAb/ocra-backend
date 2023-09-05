@@ -155,8 +155,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 person.GenderOr = personResponse?.GenderOr;
 
                 person.NationalId = personResponse?.NationalId;
-
-
                 person.NationalityOr = personResponse?.NationalityOr;
                 person.NationalityAm = personResponse?.NationalityAm;
 

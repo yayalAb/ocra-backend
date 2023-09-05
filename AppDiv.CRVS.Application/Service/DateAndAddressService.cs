@@ -132,10 +132,11 @@ namespace AppDiv.CRVS.Application.Service
 
 
    public (string?,string?) stringAddress(FormatedAddressDto? address)
-        {   
-            string addressAm = string.Join("/", address?.CountryAm, address?.RegionAm,address?.ZoneAm,address?.WoredaAm,address?.KebeleAm);
+        {  // address?.CountryOr, address?.RegionOr,
+           // address?.CountryAm, address?.RegionAm,
+            string addressAm = string.Join("/",address?.ZoneAm,address?.WoredaAm,address?.KebeleAm);
 
-            string addressOr = string.Join("/", address?.CountryOr, address?.RegionOr,address?.ZoneOr,address?.WoredaOr,address?.KebeleOr);
+            string addressOr = string.Join("/", address?.ZoneOr,address?.WoredaOr,address?.KebeleOr);
 
             addressAm = Regex.Replace(addressAm, "/+", "/").TrimEnd('/');
 
