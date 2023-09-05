@@ -34,22 +34,23 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
         {
             var response = new BaseResponse();
             try
-            {   foreach(Guid id in request.Ids){
+            {  
+                foreach(Guid id in request.Ids){
                 var correctionRequest= _correctionRequestRepository.GetAll()
                 .Include(x=>x.Request).Where(x=>x.Id==id).FirstOrDefault();
-                if(correctionRequest?.Request?.currentStep!=0){   
+                if(correctionRequest.Request.currentStep!=0){   
                     throw  new NotFoundException("You Can not delete this Request It Is Approved");
                 }
                 await _requestRepostory.DeleteAsync(correctionRequest.RequestId);
                 await _correctionRequestRepository.DeleteAsync(id);
             }  
                 await _correctionRequestRepository.SaveChangesAsync(cancellationToken);
-                response.Deleted("Correctoon Request");
+                response.Deleted("Correction Request");
 
             }
             catch (Exception exp)
             {
-                response.BadRequest("You Can not delete this Request It Is Approved");
+                response.BadRequest("Unable to delete the specified correction Request. b/c It Is Approved");
             }
             return response;
         }
