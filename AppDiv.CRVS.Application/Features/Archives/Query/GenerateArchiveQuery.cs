@@ -48,23 +48,16 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         private readonly IUserRepository _userRepository;
         private readonly IUserResolverService _userResolverService;
         private readonly IBirthEventRepository _IBirthEventRepository;
-        private readonly IMediator _mediator;
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
         private readonly IArchiveGenerator _archiveGenerator;
-        private readonly ILogger<GenerateArchiveHandler> _ILogger;
-        private readonly IFileService _fileService;
-        private readonly ISupportingDocumentRepository _supportingDocumentRepository;
 
 
-        public GenerateArchiveHandler(ILogger<GenerateArchiveHandler> ILogger,
+        public GenerateArchiveHandler(
                                         IArchiveGenerator archiveGenerator,
                                         IBirthEventRepository IBirthEventRepository,
                                         ICertificateTemplateRepository ICertificateTemplateRepository,
                                         ICertificateRepository CertificateRepository,
-                                        IMediator mediato,
                                         IEventRepository eventRepository,
-                                        IFileService fileService,
-                                        ISupportingDocumentRepository supportingDocumentRepository,
                                         IUserRepository userRepository,
                                         IUserResolverService userResolverService)
         {
@@ -73,9 +66,6 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             _ICertificateTemplateRepository = ICertificateTemplateRepository;
             _IBirthEventRepository = IBirthEventRepository;
             _archiveGenerator = archiveGenerator;
-            _ILogger = ILogger;
-            _fileService = fileService;
-            _supportingDocumentRepository = supportingDocumentRepository;
             _userRepository = userRepository;
             _userResolverService = userResolverService;
         }
@@ -106,10 +96,15 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             //     throw new NotFoundException("You Are Not Allowed to See This Event Detail");
             // }
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
+            
             var content = await _eventRepository.GetArchive(request.Id);
+
             var certificate = _archiveGenerator.GetArchive(request, content, birthCertificateNo?.Event?.CertificateId);
+          
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType + " " + "Archive").FirstOrDefault();
+           
            var certficatesList= _certificateRepository.GetAll().Where(x => x.EventId == request.Id && x.Status);
+          
            foreach(var xx in certficatesList){
                if(!xx.AuthenticationStatus){
                   Authenticated=false;

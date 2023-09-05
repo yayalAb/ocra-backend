@@ -55,6 +55,20 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             var Workflow = _WorkflowRepository.GetAll()
             .Include(x => x.Steps)
             .Where(wf => wf.workflowName == "authentication").FirstOrDefault();
+            var AuthenticationRequest = new AuthenticationRequest
+            {
+                Id=new Guid(),
+                CertificateId = request.CertificateId,
+                Request = new Request
+                {   Id=new Guid(),
+                    RequestType = "authentication",
+                    CivilRegOfficerId = request.CivilRegOfficer,
+                    currentStep = 0,
+                    NextStep = 0,
+                    WorkflowId = Guid.Empty
+                }
+            };
+            await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);
 
             if (Workflow == null || Workflow?.Steps.Count == 0)
             {
@@ -66,9 +80,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 if (certificate == null)
                 {
                     throw new NotFoundException("Certificate With the given Id Does't Found");
-                }
+                }                
                 (float amount, string code) respons = await _eventPayment.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "authentication",
-                    null, false, false, cancellationToken);
+                    AuthenticationRequest?.Request?.Id, false, false, cancellationToken);
 
                 if (true)
                 {
@@ -87,22 +101,11 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                     return response;
                 }
 
-
             }
             var next = _WorkflowService.GetNextStep("authentication", 0, true);
-            var AuthenticationRequest = new AuthenticationRequest
-            {
-                CertificateId = request.CertificateId,
-                Request = new Request
-                {
-                    RequestType = "authentication",
-                    CivilRegOfficerId = request.CivilRegOfficer,
-                    currentStep = 0,
-                    NextStep = next,
-                    WorkflowId = Workflow.Id
-                }
-            };
-            await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);
+            AuthenticationRequest.Request.NextStep=next;
+            AuthenticationRequest.Request.WorkflowId=Workflow.Id;
+
             await _AuthenticationRepository.SaveChangesAsync(cancellationToken);
             string? userId = _userRepository.GetAll()
                                 .Where(u => u.PersonalInfoId == request.CivilRegOfficer)
