@@ -83,17 +83,17 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return divorceInfo;
         }
 
-        public DivorceArchiveDTO GetDivorceArchive(Event divorce, string? BirthCertNo)
+        public DivorceArchiveDTO GetDivorceArchive(Event divorce, string? BirthCertNo, bool IsCorrection=false)
         {
 
             var divorceInfo = new DivorceArchiveDTO()
             {
-                Husband = ReturnPerson.GetPerson(divorce.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory),
-                Wife = ReturnPerson.GetPerson(divorce.DivorceEvent.DivorcedWife, _dateAndAddressService, _lookupService,_reportRepostory),
+                Husband = ReturnPerson.GetPerson(divorce.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
+                Wife = ReturnPerson.GetPerson(divorce.DivorceEvent.DivorcedWife, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
                 EventInfo = GetEventInfo(divorce),
                 Court = GetCourt(divorce?.DivorceEvent?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
+                                        (ReturnPerson.GetPerson(divorce.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection)),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == divorce.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
             };
@@ -103,7 +103,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return divorceInfo;
 
         }
-        public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo)
+        public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo, bool IsCorrection=false)
         {
             divorce.Event.DivorceEvent = divorce;
             if (divorce.Event.CivilRegOfficer == null && divorce.Event.CivilRegOfficerId != null)
@@ -112,12 +112,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             }
             return new DivorceArchiveDTO()
             {
-                Husband = ReturnPerson.GetPerson(divorce.Event.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory),
-                Wife = ReturnPerson.GetPerson(divorce.DivorcedWife, _dateAndAddressService, _lookupService,_reportRepostory),
+                Husband = ReturnPerson.GetPerson(divorce.Event.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
+                Wife = ReturnPerson.GetPerson(divorce.DivorcedWife, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
                 EventInfo = GetEventInfo(divorce.Event),
                 Court = GetCourt(divorce?.CourtCase),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(divorce.Event.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
+                                        (ReturnPerson.GetPerson(divorce.Event.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection)),
                 EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(divorce?.Event?.EventSupportingDocuments),
                 PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(divorce?.Event?.PaymentExamption?.SupportingDocuments),
 

@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         }
 
-        public BirthArchiveDTO GetBirthArchive(Event? birth, string? BirthCertNo)
+        public BirthArchiveDTO GetBirthArchive(Event? birth, string? BirthCertNo,bool IsCorectionRequest=false)
         {
             // (string am, string or)? address = (birth?.EventAddressId == Guid.Empty
             //    || birth?.EventAddressId == null) ? null :
@@ -103,7 +103,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         }
 
-        public BirthArchiveDTO GetBirthPreviewArchive(BirthEvent? birth, string? BirthCertNo)
+        public BirthArchiveDTO GetBirthPreviewArchive(BirthEvent? birth, string? BirthCertNo,bool IsCorectionRequest=false)
         {
             birth!.Event.BirthEvent = birth;
             if (birth?.Event.CivilRegOfficer == null && birth?.Event.CivilRegOfficerId != null)
@@ -113,14 +113,14 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return new BirthArchiveDTO()
             {
                 Child = CustomMapper.Mapper.Map<Child>
-                                            (ReturnPerson.GetPerson(birth?.Event?.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory)),
-                Mother = ReturnPerson.GetPerson(birth?.Mother, _dateAndAddressService, _lookupService,_reportRepostory),
-                Father = ReturnPerson.GetPerson(birth?.Father, _dateAndAddressService, _lookupService,_reportRepostory),
+                                            (ReturnPerson.GetPerson(birth?.Event?.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory,IsCorectionRequest)),
+                Mother = ReturnPerson.GetPerson(birth?.Mother, _dateAndAddressService, _lookupService,_reportRepostory,IsCorectionRequest),
+                Father = ReturnPerson.GetPerson(birth?.Father, _dateAndAddressService, _lookupService,_reportRepostory,IsCorectionRequest),
                 EventInfo = GetEventInfo(birth?.Event),
                 Notification = GetNotification(birth?.BirthNotification),
                 Registrar = GetRegistrar(birth?.Event?.EventRegistrar),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(birth?.Event?.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
+                                        (ReturnPerson.GetPerson(birth?.Event?.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory,IsCorectionRequest)),
                 EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(birth?.Event?.EventSupportingDocuments),
                 PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(birth?.Event?.PaymentExamption?.SupportingDocuments),
             };

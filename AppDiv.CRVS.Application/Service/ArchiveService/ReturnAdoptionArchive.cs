@@ -38,26 +38,26 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             _reportRepostory=reportRepostory;
         }
 
-        private AdoptedChild GetChild(PersonalInfo adoptedChild)
+        private AdoptedChild GetChild(PersonalInfo adoptedChild,bool IsCorrection=false)
         {
-            AdoptedChild? child = CustomMapper.Mapper.Map<AdoptedChild>(ReturnPerson.GetPerson(adoptedChild, _DateAndAddressService, _lookupService, _reportRepostory));
+            AdoptedChild? child = CustomMapper.Mapper.Map<AdoptedChild>(ReturnPerson.GetPerson(adoptedChild, _DateAndAddressService, _lookupService, _reportRepostory,IsCorrection));
             return child;
         }
 
-        private Officer GetOfficer(PersonalInfo adoptionOfficer)
+        private Officer GetOfficer(PersonalInfo adoptionOfficer,bool IsCorrection=false)
         {
-            Officer? officer = CustomMapper.Mapper.Map<Officer>(ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService, _lookupService, _reportRepostory));
+            Officer? officer = CustomMapper.Mapper.Map<Officer>(ReturnPerson.GetPerson(adoptionOfficer, _DateAndAddressService, _lookupService, _reportRepostory,IsCorrection));
             return officer;
         }
 
-        private Person GetMother(PersonalInfo adoptiveMother)
+        private Person GetMother(PersonalInfo adoptiveMother,bool IsCorrection=false)
         {
-            Person? mother = ReturnPerson.GetPerson(adoptiveMother, _DateAndAddressService, _lookupService, _reportRepostory);
+            Person? mother = ReturnPerson.GetPerson(adoptiveMother, _DateAndAddressService, _lookupService, _reportRepostory,IsCorrection);
             return mother;
         }
-        private Person GetFather(PersonalInfo adoptiveFather)
+        private Person GetFather(PersonalInfo adoptiveFather,bool IsCorrection=false)
         {
-            Person? father = ReturnPerson.GetPerson(adoptiveFather, _DateAndAddressService, _lookupService, _reportRepostory);
+            Person? father = ReturnPerson.GetPerson(adoptiveFather, _DateAndAddressService, _lookupService, _reportRepostory,IsCorrection);
             return father;
         }
         private AdoptionInfo GetEventInfo(Event adoption)
@@ -98,17 +98,17 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 CourtCaseNumber = court?.CourtCaseNumber,
             };
         }
-        public AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo)
+        public AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo, bool IsCorrection=false)
         {
 
             var adoptionInfo = new AdoptionArchiveDTO()
             {
-                Child = GetChild(adoption?.EventOwener),
-                Mother = GetMother(adoption?.AdoptionEvent?.AdoptiveMother),
-                Father = GetFather(adoption?.AdoptionEvent?.AdoptiveFather),
+                Child = GetChild(adoption?.EventOwener,IsCorrection),
+                Mother = GetMother(adoption?.AdoptionEvent?.AdoptiveMother,IsCorrection),
+                Father = GetFather(adoption?.AdoptionEvent?.AdoptiveFather,IsCorrection),
                 Court = GetCourt(adoption?.AdoptionEvent?.CourtCase),
                 EventInfo = GetEventInfo(adoption),
-                CivilRegistrarOfficer = GetOfficer(adoption?.CivilRegOfficer),
+                CivilRegistrarOfficer = GetOfficer(adoption?.CivilRegOfficer,IsCorrection),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == adoption.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
             };
@@ -118,7 +118,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return adoptionInfo;
 
         }
-        public AdoptionArchiveDTO GetAdoptionPreviewArchive(AdoptionEvent adoption, string? BirthCertNo)
+        public AdoptionArchiveDTO GetAdoptionPreviewArchive(AdoptionEvent adoption, string? BirthCertNo,bool IsCorrection=false)
         {
             var child = adoption.Event.EventOwener == null ?
                                     _person.GetAll().Where(p => p.Id == adoption.Event.EventOwenerId)

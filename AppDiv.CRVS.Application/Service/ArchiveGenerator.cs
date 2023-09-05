@@ -39,29 +39,29 @@ namespace AppDiv.CRVS.Application.Service
             _Ilogger = Ilogger;
         }
 
-        public JObject GetBirthArchivePreview(BirthEvent birth, string BirthCertNo)
+        public JObject GetBirthArchivePreview(BirthEvent birth, string BirthCertNo,bool isCorrectionRequest=false)
         {
-            return JObject.FromObject(_returnBirthArchive.GetBirthPreviewArchive(birth, BirthCertNo));
+            return JObject.FromObject(_returnBirthArchive.GetBirthPreviewArchive(birth, BirthCertNo,isCorrectionRequest));
         }
 
-        public JObject GetAdoptionArchivePreview(AdoptionEvent adoption, string? BirthCertNo)
+        public JObject GetAdoptionArchivePreview(AdoptionEvent adoption, string? BirthCertNo,bool isCorrectionRequest=false)
         {
-            return JObject.FromObject(_returnAdoptionArchive.GetAdoptionPreviewArchive(adoption, BirthCertNo));
+            return JObject.FromObject(_returnAdoptionArchive.GetAdoptionPreviewArchive(adoption, BirthCertNo,isCorrectionRequest));
         }
-        public JObject GetMarriageArchivePreview(MarriageEvent marriage, string? BirthCertNo)
+        public JObject GetMarriageArchivePreview(MarriageEvent marriage, string? BirthCertNo,bool isCorrectionRequest=false)
         {
-            return JObject.FromObject(_returnMarriageArchive.GetMarriagePreviewArchive(marriage, BirthCertNo));
-        }
-
-
-        public JObject GetDivorceArchivePreview(DivorceEvent divorce, string? BirthCertNo)
-        {
-            return JObject.FromObject(_returnDivorceArchive.GetDivorcePreviewArchive(divorce, BirthCertNo));
+            return JObject.FromObject(_returnMarriageArchive.GetMarriagePreviewArchive(marriage, BirthCertNo,isCorrectionRequest));
         }
 
-        public JObject GetDeathArchivePreview(DeathEvent death, string? BirthCertNo)
+
+        public JObject GetDivorceArchivePreview(DivorceEvent divorce, string? BirthCertNo,bool isCorrectionRequest=false)
         {
-            return JObject.FromObject(_returnDeathArchive.GetDeathPreviewArchive(death, BirthCertNo));
+            return JObject.FromObject(_returnDivorceArchive.GetDivorcePreviewArchive(divorce, BirthCertNo,isCorrectionRequest));
+        }
+
+        public JObject GetDeathArchivePreview(DeathEvent death, string? BirthCertNo,bool isCorrectionRequest=false)
+        {
+            return JObject.FromObject(_returnDeathArchive.GetDeathPreviewArchive(death, BirthCertNo,isCorrectionRequest));
         }
         // public JObject GetArchivePreview(JObject? content, string BirhtCertId)
         // {
@@ -76,46 +76,46 @@ namespace AppDiv.CRVS.Application.Service
         //         "Divorce" => JObject.FromObject(this.GetDivorceArchive(content, BirhtCertId))
         //     };
         // }
-        public JObject GetArchive(GenerateArchiveQuery request, Event? content, string BirhtCertId)
+        public JObject GetArchive(GenerateArchiveQuery request, Event? content, string BirhtCertId,bool IsCorrection=false)
         {
             var archive = new object();
 
             return content.EventType switch
             {
-                "Birth" => JObject.FromObject(this.GetBirthArchive(content, BirhtCertId)),
-                "Death" => JObject.FromObject(this.GetDeathArchive(content, BirhtCertId)),
-                "Adoption" => JObject.FromObject(this.GetAdoptionArchive(content, BirhtCertId)),
-                "Marriage" => JObject.FromObject(this.GetMarriageArchive(content, BirhtCertId)),
-                "Divorce" => JObject.FromObject(this.GetDivorceArchive(content, BirhtCertId))
+                "Birth" => JObject.FromObject(this.GetBirthArchive(content, BirhtCertId,IsCorrection)),
+                "Death" => JObject.FromObject(this.GetDeathArchive(content, BirhtCertId,IsCorrection)),
+                "Adoption" => JObject.FromObject(this.GetAdoptionArchive(content, BirhtCertId,IsCorrection)),
+                "Marriage" => JObject.FromObject(this.GetMarriageArchive(content, BirhtCertId,IsCorrection)),
+                "Divorce" => JObject.FromObject(this.GetDivorceArchive(content, BirhtCertId,IsCorrection))
             };
         }
 
 
 
 
-        private BirthArchiveDTO GetBirthArchive(Event birth, string BirthCertNo)
+        private BirthArchiveDTO GetBirthArchive(Event birth, string BirthCertNo, bool IsCorrection=false)
         {
-            return _returnBirthArchive.GetBirthArchive(birth, BirthCertNo);
+            return _returnBirthArchive.GetBirthArchive(birth, BirthCertNo,IsCorrection);
         }
 
-        private AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo)
+        private AdoptionArchiveDTO GetAdoptionArchive(Event adoption, string? BirthCertNo,bool IsCorrection=false)
         {
-            return _returnAdoptionArchive.GetAdoptionArchive(adoption, BirthCertNo);
+            return _returnAdoptionArchive.GetAdoptionArchive(adoption, BirthCertNo,IsCorrection);
         }
-        private MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo)
+        private MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo,bool IsCorrection=false)
         {
-            return _returnMarriageArchive.GetMarriageArchive(marriage, BirthCertNo);
-        }
-
-
-        private DivorceArchiveDTO GetDivorceArchive(Event divorce, string? BirthCertNo)
-        {
-            return _returnDivorceArchive.GetDivorceArchive(divorce, BirthCertNo);
+            return _returnMarriageArchive.GetMarriageArchive(marriage, BirthCertNo,IsCorrection);
         }
 
-        private DeathArchiveDTO GetDeathArchive(Event death, string? BirthCertNo)
+
+        private DivorceArchiveDTO GetDivorceArchive(Event divorce, string? BirthCertNo,bool IsCorrection=false)
         {
-            return _returnDeathArchive.GetDeathArchive(death, BirthCertNo);
+            return _returnDivorceArchive.GetDivorceArchive(divorce, BirthCertNo,IsCorrection);
+        }
+
+        private DeathArchiveDTO GetDeathArchive(Event death, string? BirthCertNo,bool IsCorrection=false)
+        {
+            return _returnDeathArchive.GetDeathArchive(death, BirthCertNo,IsCorrection);
         }
     }
 }

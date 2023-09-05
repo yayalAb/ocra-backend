@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Archive
 {
     public interface IReturnMarriageArchive
     {
-        public MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo);
-        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo);
+        public MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo, bool IsCorrection=false);
+        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo, bool IsCorrection=false);
     }
 }

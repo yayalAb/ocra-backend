@@ -65,11 +65,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.GetForAppro
             var eventContent = _correctionRequestRepository.GetAll().Where(cr => cr.EventId == CorrectionRequest.EventId).FirstOrDefault()?.Content;
             response.NewData = selectedEvent.EventType switch
             {
-                "Birth" => _archiveGenerator.GetBirthArchivePreview(ReturnArchiveFromJObject.GetArchive<BirthEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId),
-                "Death" => _archiveGenerator.GetDeathArchivePreview(ReturnArchiveFromJObject.GetArchive<DeathEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId),
-                "Adoption" => _archiveGenerator.GetAdoptionArchivePreview(ReturnArchiveFromJObject.GetArchive<AdoptionEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId),
-                "Divorce" => _archiveGenerator.GetDivorceArchivePreview(ReturnArchiveFromJObject.GetArchive<DivorceEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId),
-                "Marriage" => _archiveGenerator.GetMarriageArchivePreview(ReturnArchiveFromJObject.GetArchive<MarriageEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId),
+                "Birth" => _archiveGenerator.GetBirthArchivePreview(ReturnArchiveFromJObject.GetArchive<BirthEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId,true),
+                "Death" => _archiveGenerator.GetDeathArchivePreview(ReturnArchiveFromJObject.GetArchive<DeathEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId,true),
+                "Adoption" => _archiveGenerator.GetAdoptionArchivePreview(ReturnArchiveFromJObject.GetArchive<AdoptionEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId,true),
+                "Divorce" => _archiveGenerator.GetDivorceArchivePreview(ReturnArchiveFromJObject.GetArchive<DivorceEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId,true),
+                "Marriage" => _archiveGenerator.GetMarriageArchivePreview(ReturnArchiveFromJObject.GetArchive<MarriageEvent>(CorrectionRequest.Content), birthCertificateNo?.Event?.CertificateId,true),
             };
 
             return response;

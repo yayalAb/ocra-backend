@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Archive
 {
     public interface IReturnBirthArchive
     {
-        public BirthArchiveDTO GetBirthArchive(Event birth, string? BirthCertNo);
-        public BirthArchiveDTO GetBirthPreviewArchive(BirthEvent birth, string? BirthCertNo);
+        public BirthArchiveDTO GetBirthArchive(Event birth, string? BirthCertNo,bool IsCorectionRequest=false);
+        public BirthArchiveDTO GetBirthPreviewArchive(BirthEvent birth, string? BirthCertNo,bool IsCorectionRequest=false);
     }
 }

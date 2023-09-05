@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Archive
 {
     public interface IReturnDeathArchive
     {
-        public DeathArchiveDTO GetDeathArchive(Event death, string? BirthCertNo);
-        public DeathArchiveDTO GetDeathPreviewArchive(DeathEvent death, string? BirthCertNo);
+        public DeathArchiveDTO GetDeathArchive(Event death, string? BirthCertNo, bool IsCorrection=false);
+        public DeathArchiveDTO GetDeathPreviewArchive(DeathEvent death, string? BirthCertNo, bool IsCorrection=false);
     }
 }

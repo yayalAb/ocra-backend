@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             _reportRepostory=reportRepostory;
         }
 
-        private ICollection<WitnessArchive> GetWittnesses(ICollection<Witness> witnesses, string witnessFor)
+        private ICollection<WitnessArchive> GetWittnesses(ICollection<Witness> witnesses, string witnessFor, bool IsCorrection=false)
         {
             var witnessInfo = new List<WitnessArchive?>();
             foreach (var w in witnesses)
@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 if (_lookupService.CheckMatchLookup(w.WitnessForLookupId, "witness-for", witnessFor))
                 {
                     var brideWitness = CustomMapper.Mapper.Map<WitnessArchive>
-                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService,_reportRepostory));
+                                                (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection));
                     witnessInfo.Add(brideWitness);
                 }
             }
@@ -79,19 +79,19 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return marriageInfo;
         }
 
-        public MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo)
+        public MarriageArchiveDTO GetMarriageArchive(Event marriage, string? BirthCertNo, bool IsCorrection=false)
         {
             var marriageInfo = new MarriageArchiveDTO()
             {
-                Groom = ReturnPerson.GetPerson(marriage.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory),
-                Bride = ReturnPerson.GetPerson(marriage.MarriageEvent.BrideInfo, _dateAndAddressService, _lookupService,_reportRepostory),
+                Groom = ReturnPerson.GetPerson(marriage.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
+                Bride = ReturnPerson.GetPerson(marriage.MarriageEvent.BrideInfo, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
                 EventInfo = GetEventInfo(marriage),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(marriage.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
+                                        (ReturnPerson.GetPerson(marriage.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection)),
                 EventSupportingDocuments = _supportingDocument.GetAll().Where(s => s.EventId == marriage.Id)
                                                 .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList(),
-                BrideWitnesses = GetWittnesses(marriage.MarriageEvent.Witnesses, "Bride"),
-                GroomWitnesses = GetWittnesses(marriage.MarriageEvent.Witnesses, "Groom"),
+                BrideWitnesses = GetWittnesses(marriage.MarriageEvent.Witnesses, "Bride",IsCorrection),
+                GroomWitnesses = GetWittnesses(marriage.MarriageEvent.Witnesses, "Groom",IsCorrection),
 
             };
             marriageInfo.PaymentExamptionSupportingDocuments = marriage?.PaymentExamption?.Id == null ? null
@@ -100,7 +100,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return marriageInfo;
 
         }
-        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo)
+        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo, bool IsCorrection=false)
         {
             marriage.Event.MarriageEvent = marriage;
             if (marriage.Event.CivilRegOfficer == null && marriage.Event.CivilRegOfficerId != null)
@@ -110,15 +110,15 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             return new MarriageArchiveDTO()
             {
-                Groom = ReturnPerson.GetPerson(marriage.Event.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory),
-                Bride = ReturnPerson.GetPerson(marriage.BrideInfo, _dateAndAddressService, _lookupService,_reportRepostory),
+                Groom = ReturnPerson.GetPerson(marriage.Event.EventOwener, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
+                Bride = ReturnPerson.GetPerson(marriage.BrideInfo, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection),
                 EventInfo = GetEventInfo(marriage.Event),
                 CivilRegistrarOfficer = CustomMapper.Mapper.Map<Officer>
-                                        (ReturnPerson.GetPerson(marriage.Event.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory)),
+                                        (ReturnPerson.GetPerson(marriage.Event.CivilRegOfficer, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection)),
                 EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(marriage.Event.EventSupportingDocuments),
                 PaymentExamptionSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(marriage?.Event?.PaymentExamption?.SupportingDocuments),
-                BrideWitnesses = GetWittnesses(marriage.Witnesses, "bride"),
-                GroomWitnesses = GetWittnesses(marriage.Witnesses, "groom"),
+                BrideWitnesses = GetWittnesses(marriage.Witnesses, "bride",IsCorrection),
+                GroomWitnesses = GetWittnesses(marriage.Witnesses, "groom",IsCorrection),
 
             };
 
