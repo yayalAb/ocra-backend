@@ -49,7 +49,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
             }
             catch (Exception exp)
             {
-                response.BadRequest("Unable to delete the specified correction Request.");
+                response.BadRequest("You Can not delete this Request It Is Approved");
             }
             return response;
         }
