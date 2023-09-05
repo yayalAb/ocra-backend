@@ -134,9 +134,9 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         };
 
                         await _transactionService.CreateTransaction(NewTranscation);
-                        await _notificationService.CreateNotification(CorrectionRequest.Id, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
-                                           _WorkflowService.GetReceiverGroupId(Enum.GetName<NotificationType>(NotificationType.change)!, (int)CorrectionRequest.Request.NextStep), CorrectionRequest.RequestId,
-                                         userId);
+                        // await _notificationService.CreateNotification(CorrectionRequest.Id, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
+                        //                    _WorkflowService.GetReceiverGroupId(Enum.GetName<NotificationType>(NotificationType.change)!, (int)CorrectionRequest.Request.NextStep), CorrectionRequest.RequestId,
+                        //                  userId,events.EventRegisteredAddressId);
                         await transaction.CommitAsync();
 
                         return response;
