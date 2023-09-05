@@ -134,9 +134,19 @@ namespace AppDiv.CRVS.Application.Service
    public (string?,string?) stringAddress(FormatedAddressDto? address)
         {  // address?.CountryOr, address?.RegionOr,
            // address?.CountryAm, address?.RegionAm,
-            string addressAm = string.Join("/",address?.ZoneAm,address?.WoredaAm,address?.KebeleAm);
+           string addressAm;
+           string addressOr;
+           if(string.IsNullOrEmpty(address.RegionAm)&& string.IsNullOrEmpty(address.RegionOr)){
 
-            string addressOr = string.Join("/", address?.ZoneOr,address?.WoredaOr,address?.KebeleOr);
+                addressAm =address?.CountryAm;
+
+                addressOr =  address?.CountryOr;
+           }else{
+
+                addressAm = string.Join("/",address?.ZoneAm,address?.WoredaAm,address?.KebeleAm);
+
+                addressOr = string.Join("/", address?.ZoneOr,address?.WoredaOr,address?.KebeleOr);
+           }
 
             addressAm = Regex.Replace(addressAm, "/+", "/").TrimEnd('/');
 
