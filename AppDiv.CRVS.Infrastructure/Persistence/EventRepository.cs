@@ -72,11 +72,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
                                             )
                                         )
-);
-            //             var res3 =   await _elasticClient.SearchAsync<PersonDtoElastic>(s => s
-            //                                         .Query(q => q.
-            //                                         )
-            // );
+                                );
+
             if (!res2.IsValid)
             {
                 var error = res2.OriginalException?.Message;
@@ -88,7 +85,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private Task<Event?> BirthIncludes(IQueryable<Event> birth)
         {
             return birth.Include(e => e.BirthEvent)
-                            .Include(m => m.EventOwener)
                             .Include(e => e.BirthEvent.BirthPlace)
                             .Include(e => e.BirthEvent.TypeOfBirthLookup)
                             .Include(e => e.BirthEvent.BirthNotification)
@@ -142,9 +138,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             var eventType = this.GetAll().Where(e => e.Id == id).Select(e => e.EventType).FirstOrDefault();
             var e = this.GetAll().Where(e => e.Id == id)
-                                .Include(m => m.EventAddress)
                                 .Include(m => m.EventOwener)
-                                .Include(m => m.EventOwener.SexLookup)
                                 .Include(m => m.PaymentExamption)
                                 .Include(d => d.CivilRegOfficer);
             // var n =
