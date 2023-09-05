@@ -33,8 +33,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
         public async Task<BaseResponse> Handle(DeleteCorrectionRequestCommad request, CancellationToken cancellationToken)
         {
             var response = new BaseResponse();
-            try
-            {  
+            // try
+            // {  
                 foreach(Guid id in request.Ids){
                 var correctionRequest= _correctionRequestRepository.GetAll()
                 .Include(x=>x.Request).Where(x=>x.Id==id).FirstOrDefault();
@@ -46,11 +46,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
                 await _correctionRequestRepository.SaveChangesAsync(cancellationToken);
                 response.Deleted("Correction Request");
 
-            }
-            catch (Exception exp)
-            {
-                response.BadRequest("Unable to delete the specified correction Request. b/c It Is Approved");
-            }
+            // }
+            // catch (Exception exp)
+            // {
+            //     response.BadRequest("Unable to delete the specified correction Request. b/c It Is Approved");
+            // }
             return response;
         }
     }
