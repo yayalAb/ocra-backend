@@ -1,14 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Exceptions;
-using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
-using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
-using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
-using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
-using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -79,11 +70,10 @@ namespace AppDiv.CRVS.Application.Service
                 throw new NotFoundException(ex.Message);
             }
 
-            if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change"
-             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication"
-             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "verfication"
-             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "reprint"
-             )
+            string? paymentType = requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower();
+            string [] validPaymetn = {"change","authentication","verfication","reprint"};
+
+            if (validPaymetn.Contains(paymentType))
             {
                 var workflow=new Workflow();
                 (bool, Guid) response=(false,Guid.Empty);
@@ -94,8 +84,6 @@ namespace AppDiv.CRVS.Application.Service
                 .Where(x => x.workflowName == requst.Request.RequestType).FirstOrDefault();
                  response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, true, cancellationToken);
                 }
-
-                
                 if (response.Item1 || workflow?.Steps?.FirstOrDefault() == null||requst.Request==null)
                 {
                     if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication" &&requst.Request != null)
