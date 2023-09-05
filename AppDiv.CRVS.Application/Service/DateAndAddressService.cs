@@ -136,6 +136,9 @@ namespace AppDiv.CRVS.Application.Service
            // address?.CountryAm, address?.RegionAm,
            string addressAm;
            string addressOr;
+           if(address==null){
+            return ("","");
+           }
            if(string.IsNullOrEmpty(address.RegionAm)&& string.IsNullOrEmpty(address.RegionOr)){
 
                 addressAm =address?.CountryAm;
@@ -146,11 +149,12 @@ namespace AppDiv.CRVS.Application.Service
                 addressAm = string.Join("/",address?.ZoneAm,address?.WoredaAm,address?.KebeleAm);
 
                 addressOr = string.Join("/", address?.ZoneOr,address?.WoredaOr,address?.KebeleOr);
+                addressAm = Regex.Replace(addressAm, "/+", "/").TrimEnd('/');
+
+               addressOr = Regex.Replace(addressOr, "/+", "/").TrimEnd('/');;
            }
 
-            addressAm = Regex.Replace(addressAm, "/+", "/").TrimEnd('/');
 
-            addressOr = Regex.Replace(addressOr, "/+", "/").TrimEnd('/');;
             
             return (addressAm,addressOr);
         }

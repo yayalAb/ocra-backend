@@ -63,7 +63,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             var BirthAddress=  _reportRepostory.ReturnAddress(BirthAddressId.ToString()).Result;
             JArray BirthAddressjsonObject = JArray.FromObject(BirthAddress);
             FormatedAddressDto BirthAddressResponse = BirthAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
-            (string? am, string? or)? BirthStringAddress = dateAndAddressService.stringAddress(BirthAddressResponse);
+           (string? am, string? or)? BirthStringAddress=("","");
+            if(BirthAddressResponse!=null){
+              BirthStringAddress = dateAndAddressService.stringAddress(BirthAddressResponse);
+            }
             bool BirthisCityAdmin=dateAndAddressService.IsCityAdmin(BirthAddressId);
             person.BirthCountryOr = BirthAddressResponse?.CountryOr;
             person.BirthCountryAm = BirthAddressResponse?.CountryAm;
@@ -140,6 +143,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return person;
          }
           public static  Person GetEventPerson(Person? person,PersonalInfo? personInfo,IReportRepostory _reportRepostory){
+                if(string.IsNullOrEmpty(personInfo.Id.ToString())){
+                    return new Person();
+                }
                 var personalInfo=  _reportRepostory.ReturnPerson(personInfo.Id.ToString()).Result;
                 JArray jsonObject = JArray.FromObject(personalInfo);
                 PersonalInfoDtoPero personResponse = jsonObject.ToObject<List<PersonalInfoDtoPero>>().FirstOrDefault();

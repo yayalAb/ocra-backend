@@ -301,7 +301,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
    public async Task<object> ReturnPerson(string Id)
         {
             var sql = $"CALL Person_procedure ('{Id}')";
-            Console.WriteLine("Person_procedure : {0}",sql);
             var result = new List<object>();
             var viewReader = await ConnectDatabase(sql);
             while (viewReader.Item1.Read())
