@@ -126,6 +126,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                            .Include(a => a.Event.MarriageEvent)
                            .Include(a => a.Event.EventOwener).ThenInclude(o => o.ResidentAddress)
                            .Include(a => a.Event.EventAddress)
+                           .Include(a => a.Event.EventRegisteredAddress)
                            .Include(a => a.Event.CivilRegOfficer)
                            .FirstOrDefault();
                if (e.State == EntityState.Added && e.Certificate != null)
@@ -221,36 +222,28 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                                                         ? certificate.Event.AdoptionEvent.Id
                                                         : certificate.Event.EventType.ToLower() == "divorce"
                                                         ? certificate.Event.DivorceEvent.Id : null,
-                MotherFirstNameAm = certificate.Event.EventType.ToLower() == "birth"
-                                                         ? (certificate.Event.BirthEvent.Mother.FirstName == null ? null : certificate.Event.BirthEvent.Mother.FirstName.Value<string>("am"))
-                                                         : certificate.Event.EventType.ToLower() == "adoption" ?
-                                                         (certificate.Event.AdoptionEvent.AdoptiveMother.FirstName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.FirstName.Value<string>("am"))
-                                                         : null,
-                MotherFirstNameOr = certificate.Event.EventType.ToLower() == "birth"
-                                                         ? (certificate.Event.BirthEvent.Mother.FirstName == null ? null : certificate.Event.BirthEvent.Mother.FirstName.Value<string>("or"))
-                                                         : certificate.Event.EventType.ToLower() == "adoption" ?
-                                                         (certificate.Event.AdoptionEvent.AdoptiveMother.FirstName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.FirstName.Value<string>("or"))
-                                                         : null,
-                MotherMiddleNameAm = certificate.Event.EventType.ToLower() == "birth"
-                                                         ? (certificate.Event.BirthEvent.Mother.MiddleName == null ? null : certificate.Event.BirthEvent.Mother.MiddleName.Value<string>("am"))
-                                                         : certificate.Event.EventType.ToLower() == "adoption" ?
-                                                         (certificate.Event.AdoptionEvent.AdoptiveMother.MiddleName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("am"))
-                                                         : null,
-                MotherMiddleNameOr = certificate.Event.EventType.ToLower() == "birth"
-                                                         ? (certificate.Event.BirthEvent.Mother.MiddleName == null ? null : certificate.Event.BirthEvent.Mother.MiddleName.Value<string>("or"))
-                                                         : certificate.Event.EventType.ToLower() == "adoption" ?
-                                                         (certificate.Event.AdoptionEvent.AdoptiveMother.MiddleName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("or"))
-                                                         : null,
-                MotherLastNameAm = certificate.Event.EventType.ToLower() == "birth"
-                                                         ? (certificate.Event.BirthEvent.Mother.LastName == null ? null : certificate.Event.BirthEvent.Mother.LastName.Value<string>("am"))
-                                                         : certificate.Event.EventType.ToLower() == "adoption" ?
-                                                         (certificate.Event.AdoptionEvent.AdoptiveMother.LastName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("am"))
-                                                         : null,
-                MotherLastNameOr = certificate.Event.EventType.ToLower() == "birth"
-                                                         ? (certificate.Event.BirthEvent.Mother.LastName == null ? null : certificate.Event.BirthEvent.Mother.LastName.Value<string>("or"))
-                                                         : certificate.Event.EventType.ToLower() == "adoption" ?
-                                                         (certificate.Event.AdoptionEvent.AdoptiveMother.LastName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("or"))
-                                                         : null,
+                MotherFullNameAm = certificate.Event.EventType.ToLower() == "birth"
+                                                        ?
+                                                        (certificate.Event.BirthEvent.Mother?.FirstName == null ? null : certificate.Event.BirthEvent.Mother.FirstName.Value<string>("am"))
+                                                        + " " + (certificate.Event.BirthEvent.Mother?.MiddleName == null ? null : certificate.Event.BirthEvent.Mother.MiddleName.Value<string>("am"))
+                                                        + " " + (certificate.Event.BirthEvent.Mother?.LastName == null ? null : certificate.Event.BirthEvent.Mother.LastName.Value<string>("am"))
+                                : certificate.Event.EventType.ToLower() == "adoption"
+                                                        ?
+                                                        (certificate.Event.AdoptionEvent.AdoptiveMother?.FirstName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.FirstName.Value<string>("am"))
+                                                        + " " + (certificate.Event.AdoptionEvent.AdoptiveMother?.MiddleName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("am"))
+                                                        + " " + (certificate.Event.AdoptionEvent.AdoptiveMother?.LastName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("am"))
+                                : null,
+                MotherFullNameOr = certificate.Event.EventType.ToLower() == "birth"
+                                                        ?
+                                                        (certificate.Event.BirthEvent.Mother?.FirstName == null ? null : certificate.Event.BirthEvent.Mother.FirstName.Value<string>("or"))
+                                                        + " " + (certificate.Event.BirthEvent.Mother?.MiddleName == null ? null : certificate.Event.BirthEvent.Mother.MiddleName.Value<string>("or"))
+                                                        + " " + (certificate.Event.BirthEvent.Mother?.LastName == null ? null : certificate.Event.BirthEvent.Mother.LastName.Value<string>("or"))
+                                : certificate.Event.EventType.ToLower() == "adoption"
+                                                        ?
+                                                        (certificate.Event.AdoptionEvent.AdoptiveMother?.FirstName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.FirstName.Value<string>("or"))
+                                                        + " " + (certificate.Event.AdoptionEvent.AdoptiveMother?.MiddleName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("or"))
+                                                        + " " + (certificate.Event.AdoptionEvent.AdoptiveMother?.LastName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("or"))
+                                : null,
                 CivilRegOfficerNameAm = certificate.Event?.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.FirstName == null ? " " : certificate.Event.CivilRegOfficer.FirstName.Value<string>("am")
                                                              + certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.MiddleName == null ? " " : certificate.Event.CivilRegOfficer.MiddleName.Value<string>("am")
                                                              + certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.LastName == null ? " " : certificate.Event.CivilRegOfficer.LastName.Value<string>("am"),
@@ -263,15 +256,17 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                 AddressAm = certificate.Event?.EventOwener?.ResidentAddress == null ? null : certificate.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
                 AddressOr = certificate.Event?.EventOwener?.ResidentAddress == null ? null : certificate.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
                 NationalId = certificate.Event?.EventOwener?.NationalId,
-                FirstNameOr = certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("or"),
-                FirstNameAm = certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("am"),
-                MiddleNameOr = certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("or"),
-                MiddleNameAm = certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("am"),
-                LastNameOr = certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("or"),
-                LastNameAm = certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("am"),
+                FullNameAm = certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("am")
+                                                        + " " + certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("am")
+                                                        + " " + certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("am"),
+                FullNameOr = certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("or")
+                                                        + " " + certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("or")
+                                                        + " " + certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("or"),
                 EventAddressAm = certificate.Event?.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("am"),
                 EventAddressOr = certificate.Event?.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("or"),
-                EventRegisteredAddressId = certificate.Event?.EventRegisteredAddressId,
+                EventRegisteredAddressId = certificate.Event?.EventRegisteredAddressId == null ? null : certificate.Event?.EventRegisteredAddressId.ToString(),
+                EventRegisteredAddressAm = certificate.Event.EventRegisteredAddress == null ? null : certificate.Event.EventRegisteredAddress.AddressName.Value<string>("am"),
+                EventRegisteredAddressOr = certificate.Event.EventRegisteredAddress == null ? null : certificate.Event.EventRegisteredAddress.AddressName.Value<string>("or"),
                 Status = certificate.Status
 
             };
