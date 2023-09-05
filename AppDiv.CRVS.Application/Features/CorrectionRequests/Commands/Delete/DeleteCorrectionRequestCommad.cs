@@ -21,9 +21,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
     public class DeleteCorrectionRequestCommadHandler : IRequestHandler<DeleteCorrectionRequestCommad, BaseResponse>
     {
         private readonly ICorrectionRequestRepostory _correctionRequestRepository;
-        public DeleteCorrectionRequestCommadHandler(ICorrectionRequestRepostory correctionRequestRepository)
+        private readonly IRequestRepostory _requestRepostory;
+        public DeleteCorrectionRequestCommadHandler(ICorrectionRequestRepostory correctionRequestRepository, IRequestRepostory requestRepostory)
         {
             _correctionRequestRepository = correctionRequestRepository;
+            _requestRepostory = requestRepostory;
         }
 
         public async Task<BaseResponse> Handle(DeleteCorrectionRequestCommad request, CancellationToken cancellationToken)
@@ -31,7 +33,9 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
             var response = new BaseResponse();
             try
             {   foreach(Guid id in request.Ids){
-                 await _correctionRequestRepository.DeleteAsync(id);
+                var correctionRequest=await _correctionRequestRepository.GetAsync(id);
+                await _requestRepostory.DeleteAsync(correctionRequest.RequestId);
+                await _correctionRequestRepository.DeleteAsync(id);
             }
                 
                 await _correctionRequestRepository.SaveChangesAsync(cancellationToken);
