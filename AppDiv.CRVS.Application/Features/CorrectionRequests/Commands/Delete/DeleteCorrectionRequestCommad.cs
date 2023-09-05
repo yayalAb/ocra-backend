@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
             {   foreach(Guid id in request.Ids){
                 var correctionRequest= _correctionRequestRepository.GetAll()
                 .Include(x=>x.Request).Where(x=>x.Id==id).FirstOrDefault();
-                if(correctionRequest.Request.currentStep!=0){   
+                if(correctionRequest?.Request?.currentStep!=0){   
                     throw  new NotFoundException("You Can not delete this Request It Is Approved");
                 }
                 await _requestRepostory.DeleteAsync(correctionRequest.RequestId);
