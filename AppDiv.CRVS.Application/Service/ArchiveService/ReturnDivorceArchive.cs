@@ -39,9 +39,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         private CourtArchive GetCourt(CourtCase court)
         {
-            (string am, string or)? courtAddress = (court.Court.AddressId == Guid.Empty
-               || court.Court.Address == null) ? null :
-               _dateAndAddressService.addressFormat(court.Court.AddressId);
+            if (court is null) return new CourtArchive();
+            (string am, string or)? courtAddress = (court?.Court?.AddressId == Guid.Empty
+               || court?.Court?.Address == null) ? null :
+               _dateAndAddressService.addressFormat(court?.Court?.AddressId);
             return new CourtArchive
             {
                 CourtNameOr = court?.Court?.Name?.Value<string>("or"),
@@ -62,8 +63,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private DivorceInfo GetEventInfo(Event divorce)
         {
             DivorceInfo divorceInfo = CustomMapper.Mapper.Map<DivorceInfo>(ReturnPerson.GetEventInfo(divorce, _dateAndAddressService,_reportRepostory));
-            // marriageInfo.MarriageAddressOr = divorce.MarriageEvent.MarriageAddress.Value?.Value<string>("or");
-            // marriageInfo.MarriageAddressAm = divorce.MarriageEvent.MarriageAddress.Value?.Value<string>("am");
+            (string am, string or)? marriageAddress = (divorce?.EventAddressId == Guid.Empty
+               || divorce?.EventAddress == null) ? null :
+               _dateAndAddressService.addressFormat(divorce?.EventAddressId);
+            divorceInfo.MarriageAddressOr = marriageAddress?.or;
+            divorceInfo.MarriageAddressAm = marriageAddress?.am;
 
             divorceInfo.MarriageMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).month, "or")?.month;
             divorceInfo.MarriageMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).month, "Am")?.month;

@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Service
         public JObject GetContent(JArray? content)
         {
             JObject oldData = new();
+            if (content is null) return oldData;
             foreach (var (columnName, originalValue, newValue) in
                             from change in content
                             let changeObject = (JObject)change
@@ -52,9 +53,22 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         result[key] = _auditlog.GetAll().OrderByDescending(a => a.AuditDate).FirstOrDefault(a => a.TablePk == value.ToString())?.AuditDataJson?.Value<JObject>("ColumnValues");
                     }
+                    
                 }
             }
             return ConvertStringToObject(result);
+        }
+        public JObject GetAuditArchive(JObject content)
+        {
+            var result = GetNestedElements(content);
+            foreach (var property in result.Properties().ToList())
+            {
+                if (property.Value.Type == JTokenType.Object)
+                {
+                    result[property.Name] = GetNestedElements((JObject)property.Value);
+                }
+            }
+            return result;
         }
 
         public static JObject Filter(JObject single)

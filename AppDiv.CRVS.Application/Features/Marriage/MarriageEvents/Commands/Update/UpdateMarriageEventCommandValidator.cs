@@ -254,7 +254,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         private bool BeUniqueApplicationId(Guid? marriageApplicationId)
         {
-            return _marriageEventRepo.GetAllQueryableAsync().Where(m => m.ApplicationId == marriageApplicationId).Any();
+            return _marriageEventRepo.GetAllQueryableAsync().AsNoTracking().Where(m => m.ApplicationId == marriageApplicationId).Any();
         }
 
         private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
@@ -284,7 +284,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
 
         private async Task<bool> Be15DaysAfterMarriageApplicationDateAsync(string marriageRegDateEt, UpdateMarriageEventCommand marriageEvent)
         {
-            var application = await _marriageApplicationRepo.GetAsync(marriageEvent.ApplicationId!);
+            var application = await _marriageApplicationRepo.GetAll()
+                                        .AsNoTracking()
+                                        .Where(ma => ma.Id == marriageEvent.ApplicationId)
+                                        .FirstOrDefaultAsync();
             var converted = new CustomDateConverter(marriageRegDateEt).gorgorianDate;
 
 

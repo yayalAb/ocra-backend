@@ -66,6 +66,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         private RegistrarArchive GetRegistrar(Registrar reg, bool IsCoorection=false)
         {
+            if (reg is null) return new RegistrarArchive();
             RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService,_reportRepostory));
             regInfo.RelationShipOr = reg?.RelationshipLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(reg?.RelationshipLookupId);
             regInfo.RelationShipAm = reg?.RelationshipLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(reg?.RelationshipLookupId);
@@ -73,6 +74,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         }
         private DeceasedPerson GetDeceased(PersonalInfo deceased, bool IsCorrection)
         {
+            if(deceased is null) return new DeceasedPerson();
             DeceasedPerson deceasedInfo = CustomMapper.Mapper.Map<DeceasedPerson>(ReturnPerson.GetPerson(deceased, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection));
             deceasedInfo.TitileAm = deceased?.TitleLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(deceased?.TitleLookupId);
             deceasedInfo.TitileOr = deceased?.TitleLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(deceased?.TitleLookupId);

@@ -12,5 +12,6 @@ namespace AppDiv.CRVS.Application.Interfaces
         JObject GetContent(JArray? content);
         JObject GetNestedElements(JObject? content);
         JArray GetAllChanges(JArray content, DateTime auditDate, string entityType);
+        JObject GetAuditArchive(JObject content);
     }
 }
