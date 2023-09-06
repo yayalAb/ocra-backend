@@ -147,18 +147,24 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             try
             {
                 entity.Event.PaymentExamption = await HelperService.UpdatePaymentExamption(entity.Event, _dbContext,paymentRequestService,cancellationToken);
-                entity.Event.EventOwener.MiddleName = entity.Father.FirstName;
-                entity.Event.EventOwener.LastName = entity.Father.MiddleName;
+                entity.Event.EventOwener.MiddleName = entity.Father?.FirstName;
+                entity.Event.EventOwener.LastName = entity.Father?.MiddleName;
+                if(entity.Father!=null){
+
                 entity.Father.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
                                                 .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
                                                     || EF.Functions.Like(l.ValueStr, "%Dhiira%")
                                                     || EF.Functions.Like(l.ValueStr, "%Male%"))
                                                 .Select(l => l.Id).FirstOrDefault();
+                }
+                if(entity.Mother!=null){
+                    
                 entity.Mother.SexLookupId = _dbContext.Lookups.Where(l => l.Key == "sex")
                                         .Where(l => EF.Functions.Like(l.ValueStr, "%ሴት%")
                                             || EF.Functions.Like(l.ValueStr, "%Dubara%")
                                             || EF.Functions.Like(l.ValueStr, "%Female%"))
                                         .Select(l => l.Id).FirstOrDefault();
+                }
                 // if (!string.IsNullOrEmpty(entity.Event.EventOwener?.Id.ToString()) && entity.Event.EventOwener?.Id != Guid.Empty)
                 // {
                 //     PersonalInfo? selectedperson = _dbContext.PersonalInfos.FirstOrDefault(p => p.Id == entity.Event.EventOwener.Id);

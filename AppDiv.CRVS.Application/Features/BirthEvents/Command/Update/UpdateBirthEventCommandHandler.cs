@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 {
@@ -78,13 +79,13 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             birthEvent.Event.EventType = "Birth";
                             birthEvent.Event.IsPaid = SelectedEvent.IsPaid;
                             birthEvent.Event.IsVerified = SelectedEvent.IsVerified;
-                            birthEvent.Event.EventRegisteredAddressId = SelectedEvent.EventRegisteredAddressId;
+                            birthEvent.Event.EventRegisteredAddressId = SelectedEvent?.EventRegisteredAddressId;
                             birthEvent.Event.HasPendingDocumentApproval = SelectedEvent.HasPendingDocumentApproval;
                             birthEvent.Event.IsOfflineReg = SelectedEvent.IsOfflineReg;
                             if (birthEvent.Father != null)
                             {
-                                birthEvent.Event.EventOwener.MiddleName = birthEvent.Father.FirstName;
-                                birthEvent.Event.EventOwener.LastName = birthEvent.Father.MiddleName;
+                                birthEvent.Event.EventOwener.MiddleName = birthEvent.Father?.FirstName;
+                                birthEvent.Event.EventOwener.LastName = birthEvent.Father?.MiddleName;
                             }
                             if (request.Event.InformantType == "guardian" && ValidationService.HaveGuardianSupportingDoc(request.Event.EventSupportingDocuments, _lookupRepository))
                             {
@@ -94,8 +95,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             // person ids
                             var personIds = new PersonIdObj
                             {
-                                MotherId = birthEvent.Mother != null ? birthEvent.Mother.Id : birthEvent.MotherId,
-                                FatherId = birthEvent.Father != null ? birthEvent.Father.Id : birthEvent.FatherId,
+                                MotherId = birthEvent.Mother != null ? birthEvent?.Mother?.Id : birthEvent?.MotherId,
+                                FatherId = birthEvent.Father != null ? birthEvent?.Father?.Id : birthEvent?.FatherId,
                                 ChildId = birthEvent.Event.EventOwener != null ? birthEvent.Event.EventOwener.Id : birthEvent.Event.EventOwenerId,
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null ? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
