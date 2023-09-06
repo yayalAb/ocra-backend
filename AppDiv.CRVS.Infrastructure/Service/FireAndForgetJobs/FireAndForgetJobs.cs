@@ -244,24 +244,24 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                                                         + " " + (certificate.Event.AdoptionEvent.AdoptiveMother?.MiddleName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("or"))
                                                         + " " + (certificate.Event.AdoptionEvent.AdoptiveMother?.LastName == null ? null : certificate.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("or"))
                                 : null,
-                CivilRegOfficerNameAm = certificate.Event?.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.FirstName == null ? " " : certificate.Event.CivilRegOfficer.FirstName.Value<string>("am")
-                                                             + certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.MiddleName == null ? " " : certificate.Event.CivilRegOfficer.MiddleName.Value<string>("am")
-                                                             + certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.LastName == null ? " " : certificate.Event.CivilRegOfficer.LastName.Value<string>("am"),
-                CivilRegOfficerNameOr = certificate.Event?.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.FirstName == null ? " " : certificate.Event.CivilRegOfficer.FirstName.Value<string>("or")
-                                                             + certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.MiddleName == null ? " " : certificate.Event.CivilRegOfficer.MiddleName.Value<string>("or")
-                                                             + certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.LastName == null ? " " : certificate.Event.CivilRegOfficer.LastName.Value<string>("or"),
+                CivilRegOfficerNameAm = (certificate.Event?.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.FirstName == null ? " " : certificate.Event.CivilRegOfficer.FirstName.Value<string>("am"))
+                                                             + " " + (certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.MiddleName == null ? " " : certificate.Event.CivilRegOfficer.MiddleName.Value<string>("am"))
+                                                             + " " + (certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.LastName == null ? " " : certificate.Event.CivilRegOfficer.LastName.Value<string>("am")),
+                CivilRegOfficerNameOr = (certificate.Event?.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.FirstName == null ? " " : certificate.Event.CivilRegOfficer.FirstName.Value<string>("or"))
+                                                             + " " + (certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.MiddleName == null ? " " : certificate.Event.CivilRegOfficer.MiddleName.Value<string>("or"))
+                                                             + " " + (certificate.Event.CivilRegOfficer == null || certificate.Event.CivilRegOfficer.LastName == null ? " " : certificate.Event.CivilRegOfficer.LastName.Value<string>("or")),
                 CertificateId = certificate.Event?.CertificateId,
                 CertificateSerialNumber = certificate.CertificateSerialNumber,
                 ContentStr = certificate.ContentStr,
                 AddressAm = certificate.Event?.EventOwener?.ResidentAddress == null ? null : certificate.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
                 AddressOr = certificate.Event?.EventOwener?.ResidentAddress == null ? null : certificate.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
                 NationalId = certificate.Event?.EventOwener?.NationalId,
-                FullNameAm = certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("am")
-                                                        + " " + certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("am")
-                                                        + " " + certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("am"),
-                FullNameOr = certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("or")
-                                                        + " " + certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("or")
-                                                        + " " + certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("or"),
+                FullNameAm = (certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("am"))
+                                                        + " " + (certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("am"))
+                                                        + " " + (certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("am")),
+                FullNameOr = (certificate.Event?.EventOwener?.FirstName == null ? null : certificate.Event.EventOwener.FirstName.Value<string>("or"))
+                                                        + " " + (certificate.Event?.EventOwener?.MiddleName == null ? null : certificate.Event.EventOwener.MiddleName.Value<string>("or"))
+                                                        + " " + (certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("or")),
                 EventAddressAm = certificate.Event?.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("am"),
                 EventAddressOr = certificate.Event?.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("or"),
                 EventRegisteredAddressId = certificate.Event?.EventRegisteredAddressId == null ? null : certificate.Event?.EventRegisteredAddressId.ToString(),
