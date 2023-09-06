@@ -174,8 +174,8 @@ namespace AppDiv.CRVS.Application.Service
                     _requestRepostory.SaveChanges();
                     var NewTranscation = new TransactionRequestDTO
                     {
-                        CurrentStep = 0,
-                        ApprovalStatus = true,
+                        CurrentStep = request.currentStep,
+                        ApprovalStatus = IsApprove,
                         WorkflowId = request.WorkflowId,
                         RequestId = request.Id,
                         CivilRegOfficerId = userId,
