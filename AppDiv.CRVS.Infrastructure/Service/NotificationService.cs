@@ -19,14 +19,14 @@ namespace AppDiv.CRVS.Infrastructure.Service
     {
         private readonly CRVSDbContext _context;
         private readonly IHubContext<MessageHub, IMessageHubClient> _messageHub;
-        private readonly IReportRepostory _reportRepostory;
+        private readonly IDateAndAddressService _addressService;
         private readonly IUserResolverService _userResolverService;
 
-        public NotificationService(CRVSDbContext context, IHubContext<MessageHub, IMessageHubClient> messageHub, IReportRepostory reportRepostory, IUserResolverService userResolverService)
+        public NotificationService(CRVSDbContext context, IHubContext<MessageHub, IMessageHubClient> messageHub, IDateAndAddressService addressService, IUserResolverService userResolverService)
         {
             _context = context;
             _messageHub = messageHub;
-            _reportRepostory = reportRepostory;
+            _addressService = addressService;
             _userResolverService = userResolverService;
         }
         public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId)
@@ -83,21 +83,18 @@ namespace AppDiv.CRVS.Infrastructure.Service
             if (eventRegisteredAddressId != null)
             {
 
-                Console.WriteLine("kjdsfkfksdkfjklsdjfkdskfkdjjsdjf");
-                var Address = _reportRepostory.ReturnAddressIds(eventRegisteredAddressId.ToString()).Result;
-                JArray jsonObject = JArray.FromObject(Address);
-                AddressResponseDTOE? addressResponse = jsonObject.ToObject<List<AddressResponseDTOE>>()?.FirstOrDefault();
+                AddressResponseDTOE addressResponse =await _addressService.FormatedAddressLoop(eventRegisteredAddressId);
                 // send notification to the group 
                 if (addressResponse?.Country != null)
-                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Country).NewNotification(resNotification);
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse?.Country).NewNotification(resNotification);
                 if (addressResponse?.Region != null)
-                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Region).NewNotification(resNotification);
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse?.Region).NewNotification(resNotification);
                 if (addressResponse?.Zone != null)
-                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Zone).NewNotification(resNotification);
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse?.Zone).NewNotification(resNotification);
                 if (addressResponse?.Woreda != null)
-                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Woreda).NewNotification(resNotification);
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse?.Woreda).NewNotification(resNotification);
                 if (addressResponse?.Kebele != null)
-                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Kebele).NewNotification(resNotification);
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse?.Kebele).NewNotification(resNotification);
             }
 
 
@@ -107,21 +104,18 @@ namespace AppDiv.CRVS.Infrastructure.Service
             var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
             if (notification != null && notification.EventRegisteredAddressId != null)
             {
-                   var Address = _reportRepostory.ReturnAddressIds(notification.EventRegisteredAddressId.ToString()).Result;
-                JArray jsonObject = JArray.FromObject(Address);
-                AddressResponseDTOE? addressResponse = jsonObject.ToObject<List<AddressResponseDTOE>>()?.FirstOrDefault();
-
+                var addressResponse =await _addressService.FormatedAddressLoop(notification.EventRegisteredAddressId);
                 // send remove notification  to the group 
                 if (addressResponse?.Country != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Country).RemoveNotification(notificationId);
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Country).RemoveNotification(notificationId);
                 if (addressResponse?.Region != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Region).RemoveNotification(notificationId);
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Region).RemoveNotification(notificationId);
                 if (addressResponse?.Zone != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Zone).RemoveNotification(notificationId);
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Zone).RemoveNotification(notificationId);
                 if (addressResponse?.Woreda != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Woreda).RemoveNotification(notificationId);
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Woreda).RemoveNotification(notificationId);
                 if (addressResponse?.Kebele != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Kebele).RemoveNotification(notificationId);
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Kebele).RemoveNotification(notificationId);
             }
         }
 
