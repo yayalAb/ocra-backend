@@ -82,7 +82,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 throw new NotFoundException("Invalid user working address please login first");
             }
             string? workingAddressIdStr = workingAddressId.ToString();
-            var response = await  _elasticClient.SearchAsync<CertificateIndex>(s => s
+            var response = await _elasticClient.SearchAsync<CertificateIndex>(s => s
                     .Index("certificate")
                     .Source(src => src
                     .Includes(i => i
@@ -120,8 +120,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             ,
                             mu => mu.QueryString(d => d.Query('*' + workingAddressIdStr + '*'))
 
-                            // mu =>mu.Term(t => t.Field(f => f.EventRegisteredAddressId).Value(workingAddressIdStr))
-                        
+                        // mu =>mu.Term(t => t.Field(f => f.EventRegisteredAddressId).Value(workingAddressIdStr))
+
 
                         ))
                         &&
@@ -230,27 +230,27 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                                             + " " + (c.Event.AdoptionEvent.AdoptiveMother.MiddleName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.MiddleName.Value<string>("or"))
                                                             + " " + (c.Event.AdoptionEvent.AdoptiveMother.LastName == null ? null : c.Event.AdoptionEvent.AdoptiveMother.LastName.Value<string>("or"))
                                                            : null,
-                                         CivilRegOfficerNameAm = c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("am")
-                                                               + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("am")
-                                                               + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("am"),
-                                         CivilRegOfficerNameOr = c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("or")
-                                                               + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("or")
-                                                               + c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("or"),
+                                         CivilRegOfficerNameAm = (c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("am"))
+                                                             + " " + (c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("am"))
+                                                             + " " + (c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("am")),
+                                         CivilRegOfficerNameOr = (c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.FirstName == null ? " " : c.Event.CivilRegOfficer.FirstName.Value<string>("or"))
+                                                             + " " + (c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.MiddleName == null ? " " : c.Event.CivilRegOfficer.MiddleName.Value<string>("or"))
+                                                             + " " + (c.Event.CivilRegOfficer == null || c.Event.CivilRegOfficer.LastName == null ? " " : c.Event.CivilRegOfficer.LastName.Value<string>("or")),
                                          CertificateId = c.Event.CertificateId,
                                          CertificateSerialNumber = c.CertificateSerialNumber,
                                          ContentStr = c.ContentStr,
                                          AddressAm = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("am"),
                                          AddressOr = c.Event.EventOwener.ResidentAddress == null ? null : c.Event.EventOwener.ResidentAddress.AddressName.Value<string>("or"),
                                          NationalId = c.Event.EventOwener.NationalId,
-                                         FullNameAm = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am")
+                                         FullNameAm = (c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("am"))
                                                         + " " + (c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("am"))
                                                         + " " + (c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("am")),
-                                         FullNameOr = c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or")
+                                         FullNameOr = (c.Event.EventOwener.FirstName == null ? null : c.Event.EventOwener.FirstName.Value<string>("or"))
                                                         + " " + (c.Event.EventOwener.MiddleName == null ? null : c.Event.EventOwener.MiddleName.Value<string>("or"))
                                                         + " " + (c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or")),
                                          EventAddressAm = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("am"),
                                          EventAddressOr = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("or"),
-                                         EventRegisteredAddressId = c.Event.EventRegisteredAddressId == null ? null:c.Event.EventRegisteredAddressId.ToString(),
+                                         EventRegisteredAddressId = c.Event.EventRegisteredAddressId == null ? null : c.Event.EventRegisteredAddressId.ToString(),
                                          EventRegisteredAddressAm = c.Event.EventRegisteredAddress == null ? null : c.Event.EventRegisteredAddress.AddressName.Value<string>("am"),
                                          EventRegisteredAddressOr = c.Event.EventRegisteredAddress == null ? null : c.Event.EventRegisteredAddress.AddressName.Value<string>("or"),
                                          Status = c.Status

@@ -114,6 +114,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 jObject["PropertyName"] = columnName;
                 properties.Add(columnName);
             }
+            reader.Item2.Close();
             return properties;
         }
 
@@ -212,11 +213,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public async Task<(DbDataReader, DbConnection)> ConnectDatabase(string sql)
         {
             var connectionString = _DbContext.Database.GetDbConnection();
+
+
+
             connectionString.Open();
+
             using var command = connectionString.CreateCommand();
             command.CommandText = sql;
             command.CommandType = CommandType.Text;
             return (await command.ExecuteReaderAsync(), connectionString);
+
 
         }
         public (string, string) ReturnAgrgateString(List<Aggregate>? aggregates)
@@ -298,7 +304,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return output;
         }
 
-   public async Task<object> ReturnPerson(string Id)
+        public async Task<object> ReturnPerson(string Id)
         {
             var sql = $"CALL Person_procedure ('{Id}')";
             var result = new List<object>();
@@ -308,27 +314,27 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 result.Add(new
                 {
                     FirstNameAm = viewReader.Item1["FirstNameAm"],
-                    FirstNameOr=viewReader.Item1["FirstNameOr"],
-                    MiddleNameAm =viewReader.Item1["MiddleNameAm"],
-                    MiddleNameOr=viewReader.Item1["MiddleNameOr"],
-                    LastNameAm=viewReader.Item1["LastNameAm"],
-                    LastNameOr=viewReader.Item1["LastNameOr"],
-                    BirthDateEt=viewReader.Item1["BirthDateEt"],
-                    GenderAm=viewReader.Item1["GenderAm"],
-                    GenderOr=viewReader.Item1["GenderOr"],
-                    NationalId=viewReader.Item1["NationalId"],
-                    NationalityOr=viewReader.Item1["NationalityOr"],
-                    NationalityAm=viewReader.Item1["NationalityAm"],
-                    MarriageStatusOr=viewReader.Item1["MarriageStatusOr"],
-                    MarriageStatusAm=viewReader.Item1["MarriageStatusAm"],
-                    ReligionOr=viewReader.Item1["ReligionOr"],
-                    ReligionAm=viewReader.Item1["ReligionAm"],
-                    NationOr=viewReader.Item1["NationOr"],
-                    NationAm=viewReader.Item1["NationAm"],
-                    EducationalStatusOr=viewReader.Item1["EducationalStatusOr"],
-                    EducationalStatusAm=viewReader.Item1["EducationalStatusAm"],
-                    TypeOfWorkOr=viewReader.Item1["TypeOfWorkOr"],
-                    TypeOfWorkAm=viewReader.Item1["TypeOfWorkAm"]
+                    FirstNameOr = viewReader.Item1["FirstNameOr"],
+                    MiddleNameAm = viewReader.Item1["MiddleNameAm"],
+                    MiddleNameOr = viewReader.Item1["MiddleNameOr"],
+                    LastNameAm = viewReader.Item1["LastNameAm"],
+                    LastNameOr = viewReader.Item1["LastNameOr"],
+                    BirthDateEt = viewReader.Item1["BirthDateEt"],
+                    GenderAm = viewReader.Item1["GenderAm"],
+                    GenderOr = viewReader.Item1["GenderOr"],
+                    NationalId = viewReader.Item1["NationalId"],
+                    NationalityOr = viewReader.Item1["NationalityOr"],
+                    NationalityAm = viewReader.Item1["NationalityAm"],
+                    MarriageStatusOr = viewReader.Item1["MarriageStatusOr"],
+                    MarriageStatusAm = viewReader.Item1["MarriageStatusAm"],
+                    ReligionOr = viewReader.Item1["ReligionOr"],
+                    ReligionAm = viewReader.Item1["ReligionAm"],
+                    NationOr = viewReader.Item1["NationOr"],
+                    NationAm = viewReader.Item1["NationAm"],
+                    EducationalStatusOr = viewReader.Item1["EducationalStatusOr"],
+                    EducationalStatusAm = viewReader.Item1["EducationalStatusAm"],
+                    TypeOfWorkOr = viewReader.Item1["TypeOfWorkOr"],
+                    TypeOfWorkAm = viewReader.Item1["TypeOfWorkAm"]
                 });
             }
             await viewReader.Item2.CloseAsync();
@@ -337,7 +343,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return result;
         }
 
-public async Task<object> ReturnAddress(string Id)
+        public async Task<object> ReturnAddress(string Id)
         {
             var sql = $"CALL Address_procedure ('{Id}')";
             var result = new List<object>();
@@ -346,16 +352,16 @@ public async Task<object> ReturnAddress(string Id)
             {
                 result.Add(new
                 {
-                        CountryOr= viewReader.Item1["CountryOr"],
-                        CountryAm= viewReader.Item1["CountryAm"],
-                        RegionOr= viewReader.Item1["RegionOr"],
-                        RegionAm= viewReader.Item1["RegionAm"],
-                        ZoneOr= viewReader.Item1["ZoneOr"],
-                        ZoneAm= viewReader.Item1["ZoneAm"],
-                        WoredaOr= viewReader.Item1["WoredaOr"],
-                        WoredaAm = viewReader.Item1["WoredaAm"],
-                        KebeleOr= viewReader.Item1["KebeleOr"],
-                        KebeleAm= viewReader.Item1["KebeleAm"]
+                    CountryOr = viewReader.Item1["CountryOr"],
+                    CountryAm = viewReader.Item1["CountryAm"],
+                    RegionOr = viewReader.Item1["RegionOr"],
+                    RegionAm = viewReader.Item1["RegionAm"],
+                    ZoneOr = viewReader.Item1["ZoneOr"],
+                    ZoneAm = viewReader.Item1["ZoneAm"],
+                    WoredaOr = viewReader.Item1["WoredaOr"],
+                    WoredaAm = viewReader.Item1["WoredaAm"],
+                    KebeleOr = viewReader.Item1["KebeleOr"],
+                    KebeleAm = viewReader.Item1["KebeleAm"]
                 });
             }
             await viewReader.Item2.CloseAsync();
@@ -373,11 +379,11 @@ public async Task<object> ReturnAddress(string Id)
             {
                 result.Add(new
                 {
-                        Country= viewReader.Item1["CountryId"],
-                        Region= viewReader.Item1["RegionId"],
-                        Zone= viewReader.Item1["ZoneId"],
-                        Woreda= viewReader.Item1["WoredaId"],
-                        Kebele= viewReader.Item1["KebeleId"],
+                    Country = viewReader.Item1["CountryId"],
+                    Region = viewReader.Item1["RegionId"],
+                    Zone = viewReader.Item1["ZoneId"],
+                    Woreda = viewReader.Item1["WoredaId"],
+                    Kebele = viewReader.Item1["KebeleId"],
                 });
             }
             await viewReader.Item2.CloseAsync();
@@ -386,7 +392,7 @@ public async Task<object> ReturnAddress(string Id)
             return result;
         }
 
-        
+
 
 
 
