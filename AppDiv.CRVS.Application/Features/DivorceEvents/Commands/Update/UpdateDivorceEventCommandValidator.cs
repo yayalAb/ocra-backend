@@ -163,7 +163,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
 
         private async Task<bool> BeFoundInCourtTable(Guid? courtId, CancellationToken token)
         {
-            return courtId != null && (await _courtRepo.GetAsync(courtId)) != null;
+            return courtId != null &&  _courtRepo.GetAll().Where(c => c.Id == courtId).Any();
         }
 
         private async Task<bool> BeFoundInAddressTable(object addressId, CancellationToken token)
@@ -174,11 +174,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
 
         private bool BeFoundInPersonalInfoTable(Guid? guid)
         {
-            return _personalInfoRepo.GetById((Guid)guid) != null;
+            return _personalInfoRepo.GetAll().Where(p => p.Id == guid).Any();
         }
         private bool BeFoundInPersonalInfoTable(Guid guid)
         {
-            return _personalInfoRepo.GetById(guid) != null;
+            return _personalInfoRepo.GetAll().Where(p => p.Id == guid).Any();
         }
 
         private async Task<bool> BeFoundInLookupTable(object lookupId)
