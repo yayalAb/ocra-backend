@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 using AppDiv.CRVS.Infrastructure.Hub;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
+using Newtonsoft.Json.Linq;
 // using AppDiv.CRVS.Utility.Hub;
 
 namespace AppDiv.CRVS.Infrastructure.Service
@@ -17,13 +19,17 @@ namespace AppDiv.CRVS.Infrastructure.Service
     {
         private readonly CRVSDbContext _context;
         private readonly IHubContext<MessageHub, IMessageHubClient> _messageHub;
+        private readonly IReportRepostory _reportRepostory;
+        private readonly IUserResolverService _userResolverService;
 
-        public NotificationService(CRVSDbContext context, IHubContext<MessageHub, IMessageHubClient> messageHub)
+        public NotificationService(CRVSDbContext context, IHubContext<MessageHub, IMessageHubClient> messageHub, IReportRepostory reportRepostory, IUserResolverService userResolverService)
         {
             _context = context;
             _messageHub = messageHub;
+            _reportRepostory = reportRepostory;
+            _userResolverService = userResolverService;
         }
-        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId)
+        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId)
         {
 
             var notification = new Notification
@@ -33,8 +39,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 MessageStr = message,
                 RequestId = requestId,
                 GroupId = groupId,
-                SenderId = senderId
+                SenderId = senderId,
+                EventRegisteredAddressId = eventRegisteredAddressId
             };
+
             await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
 
@@ -72,9 +80,49 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
                 throw new NotFoundException("notification could not be created");
             }
-            // send notification to the group
-            await _messageHub.Clients.Group(resNotification.GroupId.ToString()).NewNotification(resNotification);
+            if (eventRegisteredAddressId != null)
+            {
 
+                Console.WriteLine("kjdsfkfksdkfjklsdjfkdskfkdjjsdjf");
+                var Address = _reportRepostory.ReturnAddressIds(eventRegisteredAddressId.ToString()).Result;
+                JArray jsonObject = JArray.FromObject(Address);
+                AddressResponseDTOE? addressResponse = jsonObject.ToObject<List<AddressResponseDTOE>>()?.FirstOrDefault();
+                // send notification to the group 
+                if (addressResponse?.Country != null)
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Country).NewNotification(resNotification);
+                if (addressResponse?.Region != null)
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Region).NewNotification(resNotification);
+                if (addressResponse?.Zone != null)
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Zone).NewNotification(resNotification);
+                if (addressResponse?.Woreda != null)
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Woreda).NewNotification(resNotification);
+                if (addressResponse?.Kebele != null)
+                    await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse.Kebele).NewNotification(resNotification);
+            }
+
+
+        }
+        public async Task RemoveNotificationForSocket(Guid notificationId)
+        {
+            var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
+            if (notification != null && notification.EventRegisteredAddressId != null)
+            {
+                   var Address = _reportRepostory.ReturnAddressIds(notification.EventRegisteredAddressId.ToString()).Result;
+                JArray jsonObject = JArray.FromObject(Address);
+                AddressResponseDTOE? addressResponse = jsonObject.ToObject<List<AddressResponseDTOE>>()?.FirstOrDefault();
+
+                // send remove notification  to the group 
+                if (addressResponse?.Country != null)
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Country).RemoveNotification(notificationId);
+                if (addressResponse?.Region != null)
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Region).RemoveNotification(notificationId);
+                if (addressResponse?.Zone != null)
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Zone).RemoveNotification(notificationId);
+                if (addressResponse?.Woreda != null)
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Woreda).RemoveNotification(notificationId);
+                if (addressResponse?.Kebele != null)
+                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Kebele).RemoveNotification(notificationId);
+            }
         }
 
         public async Task updateSeenStatus(Guid notificationId)
@@ -107,13 +155,21 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
         public async Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds)
         {
-
-            return await _context.Notifications
+            var workingAddressId = _userResolverService.GetWorkingAddressId();
+            if (workingAddressId == Guid.Empty) throw new NotFoundException("Invalid working address please login first");
+            var query1 = _context.Notifications
                     .Include(n => n.Sender)
                         .ThenInclude(s => s.PersonalInfo)
                     .Include(n => n.Request.CorrectionRequest)
                     .Include(n => n.Request.AuthenticationRequest)
+                    .Include(n => n.EventRegisteredAddress)
                     .Where(n => groupIds.Contains(n.GroupId) && !n.Seen)
+                    .Where(n =>
+                     (n.EventRegisteredAddress.AdminLevel >= 4 && n.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == workingAddressId)
+                     || (n.EventRegisteredAddress.AdminLevel >= 3 && n.EventRegisteredAddress.ParentAddress.ParentAddress.Id == workingAddressId)
+                     || (n.EventRegisteredAddress.AdminLevel >= 2 && n.EventRegisteredAddress.ParentAddress.Id == workingAddressId)
+                     || (n.EventRegisteredAddress.Id == workingAddressId));
+            return await query1
                     .Select(n => new NotificationResponseDTO
                     {
                         Id = n.Id,
@@ -138,6 +194,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     })
                     .ToListAsync();
         }
+
 
 
     }

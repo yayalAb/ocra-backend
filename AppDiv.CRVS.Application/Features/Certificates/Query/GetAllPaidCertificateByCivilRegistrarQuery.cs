@@ -81,7 +81,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                   EventRegDate = e.EventRegDateEt,
                                   IsCertified = e.IsCertified,
                                   HasPendingDocumentApproval = e.HasPendingDocumentApproval,
-                                  IsReprint = e.ReprintWaiting,
+                                  IsReprint = (e.ReprintWaiting&& (bool)e.IsOfflineReg),
                               })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }

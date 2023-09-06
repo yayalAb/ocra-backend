@@ -1,17 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Exceptions;
-using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
-using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
-using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
-using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
-using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -78,25 +70,23 @@ namespace AppDiv.CRVS.Application.Service
                 throw new NotFoundException(ex.Message);
             }
 
-            if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change"
-             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication"
-             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "verfication"
-             || requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "reprint"
-             )
+            string? paymentType = requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower();
+            string [] validPaymetn = {"change","authentication","verfication","reprint"};
+
+            if (validPaymetn.Contains(paymentType))
             {
-                if (requst.Request == null)
+                var workflow=new Workflow();
+                (bool, Guid) response=(false,Guid.Empty);
+                if (requst.Request != null)
                 {
-                    throw new NotFoundException("Request Does't Found");
-                }
-                var workflow = _WorkflowRepo.GetAll()
+                workflow = _WorkflowRepo.GetAll()
                 .Include(x => x.Steps)
                 .Where(x => x.workflowName == requst.Request.RequestType).FirstOrDefault();
-
-                var response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, true, cancellationToken);
-                
-                if (response.Item1 || workflow?.Steps?.FirstOrDefault() == null)
+                 response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, true, cancellationToken);
+                }
+                if (response.Item1 || workflow?.Steps?.FirstOrDefault() == null||requst.Request==null)
                 {
-                    if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication")
+                    if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "authentication" &&requst.Request != null)
                     {
                         var AuthRequ = _AuthenticationRequestRepostory.GetAll()
                         .Where(x => x.RequestId == requst.Request.Id).FirstOrDefault();
@@ -105,7 +95,7 @@ namespace AppDiv.CRVS.Application.Service
                         certificate.AuthenticationAt=DateTime.Now;
                         _CertificateRepository.Update(certificate);
                     }
-                    else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change")
+                    else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "change" && requst.Request != null)
                     {
                         var modifiedEvent = _CorrectionRequestRepostory.GetAll()
                                         .Include(x => x.Event)
@@ -114,17 +104,16 @@ namespace AppDiv.CRVS.Application.Service
                         var CorrectionRequestResponse = CustomMapper.Mapper.Map<AddCorrectionRequest>(modifiedEvent);
                         await _contentValidator.ValidateAsync(modifiedEvent.Event.EventType, CorrectionRequestResponse.Content, false);
                     }
-                    else if (requst?.Request?.RequestType == "verfication")
+                    else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "verfication" &&requst.Request != null)
                     {
                         var selectedEvent = await _eventRepostory.GetAsync(requst.EventId);
                         selectedEvent.IsVerified = true;
                         await _eventRepostory.UpdateAsync(selectedEvent, x => x.Id);
                     }
-                     else if (requst?.Request?.RequestType == "reprint")
+                     else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "reprint")
                     {
                          await _paymentRepository.UpdateEventPaymentStatus(paymentRequestId);
                     }
-                    // await _eventRepostory.SaveChangesAsync(cancellationToken);
                 }
             }
             else if (requst?.PaymentRate?.PaymentTypeLookup?.Value?.Value<string>("en")?.ToLower() == "certificategeneration")

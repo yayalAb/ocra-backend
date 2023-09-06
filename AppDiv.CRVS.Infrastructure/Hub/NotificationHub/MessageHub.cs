@@ -18,7 +18,7 @@ public class MessageHub : Hub<IMessageHubClient>
     private readonly IUserResolverService _userResolverService;
     private readonly CRVSDbContext _dbContext;
 
-    public MessageHub(ILogger<MessageHub> logger, IUserResolverService userResolverService, CRVSDbContext dbContext )
+    public MessageHub(ILogger<MessageHub> logger, IUserResolverService userResolverService, CRVSDbContext dbContext)
     {
         this.logger = logger;
         _userResolverService = userResolverService;
@@ -41,13 +41,17 @@ public class MessageHub : Hub<IMessageHubClient>
     public override async Task<Task> OnConnectedAsync()
     {
         var userGroupIds = GetUserGroups();
-        foreach (var groupId in userGroupIds)
+        var workingAddressId = _userResolverService.GetWorkingAddressId();
+        if (workingAddressId != Guid.Empty)
         {
-            await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString());
+            foreach (var groupId in userGroupIds)
+            {
+                await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString() + "_" + workingAddressId.ToString());
+            Console.WriteLine($"Notification:conected to group ----- { groupId.ToString() + "_" + workingAddressId.ToString()}");
+            }
+
+            logger.LogCritical("connected");
         }
-    
-        logger.LogCritical("connected");
-          Console.WriteLine($"Notification:----- {_userResolverService.GetUserId()}");    
 
 
         return base.OnConnectedAsync();

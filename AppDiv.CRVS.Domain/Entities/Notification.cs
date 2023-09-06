@@ -15,10 +15,12 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? RequestId {get; set;}
         public Guid GroupId { get; set; }
         public string SenderId { get; set; }
+        public Guid? EventRegisteredAddressId {get;set;}
 
         public virtual UserGroup UserGroup { get; set; }
         public virtual Request Request { get; set; }
         public virtual ApplicationUser Sender { get; set; }
+        public virtual Address EventRegisteredAddress {get; set; }
 
     }
 }

@@ -61,14 +61,12 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .Include(x => x.AuthenticationRequest)
                  .ThenInclude(x => x.Certificate)
                  .Include(x => x.CorrectionRequest)
-                 .Include(x => x.PaymentExamptionRequest)
-                 .Include(x => x.PaymentRequest)
-                 .Include(x=>x.PaymentRequest)
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
               .Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
-               &&(wf.PaymentRequest==null)));
+               &&(wf.PaymentRequest==null)&&(wf.CorrectionRequest!=null||wf.AuthenticationRequest!=null)));
+
              if (userGroup.Address.AdminLevel == 1)
             {
                 RequestList=RequestList.Where(e => (e.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == userGroup.AddressId)
