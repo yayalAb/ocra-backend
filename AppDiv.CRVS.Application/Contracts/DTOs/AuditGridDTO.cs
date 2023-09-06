@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Domain.Entities.Audit;
 using AppDiv.CRVS.Domain.Repositories;
@@ -19,6 +20,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? AuditDate { get; set; }
         public Guid? AddressId { get; set; }
         public JObject? Content { get; set; }
+        public string? IpAddress { get; set; }
         public AuditGridDTO(AuditLog? audit, bool withContent, IUserRepository user)
         {
             var convertor = new CustomDateConverter();
@@ -29,6 +31,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
             AuditedEntity = audit?.EntityType;
             AddressId = audit?.AddressId;
             Action = audit?.Action;
+            IpAddress = audit?.AuditDataJson?.Value<string>("IpAddress");
             Content = withContent ? audit?.AuditDataJson?.Value<JObject>("ColumnValues") : null;
         }
     }

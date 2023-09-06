@@ -17,6 +17,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? AuditUserId { get; set; }
         public string TablePk { get; set; }
         public JObject AuditDataJson { get; set; }
+        public string IpAddress { get; set; }
 
 
 
