@@ -89,10 +89,10 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Crea
                     Remark = "payment Exemption Request" //TODO:remark or reason from user
                 };
 
-                await _transactionService.CreateTransaction(NewTranscation);
-                await _notificationService.CreateNotification(PaymentExamptionRequest.Request.Id, PaymentExamptionRequest.Request.RequestType, "payment Exemption Request",
-                                   _WorkflowService.GetReceiverGroupId("payment exemption", (int)PaymentExamptionRequest.Request.NextStep), PaymentExamptionRequest.Request.Id,
-                                 userId);
+                // await _transactionService.CreateTransaction(NewTranscation);
+                // await _notificationService.CreateNotification(PaymentExamptionRequest.Request.Id, PaymentExamptionRequest.Request.RequestType, "payment Exemption Request",
+                //                    _WorkflowService.GetReceiverGroupId("payment exemption", (int)PaymentExamptionRequest.Request.NextStep), PaymentExamptionRequest.Request.Id,
+                //                  userId);
 
 
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);

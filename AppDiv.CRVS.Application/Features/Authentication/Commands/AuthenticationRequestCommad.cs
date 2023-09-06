@@ -70,21 +70,19 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
             };
             await _AuthenticationRepository.InsertAsync(AuthenticationRequest, cancellationToken);
 
+            var certificate = _certificateRepository.GetAll()
+            .Include(x => x.Event)
+            .Include(x => x.Event.EventOwener)
+            .Where(x => x.Id == request.CertificateId).FirstOrDefault() ?? throw new NotFoundException("Certificate With the given Id Does't Found");
+           
+            //if workflow is not set for authentication
             if (Workflow == null || Workflow?.Steps.Count == 0)
             {
-                var certificate = _certificateRepository.GetAll()
-                .Include(x => x.Event)
-                .Include(x => x.Event.EventOwener)
-                .Where(x => x.Id == request.CertificateId).FirstOrDefault();
-
-                if (certificate == null)
-                {
-                    throw new NotFoundException("Certificate With the given Id Does't Found");
-                }                
+                // check if it has payment (create payment request if it has)
                 (float amount, string code) respons = await _eventPayment.CreatePaymentRequest(certificate.Event.EventType, certificate.Event, "authentication",
                     AuthenticationRequest?.Request?.Id, false, false, cancellationToken);
 
-                if (true)
+                if (respons.amount == 0)//has no payment authenticate certificate
                 {
                     certificate.AuthenticationStatus = true;
                     certificate.AuthenticationAt = DateTime.Now;
@@ -102,6 +100,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 }
 
             }
+            //has workflow (send authentication request)
             var next = _WorkflowService.GetNextStep("authentication", 0, true);
             AuthenticationRequest.Request.NextStep=next;
             AuthenticationRequest.Request.WorkflowId=Workflow.Id;
@@ -126,14 +125,13 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 Remark = request.Remark
             };
             await _transactionService.CreateTransaction(NewTranscation);
-            var eventId = _certificateRepository.GetAll()
-                           .Where(x => x.Id == request.CertificateId).Select(c => c.EventId).FirstOrDefault();
-            if (eventId != null)
+            
+            if (certificate.Event != null)
             {
-
-                await _notificationService.CreateNotification(eventId, "Authentication", request.Remark,
+               Console.WriteLine($"&&&&&&&&&&&&&&&&&&&&&&&&&&7-------- {certificate.Event.EventRegisteredAddressId}");
+                await _notificationService.CreateNotification(certificate.EventId, "Authentication", request.Remark,
                                    _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
-                                 userId);
+                                 userId,certificate.Event.EventRegisteredAddressId);
             }
 
             response.Message = "Authentication Request Sent Sucessfully";

@@ -186,22 +186,30 @@ namespace AppDiv.CRVS.Application.Service
                     await _TransactionService.CreateTransaction(NewTranscation);
 
                     //send notification
-                    Guid? notificationObjId = request.CorrectionRequest != null
-                                           ? request.CorrectionRequest.Id
-                                           : request.AuthenticationRequest != null
-                                           ?
-                                           _CertificateRepository
+                    Guid? eventId =  request.CorrectionRequest != null
+                                            ? _EventRepository.GetAll().Where(e => e.Id == request.CorrectionRequest.EventId)
+                                                                .Select(e =>e.EventRegisteredAddressId).FirstOrDefault()
+                                            : request.AuthenticationRequest != null 
+                                            ?   _CertificateRepository
                                            .GetAll()
                                            .Where(c => c.Id == request.AuthenticationRequest.CertificateId)
                                            .Select(c => c.EventId).FirstOrDefault()
                                            : request.VerficationRequest.EventId;
 
+                    Guid? notificationObjId = request.CorrectionRequest != null
+                                           ? request.CorrectionRequest.Id
+                                           : eventId;
+
+                    Guid? eventRegisteredId = _EventRepository.GetAll()
+                                                .Where(e => e.Id == eventId)
+                                                .Select(e => e.EventRegisteredAddressId)
+                                                .FirstOrDefault();
 
                     if (notificationObjId != null)
                     {
                         await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
                                         this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                      userId);
+                                      userId, eventRegisteredId);
 
                     }
 
@@ -209,6 +217,7 @@ namespace AppDiv.CRVS.Application.Service
                     if (request.Notification?.Id != null)
                     {
                         await notificationService.updateSeenStatus(request.Notification.Id);
+                        await notificationService.RemoveNotificationForSocket(request.Notification.Id);
 
                     }
 
