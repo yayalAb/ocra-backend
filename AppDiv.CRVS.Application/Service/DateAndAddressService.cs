@@ -127,6 +127,43 @@ namespace AppDiv.CRVS.Application.Service
              }                      
             return false;
         }
+  public async Task<AddressResponseDTOE>? FormatedAddressLoop(Guid? id)
+        {
+            if (id == null || id == Guid.Empty)
+            {
+                return null;
+            }
+            string addessSt = "";
+            var Address = _AddresslookupRepository.GetAll()
+                                   .Where(a => a.Id == id).FirstOrDefault();
+            if (Address == null)
+            {
+                return null;
+            }
+            addessSt = Address?.Id.ToString();
+            while (Address?.ParentAddressId != null)
+            {
+                Address = _AddresslookupRepository.GetAll()
+                                    .Where(a => a.Id == Address.ParentAddressId).FirstOrDefault();
+                addessSt = Address?.Id.ToString() + "/" + addessSt;
+
+            };
+            if (string.IsNullOrEmpty(addessSt))
+            {
+                return null;
+            }
+            string[] address = addessSt.Split("/");
+
+            var FormatAddress = new AddressResponseDTOE
+            {
+                Country = address.ElementAtOrDefault(0),
+                Region = address.ElementAtOrDefault(1),
+                Zone = address.ElementAtOrDefault(2),
+                Woreda = address.ElementAtOrDefault(3),
+                Kebele = address.ElementAtOrDefault(4),
+            };
+            return FormatAddress;
+        }
 
 
 
