@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task updateSeenStatus(Guid notificationId);
         public Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds);
         public Task updateSeenStatusByRequest(Guid requestId, Guid groupId, string type);
-        public  Task RemoveNotificationForSocket(Guid notificationId);
+        public  Task RemoveNotification(Guid notificationId);
 
 
     }
