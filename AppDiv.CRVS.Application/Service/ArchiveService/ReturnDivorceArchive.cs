@@ -70,6 +70,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             JArray EventAddressjsonObject = JArray.FromObject(EventAddress);
             FormatedAddressDto EventAddressResponse = EventAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
             (string am, string or)? marriageAddress = _dateAndAddressService.stringAddress(EventAddressResponse);
+           
             divorceInfo.MarriageAddressOr = marriageAddress?.or;
             divorceInfo.MarriageAddressAm = marriageAddress?.am;
             divorceInfo.MarriageMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).month, "or")?.month;
