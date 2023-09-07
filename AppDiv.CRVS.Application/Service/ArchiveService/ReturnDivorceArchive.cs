@@ -12,6 +12,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AutoMapper.QueryableExtensions;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -39,10 +40,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         private CourtArchive GetCourt(CourtCase court)
         {
+            var EventAddress=  _reportRepostory.ReturnAddress(court?.Court?.AddressId.ToString()).Result;
+            JArray EventAddressjsonObject = JArray.FromObject(EventAddress);
+            FormatedAddressDto EventAddressResponse = EventAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
+            
             if (court is null) return new CourtArchive();
-            (string am, string or)? courtAddress = (court?.Court?.AddressId == Guid.Empty
-               || court?.Court?.Address == null) ? null :
-               _dateAndAddressService.addressFormat(court?.Court?.AddressId);
+            (string am, string or)? courtAddress = _dateAndAddressService.stringAddress(EventAddressResponse);
             return new CourtArchive
             {
                 CourtNameOr = court?.Court?.Name?.Value<string>("or"),
@@ -63,12 +66,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private DivorceInfo GetEventInfo(Event divorce)
         {
             DivorceInfo divorceInfo = CustomMapper.Mapper.Map<DivorceInfo>(ReturnPerson.GetEventInfo(divorce, _dateAndAddressService,_reportRepostory));
-            (string am, string or)? marriageAddress = (divorce?.EventAddressId == Guid.Empty
-               || divorce?.EventAddress == null) ? null :
-               _dateAndAddressService.addressFormat(divorce?.EventAddressId);
+            var EventAddress=  _reportRepostory.ReturnAddress(divorce?.EventAddressId.ToString()).Result;
+            JArray EventAddressjsonObject = JArray.FromObject(EventAddress);
+            FormatedAddressDto EventAddressResponse = EventAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
+            (string am, string or)? marriageAddress = _dateAndAddressService.stringAddress(EventAddressResponse);
             divorceInfo.MarriageAddressOr = marriageAddress?.or;
             divorceInfo.MarriageAddressAm = marriageAddress?.am;
-
             divorceInfo.MarriageMonthOr = new EthiopicDateTime(convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).month, "or")?.month;
             divorceInfo.MarriageMonthAm = new EthiopicDateTime(convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).month, "Am")?.month;
             divorceInfo.MarriageDay = convertor.getSplitted(divorce?.DivorceEvent?.DateOfMarriageEt).day.ToString("D2");
@@ -79,9 +82,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             divorceInfo.DivorceReasonOr = divorce?.DivorceEvent?.DivorceReason?.Value<string>("or");
             divorceInfo.DivorceReasonAm = divorce?.DivorceEvent?.DivorceReason?.Value<string>("am");
-
-
-
             divorceInfo.NumberOfChildren = divorce?.DivorceEvent?.NumberOfChildren;
 
             return divorceInfo;
