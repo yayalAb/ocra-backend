@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface ILoginHistoryRepository : IBaseRepository<LoginHistory>
     {
-
+        IQueryable<LoginHistory> GetAllGrid();
     }
 }
 
