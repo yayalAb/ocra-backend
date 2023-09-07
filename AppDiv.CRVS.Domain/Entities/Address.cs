@@ -1,6 +1,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Domain.Entities.Audit;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -49,6 +50,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<PaymentExamptionRequest> ExamptionRequestAddresses { get; set; }
         public virtual ICollection<CertificateSerialRange> CertificateSerialRanges { get; set; }
         public virtual ICollection<WorkHistory> WorkHistories { get; set; }
+        public virtual ICollection<AuditLog> AuditLogs { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
         [NotMapped]
         public string? AddressNameLang

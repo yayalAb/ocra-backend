@@ -25,7 +25,7 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
         }
         public async Task<PaginatedList<SystemAuditGridDTO>> Handle(SystemAuditQuery request, CancellationToken cancellationToken)
         {
-            var audit = _auditLogRepository.GetAll().Where(a => a.EntityType == "Lookup" || a.EntityType == "Address" || a.EntityType == "Setting");
+            var audit = _auditLogRepository.GetAllGrid().Where(a => a.EntityType == "Lookup" || a.EntityType == "Address" || a.EntityType == "Setting");
             
             return await audit.OrderByDescending(a => a.AuditDate).Select(a => new SystemAuditGridDTO(a, _userRepository))
                         .PaginateAsync<SystemAuditGridDTO,SystemAuditGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);

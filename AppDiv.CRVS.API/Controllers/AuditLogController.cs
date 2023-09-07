@@ -23,6 +23,12 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return Ok(await Mediator.Send(query));
         }
+
+        [HttpGet("WorkHistory")]
+        public async Task<IActionResult> WorkHistoryAudit([FromQuery] WorkHistoryAuditQuery query)
+        {
+            return Ok(await Mediator.Send(query));
+        }
         [HttpGet("SystemAudit/Detail")]
         public async Task<IActionResult> SystemAuditDetail([FromQuery] SystemAuditDetailQuery query)
         {

@@ -9,6 +9,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IAuditLogRepository : IBaseRepository<AuditLog>
     {
-
+        IQueryable<AuditLog> GetAllGrid();
     }
 }

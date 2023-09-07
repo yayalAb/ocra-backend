@@ -20,6 +20,8 @@ namespace AppDiv.CRVS.Domain.Entities.Audit
         public Guid? AuditUserId { get; set; }
         public Guid? AddressId { get; set; }
         public string TablePk { get; set; }
+
+        public Address Address { get; set; }
         [NotMapped]
         public JObject AuditDataJson
         {
