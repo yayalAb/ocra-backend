@@ -85,7 +85,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                              var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             // request.Event.EventAddressId = request?.CourtCase?.Court?.AddressId!;
-                            if(request?.CourtCase?.CourtId!=null||request?.CourtCase?.CourtId!=Guid.Empty){
+                            if(request?.CourtCase?.CourtId!=null&&request?.CourtCase?.CourtId!=Guid.Empty){
                                 request.CourtCase.Court=null;
                             }
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
