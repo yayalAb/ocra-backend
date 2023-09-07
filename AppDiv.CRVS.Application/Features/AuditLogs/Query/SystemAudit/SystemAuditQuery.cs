@@ -8,7 +8,7 @@ using MediatR;
 
 namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
 {
-    public record SystemAuditQuery : IRequest<PaginatedList<AuditGridDTO>>
+    public record SystemAuditQuery : IRequest<PaginatedList<SystemAuditGridDTO>>
     {
         // public string? Id { get; set; }
         // public Guid? AddressId { get; set; }
@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
         // public string? StartDate { get; set; }
         // public string? EndDate { get; set; }
         // public string? EntityType { get; set; }
-        public bool WithContent { get; set; } = false;
+        // public bool WithContent { get; set; } = false;
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public string? SearchString { get; set; }

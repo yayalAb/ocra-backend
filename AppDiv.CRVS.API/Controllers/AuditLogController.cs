@@ -21,7 +21,6 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet("SystemAudit")]
         public async Task<IActionResult> SystemAudit([FromQuery] SystemAuditQuery query)
         {
-
             return Ok(await Mediator.Send(query));
         }
         [HttpGet("SystemAudit/Detail")]
