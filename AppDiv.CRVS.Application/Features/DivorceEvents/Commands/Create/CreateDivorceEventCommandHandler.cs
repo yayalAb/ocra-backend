@@ -85,6 +85,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                              var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             // request.Event.EventAddressId = request?.CourtCase?.Court?.AddressId!;
+                            if(request?.CourtCase?.CourtId!=null||request?.CourtCase?.CourtId!=Guid.Empty){
+                                request.CourtCase.Court=null;
+                            }
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
@@ -105,8 +108,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 
                             var personIds = new PersonIdObj
                             {
-                                WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife.Id : divorceEvent.DivorcedWifeId,
-                                HusbandId = divorceEvent.Event.EventOwener != null ? divorceEvent.Event.EventOwener.Id : divorceEvent.Event.EventOwenerId,
+                                WifeId = divorceEvent.DivorcedWife != null ? divorceEvent.DivorcedWife?.Id : divorceEvent.DivorcedWifeId,
+                                HusbandId = divorceEvent.Event.EventOwener != null ? divorceEvent.Event?.EventOwener?.Id : divorceEvent.Event.EventOwenerId,
                             };
                             // await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
 
