@@ -36,6 +36,12 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(await Mediator.Send(query));
         }
         
+        [HttpGet("EventAudit")]
+        public async Task<IActionResult> EventAudit([FromQuery] EventAuditQuery query)
+        {
+            return Ok(await Mediator.Send(query));
+        }
+        
         [HttpGet("SystemAudit/Detail")]
         public async Task<IActionResult> SystemAuditDetail([FromQuery] SystemAuditDetailQuery query)
         {

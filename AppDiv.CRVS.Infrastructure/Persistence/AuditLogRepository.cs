@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return _dbContext.AuditLogs
                         .AsNoTracking()
+                        .Include(a => a.AuditUser)
                         .Include(a => a.Address)
                         .ThenInclude(a => a.ParentAddress)
                         .ThenInclude(a => a.ParentAddress);

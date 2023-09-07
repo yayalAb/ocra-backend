@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Entities.Audit;
 using AppDiv.CRVS.Domain.Enums;
@@ -29,7 +30,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
             Id = audit?.AuditId;
             TablePkId = audit?.TablePk;
             AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
-            UserName = audit?.AuditUserId != Guid.Empty ? user.GetSingle(audit!.AuditUserId.ToString()!)?.UserName : string.Empty;
+            UserName = audit?.AuditUserId != string.Empty ? user.GetSingle(audit!.AuditUserId.ToString()!)?.UserName : string.Empty;
             AuditedEntity = audit?.EntityType;
             AddressId = audit?.AddressId;
             Action = audit?.Action;
@@ -54,7 +55,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
             Id = audit?.AuditId;
             TablePkId = audit?.TablePk;
             AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
-            UserName = audit?.AuditUserId != Guid.Empty ? user.GetSingle(audit!.AuditUserId.ToString()!)?.UserName : string.Empty;
+            UserName = audit?.AuditUserId != string.Empty ? user.GetSingle(audit!.AuditUserId.ToString()!)?.UserName : string.Empty;
             AuditedEntity = audit?.EntityType;
             Address = $"{audit?.Address?.ParentAddress?.ParentAddress?.AddressNameLang}/{audit?.Address?.ParentAddress?.AddressNameLang}/{audit?.Address?.AddressNameLang}".Trim('/');
             Action = audit?.Action;
@@ -110,5 +111,29 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
             Action = history?.EventType;
             IpAddress = history?.IpAddress;
             
+        }
+    }
+
+    public class EventAuditGridDTO
+    {
+        public Guid? Id { get; set; }
+        public string? TablePkId { get; set; }
+        public string? UserName { get; set; }
+        public string? Action { get; set; }
+        public string? AuditedEntity { get; set; }
+        public string? AuditDate { get; set; }
+        public string? Address { get; set; }
+        public string? CertificateId { get; set; }
+        public EventAuditGridDTO(AuditLog? audit, IEventRepository eventRepository)
+        {
+            var convertor = new CustomDateConverter();
+            Id = audit?.AuditId;
+            TablePkId = audit?.TablePk;
+            AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
+            UserName = audit?.AuditUser?.UserName;
+            AuditedEntity = audit?.EntityType;
+            Address = $"{audit?.Address?.ParentAddress?.ParentAddress?.AddressNameLang}/{audit?.Address?.ParentAddress?.AddressNameLang}/{audit?.Address?.AddressNameLang}".Trim('/');
+            Action = audit?.Action;
+            CertificateId = eventRepository.GetSingle(Guid.Parse(audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.Value<string>("EventId")!))?.CertificateId;
         }
     }
