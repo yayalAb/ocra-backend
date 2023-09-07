@@ -39,6 +39,10 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         }
         private DeathInfo GetEventInfo(Event death)
         {
+             var EventAddress=  _reportRepostory.ReturnAddress(death?.EventAddressId.ToString()).Result;
+            JArray EventAddressjsonObject = JArray.FromObject(EventAddress);
+            FormatedAddressDto EventAddressResponse = EventAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
+            bool isCityAdmin=_dateAndAddressService.IsCityAdmin(death?.EventAddressId);
             DeathInfo deathInfo = CustomMapper.Mapper.Map<DeathInfo>(ReturnPerson.GetEventInfo(death, _dateAndAddressService,_reportRepostory));
             deathInfo.BirthCertificateId = death?.DeathEventNavigation?.BirthCertificateId;
             deathInfo.PlaceOfFuneral = death?.DeathEventNavigation?.PlaceOfFuneral;
@@ -46,7 +50,18 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             deathInfo.DuringDeathOr = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupAm(death?.DeathEventNavigation?.DuringDeathId);
             deathInfo.FacilityTypeAm = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupOr(death?.DeathEventNavigation?.FacilityTypeLookupId);
             deathInfo.FacilityTypeOr = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupAm(death?.DeathEventNavigation?.FacilityTypeLookupId);
-           
+            deathInfo.EventCountryOr = EventAddressResponse?.CountryOr;
+            deathInfo.EventCountryAm = EventAddressResponse?.CountryAm;
+            deathInfo.EventRegionOr = EventAddressResponse?.RegionOr;
+            deathInfo.EventRegionAm = EventAddressResponse?.RegionAm;
+            deathInfo.EventZoneOr =!isCityAdmin?EventAddressResponse?.ZoneOr:null;
+            deathInfo.EventZoneAm =!isCityAdmin? EventAddressResponse?.ZoneAm:null;
+            deathInfo.EventSubcityOr =isCityAdmin?EventAddressResponse?.WoredaOr:null;
+            deathInfo.EventSubcityAm =isCityAdmin? EventAddressResponse?.WoredaAm:null;
+            deathInfo.EventWoredaOr = EventAddressResponse?.WoredaOr;
+            deathInfo.EventWoredaAm = EventAddressResponse?.WoredaAm;
+            deathInfo.EventKebeleOr = EventAddressResponse?.KebeleOr;
+            deathInfo.EventKebeleAm = EventAddressResponse?.KebeleAm;
             return deathInfo;
 
         }
