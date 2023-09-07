@@ -23,6 +23,25 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return Ok(await Mediator.Send(query));
         }
+
+        [HttpGet("WorkHistory")]
+        public async Task<IActionResult> WorkHistoryAudit([FromQuery] WorkHistoryAuditQuery query)
+        {
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpGet("LoginHistory")]
+        public async Task<IActionResult> LoginHistoryAudit([FromQuery] LoginAuditQuery query)
+        {
+            return Ok(await Mediator.Send(query));
+        }
+        
+        [HttpGet("EventAudit")]
+        public async Task<IActionResult> EventAudit([FromQuery] EventAuditQuery query)
+        {
+            return Ok(await Mediator.Send(query));
+        }
+        
         [HttpGet("SystemAudit/Detail")]
         public async Task<IActionResult> SystemAuditDetail([FromQuery] SystemAuditDetailQuery query)
         {

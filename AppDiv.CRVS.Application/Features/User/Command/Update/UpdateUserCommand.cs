@@ -45,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         private readonly IGroupRepository _groupRepository;
         private readonly IFileService _fileService;
         private readonly ILogger<UpdateUserCommandHandler> logger;
-        private readonly IWorkHistoryTracker _tracker;
+        private readonly IWorkHistoryTracker _workHistoryTracker;
         private readonly IBaseRepository<PersonalInfo> personBaseRepo;
 
         public UpdateUserCommandHandler(
@@ -53,13 +53,13 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             IGroupRepository groupRepository,
             IFileService fileService,
             ILogger<UpdateUserCommandHandler> logger,
-            IWorkHistoryTracker tracker,
+            IWorkHistoryTracker workHistoryTracker,
             IBaseRepository<PersonalInfo> personBaseRepo
             )
         {
             this._fileService = fileService;
             this.logger = logger;
-            this._tracker = tracker;
+            this._workHistoryTracker = workHistoryTracker;
             this.personBaseRepo = personBaseRepo;
             this._groupRepository = groupRepository;
             _identityService = identityService;
@@ -77,7 +77,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                         {
                             throw new BadRequestException("user Image is invalid base64String");
                         }
-                        await _tracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
+                        await _workHistoryTracker.TrackAsync(request.Id, request.AddressId, request.UserGroups, cancellationToken);
                         // var contact = new ContactInfo
                         // {
                         //     Id = request.PersonalInfo.ContactInfo.Id,

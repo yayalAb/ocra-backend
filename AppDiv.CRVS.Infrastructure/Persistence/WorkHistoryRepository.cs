@@ -29,5 +29,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(w => w.Address)
                             .AsQueryable();
         }
+        public IQueryable<WorkHistory> GetAllGrid()
+        {
+            return _dbContext.WorkHistories
+                            .AsNoTracking()
+                            .Include(w => w.UserGroups)
+                            .Include(w => w.User)
+                            .Include(w => w.Address)
+                                .ThenInclude(a => a.ParentAddress)
+                                .ThenInclude(a => a.ParentAddress)
+                            .AsQueryable();
+        }
     }
 }

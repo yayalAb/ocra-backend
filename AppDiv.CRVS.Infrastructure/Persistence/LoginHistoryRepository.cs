@@ -18,6 +18,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             _dbContext = dbContext;
         }
 
+        public IQueryable<LoginHistory> GetAllGrid()
+        {
+            return _dbContext.LoginHistorys
+                                .AsNoTracking()
+                                .Include(l => l.User)
+                                .ThenInclude(u => u.Address)
+                                .ThenInclude(a => a.ParentAddress)
+                                .ThenInclude(a => a.ParentAddress);
+        }
+
     }
 }
 

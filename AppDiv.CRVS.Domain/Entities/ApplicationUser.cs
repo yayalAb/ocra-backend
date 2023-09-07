@@ -1,5 +1,6 @@
 ﻿
 using AppDiv.CRVS.Domain.Entities;
+using AppDiv.CRVS.Domain.Entities.Audit;
 using Microsoft.AspNetCore.Identity;
 
 namespace AppDiv.CRVS.Domain
@@ -31,6 +32,7 @@ namespace AppDiv.CRVS.Domain
         public virtual ICollection<Notification> Notifications { get; set; }
         public virtual ICollection<Transaction> CivilRegOfficerTransactions { get; set; }
         public virtual ICollection<LoginHistory> LoginHistorys { get; set; }
+        public virtual ICollection<AuditLog> AuditLogs { get; set; }
         // public virtual ICollection<WorkHistory> WorkerHistories { get; set; }
 
         public virtual ICollection<Message> SentMessages {get; set; }

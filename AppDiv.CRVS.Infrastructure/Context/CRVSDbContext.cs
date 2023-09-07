@@ -155,16 +155,16 @@ namespace AppDiv.CRVS.Infrastructure
                     auditEntity.AuditData = JsonConvert.SerializeObject(auditedEntity, GetJsonSerializerSettings());
                     auditEntity.EntityType = auditedEntity.EntityType.Name;
                     auditEntity.AuditDate = DateTime.Now;
-                    auditEntity.AuditUserId = Guid.NewGuid();
+                    auditEntity.AuditUserId = string.Empty;
                     auditEntity.AddressId = Guid.NewGuid();
                     if (userResolverService != null)
                     {
                         var userId = userResolverService.GetUserId();
                         var workingAddressId = userResolverService.GetWorkingAddressId();
 
-                        auditEntity.AuditUserId = userId != null
-                                ? new Guid(userId)
-                                : Guid.Empty;
+                        auditEntity.AuditUserId = userId is not null
+                                ? userId
+                                : string.Empty;
                         auditEntity.AddressId = workingAddressId;
                     }
 

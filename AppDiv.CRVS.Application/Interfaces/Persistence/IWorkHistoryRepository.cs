@@ -12,5 +12,6 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         public DatabaseFacade Database { get; }
         IQueryable<WorkHistory> GetAll(string userId);
+        IQueryable<WorkHistory> GetAllGrid();
     }
 }
