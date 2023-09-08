@@ -163,12 +163,12 @@ namespace AppDiv.CRVS.Application.Service
                     }
                     request.currentStep = nextStep;
                     request.NextStep = this.GetNextStep(workflowType, nextStep, true);
-                    if (request.Notification != null)
-                    {
-                        request.Notification.MessageStr = Remark;
-                        request.Notification.GroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
-                        request.Notification.SenderId = userId;
-                    }
+                    // if (request.Notification != null)
+                    // {
+                    //     request.Notification.MessageStr = Remark;
+                    //     request.Notification.GroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
+                    //     request.Notification.SenderId = userId;
+                    // }
 
                     _requestRepostory.Update(request);
                     _requestRepostory.SaveChanges();
@@ -186,11 +186,11 @@ namespace AppDiv.CRVS.Application.Service
                     await _TransactionService.CreateTransaction(NewTranscation);
 
                     //send notification
-                    Guid? eventId =  request.CorrectionRequest != null
+                    Guid? eventId = request.CorrectionRequest != null
                                             ? _EventRepository.GetAll().Where(e => e.Id == request.CorrectionRequest.EventId)
-                                                                .Select(e =>e.EventRegisteredAddressId).FirstOrDefault()
-                                            : request.AuthenticationRequest != null 
-                                            ?   _CertificateRepository
+                                                                .Select(e => e.EventRegisteredAddressId).FirstOrDefault()
+                                            : request.AuthenticationRequest != null
+                                            ? _CertificateRepository
                                            .GetAll()
                                            .Where(c => c.Id == request.AuthenticationRequest.CertificateId)
                                            .Select(c => c.EventId).FirstOrDefault()
@@ -205,19 +205,27 @@ namespace AppDiv.CRVS.Application.Service
                                                 .Select(e => e.EventRegisteredAddressId)
                                                 .FirstOrDefault();
 
-                    if (notificationObjId != null)
+                    //update old notification from db and socket
+                    if (request.Notification?.Id != null)
                     {
-                        await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
-                                        this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                      userId, eventRegisteredId);
+                        await notificationService.RemoveNotification(request.Notification.Id);
 
                     }
 
-                    //update old notification seen status to true
-                    if (request.Notification?.Id != null)
+                    if (notificationObjId != null)
                     {
-                        await notificationService.updateSeenStatus(request.Notification.Id);
-                        await notificationService.RemoveNotificationForSocket(request.Notification.Id);
+                        //check if its not last step 
+                        if (request.NextStep != request.currentStep && request.NextStep != 0)
+                        {
+                            await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
+                                            this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
+                                          userId, eventRegisteredId);
+                        }
+                        //ie:final rejection or approval , send notification to the civilRegOfficer who created the request
+                        else if (request.NextStep == 0 || request.NextStep == request.currentStep)
+                        {
+
+                        }
 
                     }
 

@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             _DbContext = dbContext;
             _reportStor = reportStor;
         }
-        public async Task<BaseResponse> CreateReportAsync(string reportName, string query, string Description, string[]? Colums, string? ReportTitle, CancellationToken cancellationToken)
+        public async Task<BaseResponse> CreateReportAsync(string reportName, string query, string Description, string[]? Colums, string? ReportTitle, string columnsLang, CancellationToken cancellationToken)
         {
             var response = new BaseResponse();
             string sql = "";
@@ -45,6 +45,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             else
             {
                 reportName = this.SanitizeString(reportName);
+                Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx {0}",reportName);
                 query = RemoveSpecialChar(query);
                 sql = $" CREATE VIEW `{reportName}` AS {query}";
                 try
@@ -59,7 +60,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         Description = Description,
                         DefualtColumns = defualt,
                         CreatedAt = DateTime.Now,
-                        Query = query
+                        Query = query,
+                        columnsLang=columnsLang
                     };
                     await this.CreateReportTable(Report, cancellationToken);
                     response.Message = $"Created a report {reportName} successfully.";
@@ -282,7 +284,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public string SanitizeString(string StringToSanitize)
         {
             string output = "";
-            if (string.IsNullOrEmpty(StringToSanitize))
+            if (!string.IsNullOrEmpty(StringToSanitize))
             {
                 output = Regex.Replace(StringToSanitize, "[^a-zA-Z0-9_]", "");
 
@@ -294,9 +296,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public string RemoveSpecialChar(string StringToSanitize)
         {
             string output = "";
-            if (string.IsNullOrEmpty(StringToSanitize))
+            if (!string.IsNullOrEmpty(StringToSanitize))
             {
-                output = Regex.Replace(StringToSanitize, "[;--]", "");
+                output = Regex.Replace(StringToSanitize, "[;-]", "");
 
             }
 

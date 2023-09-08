@@ -41,7 +41,10 @@ public class MessageHub : Hub<IMessageHubClient>
     public override async Task<Task> OnConnectedAsync()
     {
         var userGroupIds = GetUserGroups();
-        var workingAddressId = _userResolverService.GetWorkingAddressId();
+        var workingAddressId = _userResolverService.GetWorkingAddressIdFromAccessTokenParam();
+        // Console.WriteLine($"*ugg^^^^^^^^^^^^^^^^^----{workingAddressId}");
+        Console.WriteLine($"*www^^^^^^^^^^^^^^^^^----{workingAddressId}");
+
         if (workingAddressId != Guid.Empty)
         {
             foreach (var groupId in userGroupIds)

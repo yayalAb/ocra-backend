@@ -7,6 +7,7 @@ using MediatR;
 using ApplicationException = AppDiv.CRVS.Application.Exceptions.ApplicationException;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Interfaces;
+using System.Text.Json;
 
 namespace AppDiv.CRVS.Application.Features.Report.Commads
 {
@@ -34,8 +35,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
             }
             if (CreateReportCommadResponse.Success)
             {
-
-                await _ReportRepository.CreateReportAsync(request.ReportName, request.Query, request?.Description, request?.DefualtColumns, request?.ReportTitle, cancellationToken);
+                string columnsLang=JsonSerializer.Serialize(request.ColumnsLang);
+                await _ReportRepository.CreateReportAsync(request.ReportName, request.Query, request?.Description, request?.DefualtColumns, request?.ReportTitle,columnsLang, cancellationToken);
                 CreateReportCommadResponse.Message = "Report created successfully";
 
             }

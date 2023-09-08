@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IReportRepostory
     {
-        public Task<BaseResponse> CreateReportAsync(string reportName, string query, string Description, string[]? Colums, string? ReportTitle, CancellationToken cancellationToken);
+        public Task<BaseResponse> CreateReportAsync(string reportName, string query, string Description, string[]? Colums, string? ReportTitle,string columnsLang, CancellationToken cancellationToken);
         public Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String? filters = "", List<Aggregate>? aggregates = null);
         public Task<JObject> GetReports();
         public Task<BaseResponse> UpdateReportQuery(string Viewname, string query);
