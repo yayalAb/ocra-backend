@@ -130,6 +130,8 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             {
                 var notification = await _requestRepostory.GetAll()
                                     .Include(r => r.Notification)
+                                    .ThenInclude(n => n.Sender)
+                                    .ThenInclude(s => s.PersonalInfo)
                                     .Where(r => r.Id == request.RequestId)
                                     .Select(r => r.Notification).FirstOrDefaultAsync(cancellationToken);
                 if (notification != null)
