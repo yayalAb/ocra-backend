@@ -12,6 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public JObject? OldData { get; set; }
         public JObject? NewData { get; set; }
         public int? CurrentStep { get; set; }
+        public NotificationData? NotificationData {get; set; }
 
 
     }

@@ -15,6 +15,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? RequestId {get; set;}
         public Guid GroupId { get; set; }
         public string SenderId { get; set; }
+        public string ApprovalType {get;set;}
         public Guid? EventRegisteredAddressId {get;set;}
 
         public virtual UserGroup UserGroup { get; set; }

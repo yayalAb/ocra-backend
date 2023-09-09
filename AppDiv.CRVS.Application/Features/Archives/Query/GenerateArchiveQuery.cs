@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs.Archive;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Application.Features.Archives.Query
 {
@@ -27,16 +28,21 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
     {
         public JObject Content { get; set; }
         public Guid? TemplateId { get; set; }
-         public bool? IsAuthenticated { get; set; } = false;
+        public bool? IsAuthenticated { get; set; } = false;
+        public NotificationData? NotificationData { get; set; }
 
     }
+
 
     // Customer GenerateCustomerQuery with Customer response
     public class GenerateArchiveQuery : IRequest<object>
     {
         public Guid Id { get; set; }
+        public Guid? RequestId { get; set; }
         public string? CertificateSerialNumber { get; set; }
         public bool IsPrint { get; set; } = false;
+
+
 
 
     }
@@ -46,6 +52,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         private readonly ICertificateRepository _certificateRepository;
         private readonly IEventRepository _eventRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IRequestRepostory _requestRepostory;
         private readonly IUserResolverService _userResolverService;
         private readonly IBirthEventRepository _IBirthEventRepository;
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
@@ -59,6 +66,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                                         ICertificateRepository CertificateRepository,
                                         IEventRepository eventRepository,
                                         IUserRepository userRepository,
+                                        IRequestRepostory requestRepostory,
                                         IUserResolverService userResolverService)
         {
             _certificateRepository = CertificateRepository;
@@ -67,11 +75,12 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             _IBirthEventRepository = IBirthEventRepository;
             _archiveGenerator = archiveGenerator;
             _userRepository = userRepository;
+            _requestRepostory = requestRepostory;
             _userResolverService = userResolverService;
         }
         public async Task<object> Handle(GenerateArchiveQuery request, CancellationToken cancellationToken)
         {
-            bool Authenticated=true;
+            bool Authenticated = true;
 
             var selectedEvent = await _eventRepository.GetByIdAsync(request.Id);
             if (selectedEvent == null)
@@ -96,25 +105,49 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             //     throw new NotFoundException("You Are Not Allowed to See This Event Detail");
             // }
             var birthCertificateNo = _IBirthEventRepository.GetAll().Where(x => x.Event.EventOwenerId == selectedEvent.EventOwenerId).FirstOrDefault();
-            
+
             var content = await _eventRepository.GetArchive(request.Id);
 
             var certificate = _archiveGenerator.GetArchive(request, content, birthCertificateNo?.Event?.CertificateId);
-          
+
             var certificateTemplateId = _ICertificateTemplateRepository.GetAll().Where(c => c.CertificateType == selectedEvent.EventType + " " + "Archive").FirstOrDefault();
-           
-           var certficatesList= _certificateRepository.GetAll().Where(x => x.EventId == request.Id && x.Status);
-          
-           foreach(var xx in certficatesList){
-               if(!xx.AuthenticationStatus){
-                  Authenticated=false;
-                  break;
-               }
-           }
+
+            var certficatesList = _certificateRepository.GetAll().Where(x => x.EventId == request.Id && x.Status);
+
+            foreach (var xx in certficatesList)
+            {
+                if (!xx.AuthenticationStatus)
+                {
+                    Authenticated = false;
+                    break;
+                }
+            }
             var response = new ArchiveResponseDTO();
             response.Content = certificate;
             response.TemplateId = certificateTemplateId?.Id;
-            response.IsAuthenticated=Authenticated;
+            response.IsAuthenticated = Authenticated;
+            if (request.RequestId != null)
+            {
+                var notification = await _requestRepostory.GetAll()
+                                    .Include(r => r.Notification)
+                                    .Where(r => r.Id == request.RequestId)
+                                    .Select(r => r.Notification).FirstOrDefaultAsync(cancellationToken);
+                if (notification != null)
+                {
+                    response.NotificationData = new NotificationData
+                    {
+
+                        Message = notification.MessageStr,
+                        ApprovalType = notification.ApprovalType,
+                        SenderId = notification.SenderId,
+                        SenderUserName = notification.Sender.UserName,
+                        SenderFullName = notification.Sender.PersonalInfo.FirstNameLang + " " +
+                                                 notification.Sender.PersonalInfo.MiddleNameLang + " " +
+                                                 notification.Sender.PersonalInfo.LastNameLang,
+                        Date = (new CustomDateConverter(notification.CreatedAt)).ethiopianDate
+                    };
+                }
+            }
             return response;
         }
 

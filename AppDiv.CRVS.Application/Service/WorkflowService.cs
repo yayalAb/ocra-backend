@@ -205,7 +205,7 @@ namespace AppDiv.CRVS.Application.Service
                                                 .Select(e => e.EventRegisteredAddressId)
                                                 .FirstOrDefault();
 
-                    //update old notification from db and socket
+                    //remove old notification from db and socket
                     if (request.Notification?.Id != null)
                     {
                         await notificationService.RemoveNotification(request.Notification.Id);
@@ -219,9 +219,9 @@ namespace AppDiv.CRVS.Application.Service
                         {
                             await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
                                             this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                          userId, eventRegisteredId);
+                                          userId, eventRegisteredId,IsApprove?"approve":"reject");
                         }
-                        //ie:final rejection or approval , send notification to the civilRegOfficer who created the request
+                        //TODO:ie:final rejection or approval , send notification to the civilRegOfficer who created the request
                         else if (request.NextStep == 0 || request.NextStep == request.currentStep)
                         {
 

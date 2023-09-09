@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             _addressService = addressService;
             _userResolverService = userResolverService;
         }
-        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId)
+        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId,string approvalType)
         {
 
             var notification = new Notification
@@ -40,6 +40,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 RequestId = requestId,
                 GroupId = groupId,
                 SenderId = senderId,
+                ApprovalType = approvalType,
                 EventRegisteredAddressId = eventRegisteredAddressId
             };
 
