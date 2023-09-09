@@ -36,9 +36,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             .Include(w => w.UserGroups)
                             .Include(w => w.User)
                             .Include(w => w.Address)
-                                .ThenInclude(a => a.ParentAddress)
-                                .ThenInclude(a => a.ParentAddress)
-                            .AsQueryable();
+                            .ThenInclude(a => a.ParentAddress)
+                            .ThenInclude(a => a.ParentAddress);
         }
     }
 }
