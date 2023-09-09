@@ -126,6 +126,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             response.Content = certificate;
             response.TemplateId = certificateTemplateId?.Id;
             response.IsAuthenticated = Authenticated;
+            
             if (request.RequestId != null)
             {
                 var notification = await _requestRepostory.GetAll()
