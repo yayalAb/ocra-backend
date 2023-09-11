@@ -323,7 +323,17 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (null, null, null, null, null);
         }
 
-
+        public async Task MakeCertificateVoid(Guid eventId, CancellationToken cancellationToken)
+        {
+            var certificate = _dbContext.Certificates
+                                .Where(c => c.EventId == eventId && c.Status).FirstOrDefault();
+            if (certificate != null)
+            {
+                certificate.Status = false;
+                base.Update(certificate);
+                await this.SaveChangesAsync(cancellationToken);
+            }
+        }
     }
 
 }

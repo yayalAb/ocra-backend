@@ -19,15 +19,18 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private readonly CRVSDbContext dbContext;
         private readonly IMediator _mediator;
         private readonly IElasticClient elasticClient;
+        private readonly ICertificateRepository _certificateRepository;
+
         // private readonly IFireAndForgetJobs fireAndForgetJobs;
 
         public DatabaseFacade Database => dbContext.Database;
 
-        public DivorceEventRepository(CRVSDbContext dbContext, IMediator mediator, IElasticClient elasticClient /*IFireAndForgetJobs fireAndForgetJobs*/) : base(dbContext)
+        public DivorceEventRepository(CRVSDbContext dbContext, IMediator mediator, IElasticClient elasticClient  , ICertificateRepository certificateRepository /*IFireAndForgetJobs fireAndForgetJobs*/) : base(dbContext)
         {
             this.dbContext = dbContext;
             this._mediator = mediator;
             this.elasticClient = elasticClient;
+            _certificateRepository = certificateRepository;
             // this.fireAndForgetJobs = fireAndForgetJobs;
         }
         public IQueryable<DivorceEvent> GetAllQueryableAsync()
@@ -125,6 +128,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 if (divorcedMarraige != null)
                 {
                     divorcedMarraige.IsDivorced = true;
+                    await _certificateRepository.MakeCertificateVoid(divorcedMarraige.EventId,cancellationToken);
                 }
             }
 
