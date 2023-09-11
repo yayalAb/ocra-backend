@@ -34,9 +34,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Archive")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> GetArchive([FromQuery] Guid id, bool IsPrint = false)
+        public async Task<object> GetArchive([FromQuery] GenerateArchiveQuery query)
         {
-            return await Mediator.Send(new GenerateArchiveQuery { Id = id, IsPrint = IsPrint });
+            return await Mediator.Send(query);
         }
 
         [HttpPost("ArchivePreview")]

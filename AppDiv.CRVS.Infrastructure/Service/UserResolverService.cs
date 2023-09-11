@@ -163,6 +163,32 @@ namespace AppDiv.CRVS.Infrastructure.Services
             }
         }
 
+        public Guid GetWorkingAddressIdFromAccessTokenParam()
+        {
+            try
+            {
+
+                var tokenstring = httpContext?.HttpContext?.Request.Query["access_token"];
+
+                if (string.IsNullOrEmpty(tokenstring) || tokenstring.ToString().ToLower() == "undefined" || tokenstring.ToString().ToLower() == "null")
+                {
+                    return Guid.Empty;
+
+                }
+                var token = new JwtSecurityTokenHandler().ReadJwtToken(tokenstring);
+
+                var personId = token.Claims.FirstOrDefault(c => c.Type == "addressId")?.Value;
+                if (personId == null)
+                {
+                    return Guid.Empty;
+                }
+                return new Guid(personId);
+            }
+            catch (Exception)
+            {
+                return Guid.Empty;
+            }
+        }
 
         public string GetLocale()
         {

@@ -7,6 +7,7 @@
         string GetLocale();
         public Guid GetUserPersonalId();
         public Guid GetUserPersonalIdFromAccessTokenParam();
+        public Guid GetWorkingAddressIdFromAccessTokenParam();
         public int GetAdminLevel();
         public Guid GetWorkingAddressId();
 

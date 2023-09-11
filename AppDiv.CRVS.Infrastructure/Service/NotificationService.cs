@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             _addressService = addressService;
             _userResolverService = userResolverService;
         }
-        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId)
+        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId,string approvalType)
         {
 
             var notification = new Notification
@@ -40,6 +40,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 RequestId = requestId,
                 GroupId = groupId,
                 SenderId = senderId,
+                ApprovalType = approvalType,
                 EventRegisteredAddressId = eventRegisteredAddressId
             };
 
@@ -99,23 +100,32 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
 
         }
-        public async Task RemoveNotificationForSocket(Guid notificationId)
+        public async Task RemoveNotification(Guid notificationId)
         {
             var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
-            if (notification != null && notification.EventRegisteredAddressId != null)
+            if (notification != null)
             {
+                _context.Notifications.Remove(notification);
+                await _context.SaveChangesAsync();
+                if (notification.EventRegisteredAddressId != null)
+                {
+
                 var addressResponse =await _addressService.FormatedAddressLoop(notification.EventRegisteredAddressId);
-                // send remove notification  to the group 
-                if (addressResponse?.Country != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Country).RemoveNotification(notificationId);
-                if (addressResponse?.Region != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Region).RemoveNotification(notificationId);
-                if (addressResponse?.Zone != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Zone).RemoveNotification(notificationId);
-                if (addressResponse?.Woreda != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Woreda).RemoveNotification(notificationId);
-                if (addressResponse?.Kebele != null)
-                    await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse?.Kebele).RemoveNotification(notificationId);
+
+      
+
+                    // send remove notification  to the group 
+                    if (addressResponse?.Country != null)
+                        await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Country).RemoveNotification(notificationId);
+                    if (addressResponse?.Region != null)
+                        await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Region).RemoveNotification(notificationId);
+                    if (addressResponse?.Zone != null)
+                        await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Zone).RemoveNotification(notificationId);
+                    if (addressResponse?.Woreda != null)
+                        await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Woreda).RemoveNotification(notificationId);
+                    if (addressResponse?.Kebele != null)
+                        await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Kebele).RemoveNotification(notificationId);
+                }
             }
         }
 

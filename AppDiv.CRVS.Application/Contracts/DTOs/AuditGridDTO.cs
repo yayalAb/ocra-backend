@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
             Id = audit?.AuditId;
             TablePkId = audit?.TablePk;
             AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
-            UserName = audit?.AuditUserId != string.Empty ? user.GetSingle(audit!.AuditUserId.ToString()!)?.UserName : string.Empty;
+            UserName = audit?.AuditUserId != string.Empty ? user.GetSingle(audit!.AuditUserId!.ToString()!)?.UserName : string.Empty;
             AuditedEntity = audit?.EntityType;
             AddressId = audit?.AddressId;
             Action = audit?.Action;
@@ -49,13 +49,13 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
         public string? AuditedEntity { get; set; }
         public string? AuditDate { get; set; }
         public string? Address { get; set; }
-        public SystemAuditGridDTO(AuditLog? audit, IUserRepository user)
+        public SystemAuditGridDTO(AuditLog? audit)
         {
             var convertor = new CustomDateConverter();
             Id = audit?.AuditId;
             TablePkId = audit?.TablePk;
             AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
-            UserName = audit?.AuditUserId != string.Empty ? user.GetSingle(audit!.AuditUserId.ToString()!)?.UserName : string.Empty;
+            UserName = audit?.AuditUser.UserName;
             AuditedEntity = audit?.EntityType;
             Address = $"{audit?.Address?.ParentAddress?.ParentAddress?.AddressNameLang}/{audit?.Address?.ParentAddress?.AddressNameLang}/{audit?.Address?.AddressNameLang}".Trim('/');
             Action = audit?.Action;
@@ -135,5 +135,36 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
             Address = $"{audit?.Address?.ParentAddress?.ParentAddress?.AddressNameLang}/{audit?.Address?.ParentAddress?.AddressNameLang}/{audit?.Address?.AddressNameLang}".Trim('/');
             Action = audit?.Action;
             CertificateId = eventRepository.GetSingle(Guid.Parse(audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.Value<string>("EventId")!))?.CertificateId;
+        }
+    }
+
+    public class TransactionAuditGridDTO
+    {
+        public Guid? Id { get; set; }
+        public string? RequestedBy { get; set; }
+        public string? ApprovedBy { get; set; }
+        public string? RequestDate { get; set; }
+        public string? ApprovalDate { get; set; }
+        public string? RequestType { get; set; }
+        public bool? RequestStatus { get; set; }
+        public int? CurrentStep { get; set; }
+        public string? StepName { get; set; }
+        public string? CertificateId { get; set; }
+        public TransactionAuditGridDTO(Transaction? transaction)
+        {
+            var convertor = new CustomDateConverter();
+            Id = transaction?.Id;
+            RequestedBy = $"{transaction!.Request?.CivilRegOfficer.FirstNameLang} {transaction!.Request!.CivilRegOfficer.MiddleNameLang} {transaction.Request.CivilRegOfficer.LastNameLang}";
+            ApprovedBy = $"{transaction.CivilRegOfficer?.PersonalInfo.FirstNameLang} {transaction.CivilRegOfficer?.PersonalInfo.MiddleNameLang} {transaction.CivilRegOfficer?.PersonalInfo.LastNameLang}";
+            RequestDate = convertor.GregorianToEthiopic(transaction.Request.CreatedAt);
+            ApprovalDate = convertor.GregorianToEthiopic(transaction.CreatedAt);
+            RequestType = transaction.Request.RequestType;
+            RequestStatus = transaction.ApprovalStatus;
+            CurrentStep = transaction.CurrentStep;
+            StepName = transaction!.Workflow!.Steps.Where(s => s.step == transaction.CurrentStep).Select(s => s.Description.ToString()).SingleOrDefault();
+            CertificateId = transaction.Request?.AuthenticationRequest?.Certificate?.Event?.CertificateId ??
+                            transaction.Request?.CorrectionRequest?.Event.CertificateId ??
+                            transaction.Request?.VerficationRequest?.Event.CertificateId ??
+                            transaction.Request?.PaymentRequest?.Event.CertificateId;
         }
     }
