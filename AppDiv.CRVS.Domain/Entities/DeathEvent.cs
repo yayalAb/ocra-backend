@@ -21,7 +21,15 @@ namespace AppDiv.CRVS.Domain.Entities
         {
             get
             {
-                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(PlaceOfFuneralStr) ? "{}" : PlaceOfFuneralStr);
+                try
+                {
+
+                    return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(PlaceOfFuneralStr) ? "{}" : PlaceOfFuneralStr);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
             }
             set
             {
