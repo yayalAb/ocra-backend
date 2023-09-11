@@ -150,27 +150,21 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             ))
                     ).Size(50)
                     );
+            string currentLanguage  = HelperService.getCurrentLanguage().ToLower();
+
+            bool isAmharic = currentLanguage == "am" ;
+
             return response.Documents.Select(d => new SearchCertificateResponseDTO
             {
                 Id = d.Id,
                 EventId = d.EventId,
                 NestedEventId = d.NestedEventId,
-                FullName = HelperService.getCurrentLanguage().ToLower() == "am"
-                ? d.FullNameAm : d.FullNameOr,
-                MotherName = HelperService.getCurrentLanguage().ToLower() == "am"
-                ? d.MotherFullNameAm : d.MotherFullNameOr,
-                CivilRegOfficerName = HelperService.getCurrentLanguage().ToLower() == "am"
-                ? d.CivilRegOfficerNameAm
-                : d.CivilRegOfficerNameOr,
-                Address = HelperService.getCurrentLanguage().ToLower() == "am"
-                ? d.AddressAm
-                : d.AddressOr,
-                EventAddress = HelperService.getCurrentLanguage().ToLower() == "am"
-                ? d.EventAddressAm
-                : d.EventAddressOr,
-                EventRegisteredAddress = HelperService.getCurrentLanguage().ToLower() == "am"
-                ? d.EventRegisteredAddressAm
-                : d.EventRegisteredAddressOr,
+                FullName = isAmharic ? d.FullNameAm : d.FullNameOr,
+                MotherName = isAmharic ? d.MotherFullNameAm : d.MotherFullNameOr,
+                CivilRegOfficerName = isAmharic ? d.CivilRegOfficerNameAm : d.CivilRegOfficerNameOr,
+                Address = isAmharic ? d.AddressAm  : d.AddressOr,
+                EventAddress = isAmharic ? d.EventAddressAm : d.EventAddressOr,
+                EventRegisteredAddress = isAmharic ? d.EventRegisteredAddressAm : d.EventRegisteredAddressOr,
                 NationalId = d.NationalId,
                 CertificateId = d.CertificateId,
                 EventType = d.EventType,
