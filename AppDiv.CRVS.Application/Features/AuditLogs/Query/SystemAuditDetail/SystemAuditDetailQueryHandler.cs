@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
                     // NewData = (newData as dynamic).Content, 
                     // OldData =  (oldData as dynamic)?.Content,
                     // newVal = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")),
-                    OldValue = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes"))),
+                    OldValue = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson)),
                     NewValue = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")),
                 };
             return result;

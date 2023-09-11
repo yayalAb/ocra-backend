@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Domain.Entities.Audit;
 using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto.Tls;
 
@@ -17,27 +18,46 @@ namespace AppDiv.CRVS.Application.Service
         {
             _auditlog = auditLog;
         }
-        public JObject GetContent(JArray? content)
+        public JObject GetContent(JObject? content)
         {
-            JObject oldData = new();
-            if (content is null) return oldData;
-            foreach (var (columnName, originalValue, newValue) in
-                            from change in content
-                            let changeObject = (JObject)change
-                            let columnName = changeObject?.GetValue("ColumnName")?.ToString()
-                            let originalValue = changeObject?.GetValue("OriginalValue")
-                            let newValue = changeObject?.GetValue("NewValue")
-                            where columnName != null
-                            select (columnName, originalValue, newValue))
+            if (content is null) return new JObject();
+            var changes = content?.Value<JArray?>("Changes")?.ToList();
+            var columnValues = content?.Value<JObject>("ColumnValues");
+            if (changes is not null)
             {
-                var oldValue = originalValue;
-                // Console.WriteLine($"{columnName} old Val= {oldValue} is empty {Object.Equals(oldValue, Guid.Empty)} || {oldValue.ToString() == Guid.Empty.ToString()}");
-                if (oldValue.ToString() == Guid.Empty.ToString())
-                    oldValue = newValue;
-                oldData.Add(columnName, oldValue);
+                foreach (var prop in columnValues?.Properties().ToList()!)
+                {
+                    if (changes.Select(c => c.Value<string>("ColumnName")).Contains(prop.Name))
+                    {
+                        var oldValue = changes.Where(c => c.Value<string>("ColumnName") == prop.Name && 
+                                                        c.Value<string?>("OriginalValue") != Guid.Empty.ToString() && 
+                                                        c.Value<string?>("OriginalValue") != null)
+                                                        .FirstOrDefault()?
+                                                        .Value<string?>("OriginalValue");
+                        if (oldValue is not null)
+                        {
+                            prop.Value = oldValue;
+                        }
+                    }
+                }
             }
+            // foreach (var (columnName, originalValue, newValue) in
+            //                 from change in content
+            //                 let changeObject = (JObject)change
+            //                 let columnName = changeObject?.GetValue("ColumnName")?.ToString()
+            //                 let originalValue = changeObject?.GetValue("OriginalValue")
+            //                 let newValue = changeObject?.GetValue("NewValue")
+            //                 where columnName != null
+            //                 select (columnName, originalValue, newValue))
+            // {
+            //     var oldValue = originalValue;
+            //     // Console.WriteLine($"{columnName} old Val= {oldValue} is empty {Object.Equals(oldValue, Guid.Empty)} || {oldValue.ToString() == Guid.Empty.ToString()}");
+            //     if (oldValue.ToString() == Guid.Empty.ToString() || (oldValue.ToString() == ""))
+            //         oldValue = newValue;
+            //     oldData.Add(columnName, oldValue);
+            // }
 
-            return oldData;
+            return columnValues;
         }
         public JObject GetNestedElements(JObject? content)
         {
@@ -102,6 +122,7 @@ namespace AppDiv.CRVS.Application.Service
         }
         private JObject ConvertStringToObject(JObject content)
         {
+            if (content is null) return new JObject();
             foreach (JProperty property in content.DescendantsAndSelf().OfType<JProperty>().ToList())
             {
                 if (property.Name.EndsWith("Str"))
@@ -112,14 +133,14 @@ namespace AppDiv.CRVS.Application.Service
                     JProperty newProperty;
                     try
                     {
-                        obj = JObject.Parse((string)(property?.Value ?? "{}"));
+                        obj = JObject.Parse((string)(property?.Value ?? "{}")!);
                         newProperty = new(newName, obj);
                     }
                     catch (System.Exception)
                     {
                         try
                         {
-                            objArray = JArray.Parse((string)(property?.Value ?? "[]"));
+                            objArray = JArray.Parse((string)(property?.Value ?? "[]")!);
                             newProperty = new(newName, objArray);
                         }
                         catch (System.Exception)
@@ -208,5 +229,191 @@ namespace AppDiv.CRVS.Application.Service
                     .AuditDataJson?.Value<JArray>("Changes");
         }
 
+        // for event 
+
+        public JObject EventAudit(AuditLog audit)
+        {
+            var events = audit.EntityType switch
+            {
+                "BirthEvent" => BirthAudit(audit.AuditDataJson, audit.Action, audit),
+                "DeathEvent" => DeathAudit(audit.AuditDataJson, audit.Action, audit),
+                "MarriageEvent" => MarriageAudit(audit.AuditDataJson, audit.Action, audit),
+                "DivorceEvent" => DivorceAudit(audit.AuditDataJson, audit.Action, audit),
+                "AdoptionEvent" => AdoptionAudit(audit.AuditDataJson, audit.Action, audit),
+                _ => new JObject()
+            };
+            return events;
+        }
+        public JObject BirthAudit(JObject content, string action,AuditLog audit)
+        {
+            JObject? oldData = null;
+            JObject newData;
+            var birthIncludes = new List<string> { "EventId", "FatherId", "MotherId" };
+
+            if (action == "Update")
+            {
+                oldData = Include(GetContent(content), birthIncludes, audit.AuditDate, true);
+                oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
+            }
+            newData = Include(content?.Value<JObject>("ColumnValues")!, birthIncludes, audit.AuditDate, false);
+            newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
+            
+            return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
+        }
+        public JObject DeathAudit(JObject content, string action,AuditLog audit)
+        {
+            JObject? oldData = null;
+            JObject newData;
+            var deathIncludes = new List<string> { "EventId" };
+
+            if (action == "Update")
+            {
+                oldData = Include(GetContent(content), deathIncludes, audit.AuditDate, true);
+                oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
+            }
+            newData = Include(content?.Value<JObject>("ColumnValues")!, deathIncludes, audit.AuditDate, false);
+            newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
+            
+            return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
+        }
+        public JObject MarriageAudit(JObject content, string action,AuditLog audit)
+        {
+            JObject? oldData = null;
+            JObject newData;
+            var marriageIncludes = new List<string> { "EventId", "BrideInfoId" };
+
+            if (action == "Update")
+            {
+                oldData = Include(GetContent(content), marriageIncludes, audit.AuditDate, true);
+                oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
+            }
+            newData = Include(content?.Value<JObject>("ColumnValues")!, marriageIncludes, audit.AuditDate, false);
+            newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
+            
+            return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
+        }
+        public JObject DivorceAudit(JObject content, string action,AuditLog audit)
+        {
+            JObject? oldData = null;
+            JObject newData;
+            var divorceIncludes = new List<string> { "EventId", "CourtCaseId", "DivorcedWifeId" };
+
+            if (action == "Update")
+            {
+                oldData = Include(GetContent(content), divorceIncludes, audit.AuditDate, true);
+                oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
+            }
+            newData = Include(content?.Value<JObject>("ColumnValues")!, divorceIncludes, audit.AuditDate, false);
+            newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
+            
+            return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
+        }
+        public JObject AdoptionAudit(JObject content, string action,AuditLog audit)
+        {
+            JObject? oldData = null;
+            JObject newData;
+            var adoptionIncludes = new List<string> { "EventId", "AdoptiveFatherId", "AdoptiveMotherId", "CourtCaseId" };
+
+            if (action == "Update")
+            {
+                oldData = Include(GetContent(content), adoptionIncludes, audit.AuditDate, true);
+                oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
+            }
+            newData = Include(content?.Value<JObject>("ColumnValues")!, adoptionIncludes, audit.AuditDate, false);
+            newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
+            
+            return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
+        }
+
+        public JObject Include(JObject content, List<string> keys, DateTime auditDate, bool changes = false)
+        {
+            if (content is null) return new JObject();
+            foreach (var property in content.Properties().ToList())
+            {
+                if (keys.Contains(property.Name))
+                {
+                    string key = property.Name.TrimEnd("Id".ToCharArray());
+                    if (!changes)
+                    {
+                        content[key] = _auditlog.GetAll()
+                                                .OrderByDescending(a => a.AuditDate)
+                                                .Where(a => a.AuditDate >= auditDate.AddMinutes(-1) && a.AuditDate <= auditDate.AddMinutes(1))
+                                                .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
+                                                .AuditDataJson?
+                                                .Value<JObject>("ColumnValues");
+                    }
+                    else
+                    {
+                        content[key] = GetContent(
+                                                _auditlog.GetAll()
+                                                    .OrderByDescending(a => a.AuditDate)
+                                                    .Where(a => a.AuditDate >= auditDate.AddMinutes(-1) && a.AuditDate <= auditDate.AddMinutes(1))
+                                                    .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
+                                                    .AuditDataJson!);
+                    }
+                }
+            }
+            return content;
+        }
+        public JObject EventIncludes(JObject content, List<string>? keys, DateTime auditDate, bool changes = false)
+        {
+            if (keys is null)
+            {
+                keys = new List<string>() { "EventOwenerId" };
+            }
+            if (content is null) return new JObject();
+            foreach (var property in content.Properties().ToList())
+            {
+                if (keys.Contains(property.Name))
+                {
+                    string key = property.Name.TrimEnd("Id".ToCharArray());
+                    if (!changes)
+                    {
+                        content[key] = _auditlog.GetAll()
+                                                .OrderByDescending(a => a.AuditDate)
+                                                .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
+                                                .AuditDataJson?
+                                                .Value<JObject>("ColumnValues");
+                    }
+                    else 
+                    {
+                        content[key] = GetContent(
+                                                 _auditlog.GetAll()
+                                                    .OrderByDescending(a => a.AuditDate)
+                                                    .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
+                                                    .AuditDataJson);
+                    }
+                }
+            }
+            if (!changes)
+            {
+                content["Registrar"] = Include(
+                                            _auditlog.GetAll()
+                                                .OrderByDescending(a => a.AuditDate)
+                                                .FirstOrDefault(a => a.EntityType == "Registrar" && 
+                                                    a.AuditData.Contains($"\"EventId\": \"{content.Value<string>("Id")}\""))?
+                                                .AuditDataJson?
+                                                .Value<JObject>("ColumnValues")!, 
+                                            new List<string> { "RegistrarInfoId" },
+                                            auditDate,
+                                            changes);
+            }
+            else
+            {
+                content["Registrar"] = Include(
+                                            GetContent(
+                                                _auditlog.GetAll()
+                                                .OrderByDescending(a => a.AuditDate)
+                                                .FirstOrDefault(a => a.EntityType == "Registrar" && 
+                                                    a.AuditData.Contains($"\"EventId\": \"{content.Value<string>("Id")}\""))?
+                                                .AuditDataJson), 
+                                            new List<string> { "RegistrarInfoId" },
+                                            auditDate,
+                                            changes);
+            }
+            return content;
+        }
+
     }
+
 }
