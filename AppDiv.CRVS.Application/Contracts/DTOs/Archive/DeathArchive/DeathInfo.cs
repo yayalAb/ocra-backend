@@ -15,7 +15,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs.Archive.DeathArchive
         public string? FacilityTypeOr { get; set; }
         public string? FacilityTypeAm { get; set; }
 
-        public string? PlaceOfFuneral { get; set; }
+        public string? PlaceOfFuneralAm { get; set; }
+        public string? PlaceOfFuneralOr { get; set; }
+
         public string? EventCountryOr { get; set; }
         public string? EventCountryAm { get; set; }
         public string? EventRegionOr { get; set; }

@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
@@ -13,7 +16,21 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? FacilityLookupId { get; set; }
         public Guid? DeathPlaceId { get; set; }
         public Guid? DuringDeathId { get; set; }
-        public string? PlaceOfFuneral { get; set; }
+        public string? PlaceOfFuneralStr { get; set; }
+
+        [NotMapped]
+        public JObject? PlaceOfFuneral
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(PlaceOfFuneralStr) ? "{}" : PlaceOfFuneralStr);
+            }
+            set
+            {
+                PlaceOfFuneralStr = value.ToString();
+            }
+        }
+
         public DeathNotificationDTO? DeathNotification { get; set; }
         public EventDTO Event { get; set; }
     }

@@ -198,18 +198,18 @@ public class AddressLookupCouchRepository : IAddressLookupCouchRepository
 
         var res = await _couchContext.AddressCouches.AddOrUpdateRangeAsync(selected.ToList());
         // insert addresses without children
-        var kebeles = addresses.Where(a => a.ChildAddresses.Count == 0)
-                        .Select(k => new AddressCouch
-                        {
-                            Id2 = k.Id,
-                            NameStr = k.AddressNameStr,
-                            ParentAddressId = k.ParentAddressId,
-                            AdminLevel = k.AdminLevel,
-                            Status = k.Status,
-                            DeletedStatus = false,
-                            addresses = new List<SingleAddressCouch>()
-                        });
-        var kebeleRes = await _couchContext.AddressCouches.AddOrUpdateRangeAsync(kebeles.ToList());
+        // var kebeles = addresses.Where(a => a.ChildAddresses.Count == 0)
+        //                 .Select(k => new AddressCouch
+        //                 {
+        //                     Id2 = k.Id,
+        //                     NameStr = k.AddressNameStr,
+        //                     ParentAddressId = k.ParentAddressId,
+        //                     AdminLevel = k.AdminLevel,
+        //                     Status = k.Status,
+        //                     DeletedStatus = false,
+        //                     addresses = new List<SingleAddressCouch>()
+        //                 });
+        // var kebeleRes = await _couchContext.AddressCouches.AddOrUpdateRangeAsync(kebeles.ToList());
 
         return true;
     }

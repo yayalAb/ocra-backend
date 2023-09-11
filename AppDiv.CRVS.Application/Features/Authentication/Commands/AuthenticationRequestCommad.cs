@@ -131,7 +131,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                Console.WriteLine($"&&&&&&&&&&&&&&&&&&&&&&&&&&7-------- {certificate.Event.EventRegisteredAddressId}");
                 await _notificationService.CreateNotification(certificate.EventId, "Authentication", request.Remark,
                                    _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
-                                 userId,certificate.Event.EventRegisteredAddressId);
+                                 userId,certificate.Event.EventRegisteredAddressId,"request");
             }
 
             response.Message = "Authentication Request Sent Sucessfully";
