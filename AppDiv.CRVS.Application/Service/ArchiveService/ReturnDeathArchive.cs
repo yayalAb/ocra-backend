@@ -15,6 +15,7 @@ using AutoMapper.QueryableExtensions;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using Org.BouncyCastle.Asn1.Cms;
 using System.ComponentModel;
+using Microsoft.Extensions.Localization;
 
 namespace AppDiv.CRVS.Application.Service.ArchiveService
 {
@@ -45,7 +46,8 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             bool isCityAdmin=_dateAndAddressService.IsCityAdmin(death?.EventAddressId);
             DeathInfo deathInfo = CustomMapper.Mapper.Map<DeathInfo>(ReturnPerson.GetEventInfo(death, _dateAndAddressService,_reportRepostory));
             deathInfo.BirthCertificateId = death?.DeathEventNavigation?.BirthCertificateId;
-            deathInfo.PlaceOfFuneral = death?.DeathEventNavigation?.PlaceOfFuneral;
+            deathInfo.PlaceOfFuneralAm = death?.DeathEventNavigation?.PlaceOfFuneral?.Value<string>("am");
+            deathInfo.PlaceOfFuneralOr = death?.DeathEventNavigation?.PlaceOfFuneral?.Value<string>("or");
             deathInfo.DuringDeathAm = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupOr(death?.DeathEventNavigation?.DuringDeathId);
             deathInfo.DuringDeathOr = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupAm(death?.DeathEventNavigation?.DuringDeathId);
             deathInfo.FacilityTypeAm = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupOr(death?.DeathEventNavigation?.FacilityTypeLookupId);
