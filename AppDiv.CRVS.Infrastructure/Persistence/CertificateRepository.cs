@@ -118,6 +118,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             mu => mu.Match(m => m.Field(f => f.Status).Query("true")
                             )
                             ,
+
                             
                             mu => mu.QueryString(d => d.Query('*' + workingAddressIdStr + '*'))
 
