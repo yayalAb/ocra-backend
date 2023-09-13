@@ -36,12 +36,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 RegistrationOfficeId = events?.CertificateId?[..((events?.CertificateId?.Length ?? 0) - 8)],
                 EventType = events?.EventType,
                 EventMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt!).month, "or")?.month,
-                EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt!).month, "Am")?.month,
+                EventMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventDateEt!).month, "am")?.month,
                 EventDay = convertor.getSplitted(events?.EventDateEt!).day.ToString("D2"),
                 EventYear = convertor.getSplitted(events?.EventDateEt!).year.ToString(),
 
                 RegistrationMonthOr = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt!).month, "or")?.month,
-                RegistrationMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt!).month, "Am")?.month,
+                RegistrationMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt!).month, "am")?.month,
                 RegistrationDay = convertor.getSplitted(events?.EventRegDateEt!).day.ToString("D2"),
                 RegistrationYear = convertor.getSplitted(events?.EventRegDateEt!).year.ToString(),
                 RegistrationCountryOr = EventAddressResponse?.CountryOr,
@@ -123,13 +123,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 person.GenderOr = personInfo?.SexLookup?.Value?.Value<string>("or");
 
                 person.NationalId = personInfo?.NationalId;
-                person.NationalityOr = personInfo?.NationalityLookup?.Value?.Value<string>("am");
+                person.NationalityOr = personInfo?.NationalityLookup?.Value?.Value<string>("or");
                 person.NationalityAm = personInfo?.NationalityLookup?.Value?.Value<string>("am");
 
-                person.MarriageStatusOr = personInfo?.MarraigeStatusLookup?.Value?.Value<string>("am");
+                person.MarriageStatusOr = personInfo?.MarraigeStatusLookup?.Value?.Value<string>("or");
                 person.MarriageStatusAm = personInfo?.MarraigeStatusLookup?.Value?.Value<string>("am");
 
-                person.ReligionOr =  personInfo?.ReligionLookup?.Value?.Value<string>("am");
+                person.ReligionOr =  personInfo?.ReligionLookup?.Value?.Value<string>("or");
                 person.ReligionAm =  personInfo?.ReligionLookup?.Value?.Value<string>("am");
 
                 person.NationOr = personInfo?.NationLookup?.Value?.Value<string>("or");

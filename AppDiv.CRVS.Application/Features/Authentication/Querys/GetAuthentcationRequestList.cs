@@ -60,7 +60,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .ThenInclude(x=>x.ParentAddress)
                  .Include(x => x.AuthenticationRequest)
                  .ThenInclude(x => x.Certificate)
+                 .ThenInclude(x => x.Event.EventOwener)
                  .Include(x => x.CorrectionRequest)
+                 .ThenInclude(x => x.Event.EventOwener)
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
@@ -117,8 +119,15 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OfficerId = w.CivilRegOfficerId,
                  RequestedBy = w.CivilRegOfficer.FirstNameLang + " " + w.CivilRegOfficer.MiddleNameLang + " " + w.CivilRegOfficer.LastNameLang,
                  RequestType = w.RequestType,
-                 RequestId = (w.CorrectionRequest.Id == null) ? (w.AuthenticationRequest.CertificateId == null) ?
+                 RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ?
                      w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
+                 EventType = (w.AuthenticationRequest!.Certificate != null) ? (string)w.AuthenticationRequest.Certificate.Event.EventType :
+                                (string)w.CorrectionRequest!.Event.EventType,
+                 CertificateId = w.CorrectionRequest != null ? w.CorrectionRequest.Event.CertificateId : 
+                                (w.AuthenticationRequest != null) ? w.AuthenticationRequest!.Certificate!.Event.CertificateId : "",
+                                
+                 EventOwnerName = w.AuthenticationRequest!.Certificate != null ? (string?)w.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
+                                (string?)w.CorrectionRequest!.Event.EventOwener.FullNameLang,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
                  RequestDate =new CustomDateConverter(w.CreatedAt).ethiopianDate,

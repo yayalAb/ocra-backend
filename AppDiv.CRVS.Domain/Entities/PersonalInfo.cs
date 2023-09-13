@@ -111,7 +111,13 @@ namespace AppDiv.CRVS.Domain.Entities
                 return LastName?.Value<string>(lang);
             }
         }
-
+        public string? FullNameLang
+        {
+            get
+            {
+                return $"{FirstNameLang} {MiddleNameLang} {LastNameLang}";
+            }
+        }
         public object FullName(bool langSpecific = false)
         {
             if (langSpecific)

@@ -11,6 +11,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid Id { get; set; }
         public string? RequestedBy { get; set; }
         public string? RequestType { get; set; }
+        public string EventType { get; set; }
+        public string? CertificateId { get; set; }
+        public string? EventOwnerName { get; set; }
         public Guid? OfficerId { get; set; }
         public string? RequestDate { get; set; }
         public int? CurrentStep { get; set; }
