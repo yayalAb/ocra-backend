@@ -57,18 +57,11 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
         private RegistrarArchive? GetRegistrar(Registrar? reg)
         {
-            if (reg != null)
-            {
-                RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService,_reportRepostory));
-                regInfo.RelationShipOr = reg?.RelationshipLookup?.Value?.Value<string>("or");
-                regInfo.RelationShipAm = reg?.RelationshipLookup?.Value?.Value<string>("am");
-                return regInfo;
-            }
-            else
-            {
-                return null;
-            }
-
+            if (reg is null) return new RegistrarArchive();
+            RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService,_reportRepostory));
+            regInfo.RelationShipOr = reg?.RelationshipLookup?.Value?.Value<string>("or");
+            regInfo.RelationShipAm = reg?.RelationshipLookup?.Value?.Value<string>("am");
+            return regInfo;           
         }
 
         public BirthArchiveDTO GetBirthArchive(Event? birth, string? BirthCertNo,bool IsCorectionRequest=false)

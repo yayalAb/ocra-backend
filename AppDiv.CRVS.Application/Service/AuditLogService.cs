@@ -302,9 +302,11 @@ namespace AppDiv.CRVS.Application.Service
             {
                 oldData = Include(GetContent(content), divorceIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
+                oldData["CourtCase"]["Court"] = Include(oldData?.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, true);
             }
             newData = Include(content?.Value<JObject>("ColumnValues")!, divorceIncludes, audit.AuditDate, false);
             newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
+            newData["CourtCase"]["Court"] = Include(newData?.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, false);
             
             return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
         }
@@ -318,9 +320,11 @@ namespace AppDiv.CRVS.Application.Service
             {
                 oldData = Include(GetContent(content), adoptionIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
+                oldData["CourtCase"]["Court"] = Include(oldData.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, true);
             }
             newData = Include(content?.Value<JObject>("ColumnValues")!, adoptionIncludes, audit.AuditDate, false);
             newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
+            newData["CourtCase"]["Court"] = Include(newData.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, false);
             
             return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
         }
