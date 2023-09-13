@@ -147,28 +147,21 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
 
                 if (updatedCertificates.Any())
                 {
-                    var tasks = new List<Task>();
-                    foreach (var certificateIndex in updatedCertificates)
+                //     var tasks = new List<Task>();
+                   foreach (var updatedCertificateIndex in updatedCertificates)
                     {
-
-                        var certificateId = certificateIndex.Id.ToString();
-                        var task = _elasticClient.UpdateByQueryAsync<CertificateIndex>(c =>
-                       c.Index("certificate")
-                           .Query(q =>
-                        q.Match(m => m.Field(f => f.Id.ToString()).Query(certificateId)))
-                        .Size(1)
-                           .Script(script => script
-                               .Source($"ctx._source = params.newDocument")
-                               .Params(p => p.Add("newDocument", certificateIndex))
-                           )
-
-                   );
-
-                        tasks.Add(task);
+                        var updateres = await _elasticClient.UpdateAsync<CertificateIndex>(DocumentPath<CertificateIndex>
+                            .Id(updatedCertificateIndex.Id.ToString()),
+                            p => p.Index("certificates")
+                                    .Doc(updatedCertificateIndex)
+                                    .Refresh(Elasticsearch.Net.Refresh.True)
+                                    );
+                        //     tasks.Add(task);
                     };
+             
 
                 }
-                await Task.WhenAll();
+                // await Task.WhenAll();
                 await _elasticClient.Indices.RefreshAsync("certificate");
 
             }
