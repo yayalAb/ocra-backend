@@ -23,6 +23,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
         public string? Description { get; set; }
         public string[]? DefualtColumns { get; set; }
         public string? query { get; set; }
+        public ReportColumsLngDto[] ColumnsLang { get; set; }
+
 
     }
 

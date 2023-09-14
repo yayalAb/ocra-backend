@@ -1,9 +1,13 @@
+using AppDiv.CRVS.Domain.Base;
+using AppDiv.CRVS.Domain.Entities.Settings;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using AppDiv.CRVS.Domain.Base;
-using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Domain.Entities
 {
@@ -15,6 +19,21 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? DefualtColumns { get; set; }
         public string? Query { get; set; }
         public string? columnsLang { get; set; }
+        public  string? UserGroupsStr { get; set; }
+        public  bool? isAddressBased { get; set; }=false;
+        [NotMapped]
+        public JArray? UserGroups
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<JArray>(string.IsNullOrEmpty(UserGroupsStr) ? "[]" : UserGroupsStr);
+            }
+            set
+            {
+                UserGroupsStr =(string.IsNullOrEmpty(value.ToString()) ||value.Count==0) ? "[]":value.ToString();
+            }
+        }
+
 
     }
 }
