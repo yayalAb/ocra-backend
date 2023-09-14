@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
         private readonly ILoginHistoryRepository _loginHistoryRepository;
         private readonly IHttpContextAccessor _httpContext;
         private readonly SMTPServerConfiguration _config;
+        private readonly IReportStoreRepostory _reportRepository;
 
         public AuthCommandHandler(IHttpContextAccessor httpContext,
                                   ILoginHistoryRepository loginHistoryRepository,
@@ -49,7 +50,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                   IMailService mailService,
                                   IOptions<SMTPServerConfiguration> config,
                                   ISmsService smsService,
-                                  IDateAndAddressService addressService)
+                                  IDateAndAddressService addressService,
+                                  IReportStoreRepostory reportRepository)
         {
             _identityService = identityService;
             _tokenGenerator = tokenGenerator;
@@ -62,6 +64,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             _loginHistoryRepository = loginHistoryRepository;
             _httpContext = httpContext;
             _config = config.Value;
+            _reportRepository=reportRepository;
         }
 
         public async Task<AuthResponseDTO> Handle(AuthCommand request, CancellationToken cancellationToken)
@@ -75,12 +78,14 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             }
             if (response.status == AuthStatus.FirstTimeLogin || response.status == AuthStatus.OtpUnverified)
             {
+
                 return new AuthResponseDTO
                 {
                     UserId = response.userId,
                     Name = request.UserName,
                     isFirstTime = response.status == AuthStatus.FirstTimeLogin,
-                    isOtpUnverified = response.status == AuthStatus.OtpUnverified
+                    isOtpUnverified = response.status == AuthStatus.OtpUnverified,
+           
                 };
 
             }
@@ -186,6 +191,14 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             };
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
+            var Report = _reportRepository.GetAll()
+                        .Select(repo => new ReportStoreDTO
+                                    {
+                                        Id = repo.Id,
+                                        ReportName = repo.ReportName,
+                                        ReportTitle =repo.ReportTitle
+                                    }).ToList();
+                                                            
 
             return new AuthResponseDTO()
             {
@@ -204,7 +217,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 LastName = userData.PersonalInfo?.LastName,
                 CanRegisterEvent = userData.CanRegisterEvent,
                 FingerPrintApiUrl = userData.FingerPrintApiUrl,
-                Address = await _addressService.FormatedAddress(userData.AddressId)!
+                Address = await _addressService.FormatedAddress(userData.AddressId)!,
+                Reports=Report
             };
         }
     }
