@@ -88,6 +88,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                     certificate.AuthenticationAt = DateTime.Now;
                     await _certificateRepository.UpdateAsync(certificate, x => x.Id);
                     await _certificateRepository.SaveChangesAsync(cancellationToken);
+                    _certificateRepository.TriggerCertificateIndex();
                     response.Message = "Requested Certificate  authenticated";
                     response.Success = true;
                     return response;
@@ -131,7 +132,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                Console.WriteLine($"&&&&&&&&&&&&&&&&&&&&&&&&&&7-------- {certificate.Event.EventRegisteredAddressId}");
                 await _notificationService.CreateNotification(certificate.EventId, "Authentication", request.Remark,
                                    _WorkflowService.GetReceiverGroupId("Authentication", (int)AuthenticationRequest.Request.NextStep), AuthenticationRequest.RequestId,
-                                 userId,certificate.Event.EventRegisteredAddressId,"request");
+                                 userId,certificate.Event.EventRegisteredAddressId,"request",null);
             }
 
             response.Message = "Authentication Request Sent Sucessfully";

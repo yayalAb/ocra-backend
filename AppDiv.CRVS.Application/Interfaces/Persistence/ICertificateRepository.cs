@@ -18,6 +18,9 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         public Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query);
         public Task InitializeCertificateIndex(bool reIndex = false);
         public Task MakeCertificateVoid(Guid eventId, CancellationToken cancellationToken);
+        public  Task<bool> SaveChangesAsync(CancellationToken cancellationToken);
+        public  void TriggerCertificateIndex();
+
 
         Task<(BirthEvent? birth, DeathEvent? death, AdoptionEvent? adoption, MarriageEvent? marriage, DivorceEvent? divorce)> GetContent(Guid eventId);
     }

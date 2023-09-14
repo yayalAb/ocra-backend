@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         private readonly CRVSDbContext _dbContext;
         private readonly IElasticClient _elasticClient;
         private readonly IUserResolverService _userResolverService;
+        private static List<CertificateEntry> certificateEntries = new List<CertificateEntry>();
 
 
         public CertificateRepository(CRVSDbContext dbContext, IElasticClient elasticClient, IUserResolverService userResolverService) : base(dbContext)
@@ -51,28 +52,36 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                (e.State == EntityState.Added
                                || e.State == EntityState.Modified));
 
-            List<CertificateEntry> certificateEntries = entries.Select(e => new CertificateEntry
+            List<CertificateEntry> newCertificateEntries = entries.Select(e => new CertificateEntry
             {
                 State = e.State,
                 CertificateId = ((Certificate)e.Entity).Id
             }).ToList();
 
+            certificateEntries.AddRange(newCertificateEntries);
+            return await base.SaveChangesAsync(cancellationToken);
 
-            var saveChangeRes = await base.SaveChangesAsync(cancellationToken);
 
 
+            // if (saveChangeRes)
+            // {
+            //     // index add or update changes to elastic search certificate index
+            //     if (certificateEntries.Any())
+            //     {
 
-            if (saveChangeRes)
+            //         BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexCertificate(certificateEntries));
+            //     }
+            // }
+
+            // return saveChangeRes;
+        }
+        public void TriggerCertificateIndex()
+        {
+            if (certificateEntries.Any())
             {
-                // index add or update changes to elastic search certificate index
-                if (certificateEntries.Any())
-                {
-
-                    BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexCertificate(certificateEntries));
-                }
+                BackgroundJob.Enqueue<IFireAndForgetJobs>(x => x.IndexCertificate(certificateEntries));
+                certificateEntries = new List<CertificateEntry>();
             }
-
-            return saveChangeRes;
         }
         public async Task<List<SearchCertificateResponseDTO>> SearchCertificate(SearchCertificateQuery query)
         {
@@ -115,11 +124,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     .Query(q =>
                     q.Bool(b => b
                     .Must(
-                            mu => mu.Match(m => m.Field(f => f.Status).Query("true")
+                            mu => mu.Match(m => m.Field(f => f.Status.ToString()).Query("true")
                             )
                             ,
 
-                            
+
                             mu => mu.QueryString(d => d.Query('*' + workingAddressIdStr + '*'))
 
                         // mu =>mu.Term(t => t.Field(f => f.EventRegisteredAddressId).Value(workingAddressIdStr))
@@ -152,9 +161,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             ))
                     ).Size(50)
                     );
-            string currentLanguage  = HelperService.getCurrentLanguage().ToLower();
+            string currentLanguage = HelperService.getCurrentLanguage().ToLower();
 
-            bool isAmharic = currentLanguage == "am" ;
+            bool isAmharic = currentLanguage == "am";
 
             return response.Documents.Select(d => new SearchCertificateResponseDTO
             {
@@ -164,7 +173,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 FullName = isAmharic ? d.FullNameAm : d.FullNameOr,
                 MotherName = isAmharic ? d.MotherFullNameAm : d.MotherFullNameOr,
                 CivilRegOfficerName = isAmharic ? d.CivilRegOfficerNameAm : d.CivilRegOfficerNameOr,
-                Address = isAmharic ? d.AddressAm  : d.AddressOr,
+                Address = isAmharic ? d.AddressAm : d.AddressOr,
                 EventAddress = isAmharic ? d.EventAddressAm : d.EventAddressOr,
                 EventRegisteredAddress = isAmharic ? d.EventRegisteredAddressAm : d.EventRegisteredAddressOr,
                 NationalId = d.NationalId,

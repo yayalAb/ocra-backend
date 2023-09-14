@@ -48,6 +48,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Create
 
                 await _certificateRepository.InsertAsync(Certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                _certificateRepository.TriggerCertificateIndex();
 
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
                 // createCustomerCommandResponse.Customer = customerResponse;          
