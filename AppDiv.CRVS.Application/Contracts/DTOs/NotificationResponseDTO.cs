@@ -11,7 +11,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string SenderId {get; set;}
         // public bool Seen { get; set; }
         public Guid? RequestId {get; set;}
-        public Guid GroupId { get; set; }
+        public Guid? GroupId { get; set; }
+        public Guid? ReceiverId {get; set;}
         public DateTime CreatedAt { get; set; }
         public string SenderUserName {get; set; }
         public string SenderFullName {get; set; }

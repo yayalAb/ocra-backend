@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 
 using AppDiv.CRVS.Application.Contracts.Request;
@@ -215,15 +216,21 @@ namespace AppDiv.CRVS.Application.Service
                     if (notificationObjId != null)
                     {
                         //check if its not last step 
-                        if (request.NextStep != request.currentStep && request.NextStep != 0)
+                        if (request.NextStep != request.currentStep && request.currentStep != 0)
                         {
                             await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
                                             this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                          userId, eventRegisteredId,IsApprove?"approve":"reject");
+                                          userId, eventRegisteredId,IsApprove?"approve":"reject",null);
                         }
                         //TODO:ie:final rejection or approval , send notification to the civilRegOfficer who created the request
-                        else if (request.NextStep == 0 || request.NextStep == request.currentStep)
+                        else if (request.currentStep == 0 || request.NextStep == request.currentStep)
                         {
+                            // var recieverId = _userRepository.GetAll()
+                            //                     .Where(u =>u.PersonalInfoId == request.CivilRegOfficerId)
+                            //                     .Select(u => u.Id);
+                            //  await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
+                            //                 null, request.Id,
+                            //               userId, eventRegisteredId,IsApprove?"approve":"reject",request.CivilRegOfficerId);
 
                         }
 
