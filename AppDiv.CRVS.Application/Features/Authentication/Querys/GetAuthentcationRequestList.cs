@@ -74,7 +74,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             }
             if (request.Status == "inprogress")
             {
-                RequestList = RequestList.Where(r => r.currentStep < r.Workflow.Steps.Count - 1 && r.IsRejected == false);
+                RequestList = RequestList.Where(r => r.currentStep < r.NextStep && r.IsRejected == false);
             }
             else if (request.Status == "approved")
             {
