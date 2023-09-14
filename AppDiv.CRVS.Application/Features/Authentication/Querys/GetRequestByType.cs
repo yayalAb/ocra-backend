@@ -12,15 +12,12 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
 {
     public class GetRequestByType : IRequest<PaginatedList<AuthenticationRequestListDTO>>
     {
-        public Guid UserId { get; set; }
         public string RequestType { get; set; } = "change";
         public string Status { get; set; } = "inprogress";
         public bool IsYourRequestList { get; set; } = false;
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public string? SearchString { get; set; }
-
-
     }
     public class GetRequestByTypeHandler : IRequestHandler<GetRequestByType, PaginatedList<AuthenticationRequestListDTO>>
     {
@@ -46,78 +43,32 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<PaginatedList<AuthenticationRequestListDTO>> Handle(GetRequestByType request, CancellationToken cancellationToken)
         {
-            var userGroup = _UserRepo.GetAll()
-            .Include(g => g.UserGroups)
-            .Include(x=>x.Address)
-            .Where(x => x.Id == _ResolverService.GetUserId()).FirstOrDefault();
-            if (userGroup == null)
-            {
-                throw new NotFoundException("user does not found");
-            }
             var address=await _dateAndAddressService.FormatedAddress(_ResolverService.GetWorkingAddressId());
             var RequestList = _transactionService.GetAllGrid()
-                 .Include(x=>x.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress)
-                //  .ThenInclude(x=>x.Address)
-                //  .ThenInclude(x=>x.ParentAddress)
-                //  .ThenInclude(x=>x.ParentAddress)
-                //  .ThenInclude(x=>x.ParentAddress)
-                //  .Include(w => w.Workflow)
-                //  .ThenInclude(ss => ss.Steps)
-                //  .ThenInclude(g => g.UserGroup)
                  .AsQueryable();
             if (request.RequestType == "change")
             {
-                RequestList = RequestList.Include(x => x.Request!.AuthenticationRequest.Certificate.Event.EventOwener);
+                RequestList = RequestList.Include(x => x.Request!.CorrectionRequest.Event.EventOwener);
             }
             else if (request.RequestType == "authentication")
             {
                 RequestList = RequestList.Include(x => x.Request!.CorrectionRequest.Event.EventOwener);
             }
-            else if (request.RequestType == "verfication")
-            if (request.Status == "inprogress")
+            else if (request.RequestType == "verification")
             {
-                RequestList = RequestList.Where(r => r.Request.currentStep < r.Request.NextStep && r.Request.IsRejected == false);
+                RequestList = RequestList.Include(x => x.Request!.VerficationRequest.Event.EventOwener);
             }
             else if (request.Status == "approved")
             {
-                RequestList = RequestList.Where(r => r.Request.currentStep == r.Request.NextStep);
+                RequestList = RequestList.Where(r => r.ApprovalStatus);
             }
             else if (request.Status == "rejected")
             {
-                RequestList = RequestList.Where(r => r.Request.IsRejected == true);
+                RequestList = RequestList.Where(r => !r.ApprovalStatus);
             }
                  
-            // RequestList.Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)));
-
-             if (userGroup.Address.AdminLevel == 1)
-            {
-                RequestList=RequestList.Where(e => (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
-            }
-            else if (userGroup.Address.AdminLevel == 2)
-            {
-                RequestList=RequestList.Where(e => (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
-            }
-            else if (userGroup.Address.AdminLevel == 3)
-            {
-                RequestList=RequestList.Where(e => (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
-               || (e.Request.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
-            }
-            else if (userGroup.Address.AdminLevel == 4)
-            {
-                RequestList=RequestList.Where(e => (e.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.Id == userGroup.AddressId)
-                || (e.Request.CivilRegOfficer.ApplicationUser.Address.Id == userGroup.AddressId));
-            }
-            else if (userGroup.Address.AdminLevel == 5)
-            {
-                RequestList=RequestList.Where(e => e.Request.CivilRegOfficer.ApplicationUser.AddressId== userGroup.AddressId);
-            }
+            
+             
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 RequestList = RequestList.Where(
@@ -133,52 +84,30 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              .OrderByDescending(w => w.CreatedAt)
              .Select(t => new AuthenticationRequestListDTO
              {
-                 Id = t.Request.Id,
-                 ResponsbleGroupId = t.Request.Workflow.Steps.Where(g => g.step == t.Request.NextStep).Select(x => x.UserGroupId).FirstOrDefault() ?? Guid.Empty,
-                 ResponsbleGroup = t.Request.Workflow.Steps.Where(g => g.step == t.Request.NextStep).Select(x => x.UserGroup.GroupName).FirstOrDefault(),
-                 OfficerId = t.Request.CivilRegOfficerId,
+                 Id = t.Id,
+                 OfficerId = Guid.Parse(t.CivilRegOfficerId),
                  RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
                  RequestType = t.Request.RequestType,
                  RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ?
                      t.Request.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
                  EventType = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
-                                request.RequestType == "change" ? t.Request.CorrectionRequest!.Event.EventType :
-                                request.RequestType == "verfication" ? t.Request.VerficationRequest.Event.EventType : string.Empty,
-                 CertificateId = request.RequestType == "change" ? t.Request.CorrectionRequest!.Event.CertificateId : 
-                                (request.RequestType == "authentication") ? t.Request.AuthenticationRequest!.Certificate!.Event.CertificateId :
-                                request.RequestType == "verfication" ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
+                             request.RequestType == "change" ? t.Request.CorrectionRequest.Event.EventType :
+                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.EventType : string.Empty,
+                 CertificateId = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest!.Certificate!.Event.CertificateId :
+                                 request.RequestType == "change" ? t.Request.CorrectionRequest.Event.CertificateId :
+                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
                                 
-                 EventOwnerName = (request.RequestType == "authentication") ? (string?)t.Request.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
-                                request.RequestType == "change" ? (string?)t.Request.CorrectionRequest!.Event.EventOwener.FullNameLang :
-                                request.RequestType == "verfication" ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
+                 EventOwnerName = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
+                                    request.RequestType == "change" ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
+                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
                  CurrentStep = t.Request.currentStep,
                  NextStep = t.Request.NextStep,
                  RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
-                 CanEdit = ((t.Request.currentStep == 0) && (t.Request.CivilRegOfficerId == userGroup.PersonalInfoId)),
-                 CanApprove = userGroup.UserGroups.Select(x => x.Id)
-                 .FirstOrDefault() == t.Request.Workflow.Steps.Where(g => g.step == t.Request.NextStep)
-                 .Select(x => x.UserGroupId).FirstOrDefault()
              });
-
-
-            if (!request.IsYourRequestList)
-            {
-                RequestListDto = RequestListDto.Where(rg => userGroup.UserGroups.Select(g => g.Id).ToList().Contains(rg.ResponsbleGroupId)); 
-                // RequestListDto = RequestListDto.Where(rg => rg.ResponsbleGroupId == userGroup.UserGroups.Select(g => g.Id).FirstOrDefault());
-            }
-            else
-            {
-                RequestListDto = RequestListDto.Where(rg => rg.OfficerId == userGroup.PersonalInfoId);
-            }
-
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
                                   RequestListDto
                                  , request.PageCount ?? 1, request.PageSize ?? 10);
-            if (RequestList == null)
-            {
-                throw new NotFoundException(" Request does not Exist");
-            }
             return List;
         }
     }
