@@ -62,15 +62,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
             Key = audit?.EntityType == "Lookup" || audit?.EntityType == "Setting" ? audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.Value<string>("Key") 
                                                 : audit?.EntityType == "Address" ? ((AdminLevel)audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.Value<int>("AdminLevel")!).ToString() 
                                                 : null;
-            var lookupValue = JObject.Parse(audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.Value<string>("ValueStr")!);
-            var addressName = audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.Value<string?>("AddressNameStr") is not null 
-                                    ? JObject.Parse(audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.Value<string>("AddressNameStr")!) 
-                                    : null;                                    
-            Record = audit?.EntityType == "Lookup" ? "Oromiffa: " + lookupValue?.Value<string>("or") + 
-                                                    ", Amharic: " + lookupValue?.Value<string>("am")
-                        : audit?.EntityType == "Address" ? "Oromiffa: " + addressName?.Value<string>("or") + 
-                                                          ", Amharic: " + addressName?.Value<string>("am")
-                        : null;
+            var lookup = audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.ToObject<Lookup>();
+            var address = audit?.AuditDataJson?.Value<JObject>("ColumnValues")?.ToObject<Address>();                           
+            Record = audit?.EntityType == "Lookup" ? lookup?.ValueLang
+                        : audit?.EntityType == "Address" ? address?.AddressNameLang : null;
         }
     }
     public class WorkHistoryAuditGridDTO
@@ -161,7 +156,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs;
             RequestType = transaction.Request.RequestType;
             RequestStatus = transaction.ApprovalStatus;
             CurrentStep = transaction.CurrentStep;
-            StepName = transaction!.Workflow!.Steps.Where(s => s.step == transaction.CurrentStep).Select(s => s.Description.ToString()).SingleOrDefault();
+            StepName = transaction!.Workflow!.Steps.Where(s => s.step == transaction.CurrentStep).Select(s => s.DescriptionLang.ToString()).SingleOrDefault();
             CertificateId = transaction.Request?.AuthenticationRequest?.Certificate?.Event?.CertificateId ??
                             transaction.Request?.CorrectionRequest?.Event.CertificateId ??
                             transaction.Request?.VerficationRequest?.Event.CertificateId ??

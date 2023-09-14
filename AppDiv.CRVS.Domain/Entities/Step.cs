@@ -25,6 +25,14 @@ namespace AppDiv.CRVS.Domain.Entities
                 DescriptionStr = value.ToString();
             }
         }
+        [NotMapped]
+        public string DescriptionLang
+        {
+            get
+            {
+                return Description.Value<string>(lang);
+            }
+        }
         public Guid workflowId { get; set; }
         public Workflow workflow { get; set; }
         public virtual Guid? UserGroupId { get; set; }

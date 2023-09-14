@@ -320,11 +320,11 @@ namespace AppDiv.CRVS.Application.Service
             {
                 oldData = Include(GetContent(content), adoptionIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
-                oldData["CourtCase"]["Court"] = Include(oldData.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, true);
+                oldData["CourtCase"]!["Court"] = Include(oldData.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, true);
             }
             newData = Include(content?.Value<JObject>("ColumnValues")!, adoptionIncludes, audit.AuditDate, false);
             newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
-            newData["CourtCase"]["Court"] = Include(newData.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, false);
+            newData["CourtCase"]!["Court"] = Include(newData.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, false);
             
             return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
         }
@@ -348,12 +348,14 @@ namespace AppDiv.CRVS.Application.Service
                     }
                     else
                     {
-                        content[key] = GetContent(
-                                                _auditlog.GetAll()
-                                                    .OrderByDescending(a => a.AuditDate)
-                                                    .Where(a => a.AuditDate >= auditDate.AddMinutes(-1) && a.AuditDate <= auditDate.AddMinutes(1))
-                                                    .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
-                                                    .AuditDataJson!);
+                        content[key] = // GetContent(
+                                        _auditlog.GetAll()
+                                            .OrderByDescending(a => a.AuditDate)
+                                            .Where(a => DateTime.Compare(a.AuditDate, auditDate) < 0)
+                                            .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
+                                            .AuditDataJson!
+                                            .Value<JObject>("ColumnValues");
+                                            // );
                     }
                 }
             }
@@ -375,17 +377,22 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         content[key] = _auditlog.GetAll()
                                                 .OrderByDescending(a => a.AuditDate)
+                                                .Where(a => a.AuditDate >= auditDate.AddMinutes(-1) && a.AuditDate <= auditDate.AddMinutes(1))
                                                 .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
                                                 .AuditDataJson?
                                                 .Value<JObject>("ColumnValues");
                     }
                     else 
                     {
-                        content[key] = GetContent(
+                        content[key] = 
+                        // GetContent(
                                                  _auditlog.GetAll()
                                                     .OrderByDescending(a => a.AuditDate)
+                                                    .Where(a => DateTime.Compare(a.AuditDate, auditDate) < 0)
                                                     .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
-                                                    .AuditDataJson);
+                                                    .AuditDataJson
+                                                    .Value<JObject>("ColumnValues");
+                                                    // );
                     }
                 }
             }
@@ -394,6 +401,7 @@ namespace AppDiv.CRVS.Application.Service
                 content["Registrar"] = Include(
                                             _auditlog.GetAll()
                                                 .OrderByDescending(a => a.AuditDate)
+                                                .Where(a => a.AuditDate >= auditDate.AddMinutes(-1) && a.AuditDate <= auditDate.AddMinutes(1))
                                                 .FirstOrDefault(a => a.EntityType == "Registrar" && 
                                                     a.AuditData.Contains($"\"EventId\": \"{content.Value<string>("Id")}\""))?
                                                 .AuditDataJson?
@@ -405,12 +413,16 @@ namespace AppDiv.CRVS.Application.Service
             else
             {
                 content["Registrar"] = Include(
-                                            GetContent(
+                                            // GetContent(
                                                 _auditlog.GetAll()
                                                 .OrderByDescending(a => a.AuditDate)
+                                                .Where(a => DateTime.Compare(a.AuditDate, auditDate) < 0)
                                                 .FirstOrDefault(a => a.EntityType == "Registrar" && 
                                                     a.AuditData.Contains($"\"EventId\": \"{content.Value<string>("Id")}\""))?
-                                                .AuditDataJson), 
+                                                .AuditDataJson
+                                                .Value<JObject>("ColumnValues")!
+                                                // )
+                                                ,
                                             new List<string> { "RegistrarInfoId" },
                                             auditDate,
                                             changes);
