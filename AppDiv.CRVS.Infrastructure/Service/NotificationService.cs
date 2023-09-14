@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             _addressService = addressService;
             _userResolverService = userResolverService;
         }
-        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId,string approvalType)
+        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid? groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId, string approvalType, Guid? receiverId = null)
         {
 
             var notification = new Notification
@@ -40,6 +40,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 RequestId = requestId,
                 GroupId = groupId,
                 SenderId = senderId,
+                ReceiverId = receiverId,
                 ApprovalType = approvalType,
                 EventRegisteredAddressId = eventRegisteredAddressId
             };
@@ -68,6 +69,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         NotificationObjId = n.NotificationObjId,
                         RequestId = n.RequestId,
                         GroupId = n.GroupId,
+                        ReceiverId = n.ReceiverId,
                         CreatedAt = n.CreatedAt,
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang + " " +
                                          n.Sender.PersonalInfo.MiddleNameLang + " " +
@@ -81,10 +83,14 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
                 throw new NotFoundException("notification could not be created");
             }
-            if (eventRegisteredAddressId != null)
+            if (!string.IsNullOrEmpty(receiverId.ToString()))// send notification to single user
+            {
+                await _messageHub.Clients.User(receiverId.ToString()).NewNotification(resNotification);
+            }
+            else if (eventRegisteredAddressId != null)
             {
 
-                AddressResponseDTOE addressResponse =await _addressService.FormatedAddressLoop(eventRegisteredAddressId);
+                AddressResponseDTOE addressResponse = await _addressService.FormatedAddressLoop(eventRegisteredAddressId);
                 // send notification to the group 
                 if (addressResponse?.Country != null)
                     await _messageHub.Clients.Group(resNotification.GroupId.ToString() + "_" + addressResponse?.Country).NewNotification(resNotification);
@@ -107,12 +113,13 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
                 _context.Notifications.Remove(notification);
                 await _context.SaveChangesAsync();
+                
                 if (notification.EventRegisteredAddressId != null)
                 {
 
-                var addressResponse =await _addressService.FormatedAddressLoop(notification.EventRegisteredAddressId);
+                    var addressResponse = await _addressService.FormatedAddressLoop(notification.EventRegisteredAddressId);
 
-      
+
 
                     // send remove notification  to the group 
                     if (addressResponse?.Country != null)
@@ -167,8 +174,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     .Include(n => n.Request.CorrectionRequest)
                     .Include(n => n.Request.AuthenticationRequest)
                     .Include(n => n.EventRegisteredAddress)
-                    .Where(n => groupIds.Contains(n.GroupId) && !n.Seen)
-                    
+                    .Where(n =>n.GroupId != null? groupIds.Contains((Guid)n.GroupId):false && !n.Seen)
                     .Where(n =>
                      (n.EventRegisteredAddress.AdminLevel >= 4 && n.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == workingAddressId)
                      || (n.EventRegisteredAddress.AdminLevel >= 3 && n.EventRegisteredAddress.ParentAddress.ParentAddress.Id == workingAddressId)

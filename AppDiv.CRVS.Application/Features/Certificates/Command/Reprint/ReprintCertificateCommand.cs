@@ -107,6 +107,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Update
                     even.ReprintWaiting = false;
                     await _EventRepository.UpdateAsync(even, x => x.Id);
                     var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                    _certificateRepository.TriggerCertificateIndex();
                 }
                 catch (Exception exp)
                 {

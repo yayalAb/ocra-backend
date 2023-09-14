@@ -176,6 +176,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 _eventRepository.Update(CustomMapper.Mapper.Map<Event>(selectedEvent));
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                _certificateRepository.TriggerCertificateIndex();
             }
             if (selectedEvent.EventType.ToLower() == "marriage" || content.marriage != null)
             {

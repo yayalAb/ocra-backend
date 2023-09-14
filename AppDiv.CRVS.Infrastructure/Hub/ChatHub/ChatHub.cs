@@ -39,7 +39,7 @@ public class ChatHub : Hub<IChatHubClient>
         var userAddressId = _userResolverService.GetWorkingAddressId().ToString();
         await Groups.AddToGroupAsync(Context.ConnectionId, userAddressId);
         await Clients.Group(userAddressId).UserConnected(userId);
-        if(string.IsNullOrEmpty(userId)){
+        if(!string.IsNullOrEmpty(userId)){
         _dbContext.OnlineUsers.Add(new OnlineUser
         {
             UserId = userId,

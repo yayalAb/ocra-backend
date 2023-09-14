@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
         private readonly IUserResolverService _userResolverService;
+        private readonly ICertificateRepository _certificateRepository;
 
         public CreateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
                                                 IPersonalInfoRepository personalInfoRepository,
@@ -38,7 +39,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                                 ICourtRepository courtRepository,
                                                 IAddressLookupRepository addressRepostory,
                                                 IFingerprintService fingerprintService,
-                                                IUserResolverService userResolverService
+                                                IUserResolverService userResolverService,
+                                                ICertificateRepository certificateRepository
                                                 )
         {
             _DivorceEventRepository = DivorceEventRepository;
@@ -53,6 +55,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
             _userResolverService=userResolverService;
+            _certificateRepository = certificateRepository;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
@@ -153,6 +156,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             createDivorceEventCommandResponse.Message = "Divorce event created successfully";
                             await transaction.CommitAsync();
                             _DivorceEventRepository.TriggerPersonalInfoIndex();
+                            _certificateRepository.TriggerCertificateIndex();
 
                             // }
                         }

@@ -17,14 +17,14 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Report.Query
 {
     // Customer query with List<Customer> response
-    public record GetReportsList : IRequest<PaginatedList<ReportStore>>
+    public record GetReportsList : IRequest<PaginatedList<ReportStoreDTO>>
     {
         public int? PageCount { get; set; } = 1;
         public int? PageSize { get; set; } = 10;
 
     }
 
-    public class GetReportsListHandler : IRequestHandler<GetReportsList, PaginatedList<ReportStore>>
+    public class GetReportsListHandler : IRequestHandler<GetReportsList, PaginatedList<ReportStoreDTO>>
     {
         private readonly IReportStoreRepostory _reportRepository;
 
@@ -32,11 +32,17 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
         {
             _reportRepository = reportRepository;
         }
-        public async Task<PaginatedList<ReportStore>> Handle(GetReportsList request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<ReportStoreDTO>> Handle(GetReportsList request, CancellationToken cancellationToken)
         {
-            var Report = _reportRepository.GetAll();
+            var Report = _reportRepository.GetAll()
+                                .Select(repo => new ReportStoreDTO
+                                            {
+                                                Id = repo.Id,
+                                                ReportName = repo.ReportName,
+                                                ReportTitle =repo.ReportTitle
+                                            }).ToList();
 
-            return await PaginatedList<ReportStore>
+            return await PaginatedList<ReportStoreDTO>
                             .CreateAsync(
                                  Report
                                 , request.PageCount ?? 1, request.PageSize ?? 10);

@@ -27,44 +27,34 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             _DbContext = dbContext;
             _reportStor = reportStor;
         }
-        public async Task<BaseResponse> CreateReportAsync(string reportName, string query, string Description, string[]? Colums, string? ReportTitle, string columnsLang, CancellationToken cancellationToken)
+        public async Task<BaseResponse> CreateReportAsync(ReportStore Report, CancellationToken cancellationToken)
+            // string reportName, string query, string Description, string[]? Colums, string? ReportTitle, string columnsLang, CancellationToken cancellationToken)
         {
             var response = new BaseResponse();
             string sql = "";
 
-            if (string.IsNullOrEmpty(reportName))
+            if (string.IsNullOrEmpty(Report?.ReportName))
             {
                 response.Message = "The report name should not be empty";
                 return response;
             }
-            else if (string.IsNullOrEmpty(query))
+            else if (string.IsNullOrEmpty(Report?.Query))
             {
                 response.Message = "You should provide the report query statement.";
                 return response;
             }
             else
             {
-                reportName = this.SanitizeString(reportName);
-                Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx {0}",reportName);
-                query = RemoveSpecialChar(query);
-                sql = $" CREATE VIEW `{reportName}` AS {query}";
+                Report.ReportName = this.SanitizeString(Report?.ReportName);
+                Report.Query = RemoveSpecialChar(Report?.Query);
+                sql = $" CREATE VIEW `{Report.ReportName}` AS {Report.Query}";
                 try
                 {
-                    string defualt = (Colums != null && Colums.Count() != 0) ? string.Join(",", Colums) : "";
                     var Data = await _DbContext.Database.ExecuteSqlRawAsync(sql);
-                    var Report = new ReportStore
-                    {
-                        Id = Guid.NewGuid(),
-                        ReportName = reportName,
-                        ReportTitle = ReportTitle,
-                        Description = Description,
-                        DefualtColumns = defualt,
-                        CreatedAt = DateTime.Now,
-                        Query = query,
-                        columnsLang=columnsLang
-                    };
+                   
+
                     await this.CreateReportTable(Report, cancellationToken);
-                    response.Message = $"Created a report {reportName} successfully.";
+                    response.Message = $"Created a report {Report.ReportName} successfully.";
                 }
                 catch (Exception ex)
                 {

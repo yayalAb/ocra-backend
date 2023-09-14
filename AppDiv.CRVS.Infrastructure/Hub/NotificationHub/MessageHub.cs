@@ -45,12 +45,13 @@ public class MessageHub : Hub<IMessageHubClient>
         // Console.WriteLine($"*ugg^^^^^^^^^^^^^^^^^----{workingAddressId}");
         Console.WriteLine($"*www^^^^^^^^^^^^^^^^^----{workingAddressId}");
 
+
         if (workingAddressId != Guid.Empty)
         {
             foreach (var groupId in userGroupIds)
             {
                 await Groups.AddToGroupAsync(Context.ConnectionId, groupId.ToString() + "_" + workingAddressId.ToString());
-            Console.WriteLine($"Notification:conected to group ----- { groupId.ToString() + "_" + workingAddressId.ToString()}");
+                Console.WriteLine($"Notification:conected to group ----- {groupId.ToString() + "_" + workingAddressId.ToString()}");
             }
 
             logger.LogCritical("connected");

@@ -35,10 +35,22 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
             }
             if (CreateReportCommadResponse.Success)
             {
-                string columnsLang=JsonSerializer.Serialize(request.ColumnsLang);
-                await _ReportRepository.CreateReportAsync(request.ReportName, request.Query, request?.Description, request?.DefualtColumns, request?.ReportTitle,columnsLang, cancellationToken);
+                string defualt = (request.DefualtColumns != null && request.DefualtColumns.Count() != 0) ? string.Join(",", request.DefualtColumns) : "";
+                 var Report = new ReportStore
+                    {
+                        Id = Guid.NewGuid(),
+                        ReportName =request.ReportName,
+                        ReportTitle =request.ReportTitle,
+                        Description =request.Description,
+                        DefualtColumns =defualt,
+                        CreatedAt =DateTime.Now,
+                        Query =request.Query,
+                        columnsLang=JsonSerializer.Serialize(request.ColumnsLang),
+                        UserGroups=request.UserGroups,
+                        isAddressBased=request.isAddressBased
+                    };
+                await _ReportRepository.CreateReportAsync(Report, cancellationToken);
                 CreateReportCommadResponse.Message = "Report created successfully";
-
             }
             return CreateReportCommadResponse;
         }
