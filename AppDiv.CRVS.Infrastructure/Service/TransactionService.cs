@@ -37,6 +37,20 @@ namespace AppDiv.CRVS.Infrastructure.Service
                             .Include(t => t.Workflow!.Steps)
                             .Include(t => t.CivilRegOfficer!.PersonalInfo);
         }
+
+        public IQueryable<Transaction> GetAll()
+        {
+            return _context.Transactions
+                            .AsNoTracking()
+                            .Include(t => t.Request)
+                            .Include(t => t.Request!.CivilRegOfficer)
+                            // .Include(t => t.Request!.CorrectionRequest.Event)
+                            // .Include(t => t.Request!.AuthenticationRequest.Certificate.Event)
+                            // .Include(t => t.Request!.VerficationRequest.Event)
+                            // .Include(t => t.Request!.PaymentRequest.Event)
+                            .Include(t => t.Workflow!.Steps)
+                            .Include(t => t.CivilRegOfficer!.PersonalInfo);
+        }
         //     public async Task<List<Transaction>> GetTransactions(TransactionRequestDTO transactionObj){
         //     var transaction = CustomMapper.Mapper.Map<Transaction>(transactionObj);
         //     await _context.Transactions.AddAsync(transaction);

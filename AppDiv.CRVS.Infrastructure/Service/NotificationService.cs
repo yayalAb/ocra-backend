@@ -168,6 +168,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     .Include(n => n.Request.AuthenticationRequest)
                     .Include(n => n.EventRegisteredAddress)
                     .Where(n => groupIds.Contains(n.GroupId) && !n.Seen)
+                    
                     .Where(n =>
                      (n.EventRegisteredAddress.AdminLevel >= 4 && n.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == workingAddressId)
                      || (n.EventRegisteredAddress.AdminLevel >= 3 && n.EventRegisteredAddress.ParentAddress.ParentAddress.Id == workingAddressId)

@@ -75,33 +75,44 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
                 foreach (MarriageApplicationCouch marraigeApplication in newMarriageApplications)
                 {
-
-                    Console.WriteLine($"creating  ---  {marraigeApplication.Id} ");
-                    var uid = _userRepository.GetAll()
-                                         .Where(u => u.PersonalInfoId == marraigeApplication.CivilRegOfficerId)
-                                         .Select(u => u.Id).FirstOrDefault();
-                    var marriageApplicationCommand
-                     = new CreateMarriageApplicationCommand
-                     {
-                         Id = new Guid(marraigeApplication.Id),
-                         ApplicationDateEt = marraigeApplication.ApplicationDateEt,
-                         ApplicationAddressId = marraigeApplication.ApplicationAddressId,
-                         BrideInfo = marraigeApplication.BrideInfo,
-                         GroomInfo = marraigeApplication.GroomInfo,
-                         CivilRegOfficerId = marraigeApplication.CivilRegOfficerId,
-                         CreatedAt = marraigeApplication.CreatedDateGorg,
-                         CreatedBy = uid != null ? new Guid(uid) : null
-
-
-                     };
-
-                    var res = await _mediator.Send(marriageApplicationCommand);
-                    if (res.Success)
+                    try
                     {
-                        marraigeApplication.Synced = true;
+
+                        Console.WriteLine($"creating  ---  {marraigeApplication.Id} ");
+                        var uid = _userRepository.GetAll()
+                                             .Where(u => u.PersonalInfoId == marraigeApplication.CivilRegOfficerId)
+                                             .Select(u => u.Id).FirstOrDefault();
+                        var marriageApplicationCommand
+                         = new CreateMarriageApplicationCommand
+                         {
+                             Id = new Guid(marraigeApplication.Id),
+                             ApplicationDateEt = marraigeApplication.ApplicationDateEt,
+                             ApplicationAddressId = marraigeApplication.ApplicationAddressId,
+                             BrideInfo = marraigeApplication.BrideInfo,
+                             GroomInfo = marraigeApplication.GroomInfo,
+                             CivilRegOfficerId = marraigeApplication.CivilRegOfficerId,
+                             CreatedAt = marraigeApplication.CreatedDateGorg,
+                             CreatedBy = uid != null ? new Guid(uid) : null
+
+
+                         };
+
+                        var res = await _mediator.Send(marriageApplicationCommand);
+                        if (res.Success)
+                        {
+                            marraigeApplication.Synced = true;
+                            await marriageDb.AddOrUpdateAsync(marraigeApplication);
+                        }//08db971e-eefe-431b-80ec-d74d8713817d
+                         //08db8831-cdee-438e-80a9-4100d6587b16
+                    }
+                    catch (Exception e)
+                    {
+                        marraigeApplication.Failed = true;
+                        marraigeApplication.FailureMessage = e.Message;
                         await marriageDb.AddOrUpdateAsync(marraigeApplication);
-                    }//08db971e-eefe-431b-80ec-d74d8713817d
-                    //08db8831-cdee-438e-80a9-4100d6587b16
+
+                    }
+
 
 
                 }

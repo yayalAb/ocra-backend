@@ -13,6 +13,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
     public class GetAuthentcationRequestList : IRequest<object>
     {
         public Guid UserId { get; set; }
+        public string RequestType { get; set; } = "change";
+        public string Status { get; set; } = "inprogress";
         public bool IsYourRequestList { get; set; } = false;
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
@@ -58,16 +60,33 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .ThenInclude(x=>x.ParentAddress)
                  .ThenInclude(x=>x.ParentAddress)
                  .ThenInclude(x=>x.ParentAddress)
-                 .Include(x => x.AuthenticationRequest)
-                 .ThenInclude(x => x.Certificate)
-                 .ThenInclude(x => x.Event.EventOwener)
-                 .Include(x => x.CorrectionRequest)
-                 .ThenInclude(x => x.Event.EventOwener)
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
-              .Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
-               &&(wf.PaymentRequest==null)&&(wf.CorrectionRequest!=null||wf.AuthenticationRequest!=null)));
+                 .Include(r => r.Transactions)
+                 .AsQueryable();
+            if (request.RequestType == "change")
+            {
+                RequestList = RequestList.Include(x => x.AuthenticationRequest.Certificate.Event.EventOwener);
+            }
+            if (request.RequestType == "authentication")
+            {
+                RequestList = RequestList.Include(x => x.CorrectionRequest.Event.EventOwener);
+            }
+            if (request.Status == "inprogress")
+            {
+                RequestList = RequestList.Where(r => r.currentStep < r.NextStep && r.IsRejected == false);
+            }
+            else if (request.Status == "approved")
+            {
+                RequestList = RequestList.Where(r => r.currentStep == r.NextStep);
+            }
+            else if (request.Status == "rejected")
+            {
+                RequestList = RequestList.Where(r => r.IsRejected == true);
+            }
+                 
+            // RequestList.Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)));
 
              if (userGroup.Address.AdminLevel == 1)
             {
@@ -109,7 +128,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                          EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.NextStep.ToString()!, "%" + request.SearchString + "%"));
             }
-            var RequestListDto = RequestList.Where(x => (x.RequestType == "change" || x.RequestType == "authentication") && x.IsRejected==false)
+            var RequestListDto = RequestList.Where(x => x.RequestType == request.RequestType)
              .OrderByDescending(w => w.CreatedAt)
              .Select(w => new AuthenticationRequestListDTO
              {
@@ -121,13 +140,16 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  RequestType = w.RequestType,
                  RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ?
                      w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
-                 EventType = (w.AuthenticationRequest!.Certificate != null) ? (string)w.AuthenticationRequest.Certificate.Event.EventType :
-                                (string)w.CorrectionRequest!.Event.EventType,
-                 CertificateId = w.CorrectionRequest != null ? w.CorrectionRequest.Event.CertificateId : 
-                                (w.AuthenticationRequest != null) ? w.AuthenticationRequest!.Certificate!.Event.CertificateId : "",
+                 EventType = (request.RequestType == "authentication")  ? w.AuthenticationRequest.Certificate.Event.EventType :
+                                request.RequestType == "change" ? w.CorrectionRequest!.Event.EventType :
+                                request.RequestType == "verfication" ? w.VerficationRequest.Event.EventType : string.Empty,
+                 CertificateId = request.RequestType == "change" ? w.CorrectionRequest!.Event.CertificateId : 
+                                (request.RequestType == "authentication") ? w.AuthenticationRequest!.Certificate!.Event.CertificateId :
+                                request.RequestType == "verfication" ? w.VerficationRequest.Event.CertificateId : string.Empty,
                                 
-                 EventOwnerName = w.AuthenticationRequest!.Certificate != null ? (string?)w.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
-                                (string?)w.CorrectionRequest!.Event.EventOwener.FullNameLang,
+                 EventOwnerName = (request.RequestType == "authentication") ? (string?)w.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
+                                request.RequestType == "change" ? (string?)w.CorrectionRequest!.Event.EventOwener.FullNameLang :
+                                request.RequestType == "verfication" ? w.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
                  RequestDate =new CustomDateConverter(w.CreatedAt).ethiopianDate,
