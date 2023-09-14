@@ -63,6 +63,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
+                 .Include(r => r.Transactions)
                  .AsQueryable();
             if (request.RequestType == "change")
             {
@@ -139,13 +140,16 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  RequestType = w.RequestType,
                  RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ?
                      w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
-                 EventType = (request.RequestType == "authentication")  ? (string)w.AuthenticationRequest.Certificate.Event.EventType :
-                                (string)w.CorrectionRequest!.Event.EventType,
+                 EventType = (request.RequestType == "authentication")  ? w.AuthenticationRequest.Certificate.Event.EventType :
+                                request.RequestType == "change" ? w.CorrectionRequest!.Event.EventType :
+                                request.RequestType == "verfication" ? w.VerficationRequest.Event.EventType : string.Empty,
                  CertificateId = request.RequestType == "change" ? w.CorrectionRequest!.Event.CertificateId : 
-                                (request.RequestType == "authentication") ? w.AuthenticationRequest!.Certificate!.Event.CertificateId : "",
+                                (request.RequestType == "authentication") ? w.AuthenticationRequest!.Certificate!.Event.CertificateId :
+                                request.RequestType == "verfication" ? w.VerficationRequest.Event.CertificateId : string.Empty,
                                 
                  EventOwnerName = (request.RequestType == "authentication") ? (string?)w.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
-                                request.RequestType == "change" ? (string?)w.CorrectionRequest!.Event.EventOwener.FullNameLang : "",
+                                request.RequestType == "change" ? (string?)w.CorrectionRequest!.Event.EventOwener.FullNameLang :
+                                request.RequestType == "verfication" ? w.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
                  RequestDate =new CustomDateConverter(w.CreatedAt).ethiopianDate,
