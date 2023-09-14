@@ -19,6 +19,8 @@ namespace AppDiv.CRVS.Application.CouchModels
         public BrideInfoDTO BrideInfo { get; set; }
         public GroomInfoDTO GroomInfo { get; set; }
         public Guid CivilRegOfficerId { get; set; }
+        public bool Failed { get; set; } = false;
+        public string? FailureMessage { get; set; }
         [NotMapped]
         public bool Synced { get; set; }
         [NotMapped]
