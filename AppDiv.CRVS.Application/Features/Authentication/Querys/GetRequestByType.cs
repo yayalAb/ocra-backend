@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
     public class GetRequestByType : IRequest<PaginatedList<AuthenticationRequestListDTO>>
     {
         public string RequestType { get; set; } = "change";
-        public string Status { get; set; } = "inprogress";
+        public string Status { get; set; }
         public bool IsYourRequestList { get; set; } = false;
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
@@ -43,7 +43,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<PaginatedList<AuthenticationRequestListDTO>> Handle(GetRequestByType request, CancellationToken cancellationToken)
         {
-            var address=await _dateAndAddressService.FormatedAddress(_ResolverService.GetWorkingAddressId());
             var RequestList = _transactionService.GetAllGrid()
                  .AsQueryable();
             if (request.RequestType == "change")
@@ -58,13 +57,13 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             {
                 RequestList = RequestList.Include(x => x.Request!.VerficationRequest.Event.EventOwener);
             }
-            else if (request.Status == "approved")
+            if (request.Status == "approved")
             {
-                RequestList = RequestList.Where(r => r.ApprovalStatus);
+                RequestList = RequestList.Where(r => r.ApprovalStatus == true);
             }
             else if (request.Status == "rejected")
             {
-                RequestList = RequestList.Where(r => !r.ApprovalStatus);
+                RequestList = RequestList.Where(r => r.ApprovalStatus == false);
             }
                  
             
