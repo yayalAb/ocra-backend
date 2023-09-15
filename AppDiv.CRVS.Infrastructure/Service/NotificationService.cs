@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             _addressService = addressService;
             _userResolverService = userResolverService;
         }
-        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid? groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId, string approvalType, Guid? receiverId = null)
+        public async Task CreateNotification(Guid notificationObjId, string type, string message, Guid? groupId, Guid? requestId, string senderId, Guid? eventRegisteredAddressId, string approvalType, string? receiverId = null)
         {
 
             var notification = new Notification
@@ -83,9 +83,9 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
                 throw new NotFoundException("notification could not be created");
             }
-            if (!string.IsNullOrEmpty(receiverId.ToString()))// send notification to single user
+            if (!string.IsNullOrEmpty(receiverId))// send notification to single user
             {
-                await _messageHub.Clients.User(receiverId.ToString()).NewNotification(resNotification);
+                await _messageHub.Clients.User(receiverId).NewNotification(resNotification);
             }
             else if (eventRegisteredAddressId != null)
             {
@@ -167,6 +167,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
         public async Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds)
         {
             var workingAddressId = _userResolverService.GetWorkingAddressId();
+            var userId = _userResolverService.GetUserId();
             if (workingAddressId == Guid.Empty) throw new NotFoundException("Invalid working address please login first");
             var query1 = _context.Notifications
                     .Include(n => n.Sender)
@@ -174,7 +175,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     .Include(n => n.Request.CorrectionRequest)
                     .Include(n => n.Request.AuthenticationRequest)
                     .Include(n => n.EventRegisteredAddress)
-                    .Where(n =>n.GroupId != null? groupIds.Contains((Guid)n.GroupId):false && !n.Seen)
+                    .Where(n =>(n.GroupId != null? groupIds.Contains((Guid)n.GroupId):n.ReceiverId == userId)  && !n.Seen)
                     .Where(n =>
                      (n.EventRegisteredAddress.AdminLevel >= 4 && n.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == workingAddressId)
                      || (n.EventRegisteredAddress.AdminLevel >= 3 && n.EventRegisteredAddress.ParentAddress.ParentAddress.Id == workingAddressId)
@@ -199,7 +200,8 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                          n.Sender.PersonalInfo.MiddleNameLang + " " +
                                          n.Sender.PersonalInfo.LastNameLang,
                         SenderUserName = n.Sender.UserName,
-                        SenderId = n.SenderId
+                        SenderId = n.SenderId,
+                        hasApproval = n.GroupId != null && n.ReceiverId == null
 
 
                     })

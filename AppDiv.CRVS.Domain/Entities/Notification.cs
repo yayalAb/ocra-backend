@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool Seen { get; set; }= false;
         public Guid? RequestId {get; set;}
         public Guid? GroupId { get; set; }
-        public Guid? ReceiverId {get;set;}
+        public string? ReceiverId {get;set;}
         public string SenderId { get; set; }
         public string ApprovalType {get;set;}
         public Guid? EventRegisteredAddressId {get;set;}

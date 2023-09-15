@@ -26,7 +26,7 @@ namespace AppDiv.CRVS.Application.Service
         private readonly INotificationService notificationService;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
-        public  bool  IsRejected=false;
+        public bool IsRejected = false;
 
 
         private readonly IEventRepository _EventRepository;
@@ -84,7 +84,8 @@ namespace AppDiv.CRVS.Application.Service
             {
                 if (step == 1 || step == 0)
                 {
-                    if(step == 0){
+                    if (step == 0)
+                    {
                         IsRejected = true;
                     }
                     return 0;
@@ -162,7 +163,7 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         throw new NotFoundException("user not found");
                     }
-                    request.IsRejected=IsRejected;
+                    request.IsRejected = IsRejected;
                     request.currentStep = nextStep;
                     request.NextStep = this.GetNextStep(workflowType, nextStep, true);
                     // if (request.Notification != null)
@@ -189,8 +190,7 @@ namespace AppDiv.CRVS.Application.Service
 
                     //send notification
                     Guid? eventId = request.CorrectionRequest != null
-                                            ? _EventRepository.GetAll().Where(e => e.Id == request.CorrectionRequest.EventId)
-                                                                .Select(e => e.EventRegisteredAddressId).FirstOrDefault()
+                                            ? request.CorrectionRequest.EventId
                                             : request.AuthenticationRequest != null
                                             ? _CertificateRepository
                                            .GetAll()
@@ -217,21 +217,25 @@ namespace AppDiv.CRVS.Application.Service
                     if (notificationObjId != null)
                     {
                         //check if its not last step 
-                        if (request.NextStep != request.currentStep && request.currentStep != 0)
+                        if (request.NextStep != request.currentStep && !IsRejected/*last rejection*/)
                         {
+                            Guid receiverGroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
+
                             await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
-                                            this.GetReceiverGroupId(workflowType, (int)request.NextStep), request.Id,
-                                          userId, eventRegisteredId,IsApprove?"approve":"reject",null);
+                                            receiverGroupId, request.Id, userId, eventRegisteredId, IsApprove ? "approve" : "reject", null);
                         }
                         //TODO:ie:final rejection or approval , send notification to the civilRegOfficer who created the request
-                        else if (request.currentStep == 0 || request.NextStep == request.currentStep)
+                        else
                         {
-                            // var recieverId = _userRepository.GetAll()
-                            //                     .Where(u =>u.PersonalInfoId == request.CivilRegOfficerId)
-                            //                     .Select(u => u.Id);
-                            //  await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
-                            //                 null, request.Id,
-                            //               userId, eventRegisteredId,IsApprove?"approve":"reject",request.CivilRegOfficerId);
+                            var recieverId = _userRepository.GetAll()
+                                                .Where(u => u.PersonalInfoId == request.CivilRegOfficerId)
+                                                .Select(u => u.Id).FirstOrDefault();
+                            if (recieverId != null)
+                            {
+                                await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
+                                               null, request.Id,
+                                             userId, eventRegisteredId, IsApprove ? "approve" : "reject", recieverId);
+                            }
 
                         }
 
