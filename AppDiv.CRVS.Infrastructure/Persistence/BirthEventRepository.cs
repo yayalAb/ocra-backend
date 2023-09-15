@@ -64,6 +64,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             {
                 entity.Event.EventType = "Birth";
                 entity.Event.EventOwener.BirthDateEt = entity.Event.EventDateEt;
+                entity.Event.EventOwener.BirthAddress = entity.Event.EventAddress;
                 entity.Event.EventOwener.MiddleName = entity.Father?.FirstName;
                 entity.Event.EventOwener.LastName = entity.Father?.MiddleName;
                 // if (entity.Father != null)
@@ -92,6 +93,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     selectedperson.NationalityLookupId = entity.Event?.EventOwener?.NationalityLookupId;
                     selectedperson.BirthDate = entity.Event?.EventOwener?.BirthDate;
                     selectedperson.BirthAddressId = entity.Event?.EventOwener?.BirthAddressId;
+                    selectedperson.ResidentAddressId = entity.Event?.EventOwener?.ResidentAddressId ?? selectedperson.ResidentAddressId;
 
                     _dbContext.PersonalInfos.Update(selectedperson);
                     entity.Event.EventOwenerId = entity.Event.EventOwener.Id;

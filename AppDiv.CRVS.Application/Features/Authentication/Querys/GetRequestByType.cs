@@ -43,7 +43,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<PaginatedList<AuthenticationRequestListDTO>> Handle(GetRequestByType request, CancellationToken cancellationToken)
         {
-            var RequestList = _transactionService.GetAllGrid()
+            var RequestList = _transactionService.GetAll()
                  .AsQueryable();
             if (request.RequestType == "change")
             {
