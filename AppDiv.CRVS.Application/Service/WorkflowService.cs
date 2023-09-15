@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Service
         private readonly INotificationService notificationService;
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
+        public  bool  IsRejected=false;
 
 
         private readonly IEventRepository _EventRepository;
@@ -83,6 +84,9 @@ namespace AppDiv.CRVS.Application.Service
             {
                 if (step == 1 || step == 0)
                 {
+                    if(step == 0){
+                        IsRejected = true;
+                    }
                     return 0;
                 }
                 var nextStep = _stepRepostory.GetAll()
@@ -158,10 +162,7 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         throw new NotFoundException("user not found");
                     }
-                    if (!IsApprove && request.currentStep == 0)
-                    {
-                        request.IsRejected = true;
-                    }
+                    request.IsRejected=IsRejected;
                     request.currentStep = nextStep;
                     request.NextStep = this.GetNextStep(workflowType, nextStep, true);
                     // if (request.Notification != null)
