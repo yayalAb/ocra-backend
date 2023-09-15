@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Delete
                 {
                     await _CertificateRepository.DeleteAsync(request.Id);
                     await _CertificateRepository.SaveChangesAsync(cancellationToken);
+                    _CertificateRepository.TriggerCertificateIndex();
                 }
                 else
                 {

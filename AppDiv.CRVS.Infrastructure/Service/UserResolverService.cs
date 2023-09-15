@@ -36,6 +36,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
             try
             {
                 // Console.WriteLine($"userrrr=============== {httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier)}");
+
                 var userId = httpContext?.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (userId == null)
                 {
@@ -49,6 +50,11 @@ namespace AppDiv.CRVS.Infrastructure.Services
                         userId = token.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
 
+                    }
+                    else if (!string.IsNullOrEmpty(httpContext?.HttpContext?.Request.Query["access_token"]))
+                    {
+                        var tokenFromQueryParam = new JwtSecurityTokenHandler().ReadJwtToken(httpContext?.HttpContext?.Request.Query["access_token"]);
+                        userId = tokenFromQueryParam.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                     }
 
                 }
