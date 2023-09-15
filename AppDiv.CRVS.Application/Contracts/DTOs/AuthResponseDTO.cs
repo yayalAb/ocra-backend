@@ -31,6 +31,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public JObject? LastName { get; set; }
         public AddressResponseDTOE? Address { get; set; }
         public List<ReportStoreDTO>? Reports { get; set; }
+        public List<ReportStoreDTO>? MyReports { get; set; }
+        
         
     }
 }

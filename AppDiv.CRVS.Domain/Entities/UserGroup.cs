@@ -59,5 +59,6 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<WorkHistory> WorkHistories { get; set; }
         public virtual ICollection<Step> Steps { get; set; }
         public virtual ICollection<Notification> Notifications { get; set; }
+        public virtual ICollection<ReportStore>? Reports { get; set; }
     }
 }
