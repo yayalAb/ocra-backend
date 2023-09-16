@@ -201,22 +201,18 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                         ReportName = repo.ReportName,
                                         ReportTitle =repo.ReportTitle
                                     }).ToList();
-
-            var Report = _reportRepository.GetAll()
-                        .Select(repo => new ReportStoreDTO
+                  List<Guid> GroupIds=userData.UserGroups.Select(g => g.Id).ToList();
+                  var Report = _reportRepository.GetAll()
+                                    .Select(repo => new ReportStoreDTO
                                     {
                                         Id = repo.Id,
                                         ReportName = repo.ReportName,
-                                        ReportTitle =repo.ReportTitle
-                                    }).ToList(); 
-                //  List<Guid> GroupIds=userData.UserGroups.Select(g => g.Id).ToList();                   
-                //     var filteredReports = _reportRepository.GetAll()
-                //         .AsEnumerable()
-                //         .Where(report => report.UserGroups.ToObject<List<Guid>>()
-                //             .Intersect(GroupIds)
-                //             .Any())
-                //         .ToList();                                                            
-
+                                        ReportTitle = repo.ReportTitle,
+                                        Groups = JsonConvert.DeserializeObject<List<Guid>>(repo.UserGroupsStr),
+                                    })
+                                    .AsEnumerable()
+                                    .Where(report => report.Groups != null && GroupIds != null && report.Groups.Intersect(GroupIds).Any())
+                                    .ToList();
             return new AuthResponseDTO()
             {
                 UserId = userData.Id,

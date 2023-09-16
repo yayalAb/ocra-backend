@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
         public string? Description { get; set; }
         public string[]? DefualtColumns { get; set; }
         public ReportColumsLngDto[] ColumnsLang { get; set; }
-        public  JArray? UserGroups { get; set; }
+        public   List<Guid>? UserGroups { get; set; }
         public  bool? isAddressBased { get; set; }=false;
 
     }
