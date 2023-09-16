@@ -6,7 +6,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Utility.Services;
 using MediatR;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.Dashboard
 
@@ -17,6 +17,7 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
 
         public string StartDate { set; get; }
         public string EndDate { get; set; }
+        public Guid? AddressId { get; set; }
 
     }
 
@@ -35,18 +36,52 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
 
             DateTime startDate = _dateConverter.EthiopicToGregorian(request.StartDate);
             DateTime EndDate = _dateConverter.EthiopicToGregorian(request.EndDate);
-            var lookuplist = _eventRepository.GetAll().Where(ev =>
-             ev.EventRegDate >= startDate &&
-             ev.EventRegDate <= EndDate).GroupBy(x => x.EventType).Select(x =>
-                            new
-                            {
-                                Event = x.Key,
-                                Count = x.Count()
-                            }
+            var CardValue=new ReportCardResponsDTO();
+            Console.WriteLine("startDate {0}, EndDate{1} ",startDate,EndDate);
+            // .Where(ev =>
+            //  ev.EventRegDate >= startDate &&
+            //  ev.EventRegDate <= EndDate)
+            var allEvents = _eventRepository.GetAll()
+            .Include(x=>x.EventCertificates);
+            var Approval=new {
+                Authentication = allEvents.Count(e => e.EventCertificates.Where(x=>x.Status==true).FirstOrDefault().AuthenticationStatus==true),
+                Verfication = allEvents.Count(e => e.IsVerified),
+                Change = allEvents.Count(e => e.IsVerified)
+            };
+            
 
-                        );
-            return lookuplist; // object
-            ;
+            var EventReport = allEvents
+                .GroupBy(x => x.EventType)
+                .Select(x => new
+                {
+                    Event = x.Key,
+                    Count = x.Count()
+                });
+               foreach(var events in  EventReport){
+                  switch(events.Event){
+                    case "Birth":
+                        CardValue.Birth=events.Count;
+                        break;
+                    case "Death":
+                        CardValue.Death=events.Count;
+                        break;  
+                    case "Divorce":
+                        CardValue.Divorce=events.Count;
+                        break;
+                    case "Adoption":
+                        CardValue.Adoption=events.Count;
+                        break;  
+                    case "Marriage":
+                        CardValue.Marriage=events.Count;
+                        break;        
+                  }
+               }
+                     
+            return new{
+                EventResponse=CardValue,
+                ApprovalResponse=Approval
+            }; 
         }
     }
 }
+       
