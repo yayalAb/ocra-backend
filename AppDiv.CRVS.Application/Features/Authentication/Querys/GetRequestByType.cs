@@ -87,6 +87,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OfficerId = Guid.Parse(t.CivilRegOfficerId),
                  RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
                  RequestType = t.Request.RequestType,
+                 EventId = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.Event.Id :
+                             request.RequestType == "change" ? t.Request.CorrectionRequest.Event.Id :
+                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.Id : null,
                  RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ?
                      t.Request.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
                  EventType = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
