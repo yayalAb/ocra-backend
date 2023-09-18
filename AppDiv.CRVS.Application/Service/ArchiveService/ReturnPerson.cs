@@ -24,9 +24,13 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             // (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or)!;
             // var convertor = new CustomDateConverter();
-            var EventAddress=  _reportRepostory.ReturnAddress(events?.EventRegisteredAddressId.ToString()).Result;
-            JArray EventAddressjsonObject = JArray.FromObject(EventAddress);
-            FormatedAddressDto EventAddressResponse = EventAddressjsonObject.ToObject<List<FormatedAddressDto>>().FirstOrDefault();
+            var EventRegAddress=  _reportRepostory.ReturnAddress(events?.EventRegisteredAddressId.ToString()!).Result;
+            JArray EventRegAddressjsonObject = JArray.FromObject(EventRegAddress);
+            FormatedAddressDto EventRegAddressResponse = EventRegAddressjsonObject.ToObject<List<FormatedAddressDto>>()?.FirstOrDefault()!;
+
+            var EventAddress=  _reportRepostory.ReturnAddress(events?.EventAddressId.ToString()!).Result;
+            JArray eventAddressJArray = JArray.FromObject(EventAddress);
+            FormatedAddressDto eventAddress = eventAddressJArray?.ToObject<List<FormatedAddressDto>>()?.FirstOrDefault()!;
              
             bool isCityAdmin=dateAndAddressService.IsCityAdmin(events?.EventRegisteredAddressId);
             return new EventInfoArchive
@@ -44,18 +48,31 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 RegistrationMonthAm = new EthiopicDateTime(convertor.getSplitted(events?.EventRegDateEt!).month, "am")?.month,
                 RegistrationDay = convertor.getSplitted(events?.EventRegDateEt!).day.ToString("D2"),
                 RegistrationYear = convertor.getSplitted(events?.EventRegDateEt!).year.ToString(),
-                RegistrationCountryOr = EventAddressResponse?.CountryOr,
-                RegistrationCountryAm = EventAddressResponse?.CountryAm,
-                RegistrationRegionOr = EventAddressResponse?.RegionOr,
-                RegistrationRegionAm = EventAddressResponse?.RegionAm,
-                RegistrationZoneOr =!isCityAdmin?EventAddressResponse?.ZoneOr:null,
-                RegistrationZoneAm =!isCityAdmin? EventAddressResponse?.ZoneAm:null,
-                RegistrationSubcityOr =isCityAdmin?EventAddressResponse?.WoredaOr:null,
-                RegistrationSubcityAm =isCityAdmin? EventAddressResponse?.WoredaAm:null,
-                RegistrationWoredaOr = EventAddressResponse?.WoredaOr,
-                RegistrationWoredaAm = EventAddressResponse?.WoredaAm,
-                RegistrationKebeleOr = EventAddressResponse?.KebeleOr,
-                RegistrationKebeleAm = EventAddressResponse?.KebeleAm,
+                RegistrationCountryOr = EventRegAddressResponse?.CountryOr,
+                RegistrationCountryAm = EventRegAddressResponse?.CountryAm,
+                RegistrationRegionOr = EventRegAddressResponse?.RegionOr,
+                RegistrationRegionAm = EventRegAddressResponse?.RegionAm,
+                RegistrationZoneOr =!isCityAdmin?EventRegAddressResponse?.ZoneOr:null,
+                RegistrationZoneAm =!isCityAdmin? EventRegAddressResponse?.ZoneAm:null,
+                RegistrationSubcityOr =isCityAdmin?EventRegAddressResponse?.WoredaOr:null,
+                RegistrationSubcityAm =isCityAdmin? EventRegAddressResponse?.WoredaAm:null,
+                RegistrationWoredaOr = EventRegAddressResponse?.WoredaOr,
+                RegistrationWoredaAm = EventRegAddressResponse?.WoredaAm,
+                RegistrationKebeleOr = EventRegAddressResponse?.KebeleOr,
+                RegistrationKebeleAm = EventRegAddressResponse?.KebeleAm,
+
+                EventCountryOr = eventAddress?.CountryOr,
+                EventCountryAm = eventAddress?.CountryAm,
+                EventRegionOr = eventAddress?.RegionOr,
+                EventRegionAm = eventAddress?.RegionAm,
+                EventZoneOr =!isCityAdmin?eventAddress?.ZoneOr:null,
+                EventZoneAm =!isCityAdmin? eventAddress?.ZoneAm:null,
+                EventSubcityOr =isCityAdmin?eventAddress?.WoredaOr:null,
+                EventSubcityAm =isCityAdmin? eventAddress?.WoredaAm:null,
+                EventWoredaOr = eventAddress?.WoredaOr,
+                EventWoredaAm = eventAddress?.WoredaAm,
+                EventKebeleOr = eventAddress?.KebeleOr,
+                EventKebeleAm = eventAddress?.KebeleAm,
             };
         }
          public static  Person GetPersonBirthAddrress(Person? person,IReportRepostory _reportRepostory, Guid? BirthAddressId,IDateAndAddressService dateAndAddressService){
