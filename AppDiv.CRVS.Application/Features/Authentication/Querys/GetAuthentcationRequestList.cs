@@ -119,6 +119,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OfficerId = w.CivilRegOfficerId,
                  RequestedBy = w.CivilRegOfficer.FullNameLang,
                  RequestType = w.RequestType,
+                 EventId = (request.RequestType == "authentication")  ? w.AuthenticationRequest.Certificate.Event.Id :
+                             request.RequestType == "change" ? w.CorrectionRequest.Event.Id : null,
                  RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ?
                      w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
                  EventType = (w.AuthenticationRequest!.Certificate != null) ? (string)w.AuthenticationRequest.Certificate.Event.EventType :
