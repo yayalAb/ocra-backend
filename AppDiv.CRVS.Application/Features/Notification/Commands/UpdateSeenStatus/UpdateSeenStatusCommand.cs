@@ -22,8 +22,9 @@ namespace AppDiv.CRVS.Application.Features.Notification.Commands.UpdateSeenStatu
 
         public async Task<BaseResponse> Handle(UpdateSeenStatusCommand request, CancellationToken cancellationToken)
         {
-           await _notificationService.updateSeenStatus(request.Id);
-           return new BaseResponse{Message ="",Status = 200};
+            //    await _notificationService.updateSeenStatus(request.Id);
+            await _notificationService.RemoveNotification(request.Id);
+            return new BaseResponse { Message = "Notification removed successfully", Status = 200 };
         }
     }
 }
