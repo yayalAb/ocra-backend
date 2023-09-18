@@ -68,7 +68,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpGet("paidCertificatesByOfficer")]
-        public async Task<PaginatedList<PaidCertificateDTO>> Get([FromQuery] GetAllPaidCertificateByCivilRegistrarQuery query)
+        public async Task<PaginatedList<AuthenticationRequestListDTO>> Get([FromQuery] GetAllPaidCertificateByCivilRegistrarQuery query)
         {
             return await Mediator.Send(query);
         }

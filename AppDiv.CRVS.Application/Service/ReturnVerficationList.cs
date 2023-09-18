@@ -35,6 +35,7 @@ namespace AppDiv.CRVS.Application.Service
             List <Guid?> userGroupIds = applicationuser.UserGroups.Select(x => (Guid?) x.Id).ToList();
             IQueryable<Event> eventsQueriable;
             eventsQueriable = _eventRepository.GetAllQueryableAsync()
+                .Include(x => x.CivilRegOfficer)
                .Include(x => x.EventRegisteredAddress)
                .ThenInclude(p => p.ParentAddress)
                .ThenInclude(p => p.ParentAddress)

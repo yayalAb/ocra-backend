@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 namespace AppDiv.CRVS.Application.Features.Certificates.Query
 {
     // Customer query with List<Customer> response
-    public record GetAllPaidCertificateByCivilRegistrarQuery : IRequest<PaginatedList<PaidCertificateDTO>>
+    public record GetAllPaidCertificateByCivilRegistrarQuery : IRequest<PaginatedList<AuthenticationRequestListDTO>>
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         public string? SearchString { get; set; }
     }
 
-    public class GetAllPaidCertificateByCivilRegistrarQueryHandler : IRequestHandler<GetAllPaidCertificateByCivilRegistrarQuery, PaginatedList<PaidCertificateDTO>>
+    public class GetAllPaidCertificateByCivilRegistrarQueryHandler : IRequestHandler<GetAllPaidCertificateByCivilRegistrarQuery, PaginatedList<AuthenticationRequestListDTO>>
     {
         private readonly IEventRepository _eventRepository;
         private readonly IUserRepository _userRepository;
@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             _ReturnVerficationList = ReturnVerficationList;
             _UserReso = UserReso;
         }
-        public async Task<PaginatedList<PaidCertificateDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<AuthenticationRequestListDTO>> Handle(GetAllPaidCertificateByCivilRegistrarQuery request, CancellationToken cancellationToken)
         {
             var applicationuser = _userRepository.GetAll()
             .Include(x => x.Address)
@@ -51,6 +51,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             }
             else
             {   eventsQueriable = _eventRepository.GetAllQueryableAsync()
+                                .Include(e => e.CivilRegOfficer)
                               .Where(e =>(e.EventRegisteredAddressId == applicationuser.AddressId|| e.CreatedBy==new Guid(applicationuser.Id))&&((!e.IsCertified && (e.IsPaid || e.IsExampted)) || e.ReprintWaiting));
             }
             eventsQueriable = eventsQueriable.Include(e => e.EventOwener);
@@ -66,23 +67,33 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                          EF.Functions.Like(u.EventOwener.LastNameStr!, "%" + request.SearchString + "%"));
             }
 
-            return await PaginatedList<PaidCertificateDTO>
+            return await PaginatedList<AuthenticationRequestListDTO>
                             .CreateAsync(
                                eventsQueriable.Include(e => e.EventOwener)
                              .Include(e => e.EventPaymentRequest).OrderBy(x => x.CreatedAt)
-
-                              .Select(e => new PaidCertificateDTO
-                              {
-                                  EventId = e.Id,
-                                  CertificateId = e.CertificateId,
-                                  EventType = e.EventType,
-                                  OwnerFullName = e.EventOwener.FirstNameLang + " " + e.EventOwener.MiddleNameLang + " " + e.EventOwener.LastNameLang,
-                                  EventDate = e.EventDateEt,
-                                  EventRegDate = e.EventRegDateEt,
-                                  IsCertified = e.IsCertified,
-                                  HasPendingDocumentApproval = e.HasPendingDocumentApproval,
-                                  IsReprint = (e.ReprintWaiting&& (bool)e.IsOfflineReg),
-                              })
+                            .Select(e => new AuthenticationRequestListDTO 
+                            {
+                                Id = e.Id,
+                                EventId = e.Id,
+                                CertificateId = e.CertificateId,
+                                EventType = e.EventType,
+                                EventOwnerName = e.EventOwener.FullNameLang,
+                                RequestDate = e.EventRegDateEt,
+                                RequestedBy = e.CivilRegOfficer.FullNameLang,
+                                OfficerId = e.CivilRegOfficerId,
+                            })
+                            //   .Select(e => new PaidCertificateDTO
+                            //   {
+                            //       EventId = e.Id,
+                            //       CertificateId = e.CertificateId,
+                            //       EventType = e.EventType,
+                            //       OwnerFullName = e.EventOwener.FirstNameLang + " " + e.EventOwener.MiddleNameLang + " " + e.EventOwener.LastNameLang,
+                            //       EventDate = e.EventDateEt,
+                            //       EventRegDate = e.EventRegDateEt,
+                            //       IsCertified = e.IsCertified,
+                            //       HasPendingDocumentApproval = e.HasPendingDocumentApproval,
+                            //       IsReprint = (e.ReprintWaiting&& (bool)e.IsOfflineReg),
+                            //   })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
