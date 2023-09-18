@@ -51,6 +51,8 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands
                 {
                     ReportOwnerId = new Guid(user.Id),
                     ReportName = request.ReportName,
+                    ReportTitle=request.ReportTitle,
+                    Description=request.Description,
                     Agrgate = JsonConvert.SerializeObject(request.Agrgate).ToString(),
                     Filter = request.Filter,
                     Colums = (request?.Colums == null || request?.Colums.Length == 0) ? "" : string.Join(",", request.Colums),

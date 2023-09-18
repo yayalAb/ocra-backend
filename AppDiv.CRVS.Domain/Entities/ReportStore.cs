@@ -22,11 +22,11 @@ namespace AppDiv.CRVS.Domain.Entities
         public  string? UserGroupsStr { get; set; }
         public  bool? isAddressBased { get; set; }=false;
         [NotMapped]
-        public JArray? UserGroups
+        public List<Guid>? UserGroups
         {
             get
             {
-                return JsonConvert.DeserializeObject<JArray>(string.IsNullOrEmpty(UserGroupsStr) ? "[]" : UserGroupsStr);
+                return JsonConvert.DeserializeObject<List<Guid>>(string.IsNullOrEmpty(UserGroupsStr) ? "[]" : UserGroupsStr);
             }
             set
             {

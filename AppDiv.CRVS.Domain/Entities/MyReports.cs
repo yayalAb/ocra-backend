@@ -13,6 +13,8 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public Guid ReportOwnerId { get; set; }
         public string? ReportName { get; set; }
+        public string? Description { get; set; }
+        public string? ReportTitle { get; set; }
         public string? Agrgate { get; set; }
         public string? Filter { get; set; }
         public string? Colums { get; set; }

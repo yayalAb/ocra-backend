@@ -39,6 +39,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
         private readonly IHttpContextAccessor _httpContext;
         private readonly SMTPServerConfiguration _config;
         private readonly IReportStoreRepostory _reportRepository;
+              private readonly IMyReportRepository _myReportRepository;
 
         public AuthCommandHandler(IHttpContextAccessor httpContext,
                                   ILoginHistoryRepository loginHistoryRepository,
@@ -51,7 +52,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                   IOptions<SMTPServerConfiguration> config,
                                   ISmsService smsService,
                                   IDateAndAddressService addressService,
-                                  IReportStoreRepostory reportRepository)
+                                  IReportStoreRepostory reportRepository,
+                                  IMyReportRepository myReportRepository)
         {
             _identityService = identityService;
             _tokenGenerator = tokenGenerator;
@@ -65,6 +67,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             _httpContext = httpContext;
             _config = config.Value;
             _reportRepository=reportRepository;
+            _myReportRepository=myReportRepository;
         }
 
         public async Task<AuthResponseDTO> Handle(AuthCommand request, CancellationToken cancellationToken)
@@ -191,15 +194,25 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             };
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
-            var Report = _reportRepository.GetAll()
-                        .Select(repo => new ReportStoreDTO
+            var MyReport= _myReportRepository.GetAll().Where(x => x.ReportOwnerId.ToString() == userData.Id)
+            .Select(repo => new ReportStoreDTO
                                     {
                                         Id = repo.Id,
                                         ReportName = repo.ReportName,
                                         ReportTitle =repo.ReportTitle
                                     }).ToList();
-                                                            
-
+                  List<Guid> GroupIds=userData.UserGroups.Select(g => g.Id).ToList();
+                  var Report = _reportRepository.GetAll()
+                                    .Select(repo => new ReportStoreDTO
+                                    {
+                                        Id = repo.Id,
+                                        ReportName = repo.ReportName,
+                                        ReportTitle = repo.ReportTitle,
+                                        Groups = JsonConvert.DeserializeObject<List<Guid>>(repo.UserGroupsStr),
+                                    })
+                                    .AsEnumerable()
+                                    .Where(report => report.Groups != null && GroupIds != null && report.Groups.Intersect(GroupIds).Any())
+                                    .ToList();
             return new AuthResponseDTO()
             {
                 UserId = userData.Id,
@@ -218,7 +231,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 CanRegisterEvent = userData.CanRegisterEvent,
                 FingerPrintApiUrl = userData.FingerPrintApiUrl,
                 Address = await _addressService.FormatedAddress(userData.AddressId)!,
-                Reports=Report
+                Reports=Report,
+                MyReports=MyReport
             };
         }
     }
