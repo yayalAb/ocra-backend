@@ -114,6 +114,7 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddHangfire(configuration => configuration
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
+            .UseFilter(new AutomaticRetryAttribute { Attempts = 0 })
             .UseStorage(
                 new MySqlStorage(
                     hangfireConnectionString,
@@ -131,6 +132,7 @@ namespace AppDiv.CRVS.Infrastructure
             );
             // Add the processing server as IHostedService
             services.AddHangfireServer();
+
             #endregion hangfire
 
 
