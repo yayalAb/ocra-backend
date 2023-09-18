@@ -23,13 +23,13 @@ namespace AppDiv.CRVS.Domain.Enums
     }
     public enum SqlAggregate
     {
-        GroupBy,
-        OrderBy,
-        Count,
         Max,
         Min,
-        Average,
+        Count,
         Sum,
+        Average,             
+        GroupBy,
+        OrderBy,
         OrderByDesc
     }
 }
