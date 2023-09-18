@@ -19,6 +19,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public AddEventForDeathRequest Event { get; set; }
         public DateTime? CreatedAt { get; set; }
         public Guid? CreatedBy { get; set; }
+        public bool IsFromBgService { get; set; } = false;
+
 
     }
 }

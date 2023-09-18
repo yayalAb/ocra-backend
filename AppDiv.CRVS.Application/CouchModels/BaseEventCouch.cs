@@ -29,15 +29,24 @@ namespace AppDiv.CRVS.Application.CouchModels
 
         public DateTime CreatedDateGorg { get; set; }
 
-        [NotMapped]
-        public string? _CreatedDate
+       [NotMapped]
+        public string? createdDateMediator
         {
             get { return CreatedDate; }
             set
             {
-                this.CreatedDate = value;
+                // this.CreatedDate = value;
+                try
+                {
 
-                CreatedDateGorg = new CustomDateConverter(CreatedDate).gorgorianDate;
+                    CreatedDateGorg = new CustomDateConverter(CreatedDate).gorgorianDate;
+                }
+                catch (Exception )
+                {
+                    var now = DateTime.Now;
+                    CreatedDateGorg = now;
+                    CreatedDate = new CustomDateConverter(now).ethiopianDate;
+                }
             }
         }
     }

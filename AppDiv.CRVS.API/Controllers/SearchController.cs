@@ -1,9 +1,13 @@
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetAddressByParent;
 using AppDiv.CRVS.Application.Features.Search;
+using AppDiv.CRVS.Infrastructure.Service;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Nest;
+
 namespace AppDiv.CRVS.API.Controllers
 {
     [EnableCors("CorsPolicy")]
@@ -15,10 +19,15 @@ namespace AppDiv.CRVS.API.Controllers
     {
         private readonly ISender _mediator;
         private readonly ILogger<SearchController> _Ilog;
-        public SearchController(ISender mediator, ILogger<SearchController> Ilog)
+        private readonly IElasticClient _elasticClient;
+        private readonly IBackgroundJobs _bgjobs;
+
+        public SearchController(ISender mediator, ILogger<SearchController> Ilog, IElasticClient elasticClient, IBackgroundJobs bgjobs)
         {
             _mediator = mediator;
             _Ilog = Ilog;
+            _elasticClient = elasticClient;
+            _bgjobs = bgjobs;
         }
         [HttpGet]
         [Route("SearchPersonalInfo")]
@@ -103,6 +112,78 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(new ReIndexCertificateCommand { });
         }
+        [HttpPost]
+        [Route("test")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> testUpdage()
+        {
+            await _bgjobs.Test();
+            return true;
+            // var res = _elasticClient.Delete<PersonalInfoIndex>(DocumentPath<PersonalInfoIndex>.Id(personalInfo.Id.ToString()).Index("personal_info_second"));
+            // var ress = _elasticClient.IndexDocument(new PersonalInfoIndex
+            // {
+            //     Id = personalInfo.Id.ToString(),
+            //     FirstNameOr = "sample",
+            //     MiddleNameOr = "father",
+            //     LastNameOr = "gFather",
+            //     NationalId = personalInfo.NationalId,
+            //     PhoneNumber = personalInfo.PhoneNumber,
+            // });
+
+            // var ress = await _elasticClient.IndexAsync(new PersonalInfoIndex
+            // {
+            //     Id = personalInfo.Id.ToString(),
+            //     FirstNameOr = "sample",
+            //     MiddleNameOr = "father",
+            //     LastNameOr = "gFather",
+            //     NationalId = personalInfo.NationalId,
+            //     PhoneNumber = personalInfo.PhoneNumber,
+            // }, i => i.Index("personal_info_second"));
+
+            // var task = await _elasticClient.UpdateByQueryAsync<PersonalInfoIndex>(c =>
+            //                c.Index("personal_info_second")
+            //                    .Query(q =>
+            //                        q.Match(m => m.Field(f => f.Id.ToString()).Query(personalInfo.Id.ToString()))
+            //                        ).Size(1)
+            //                    .Script(script => script
+            //                        .Source($"ctx._source = params.newDocument")
+
+            //                        .Params(p => p.Add("newDocument", new PersonalInfoIndex
+            //                        {
+            //                            Id = personalInfo.Id.ToString(),
+            //                            FirstNameOr = "sample",
+            //                            MiddleNameOr = "father",
+            //                            LastNameOr = "gFather",
+            //                            NationalId = personalInfo.NationalId,
+            //                            PhoneNumber = personalInfo.PhoneNumber,
+            //                        }))
+            //                    )
+            //                );
+
+
+            // var upData = new PersonalInfoIndex
+            // {
+            //     Id = personalInfo.Id.ToString(),
+            //     FirstNameOr = "sample",
+            //     MiddleNameOr = "father",
+            //     LastNameOr = "gFather",
+            //     NationalId = personalInfo.NationalId,
+            //     PhoneNumber = personalInfo.PhoneNumber,
+            // };
+            // var updateres = await _elasticClient.UpdateAsync<PersonalInfoIndex>(DocumentPath<PersonalInfoIndex>
+            //     .Id(personalInfo.Id.ToString()),
+            //     p => p.Index("personal_info_second")
+            //             .Doc(upData)
+            //             .Refresh(Elasticsearch.Net.Refresh.True)
+            //             );
+
+            // var res22 = await _elasticClient.Indices.RefreshAsync("personal_info_second");
+
+            // return true;
+        }
+
+
+
     }
 }
 

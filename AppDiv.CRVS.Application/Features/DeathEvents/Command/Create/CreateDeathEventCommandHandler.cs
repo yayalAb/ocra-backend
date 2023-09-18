@@ -38,8 +38,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _smsService = smsService;
             _paymentRequestService = paymentRequestService;
             _addressRepostory = addressRepostory;
-            _fingerprintService=fingerprintService;
-            _userResolverService=userResolverService;
+            _fingerprintService = fingerprintService;
+            _userResolverService = userResolverService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -49,7 +49,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             return await executionStrategy.ExecuteAsync(async () =>
             {
 
-                using var transaction = _deathEventRepository.Database.BeginTransaction();
+                using var transaction = request.DeathEvent.IsFromBgService ? null : _deathEventRepository.Database.BeginTransaction();
                 try
                 {
                     var response = new CreateDeathEventCommandResponse();
@@ -76,9 +76,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                if(address==null){
-                                        throw new NotFoundException("Invalid user working address");
-                                    }
+                                if (address == null)
+                                {
+                                    throw new NotFoundException("Invalid user working address");
+                                }
                                 if (address != null && address.AdminLevel != 5)
                                 {
                                     deathEvent.Event.IsCertified = true;
@@ -107,7 +108,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             //         }
                             _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
                             _eventDocumentService.saveFingerPrints(fingerprints);
-                            if ((!deathEvent.Event.IsExampted)&&(address != null && address?.AdminLevel ==5 ))
+                            if ((!deathEvent.Event.IsExampted) && (address != null && address?.AdminLevel == 5))
                             {
                                 // Get Payment rate for death certificate.
                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Death", deathEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
@@ -137,7 +138,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                         // Set the response to created.
                         response.Created("Death Event");
                         // Commit the transaction.
-                        await transaction.CommitAsync();
+                        if (transaction != null)
+                        {
+                            await transaction.CommitAsync();
+                        }
                         _deathEventRepository.TriggerPersonalInfoIndex();
                     }
                     return response;
@@ -145,7 +149,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                 catch (Exception)
                 {
                     // Roleback the transaction on exception.
-                    await transaction.RollbackAsync();
+                    if (transaction != null)
+                    {
+                        await transaction.RollbackAsync();
+                    }
                     throw;
                 }
 

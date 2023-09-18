@@ -54,7 +54,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _courtRepository = courtRepository;
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
-            _userResolverService=userResolverService;
+            _userResolverService = userResolverService;
             _certificateRepository = certificateRepository;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
@@ -64,7 +64,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             return await executionStrategy.ExecuteAsync(async () =>
             {
 
-                using (var transaction = _DivorceEventRepository.Database.BeginTransaction())
+                using (var transaction = request.IsFromBgService ? null : _DivorceEventRepository.Database.BeginTransaction())
                 {
                     try
                     {
@@ -85,18 +85,20 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                         }
                         if (createDivorceEventCommandResponse.Success)
                         {
-                             var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
+                            var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             // request.Event.EventAddressId = request?.CourtCase?.Court?.AddressId!;
-                            if(request?.CourtCase?.CourtId!=null&&request?.CourtCase?.CourtId!=Guid.Empty){
-                                request.CourtCase.Court=null;
+                            if (request?.CourtCase?.CourtId != null && request?.CourtCase?.CourtId != Guid.Empty)
+                            {
+                                request.CourtCase.Court = null;
                             }
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                if(address==null){
-                                        throw new NotFoundException("Invalid user working address");
-                                    }
+                                if (address == null)
+                                {
+                                    throw new NotFoundException("Invalid user working address");
+                                }
                                 if (address != null && address.AdminLevel != 5)
                                 {
                                     divorceEvent.Event.IsCertified = true;
@@ -126,7 +128,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             //         createDivorceEventCommandResponse.Success=false; 
                             //         return createDivorceEventCommandResponse;
                             //         }
-                            if ((!divorceEvent.Event.IsExampted)&&(address != null && address?.AdminLevel ==5 ))
+                            if ((!divorceEvent.Event.IsExampted) && (address != null && address?.AdminLevel == 5))
                             {
                                 (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Divorce", divorceEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                 amount = response.amount;
@@ -154,7 +156,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             // if (amount != 0 || divorceEvent.Event.IsExampted)
                             // {
                             createDivorceEventCommandResponse.Message = "Divorce event created successfully";
-                            await transaction.CommitAsync();
+                            if (transaction != null)
+                            {
+                                await transaction.CommitAsync();
+                            }
                             _DivorceEventRepository.TriggerPersonalInfoIndex();
                             _certificateRepository.TriggerCertificateIndex();
 
@@ -164,7 +169,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                     }
                     catch (System.Exception)
                     {
-                        await transaction.RollbackAsync();
+                        if (transaction != null)
+                        {
+                            await transaction.RollbackAsync();
+                        }
                         throw;
                     }
                 }

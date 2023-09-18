@@ -21,5 +21,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public virtual AddBirthNotificationRequest? BirthNotification { get; set; } = null;
         public DateTime? CreatedAt { get; set; }
         public Guid? CreatedBy { get; set; }
+        public bool IsFromBgService { get; set; } = false;
+
     }
 }

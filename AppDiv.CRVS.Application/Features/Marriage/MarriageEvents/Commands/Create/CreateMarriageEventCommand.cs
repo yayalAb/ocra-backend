@@ -23,5 +23,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
         public DateTime? CreatedAt { get; set; }
         public Guid? CreatedBy { get; set; }
+        public bool IsFromBgService {get; set;}= false;
     }
 }

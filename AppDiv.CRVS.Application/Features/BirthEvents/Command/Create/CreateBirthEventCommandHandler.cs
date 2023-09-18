@@ -44,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _smsService = smsService;
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
-            _userResolverService=userResolverService;
+            _userResolverService = userResolverService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -56,8 +56,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
 
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                // Begin new transaction.
-                using var transaction = _birthEventRepository.Database.BeginTransaction();
+                // Begin new transaction if not from background service ...... since transaction is defined in the bg service
+                using var transaction = request.BirthEvent.IsFromBgService ? null : _birthEventRepository.Database.BeginTransaction();
 
                 try
                 {
@@ -79,15 +79,17 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                     }
                     else if (response.Success)
                     {
-                        try{       
-                             var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
+                        try
+                        {
+                            var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                if(address==null){
-                                        throw new NotFoundException("Invalid user working address");
-                                    }
+                                if (address == null)
+                                {
+                                    throw new NotFoundException("Invalid user working address");
+                                }
                                 if (address != null && address.AdminLevel != 5)
                                 {
                                     birthEvent.Event.IsCertified = true;
@@ -124,7 +126,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             _eventDocumentService.saveFingerPrints(fingerprints);
 
                             // For non exempted documents 
-                            if ((!birthEvent.Event.IsExampted)&&(address != null && address?.AdminLevel == 5))
+                            if ((!birthEvent.Event.IsExampted) && (address != null && address?.AdminLevel == 5))
                             {
                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest("Birth", birthEvent.Event, "CertificateGeneration", null, false, false, cancellationToken);
                                 if (payment.amount == 0)
@@ -162,7 +164,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                         }
                         response.Message = "Birth Event created Successfully";
                         response.Status = 200;
-                        await transaction.CommitAsync();
+                        if (transaction != null)
+                        {
+                            await transaction.CommitAsync();
+                        }
                         _birthEventRepository.TriggerPersonalInfoIndex();
 
                     }
@@ -173,7 +178,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                 catch (Exception)
                 {
                     // Rollback the transaction on exception.
-                    await transaction.RollbackAsync();
+                    if (transaction != null)
+                    {
+                        await transaction.RollbackAsync();
+                    }
                     throw;
                 }
 

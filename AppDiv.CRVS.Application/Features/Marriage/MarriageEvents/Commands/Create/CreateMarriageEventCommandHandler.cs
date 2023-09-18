@@ -69,8 +69,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _marriageApplicationCouchRepo = marriageApplicationCouchRepo;
             this.logger = logger;
             _addressRepostory = addressRepostory;
-            _fingerprintService=fingerprintService;
-            _userResolverService=userResolverService;
+            _fingerprintService = fingerprintService;
+            _userResolverService = userResolverService;
         }
 
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
@@ -80,7 +80,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             return await executionStrategy.ExecuteAsync(async () =>
             {
 
-                using (var transaction = _marriageEventRepository.Database.BeginTransaction())
+                using (var transaction = request.IsFromBgService ? null : _marriageEventRepository.Database.BeginTransaction())
                 {
 
                     try
@@ -88,7 +88,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     {
                         var CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse();
 
-                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository, _settingRepository,_marriageApplicationCouchRepo, _eventRepository);
+                        var validator = new CreateMarriageEventCommandValidator(_lookupRepository, _marriageApplicationRepository, _personalInfoRepository, _divorceEventRepository, _marriageEventRepository, _paymentExamptionRequestRepository, _addressRepository, _settingRepository, _marriageApplicationCouchRepo, _eventRepository);
                         var validationResult = await validator.ValidateAsync(request, cancellationToken);
 
                         // Check and log validation errors
@@ -108,10 +108,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
-                                if(address==null){
-                                        throw new NotFoundException("Invalid user working address");
-                                    }         
-                                 if (address != null && address.AdminLevel != 5)
+                                if (address == null)
+                                {
+                                    throw new NotFoundException("Invalid user working address");
+                                }
+                                if (address != null && address.AdminLevel != 5)
                                 {
                                     marriageEvent.Event.IsCertified = true;
                                     marriageEvent.Event.IsPaid = true;
@@ -157,7 +158,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             //         return CreateMarriageEventCommandResponse;
                             //         }
                             // create payment request for the event if it is not exempted
-                            if ((!marriageEvent.Event.IsExampted )&&(address != null && address?.AdminLevel == 5))
+                            if ((!marriageEvent.Event.IsExampted) && (address != null && address?.AdminLevel == 5))
                             {
                                 (float amount, string code) response = await _paymentRequestService.CreatePaymentRequest("Marriage", marriageEvent.Event, "CertificateGeneration", null, marriageEvent.HasCamera, marriageEvent.HasVideo, cancellationToken);
                                 amount = response.amount;
@@ -186,7 +187,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
 
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
                             // }
-                            await transaction.CommitAsync();
+                            if (transaction != null)
+                            {
+
+                                await transaction.CommitAsync();
+                            }
                             _marriageEventRepository.TriggerPersonalInfoIndex();
 
                         }
@@ -194,7 +199,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                     }
                     catch (Exception e)
                     {
-                        await transaction.RollbackAsync();
+                        if (transaction != null)
+                        {
+
+                            await transaction.RollbackAsync();
+                        }
                         throw;
                     }
                 }

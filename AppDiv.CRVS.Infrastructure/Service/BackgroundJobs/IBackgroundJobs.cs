@@ -13,5 +13,6 @@ namespace AppDiv.CRVS.Infrastructure.Service
         public Task SyncMarriageApplicationJob();
         public Task GetEventJob();
         public Task SyncCertificatesAndPayments();
+        public Task Test();
     }
 }

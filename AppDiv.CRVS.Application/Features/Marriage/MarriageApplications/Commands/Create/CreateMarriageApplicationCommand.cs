@@ -15,6 +15,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageApplications.Command.Create
         public Guid CivilRegOfficerId { get; set; }
         public DateTime? CreatedAt {get;set;}
         public Guid? CreatedBy {get;set;}
+        public bool FromBgService {get;set; } = false;
 
        
     }

@@ -61,8 +61,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _paymentRequestService = paymentRequestService;
             _smsService = smsService;
             _addressRepostory = addressRepostory;
-            _fingerprintService= fingerprintService;
-            _userResolverService=userResolverService;
+            _fingerprintService = fingerprintService;
+            _userResolverService = userResolverService;
 
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
             return await executionStrategy.ExecuteAsync(async () =>
             {
-                using (var transaction = _AdoptionEventRepository.Database.BeginTransaction())
+                using (var transaction = request.Adoption.IsFromBgService ? null : _AdoptionEventRepository.Database.BeginTransaction())
                 {
                     try
                     {
@@ -115,7 +115,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 if (request?.Adoption?.Event?.EventRegisteredAddressId != null && request?.Adoption?.Event?.EventRegisteredAddressId != Guid.Empty)
                                 {
                                     var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
-                                    if(address==null){
+                                    if (address == null)
+                                    {
                                         throw new NotFoundException("Invalid user working address");
                                     }
                                     if (address != null && address.AdminLevel != 5)
@@ -232,11 +233,16 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
                                     //
 
-                                }else{
+                                }
+                                else
+                                {
                                     await _AdoptionEventRepository.SaveChangesAsync(cancellationToken);
                                 }
-                               
-                                await transaction.CommitAsync();
+
+                                if (transaction != null)
+                                {
+                                    await transaction.CommitAsync();
+                                }
                                 _AdoptionEventRepository.TriggerPersonalInfoIndex();
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
@@ -263,7 +269,10 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                     }
                     catch (Exception ex)
                     {
-                        await transaction.RollbackAsync();
+                        if (transaction != null)
+                        {
+                            await transaction.RollbackAsync();
+                        }
                         throw;
                     }
                 }
