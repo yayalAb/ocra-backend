@@ -24,6 +24,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
         private readonly IUserResolverService _userResolverService;
+        private readonly IPersonalInfoRepository _personalInfoRepository;
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
@@ -33,7 +34,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                               ISmsService smsService,
                                               IAddressLookupRepository addressRepostory,
                                               IFingerprintService fingerprintService,
-                                              IUserResolverService userResolverService
+                                              IUserResolverService userResolverService,
+                                              IPersonalInfoRepository personalInfoRepository
                                               )
         {
             _eventDocumentService = eventDocumentService;
@@ -45,6 +47,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
+            _personalInfoRepository = personalInfoRepository;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -81,7 +84,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                     {
                         try
                         {
-                            var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
+                            Guid workingAddressId = await HelperService.GetWorkingAddressId(_userResolverService, _personalInfoRepository, request.BirthEvent.IsFromBgService ? request.BirthEvent.Event.CivilRegOfficerId : null);
+                            var address = await _addressRepostory.GetAsync(workingAddressId);
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)

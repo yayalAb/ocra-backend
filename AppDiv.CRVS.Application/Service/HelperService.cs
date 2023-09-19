@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 
 namespace AppDiv.CRVS.Application.Service
@@ -86,6 +87,18 @@ namespace AppDiv.CRVS.Application.Service
             Console.WriteLine("code ===========   " + new string(code));
 
             return new string(code);
+        }
+        public static async Task<Guid> GetWorkingAddressId(IUserResolverService _userResolverService, IPersonalInfoRepository _personalInfoRepository, Guid? personId)
+        {
+            if (personId != null)
+            {
+                var civilRegistrarUser = await _personalInfoRepository.GetUserByPersonalInfoId((Guid)personId) ?? throw new NotFoundException($"civil registrar user with personal info id {personId} is not found");
+                return civilRegistrarUser.AddressId;
+            }
+            else
+            {
+                return _userResolverService.GetWorkingAddressId();
+            }
         }
     }
 }

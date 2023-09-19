@@ -10,6 +10,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 {
@@ -114,7 +115,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
 
                                 if (request?.Adoption?.Event?.EventRegisteredAddressId != null && request?.Adoption?.Event?.EventRegisteredAddressId != Guid.Empty)
                                 {
-                                    var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
+                                    Guid workingAddressId = await HelperService.GetWorkingAddressId(_userResolverService, _personalInfoRepository, request.Adoption.IsFromBgService ? request.Adoption.Event.CivilRegOfficerId : null);
+                                    var address = await _addressRepostory.GetAsync(workingAddressId);
                                     if (address == null)
                                     {
                                         throw new NotFoundException("Invalid user working address");
