@@ -47,15 +47,25 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .AsQueryable();
             if (request.RequestType == "change")
             {
-                RequestList = RequestList.Include(x => x.Request!.CorrectionRequest.Event.EventOwener);
+                RequestList = RequestList.Include(x => x.Request)
+                                .ThenInclude(x => x.CorrectionRequest)
+                                .ThenInclude(x => x.Event)
+                                .ThenInclude(x => x.EventOwener);
             }
             else if (request.RequestType == "authentication")
             {
-                RequestList = RequestList.Include(x => x.Request!.CorrectionRequest.Event.EventOwener);
+                RequestList = RequestList.Include(x => x.Request)
+                    .ThenInclude(x => x.AuthenticationRequest)
+                    .ThenInclude(x => x.Certificate)
+                    .ThenInclude(x => x.Event)
+                    .ThenInclude(x => x.EventOwener);
             }
             else if (request.RequestType == "verification")
             {
-                RequestList = RequestList.Include(x => x.Request!.VerficationRequest.Event.EventOwener);
+                RequestList = RequestList.Include(x => x.Request)
+                    .ThenInclude(x => x.VerficationRequest)
+                    .ThenInclude(x => x.Event)
+                    .ThenInclude(x => x.EventOwener);
             }
             if (request.Status == "approved")
             {
@@ -87,19 +97,19 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OfficerId = Guid.Parse(t.CivilRegOfficerId),
                  RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
                  RequestType = t.Request.RequestType,
-                 EventId = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.Event.Id :
-                             request.RequestType == "change" ? t.Request.CorrectionRequest.Event.Id :
-                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.Id : null,
+                 EventId = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.EventId :
+                             request.RequestType == "change" ? t.Request.CorrectionRequest.EventId :
+                                request.RequestType == "verification" ? t.Request.VerficationRequest.EventId : null,
                  RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ?
                      t.Request.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
                  EventType = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
                              request.RequestType == "change" ? t.Request.CorrectionRequest.Event.EventType :
                                 request.RequestType == "verification" ? t.Request.VerficationRequest.Event.EventType : string.Empty,
-                 CertificateId = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest!.Certificate!.Event.CertificateId :
+                 CertificateId = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest.Certificate.Event.CertificateId :
                                  request.RequestType == "change" ? t.Request.CorrectionRequest.Event.CertificateId :
                                 request.RequestType == "verification" ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
                                 
-                 EventOwnerName = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
+                 EventOwnerName = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
                                     request.RequestType == "change" ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
                                 request.RequestType == "verification" ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
                  CurrentStep = t.Request.currentStep,

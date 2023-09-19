@@ -60,7 +60,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .ThenInclude(x=>x.ParentAddress)
                  .Include(x => x.AuthenticationRequest)
                  .ThenInclude(x => x.Certificate)
-                 .ThenInclude(x => x.Event.EventOwener)
+                 .ThenInclude(x => x.Event)
+                 .ThenInclude(x => x.EventOwener)
                  .Include(x => x.CorrectionRequest)
                  .ThenInclude(x => x.Event.EventOwener)
                  .Include(w => w.Workflow)
@@ -119,17 +120,17 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OfficerId = w.CivilRegOfficerId,
                  RequestedBy = w.CivilRegOfficer.FullNameLang,
                  RequestType = w.RequestType,
-                 EventId = (request.RequestType == "authentication")  ? w.AuthenticationRequest.Certificate.Event.Id :
-                             request.RequestType == "change" ? w.CorrectionRequest.Event.Id : null,
+                 EventId = (request.RequestType == "authentication")  ? w.AuthenticationRequest.Certificate.EventId :
+                             request.RequestType == "change" ? w.CorrectionRequest.EventId : null,
                  RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ?
                      w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
                  EventType = (w.AuthenticationRequest!.Certificate != null) ? (string)w.AuthenticationRequest.Certificate.Event.EventType :
-                                (string)w.CorrectionRequest!.Event.EventType,
+                                (string)w.CorrectionRequest.Event.EventType,
                  CertificateId = request.RequestType == "change" ? w.CorrectionRequest.Event.CertificateId : 
-                                request.RequestType == "authentication" ? w.AuthenticationRequest!.Certificate!.Event.CertificateId : "",
+                                request.RequestType == "authentication" ? w.AuthenticationRequest.Certificate.Event.CertificateId : "",
                                 
-                 EventOwnerName = request.RequestType == "authentication" ? w.AuthenticationRequest!.Certificate!.Event.EventOwener.FullNameLang :
-                                w.CorrectionRequest!.Event.EventOwener.FullNameLang,
+                 EventOwnerName = request.RequestType == "authentication" ? w.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
+                                w.CorrectionRequest.Event.EventOwener.FullNameLang,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
                  RequestDate =new CustomDateConverter(w.CreatedAt).ethiopianDate,

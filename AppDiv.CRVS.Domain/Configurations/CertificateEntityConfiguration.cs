@@ -15,7 +15,7 @@ namespace AppDiv.CRVS.Domain.Configurations
                 .OnDelete(DeleteBehavior.Restrict);
             builder.HasMany(m => m.AuthenticationRequests)
                 .WithOne(n => n.Certificate)
-                .HasForeignKey(n => n.RequestId)
+                .HasForeignKey(n => n.CertificateId)
                 .OnDelete(DeleteBehavior.Restrict);
 
         }
