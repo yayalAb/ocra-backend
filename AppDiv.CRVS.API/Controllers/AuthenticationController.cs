@@ -68,6 +68,13 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(query);
         }
 
+        [HttpGet("Count")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<object> GetCount([FromQuery] GetCount query)
+        {
+            return await _mediator.Send(query);
+        }
+
         [HttpGet("RequestByType")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<PaginatedList<AuthenticationRequestListDTO>> RequestByType([FromQuery] GetRequestByType query)
