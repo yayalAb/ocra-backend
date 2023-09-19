@@ -136,9 +136,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             Console.WriteLine("Sql statment1 {0} {1}", aggregateSql, columns);
             if (!string.IsNullOrEmpty(aggregateSql) && aggregateSql.Length > 0)
             {
-                Console.WriteLine("Sql statment2 {0} ", sql);
+                
                 reportName = this.SanitizeString(reportName);
-                sql = $"SELECT {aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
+                if(string.IsNullOrEmpty(groupBySql)){
+                  sql = $"SELECT {aggregateSql} FROM `{reportName}` {filters}";
+                }else{
+                  sql = $"SELECT {SelectedColumns},{aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
+                }
+                Console.WriteLine("Sql statment2 {0} ", sql);
             }
             else
             {
