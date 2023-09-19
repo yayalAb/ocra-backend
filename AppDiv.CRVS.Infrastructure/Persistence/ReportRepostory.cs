@@ -141,9 +141,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 if(string.IsNullOrEmpty(groupBySql)){
                   sql = $"SELECT {aggregateSql} FROM `{reportName}` {filters}";
                 }else{
+                    if (aggregateSql.EndsWith(","))
+                        {
+                            aggregateSql = aggregateSql.Substring(0, aggregateSql.Length - 1);
+                        }
                   sql = $"SELECT {SelectedColumns},{aggregateSql} FROM `{reportName}` {filters} {groupBySql}";
                 }
-                Console.WriteLine("Sql statment2 {0} ", sql);
             }
             else
             {
