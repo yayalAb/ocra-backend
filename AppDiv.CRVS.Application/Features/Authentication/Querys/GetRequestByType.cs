@@ -109,7 +109,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                                  request.RequestType == "change" ? t.Request.CorrectionRequest.Event.CertificateId :
                                 request.RequestType == "verification" ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
                                 
-                 EventOwnerName = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
+                 OwnerFullName = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
                                     request.RequestType == "change" ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
                                 request.RequestType == "verification" ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
                  CurrentStep = t.Request.currentStep,

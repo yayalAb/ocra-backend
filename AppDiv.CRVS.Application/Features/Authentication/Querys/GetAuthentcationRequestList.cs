@@ -129,7 +129,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  CertificateId = request.RequestType == "change" ? w.CorrectionRequest.Event.CertificateId : 
                                 request.RequestType == "authentication" ? w.AuthenticationRequest.Certificate.Event.CertificateId : "",
                                 
-                 EventOwnerName = request.RequestType == "authentication" ? w.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
+                 OwnerFullName = request.RequestType == "authentication" ? w.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
                                 w.CorrectionRequest.Event.EventOwener.FullNameLang,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,

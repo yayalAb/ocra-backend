@@ -20,6 +20,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Infrastructure.Context;
 using AutoMapper;
+using CouchDB.Driver;
 using CouchDB.Driver.DatabaseApiMethodOptions;
 using CouchDB.Driver.Types;
 using MediatR;
@@ -206,671 +207,25 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
                                        case "marriage":
 
-
-                                           var marriageDb = _couchContext.Client.GetDatabase<MarriageEventCouch>(dbName);
-                                           var marriageEventCouch = marriageDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
-                                           eventDocCouch = marriageEventCouch;
-                                           Console.WriteLine($"doc --(isnull)-- ${marriageEventCouch == null}");
-                                           Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
-
-
-                                           if (marriageEventCouch == null)
-                                           {
-                                               break;
-                                           }
-                                           var exists = _dbContext.MarriageEvents.Where(e => e.Id == marriageEventCouch.Id2).Any();
-                                           if (exists)
-                                           {
-                                               if (marriageEventCouch.Exported)
-                                               {
-                                                   marriageEventCouch.Synced = true;
-                                                   await marriageDb.AddOrUpdateAsync(marriageEventCouch);
-                                                   Console.WriteLine($"doc --synced -- ${marriageEventCouch.Synced}");
-                                                   break;
-
-                                               }
-                                               else
-                                               {
-                                                   marriageEventCouch.Failed = true;
-                                                   marriageEventCouch.FailureMessage = $"duplicate marriage event id , marriage event with id {marriageEventCouch.Id2}already exists in database while exported flag is false";
-                                                   await eventDb.AddOrUpdateAsync(marriageEventCouch);
-                                                   break;
-                                               }
-                                           }
-                                           Console.WriteLine($"registering marriage event");
-
-
-                                           Console.WriteLine($"doc --(_id)-- ${marriageEventCouch.Id}");
-                                           Console.WriteLine($"doc --Id-- ${marriageEventCouch.Event.Id}");
-
-                                           officerPersonalInfoId = marriageEventCouch.Event.CivilRegOfficerId;
-                                           uid = _userRepository.GetAll()
-                                                      .Where(u => u.PersonalInfoId == officerPersonalInfoId)
-                                                      .Select(u => u.Id).FirstOrDefault();
-                                           officerUserId = string.IsNullOrEmpty(uid) ? officerUserId : new Guid(uid);
-                                           var marriageEventCommand = new CreateMarriageEventCommand
-                                           {
-                                               Id = marriageEventCouch.Id2,
-                                               MarriageTypeId = marriageEventCouch.MarriageTypeId,
-                                               ApplicationId = marriageEventCouch.ApplicationId,
-                                               BirthCertificateBrideId = marriageEventCouch.BirthCertificateBrideId,
-                                               BirthCertificateGroomId = marriageEventCouch.BirthCertificateGroomId,
-                                               HasCamera = marriageEventCouch.HasCamera,
-                                               HasVideo = marriageEventCouch.HasVideo,
-                                               BrideInfo = marriageEventCouch.BrideInfo,
-                                               Event = marriageEventCouch.Event,
-                                               Witnesses = marriageEventCouch.Witnesses,
-                                               CreatedAt = marriageEventCouch.CreatedDateGorg,
-                                               IsFromBgService = true
-                                           };
-                                           marriageEventCommand.BrideInfo.CreatedAt = marriageEventCouch.CreatedDateGorg;
-                                           marriageEventCommand.BrideInfo.CreatedBy = officerUserId;
-
-                                           marriageEventCommand.Event.CreatedAt = marriageEventCouch.CreatedDateGorg;
-                                           marriageEventCommand.Event.CreatedBy = officerUserId;
-
-                                           marriageEventCommand.Event.EventOwener.CreatedAt = marriageEventCouch.CreatedDateGorg;
-                                           marriageEventCommand.Event.EventOwener.CreatedBy = officerUserId;
-                                           if (marriageEventCommand.Event.PaymentExamption != null)
-                                           {
-                                               marriageEventCommand.Event.PaymentExamption.CreatedAt = marriageEventCouch.CreatedDateGorg;
-                                               marriageEventCommand.Event.PaymentExamption.CreatedBy = officerUserId;
-                                           }
-
-                                           marriageEventCommand.Witnesses.ToList().ForEach(w =>
-                                           {
-                                               w.CreatedAt = marriageEventCouch.CreatedDateGorg;
-                                               w.CreatedBy = officerUserId;
-                                               w.WitnessPersonalInfo.CreatedAt = marriageEventCouch.CreatedDateGorg;
-                                               w.WitnessPersonalInfo.CreatedBy = officerUserId;
-                                           });
-
-                                           var res = await _mediator.Send(marriageEventCommand);
-                                           Console.WriteLine($"doc --save succeded-- ${res.Success}");
-                                           Console.WriteLine($"doc --save message-- ${res.Message}");
-
-                                           if (!res.Success)
-                                           {
-                                               throw new Exception(res.Message);
-
-                                           }
-
-
-                                           if (marriageEventCouch.Paid && marriageEventCouch.Payment != null)
-                                           {
-                                               var paymentRes = await createPayment(marriageEventCommand.Event.Id, marriageEventCouch.Payment?.PaymentWayLookupId, marriageEventCouch.Payment?.BillNumber);
-
-
-                                               Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                                               if (!paymentRes.succeded)
-                                               {
-                                                   marriageEventCouch.Failed = true;
-                                                   marriageEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-                                               }
-                                               else
-                                               {
-                                                   marriageEventCouch.paymentSynced = true;
-
-                                               }
-
-                                           }
-                                           if (marriageEventCouch.Certified)
-                                           {
-
-                                               var certificateRes = await createCertificate((Guid)marriageEventCouch.Event.Id, marriageEventCouch.serialNo);
-                                               if (certificateRes.succeded)
-                                               {
-                                                   marriageEventCouch.CertificateSynced = true;
-
-                                               }
-                                               else
-                                               {
-                                                   marriageEventCouch.Failed = true;
-                                                   marriageEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                               }
-                                           }
-                                           marriageEventCouch.Synced = true;
-                                           await marriageDb.AddOrUpdateAsync(marriageEventCouch);
-                                           Console.WriteLine($"doc --synced -- ${marriageEventCouch.Synced}");
-
-
-
-
+                                           var marriageSyncRes = await marriageSync(dbName, eventDoc.Id, eventDb);
+                                           eventDocCouch = marriageSyncRes.MarriageEventCouch;
                                            break;
                                        case "birth":
-                                           var birthDb = _couchContext.Client.GetDatabase<BirthEventCouch>(dbName);
-                                           var birthEventCouch = birthDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
-                                           eventDocCouch = birthEventCouch;
-                                           Console.WriteLine($"doc --(isnull)-- ${birthEventCouch == null}");
-                                           Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
-
-
-                                           if (birthEventCouch == null)
-                                           {
-                                               break;
-                                           }
-                                           var birthExists = _dbContext.BirthEvents.Where(e => e.Id == birthEventCouch.Id2).Any();
-                                           if (birthExists)
-                                           {
-                                               if (birthEventCouch.Exported)
-                                               {
-                                                   birthEventCouch.Synced = true;
-                                                   await birthDb.AddOrUpdateAsync(birthEventCouch);
-                                                   Console.WriteLine($"doc --synced -- ${birthEventCouch.Synced}");
-                                                   break;
-
-                                               }
-                                               else
-                                               {
-                                                   birthEventCouch.Failed = true;
-                                                   birthEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {birthEventCouch.Id2}already exists in database while exported flag is false";
-                                                   await eventDb.AddOrUpdateAsync(birthEventCouch);
-                                                   break;
-                                               }
-                                           }
-
-                                           Console.WriteLine($"doc --(_id)-- ${birthEventCouch.Id}");
-
-
-
-                                           Console.WriteLine($"doc --Id-- ${birthEventCouch.Id2}");
-
-                                           officerPersonalInfoId = birthEventCouch.Event.CivilRegOfficerId;
-                                           uid = _userRepository.GetAll()
-                                                       .Where(u => u.PersonalInfoId == officerPersonalInfoId)
-                                                       .Select(u => u.Id).FirstOrDefault();
-                                           officerUserId = string.IsNullOrEmpty(uid) ? officerUserId : new Guid(uid);
-
-                                           var birthEventCommand = new CreateBirthEventCommand
-                                           (new AddBirthEventRequest
-                                           {
-                                               Id = birthEventCouch.Id2,
-                                               FacilityTypeLookupId = birthEventCouch.FacilityTypeLookupId,
-                                               FacilityLookupId = birthEventCouch.FacilityLookupId,
-                                               BirthPlaceId = birthEventCouch.BirthPlaceId,
-                                               TypeOfBirthLookupId = birthEventCouch.TypeOfBirthLookupId,
-                                               Father = birthEventCouch.Father,
-                                               Mother = birthEventCouch.Mother,
-                                               Event = birthEventCouch.Event,
-                                               BirthNotification = birthEventCouch.BirthNotification,
-                                               IsFromBgService = true
-                                           });
-                                           birthEventCommand.BirthEvent.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                           birthEventCommand.BirthEvent.CreatedBy = officerUserId;
-                                           if (birthEventCommand.BirthEvent.Father != null)
-                                           {
-                                               birthEventCommand.BirthEvent.Father.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                               birthEventCommand.BirthEvent.Father.CreatedBy = officerUserId;
-                                           }
-                                           if (birthEventCommand.BirthEvent.Mother != null)
-                                           {
-                                               birthEventCommand.BirthEvent.Mother.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                               birthEventCommand.BirthEvent.Mother.CreatedBy = officerUserId;
-                                           }
-                                           birthEventCommand.BirthEvent.Event.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                           birthEventCommand.BirthEvent.Event.CreatedBy = officerUserId;
-                                           birthEventCommand.BirthEvent.Event.EventOwener.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                           birthEventCommand.BirthEvent.Event.EventOwener.CreatedBy = officerUserId;
-
-                                           if (birthEventCommand.BirthEvent.Event.PaymentExamption != null)
-                                           {
-                                               birthEventCommand.BirthEvent.Event.PaymentExamption.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                               birthEventCommand.BirthEvent.Event.PaymentExamption.CreatedBy = officerUserId;
-                                           }
-
-
-                                           if (birthEventCommand.BirthEvent.Event.EventRegistrar != null)
-                                           {
-                                               birthEventCommand.BirthEvent.Event.EventRegistrar.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                               birthEventCommand.BirthEvent.Event.EventRegistrar.CreatedBy = officerUserId;
-                                               birthEventCommand.BirthEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                               birthEventCommand.BirthEvent.Event.EventRegistrar.RegistrarInfo.CreatedBy = officerUserId;
-
-                                           }
-
-                                           if (birthEventCommand.BirthEvent.BirthNotification != null)
-                                           {
-                                               birthEventCommand.BirthEvent.BirthNotification.CreatedAt = birthEventCouch.CreatedDateGorg;
-                                               birthEventCommand.BirthEvent.BirthNotification.CreatedBy = officerUserId;
-
-                                           }
-
-                                           var res2 = await _mediator.Send(birthEventCommand);
-                                           Console.WriteLine($"doc --save succeded-- ${res2.Success}");
-                                           Console.WriteLine($"doc --save message-- ${res2.Message}");
-                                           if (!res2.Success)
-                                           {
-                                               throw new Exception(res2.Message);
-
-                                           }
-
-
-                                           if (birthEventCouch.Paid && birthEventCouch.Payment != null)
-                                           {
-                                               var paymentRes = await createPayment(birthEventCommand.BirthEvent.Event.Id, birthEventCouch.Payment?.PaymentWayLookupId, birthEventCouch.Payment?.BillNumber);
-                                               //TODO:if paymentRes == false???
-                                               Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                                               if (!paymentRes.succeded)
-                                               {
-                                                   birthEventCouch.Failed = true;
-                                                   birthEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-
-                                               }
-                                               else
-                                               {
-                                                   birthEventCouch.paymentSynced = true;
-
-                                               }
-
-
-                                           }
-                                           if (birthEventCouch.Certified)
-                                           {
-
-                                               var certificateRes = await createCertificate((Guid)birthEventCouch.Event.Id, birthEventCouch.serialNo);
-                                               if (certificateRes.succeded)
-                                               {
-                                                   birthEventCouch.CertificateSynced = true;
-
-                                               }
-                                               else
-                                               {
-                                                   birthEventCouch.Failed = true;
-                                                   birthEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                               }
-                                           }
-                                           birthEventCouch.Synced = true;
-                                           await birthDb.AddOrUpdateAsync(birthEventCouch);
-                                           Console.WriteLine($"doc --synced -- ${birthEventCouch.Synced}");
-
-
+                                           var birthSyncRes = await birthSync(dbName, eventDoc.Id, eventDb);
+                                           eventDocCouch = birthSyncRes.BirthEventCouch;
                                            break;
 
                                        case "death":
-                                           var deathDb = _couchContext.Client.GetDatabase<DeathEventCouch>(dbName);
-                                           var deathEventCouch = deathDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
-                                           eventDocCouch = deathEventCouch;
-                                           Console.WriteLine($"doc --(isnull)-- ${deathEventCouch == null}");
-                                           Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
-
-                                           if (deathEventCouch == null)
-                                           {
-                                               Console.WriteLine($"doc --is null ");
-                                               break;
-                                           }
-                                           var deathExists = _dbContext.BirthEvents.Where(e => e.Id == deathEventCouch.Id2).Any();
-                                           if (deathExists)
-                                           {
-                                               if (deathEventCouch.Exported)
-                                               {
-                                                   deathEventCouch.Synced = true;
-                                                   await deathDb.AddOrUpdateAsync(deathEventCouch);
-                                                   Console.WriteLine($"doc --synced -- ${deathEventCouch.Synced}");
-                                                   break;
-
-                                               }
-                                               else
-                                               {
-                                                   deathEventCouch.Failed = true;
-                                                   deathEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {deathEventCouch.Id2}already exists in database while exported flag is false";
-                                                   await eventDb.AddOrUpdateAsync(deathEventCouch);
-                                                   break;
-                                               }
-                                           }
-                                           Console.WriteLine($"registering death event");
-
-                                           Console.WriteLine($"doc --(_id)-- ${deathEventCouch.Id}");
-
-                                           officerPersonalInfoId = deathEventCouch.Event.CivilRegOfficerId;
-                                           uid = _userRepository.GetAll()
-                                                         .Where(u => u.PersonalInfoId == officerPersonalInfoId)
-                                                         .Select(u => u.Id).FirstOrDefault();
-                                           officerUserId = string.IsNullOrEmpty(uid) ? officerUserId : new Guid(uid);
-
-
-                                           var deathEventCommand = new CreateDeathEventCommand
-                                           (new AddDeathEventRequest
-                                           {
-                                               Id = deathEventCouch.Id2,
-                                               FacilityTypeLookupId = deathEventCouch.FacilityTypeLookupId,
-                                               FacilityLookupId = deathEventCouch.FacilityLookupId,
-                                               BirthCertificateId = deathEventCouch.BirthCertificateId,
-                                               DuringDeathId = deathEventCouch.DuringDeathId,
-                                               DeathPlaceId = deathEventCouch.DeathPlaceId,
-                                               PlaceOfFuneral = deathEventCouch.PlaceOfFuneral,
-                                               Event = deathEventCouch.Event,
-                                               DeathNotification = deathEventCouch.DeathNotification,
-                                               CreatedAt = deathEventCouch.CreatedDateGorg,
-                                               CreatedBy = officerUserId,
-                                               IsFromBgService = true
-                                           });
-                                           if (deathEventCommand.DeathEvent.DeathNotification != null)
-                                           {
-                                               deathEventCommand.DeathEvent.DeathNotification.CreatedAt = deathEventCouch.CreatedDateGorg;
-                                               deathEventCommand.DeathEvent.DeathNotification.CreatedBy = officerUserId;
-
-                                           }
-                                           deathEventCommand.DeathEvent.Event.CreatedAt = deathEventCouch.CreatedDateGorg;
-                                           deathEventCommand.DeathEvent.Event.CreatedBy = officerUserId;
-                                           deathEventCommand.DeathEvent.Event.EventOwener.CreatedAt = deathEventCouch.CreatedDateGorg;
-                                           deathEventCommand.DeathEvent.Event.EventOwener.CreatedBy = officerUserId;
-                                           deathEventCommand.DeathEvent.Event.EventRegistrar.CreatedAt = deathEventCouch.CreatedDateGorg;
-                                           deathEventCommand.DeathEvent.Event.EventRegistrar.CreatedBy = officerUserId;
-                                           deathEventCommand.DeathEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = deathEventCouch.CreatedDateGorg;
-                                           deathEventCommand.DeathEvent.Event.EventRegistrar.RegistrarInfo.CreatedBy = officerUserId;
-                                           if (deathEventCommand.DeathEvent.Event.PaymentExamption != null)
-                                           {
-                                               deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedAt = deathEventCouch.CreatedDateGorg;
-                                               deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedBy = officerUserId;
-                                           }
-                                           var res3 = await _mediator.Send(deathEventCommand);
-                                           Console.WriteLine($"doc --save succeded-- ${res3.Success}");
-                                           Console.WriteLine($"doc --save message-- ${res3.Message}");
-                                           Console.WriteLine($"doc -  id -- ${deathEventCommand.DeathEvent.Id}");
-
-
-                                           if (!res3.Success)
-                                           {
-
-                                               Console.WriteLine($"doc -failed-  id -- ${deathEventCommand.DeathEvent.Id}");
-
-                                               throw new Exception(res3.Message);
-
-
-                                           }
-                                           if (deathEventCouch.Paid && deathEventCouch.Payment != null)
-                                           {
-                                               var paymentRes = await createPayment(deathEventCommand.DeathEvent.Event.Id, deathEventCouch.Payment?.PaymentWayLookupId, deathEventCouch.Payment?.BillNumber);
-                                               //TODO:if paymentRes == false???
-                                               Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                                               if (!paymentRes.succeded)
-                                               {
-                                                   deathEventCouch.Failed = true;
-                                                   deathEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-
-                                               }
-                                               else
-                                               {
-                                                   deathEventCouch.paymentSynced = true;
-
-                                               }
-                                           }
-                                           if (deathEventCouch.Certified)
-                                           {
-
-                                               var certificateRes = await createCertificate((Guid)deathEventCouch.Event.Id, deathEventCouch.serialNo);
-                                               if (certificateRes.succeded)
-                                               {
-                                                   deathEventCouch.CertificateSynced = true;
-
-                                               }
-                                               else
-                                               {
-                                                   deathEventCouch.Failed = true;
-                                                   deathEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                               }
-                                           }
-                                           deathEventCouch.Synced = true;
-                                           await deathDb.AddOrUpdateAsync(deathEventCouch);
+                                           var deathSyncRes = await deathSync(dbName, eventDoc.Id, eventDb);
+                                           eventDocCouch = deathSyncRes.DeathEventCouch;
                                            break;
                                        case "adoption":
-                                           var adoptionDb = _couchContext.Client.GetDatabase<AdoptionEventCouch>(dbName);
-                                           var adoptionEventCouch = adoptionDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
-                                           eventDocCouch = adoptionEventCouch;
-                                           Console.WriteLine($"doc --(isnull)-- ${adoptionEventCouch == null}");
-
-
-                                           if (adoptionEventCouch == null)
-                                           {
-                                               Console.WriteLine($"doc --is null ");
-                                               break;
-                                           }
-                                           var adoptionExists = _dbContext.BirthEvents.Where(e => e.Id == adoptionEventCouch.Id2).Any();
-                                           if (adoptionExists)
-                                           {
-                                               if (adoptionEventCouch.Exported)
-                                               {
-                                                   adoptionEventCouch.Synced = true;
-                                                   await adoptionDb.AddOrUpdateAsync(adoptionEventCouch);
-                                                   Console.WriteLine($"doc --synced -- ${adoptionEventCouch.Synced}");
-                                                   break;
-
-                                               }
-                                               else
-                                               {
-                                                   adoptionEventCouch.Failed = true;
-                                                   adoptionEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {adoptionEventCouch.Id2}already exists in database while exported flag is false";
-                                                   await eventDb.AddOrUpdateAsync(adoptionEventCouch);
-                                                   break;
-                                               }
-                                           }
-                                           Console.WriteLine($"registering adoption event");
-
-                                           Console.WriteLine($"doc --(_id)-- ${adoptionEventCouch.Id}");
-                                           Console.WriteLine($"doc --Id-- ${adoptionEventCouch.Id2}");
-
-                                           officerPersonalInfoId = adoptionEventCouch.Event.CivilRegOfficerId;
-                                           uid = _userRepository.GetAll()
-                                                       .Where(u => u.PersonalInfoId == officerPersonalInfoId)
-                                                       .Select(u => u.Id).FirstOrDefault();
-                                           officerUserId = string.IsNullOrEmpty(uid) ? officerUserId : new Guid(uid);
-
-
-                                           var adoptionEventCommand = new CreateAdoptionCommand
-                                           (new AddAdoptionRequest
-                                           {
-                                               Id = adoptionEventCouch.Id2,
-                                               BeforeAdoptionAddressId = adoptionEventCouch.BeforeAdoptionAddressId,
-                                               ApprovedName = adoptionEventCouch.ApprovedName,
-                                               BirthCertificateId = adoptionEventCouch.BirthCertificateId,
-                                               Reason = adoptionEventCouch.Reason,
-                                               AdoptiveMother = adoptionEventCouch.AdoptiveMother,
-                                               AdoptiveFather = adoptionEventCouch.AdoptiveFather,
-                                               Event = adoptionEventCouch.Event,
-                                               CourtCase = adoptionEventCouch.CourtCase,
-                                               CreatedAt = adoptionEventCouch.CreatedDateGorg,
-                                               CreatedBy = officerUserId,
-                                               IsFromBgService = true
-                                           });
-                                           if (adoptionEventCommand.Adoption.AdoptiveMother != null)
-                                           {
-
-                                               adoptionEventCommand.Adoption.AdoptiveMother.CreatedAt = adoptionEventCouch.CreatedDateGorg;
-                                               adoptionEventCommand.Adoption.AdoptiveMother.CreatedBy = officerUserId;
-                                           }
-                                           if (adoptionEventCommand.Adoption.AdoptiveFather != null)
-                                           {
-
-                                               adoptionEventCommand.Adoption.AdoptiveFather.CreatedAt = adoptionEventCouch.CreatedDateGorg;
-                                               adoptionEventCommand.Adoption.AdoptiveFather.CreatedBy = officerUserId;
-                                           }
-                                           adoptionEventCommand.Adoption.CourtCase.CreatedAt = adoptionEventCouch.CreatedDateGorg;
-                                           adoptionEventCommand.Adoption.CourtCase.CreatedBy = officerUserId;
-                                           if (adoptionEventCommand.Adoption.CourtCase.Court != null)
-                                           {
-                                               adoptionEventCommand.Adoption.CourtCase.Court.CreatedAt = adoptionEventCouch.CreatedDateGorg;
-                                               adoptionEventCommand.Adoption.CourtCase.Court.CreatedBy = officerUserId;
-                                           }
-                                           adoptionEventCommand.Adoption.Event.CreatedAt = adoptionEventCouch.CreatedDateGorg;
-                                           adoptionEventCommand.Adoption.Event.CreatedBy = officerUserId;
-                                           adoptionEventCommand.Adoption.Event.EventOwener.CreatedAt = adoptionEventCouch.CreatedDateGorg;
-                                           adoptionEventCommand.Adoption.Event.EventOwener.CreatedBy = officerUserId;
-                                           if (adoptionEventCommand.Adoption.Event.PaymentExamption != null)
-                                           {
-                                               adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedAt = adoptionEventCouch.CreatedDateGorg;
-                                               adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedBy = officerUserId;
-
-                                           }
-
-                                           var res4 = await _mediator.Send(adoptionEventCommand);
-                                           Console.WriteLine($"doc --save succeded-- ${res4.Success}");
-                                           Console.WriteLine($"doc --save message-- ${res4.Message}");
-                                           if (!res4.Success)
-                                           {
-                                               throw new Exception(res4.Message);
-
-                                           }
-
-
-                                           if (adoptionEventCouch.Paid && adoptionEventCouch.Payment != null)
-                                           {
-                                               var paymentRes = await createPayment(adoptionEventCommand.Adoption.Event.Id, adoptionEventCouch.Payment?.PaymentWayLookupId, adoptionEventCouch.Payment?.BillNumber);
-                                               //TODO:if paymentRes == false???
-                                               Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                                               if (!paymentRes.succeded)
-                                               {
-                                                   adoptionEventCouch.Failed = true;
-                                                   adoptionEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-
-                                               }
-                                               else
-                                               {
-                                                   adoptionEventCouch.paymentSynced = true;
-
-                                               }
-
-                                           }
-                                           if (adoptionEventCouch.Certified)
-                                           {
-
-                                               var certificateRes = await createCertificate((Guid)adoptionEventCouch.Event.Id, adoptionEventCouch.serialNo);
-                                               if (certificateRes.succeded)
-                                               {
-                                                   adoptionEventCouch.CertificateSynced = true;
-
-                                               }
-                                               else
-                                               {
-                                                   adoptionEventCouch.Failed = true;
-                                                   adoptionEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                               }
-                                           }
-                                           adoptionEventCouch.Synced = true;
-                                           await adoptionDb.AddOrUpdateAsync(adoptionEventCouch);
-                                           Console.WriteLine($"doc --synced -- ${adoptionEventCouch.Synced}");
+                                           var adoptionSyncRes = await adoptionSync(dbName, eventDoc.Id, eventDb);
+                                           eventDocCouch = adoptionSyncRes.AdoptionEventCouch;
                                            break;
                                        case "divorce":
-                                           var divorceDb = _couchContext.Client.GetDatabase<DivorceEventCouch>(dbName);
-                                           var divorceEventCouch = divorceDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
-                                           eventDocCouch = divorceEventCouch;
-                                           Console.WriteLine($"doc --(isnull)-- ${divorceEventCouch == null}");
-                                           Console.WriteLine($"doc --(_id)-- {eventDoc.Id}");
-
-
-                                           if (divorceEventCouch == null)
-                                           {
-                                               Console.WriteLine($"doc --is null ");
-                                               break;
-                                           }
-                                           var divorceExists = _dbContext.BirthEvents.Where(e => e.Id == divorceEventCouch.Id2).Any();
-                                           if (divorceExists)
-                                           {
-                                               if (divorceEventCouch.Exported)
-                                               {
-                                                   divorceEventCouch.Synced = true;
-                                                   await divorceDb.AddOrUpdateAsync(divorceEventCouch);
-                                                   Console.WriteLine($"doc --synced -- ${divorceEventCouch.Synced}");
-                                                   break;
-
-                                               }
-                                               else
-                                               {
-                                                   divorceEventCouch.Failed = true;
-                                                   divorceEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {divorceEventCouch.Id2}already exists in database while exported flag is false";
-                                                   await eventDb.AddOrUpdateAsync(divorceEventCouch);
-                                                   break;
-                                               }
-                                           }
-                                           Console.WriteLine($"registering divorce event");
-
-                                           Console.WriteLine($"doc --(_id)-- ${divorceEventCouch.Id}");
-                                           Console.WriteLine($"doc --Id-- ${divorceEventCouch.Id2}");
-
-                                           officerPersonalInfoId = divorceEventCouch.Event.CivilRegOfficerId;
-                                           uid = _userRepository.GetAll()
-                                                       .Where(u => u.PersonalInfoId == officerPersonalInfoId)
-                                                       .Select(u => u.Id).FirstOrDefault();
-                                           officerUserId = string.IsNullOrEmpty(uid) ? officerUserId : new Guid(uid);
-
-
-                                           var divorceEventCommand = new CreateDivorceEventCommand
-
-                                           {
-                                               Id = divorceEventCouch.Id2,
-                                               DivorcedWife = divorceEventCouch.DivorcedWife,
-                                               WifeBirthCertificateId = divorceEventCouch.WifeBirthCertificateId,
-                                               HusbandBirthCertificate = divorceEventCouch.HusbandBirthCertificate,
-                                               DateOfMarriageEt = divorceEventCouch.DateOfMarriageEt,
-                                               DivorceReason = divorceEventCouch.DivorceReason,
-                                               CourtCase = divorceEventCouch.CourtCase,
-                                               NumberOfChildren = divorceEventCouch.NumberOfChildren,
-                                               Event = divorceEventCouch.Event,
-                                               CreatedAt = divorceEventCouch.CreatedDateGorg,
-                                               CreatedBy = officerUserId,
-                                               IsFromBgService = true
-                                           };
-
-                                           divorceEventCommand.CourtCase.CreatedAt = divorceEventCouch.CreatedDateGorg;
-                                           divorceEventCommand.CourtCase.CreatedBy = officerUserId;
-                                           if (divorceEventCommand.CourtCase.Court != null)
-                                           {
-                                               divorceEventCommand.CourtCase.Court.CreatedAt = divorceEventCouch.CreatedDateGorg;
-                                               divorceEventCommand.CourtCase.Court.CreatedBy = officerUserId;
-                                           }
-                                           divorceEventCommand.Event.CreatedAt = divorceEventCouch.CreatedDateGorg;
-                                           divorceEventCommand.Event.CreatedBy = officerUserId;
-                                           divorceEventCommand.Event.EventOwener.CreatedAt = divorceEventCouch.CreatedDateGorg;
-                                           divorceEventCommand.Event.EventOwener.CreatedBy = officerUserId;
-                                           if (divorceEventCommand.Event.PaymentExamption != null)
-                                           {
-                                               divorceEventCommand.Event.PaymentExamption.CreatedAt = divorceEventCouch.CreatedDateGorg;
-                                               divorceEventCommand.Event.PaymentExamption.CreatedBy = officerUserId;
-
-                                           }
-
-                                           var res5 = await _mediator.Send(divorceEventCommand);
-                                           Console.WriteLine($"doc --save succeded-- ${res5.Success}");
-                                           Console.WriteLine($"doc --save message-- ${res5.Message}");
-                                           if (!res5.Success)
-                                           {
-                                               throw new Exception(res5.Message);
-
-
-                                           }
-                                           if (divorceEventCouch.Paid && divorceEventCouch.Payment != null)
-                                           {
-                                               var paymentRes = await createPayment(divorceEventCommand.Event.Id, divorceEventCouch.Payment?.PaymentWayLookupId, divorceEventCouch.Payment?.BillNumber);
-                                               //TODO:if paymentRes == false???
-                                               Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                                               if (!paymentRes.succeded)
-                                               {
-                                                   divorceEventCouch.Failed = true;
-                                                   divorceEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-                                               }
-                                               else
-                                               {
-                                                   divorceEventCouch.paymentSynced = true;
-
-                                               }
-                                           }
-                                           if (divorceEventCouch.Certified)
-                                           {
-
-                                               var certificateRes = await createCertificate((Guid)divorceEventCouch.Event.Id, divorceEventCouch.serialNo);
-                                               if (certificateRes.succeded)
-                                               {
-                                                   divorceEventCouch.CertificateSynced = true;
-
-                                               }
-                                               else
-                                               {
-                                                   divorceEventCouch.Failed = true;
-                                                   divorceEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                               }
-                                           }
-                                           divorceEventCouch.Synced = true;
-                                           await divorceDb.AddOrUpdateAsync(divorceEventCouch);
-                                           Console.WriteLine($"doc --synced -- ${divorceEventCouch.Synced}");
+                                           var divorceSyncRes = await divorceSync(dbName, eventDoc.Id, eventDb);
+                                           eventDocCouch = divorceSyncRes.DivorceEventCouch;
                                            break;
 
 
@@ -1209,6 +564,689 @@ namespace AppDiv.CRVS.Infrastructure.Service
             }
 
 
+        }
+
+        private async Task<(MarriageEventCouch? MarriageEventCouch, bool Success)> marriageSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        {
+
+            var marriageDb = _couchContext.Client.GetDatabase<MarriageEventCouch>(dbName);
+            var marriageEventCouch = marriageDb.Where(b => b.Id == eventDocId).FirstOrDefault();
+            // eventDocCouch = marriageEventCouch;
+            Console.WriteLine($"doc --(isnull)-- ${marriageEventCouch == null}");
+            Console.WriteLine($"doc --(_id)-- {eventDocId}");
+
+
+            if (marriageEventCouch == null)
+            {
+                // break;
+                return (MarriageEventCouch: marriageEventCouch, Success: false);
+            }
+            var exists = _dbContext.MarriageEvents.Where(e => e.Id == marriageEventCouch.Id2).Any();
+            if (exists)
+            {
+                if (marriageEventCouch.Exported)
+                {
+                    marriageEventCouch.Synced = true;
+                    await marriageDb.AddOrUpdateAsync(marriageEventCouch);
+                    Console.WriteLine($"doc --synced -- ${marriageEventCouch.Synced}");
+                    return (MarriageEventCouch: marriageEventCouch, Success: false);
+
+
+                }
+                else
+                {
+                    marriageEventCouch.Failed = true;
+                    marriageEventCouch.FailureMessage = $"duplicate marriage event id , marriage event with id {marriageEventCouch.Id2}already exists in database while exported flag is false";
+                    await eventDb.AddOrUpdateAsync(marriageEventCouch);
+                    return (MarriageEventCouch: marriageEventCouch, Success: false);
+
+                }
+            }
+            Console.WriteLine($"registering marriage event");
+
+
+            Console.WriteLine($"doc --(_id)-- ${marriageEventCouch.Id}");
+            Console.WriteLine($"doc --Id-- ${marriageEventCouch.Event.Id}");
+
+            var officerPersonalInfoId = marriageEventCouch.Event.CivilRegOfficerId;
+            var uid = _userRepository.GetAll()
+                       .Where(u => u.PersonalInfoId == officerPersonalInfoId)
+                       .Select(u => u.Id).FirstOrDefault();
+            var officerUserId = string.IsNullOrEmpty(uid) ? new Guid() : new Guid(uid);
+            var marriageEventCommand = new CreateMarriageEventCommand
+            {
+                Id = marriageEventCouch.Id2,
+                MarriageTypeId = marriageEventCouch.MarriageTypeId,
+                ApplicationId = marriageEventCouch.ApplicationId,
+                BirthCertificateBrideId = marriageEventCouch.BirthCertificateBrideId,
+                BirthCertificateGroomId = marriageEventCouch.BirthCertificateGroomId,
+                HasCamera = marriageEventCouch.HasCamera,
+                HasVideo = marriageEventCouch.HasVideo,
+                BrideInfo = marriageEventCouch.BrideInfo,
+                Event = marriageEventCouch.Event,
+                Witnesses = marriageEventCouch.Witnesses,
+                CreatedAt = marriageEventCouch.CreatedDateGorg,
+                IsFromBgService = true
+            };
+            marriageEventCommand.BrideInfo.CreatedAt = marriageEventCouch.CreatedDateGorg;
+            marriageEventCommand.BrideInfo.CreatedBy = officerUserId;
+
+            marriageEventCommand.Event.CreatedAt = marriageEventCouch.CreatedDateGorg;
+            marriageEventCommand.Event.CreatedBy = officerUserId;
+
+            marriageEventCommand.Event.EventOwener.CreatedAt = marriageEventCouch.CreatedDateGorg;
+            marriageEventCommand.Event.EventOwener.CreatedBy = officerUserId;
+            if (marriageEventCommand.Event.PaymentExamption != null)
+            {
+                marriageEventCommand.Event.PaymentExamption.CreatedAt = marriageEventCouch.CreatedDateGorg;
+                marriageEventCommand.Event.PaymentExamption.CreatedBy = officerUserId;
+            }
+
+            marriageEventCommand.Witnesses.ToList().ForEach(w =>
+            {
+                w.CreatedAt = marriageEventCouch.CreatedDateGorg;
+                w.CreatedBy = officerUserId;
+                w.WitnessPersonalInfo.CreatedAt = marriageEventCouch.CreatedDateGorg;
+                w.WitnessPersonalInfo.CreatedBy = officerUserId;
+            });
+
+            var res = await _mediator.Send(marriageEventCommand);
+            Console.WriteLine($"doc --save succeded-- ${res.Success}");
+            Console.WriteLine($"doc --save message-- ${res.Message}");
+
+            if (!res.Success)
+            {
+                throw new Exception(res.Message);
+
+            }
+
+
+            if (marriageEventCouch.Paid && marriageEventCouch.Payment != null)
+            {
+                var paymentRes = await createPayment(marriageEventCommand.Event.Id, marriageEventCouch.Payment?.PaymentWayLookupId, marriageEventCouch.Payment?.BillNumber);
+
+
+                Console.WriteLine($"doc --payment created -- ${paymentRes}");
+                if (!paymentRes.succeded)
+                {
+                    marriageEventCouch.Failed = true;
+                    marriageEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
+                }
+                else
+                {
+                    marriageEventCouch.paymentSynced = true;
+
+                }
+
+            }
+            if (marriageEventCouch.Certified)
+            {
+
+                var certificateRes = await createCertificate((Guid)marriageEventCouch.Event.Id, marriageEventCouch.serialNo);
+                if (certificateRes.succeded)
+                {
+                    marriageEventCouch.CertificateSynced = true;
+
+                }
+                else
+                {
+                    marriageEventCouch.Failed = true;
+                    marriageEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
+                }
+            }
+            marriageEventCouch.Synced = true;
+            await marriageDb.AddOrUpdateAsync(marriageEventCouch);
+            Console.WriteLine($"doc --synced -- ${marriageEventCouch.Synced}");
+            return (MarriageEventCouch: marriageEventCouch, Success: false);
+
+
+
+
+        }
+
+        private async Task<(BirthEventCouch? BirthEventCouch, bool Success)> birthSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        {
+            var birthDb = _couchContext.Client.GetDatabase<BirthEventCouch>(dbName);
+            var birthEventCouch = birthDb.Where(b => b.Id == eventDocId).FirstOrDefault();
+            // eventDocCouch = birthEventCouch;
+            Console.WriteLine($"doc --(isnull)-- ${birthEventCouch == null}");
+            Console.WriteLine($"doc --(_id)-- {eventDocId}");
+
+
+            if (birthEventCouch == null)
+            {
+                return (BirthEventCouch: birthEventCouch, Success: false);
+            }
+            var birthExists = _dbContext.BirthEvents.Where(e => e.Id == birthEventCouch.Id2).Any();
+            if (birthExists)
+            {
+                if (birthEventCouch.Exported)
+                {
+                    birthEventCouch.Synced = true;
+                    await birthDb.AddOrUpdateAsync(birthEventCouch);
+                    Console.WriteLine($"doc --synced -- ${birthEventCouch.Synced}");
+                    return (BirthEventCouch: birthEventCouch, Success: false);
+
+                }
+                else
+                {
+                    birthEventCouch.Failed = true;
+                    birthEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {birthEventCouch.Id2}already exists in database while exported flag is false";
+                    await eventDb.AddOrUpdateAsync(birthEventCouch);
+                    return (BirthEventCouch: birthEventCouch, Success: false);
+                }
+            }
+
+            Console.WriteLine($"doc --(_id)-- ${birthEventCouch.Id}");
+
+
+
+            Console.WriteLine($"doc --Id-- ${birthEventCouch.Id2}");
+
+            var officerPersonalInfoId = birthEventCouch.Event.CivilRegOfficerId;
+            var uid = _userRepository.GetAll()
+                         .Where(u => u.PersonalInfoId == officerPersonalInfoId)
+                         .Select(u => u.Id).FirstOrDefault();
+            var officerUserId = string.IsNullOrEmpty(uid) ? new Guid() : new Guid(uid);
+
+            var birthEventCommand = new CreateBirthEventCommand
+            (new AddBirthEventRequest
+            {
+                Id = birthEventCouch.Id2,
+                FacilityTypeLookupId = birthEventCouch.FacilityTypeLookupId,
+                FacilityLookupId = birthEventCouch.FacilityLookupId,
+                BirthPlaceId = birthEventCouch.BirthPlaceId,
+                TypeOfBirthLookupId = birthEventCouch.TypeOfBirthLookupId,
+                Father = birthEventCouch.Father,
+                Mother = birthEventCouch.Mother,
+                Event = birthEventCouch.Event,
+                BirthNotification = birthEventCouch.BirthNotification,
+                IsFromBgService = true
+            });
+            birthEventCommand.BirthEvent.CreatedAt = birthEventCouch.CreatedDateGorg;
+            birthEventCommand.BirthEvent.CreatedBy = officerUserId;
+            if (birthEventCommand.BirthEvent.Father != null)
+            {
+                birthEventCommand.BirthEvent.Father.CreatedAt = birthEventCouch.CreatedDateGorg;
+                birthEventCommand.BirthEvent.Father.CreatedBy = officerUserId;
+            }
+            if (birthEventCommand.BirthEvent.Mother != null)
+            {
+                birthEventCommand.BirthEvent.Mother.CreatedAt = birthEventCouch.CreatedDateGorg;
+                birthEventCommand.BirthEvent.Mother.CreatedBy = officerUserId;
+            }
+            birthEventCommand.BirthEvent.Event.CreatedAt = birthEventCouch.CreatedDateGorg;
+            birthEventCommand.BirthEvent.Event.CreatedBy = officerUserId;
+            birthEventCommand.BirthEvent.Event.EventOwener.CreatedAt = birthEventCouch.CreatedDateGorg;
+            birthEventCommand.BirthEvent.Event.EventOwener.CreatedBy = officerUserId;
+
+            if (birthEventCommand.BirthEvent.Event.PaymentExamption != null)
+            {
+                birthEventCommand.BirthEvent.Event.PaymentExamption.CreatedAt = birthEventCouch.CreatedDateGorg;
+                birthEventCommand.BirthEvent.Event.PaymentExamption.CreatedBy = officerUserId;
+            }
+
+
+            if (birthEventCommand.BirthEvent.Event.EventRegistrar != null)
+            {
+                birthEventCommand.BirthEvent.Event.EventRegistrar.CreatedAt = birthEventCouch.CreatedDateGorg;
+                birthEventCommand.BirthEvent.Event.EventRegistrar.CreatedBy = officerUserId;
+                birthEventCommand.BirthEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = birthEventCouch.CreatedDateGorg;
+                birthEventCommand.BirthEvent.Event.EventRegistrar.RegistrarInfo.CreatedBy = officerUserId;
+
+            }
+
+            if (birthEventCommand.BirthEvent.BirthNotification != null)
+            {
+                birthEventCommand.BirthEvent.BirthNotification.CreatedAt = birthEventCouch.CreatedDateGorg;
+                birthEventCommand.BirthEvent.BirthNotification.CreatedBy = officerUserId;
+
+            }
+
+            var res2 = await _mediator.Send(birthEventCommand);
+            Console.WriteLine($"doc --save succeded-- ${res2.Success}");
+            Console.WriteLine($"doc --save message-- ${res2.Message}");
+            if (!res2.Success)
+            {
+                throw new Exception(res2.Message);
+
+            }
+
+
+            if (birthEventCouch.Paid && birthEventCouch.Payment != null)
+            {
+                var paymentRes = await createPayment(birthEventCommand.BirthEvent.Event.Id, birthEventCouch.Payment?.PaymentWayLookupId, birthEventCouch.Payment?.BillNumber);
+                //TODO:if paymentRes == false???
+                Console.WriteLine($"doc --payment created -- ${paymentRes}");
+                if (!paymentRes.succeded)
+                {
+                    birthEventCouch.Failed = true;
+                    birthEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
+
+                }
+                else
+                {
+                    birthEventCouch.paymentSynced = true;
+
+                }
+
+
+            }
+            if (birthEventCouch.Certified)
+            {
+
+                var certificateRes = await createCertificate((Guid)birthEventCouch.Event.Id, birthEventCouch.serialNo);
+                if (certificateRes.succeded)
+                {
+                    birthEventCouch.CertificateSynced = true;
+
+                }
+                else
+                {
+                    birthEventCouch.Failed = true;
+                    birthEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
+                }
+            }
+            birthEventCouch.Synced = true;
+            await birthDb.AddOrUpdateAsync(birthEventCouch);
+            Console.WriteLine($"doc --synced -- ${birthEventCouch.Synced}");
+
+            return (BirthEventCouch: birthEventCouch, Success: true);
+        }
+
+        private async Task<(DeathEventCouch? DeathEventCouch, bool Success)> deathSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        {
+            var deathDb = _couchContext.Client.GetDatabase<DeathEventCouch>(dbName);
+            var deathEventCouch = deathDb.Where(b => b.Id == eventDocId).FirstOrDefault();
+            // eventDocCouch = deathEventCouch;
+            Console.WriteLine($"doc --(isnull)-- ${deathEventCouch == null}");
+            Console.WriteLine($"doc --(_id)-- {eventDocId}");
+
+            if (deathEventCouch == null)
+            {
+                Console.WriteLine($"doc --is null ");
+                return (DeathEventCouch: deathEventCouch, Success: false);
+            }
+            var deathExists = _dbContext.BirthEvents.Where(e => e.Id == deathEventCouch.Id2).Any();
+            if (deathExists)
+            {
+                if (deathEventCouch.Exported)
+                {
+                    deathEventCouch.Synced = true;
+                    await deathDb.AddOrUpdateAsync(deathEventCouch);
+                    Console.WriteLine($"doc --synced -- ${deathEventCouch.Synced}");
+                    return (DeathEventCouch: deathEventCouch, Success: false);
+
+                }
+                else
+                {
+                    deathEventCouch.Failed = true;
+                    deathEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {deathEventCouch.Id2}already exists in database while exported flag is false";
+                    await eventDb.AddOrUpdateAsync(deathEventCouch);
+                    return (DeathEventCouch: deathEventCouch, Success: false);
+                }
+            }
+            Console.WriteLine($"registering death event");
+
+            Console.WriteLine($"doc --(_id)-- ${deathEventCouch.Id}");
+
+            var officerPersonalInfoId = deathEventCouch.Event.CivilRegOfficerId;
+            var uid = _userRepository.GetAll()
+                          .Where(u => u.PersonalInfoId == officerPersonalInfoId)
+                          .Select(u => u.Id).FirstOrDefault();
+            var officerUserId = string.IsNullOrEmpty(uid) ? new Guid() : new Guid(uid);
+
+
+            var deathEventCommand = new CreateDeathEventCommand
+            (new AddDeathEventRequest
+            {
+                Id = deathEventCouch.Id2,
+                FacilityTypeLookupId = deathEventCouch.FacilityTypeLookupId,
+                FacilityLookupId = deathEventCouch.FacilityLookupId,
+                BirthCertificateId = deathEventCouch.BirthCertificateId,
+                DuringDeathId = deathEventCouch.DuringDeathId,
+                DeathPlaceId = deathEventCouch.DeathPlaceId,
+                PlaceOfFuneral = deathEventCouch.PlaceOfFuneral,
+                Event = deathEventCouch.Event,
+                DeathNotification = deathEventCouch.DeathNotification,
+                CreatedAt = deathEventCouch.CreatedDateGorg,
+                CreatedBy = officerUserId,
+                IsFromBgService = true
+            });
+            if (deathEventCommand.DeathEvent.DeathNotification != null)
+            {
+                deathEventCommand.DeathEvent.DeathNotification.CreatedAt = deathEventCouch.CreatedDateGorg;
+                deathEventCommand.DeathEvent.DeathNotification.CreatedBy = officerUserId;
+
+            }
+            deathEventCommand.DeathEvent.Event.CreatedAt = deathEventCouch.CreatedDateGorg;
+            deathEventCommand.DeathEvent.Event.CreatedBy = officerUserId;
+            deathEventCommand.DeathEvent.Event.EventOwener.CreatedAt = deathEventCouch.CreatedDateGorg;
+            deathEventCommand.DeathEvent.Event.EventOwener.CreatedBy = officerUserId;
+            deathEventCommand.DeathEvent.Event.EventRegistrar.CreatedAt = deathEventCouch.CreatedDateGorg;
+            deathEventCommand.DeathEvent.Event.EventRegistrar.CreatedBy = officerUserId;
+            deathEventCommand.DeathEvent.Event.EventRegistrar.RegistrarInfo.CreatedAt = deathEventCouch.CreatedDateGorg;
+            deathEventCommand.DeathEvent.Event.EventRegistrar.RegistrarInfo.CreatedBy = officerUserId;
+            if (deathEventCommand.DeathEvent.Event.PaymentExamption != null)
+            {
+                deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedAt = deathEventCouch.CreatedDateGorg;
+                deathEventCommand.DeathEvent.Event.PaymentExamption.CreatedBy = officerUserId;
+            }
+            var res3 = await _mediator.Send(deathEventCommand);
+            Console.WriteLine($"doc --save succeded-- ${res3.Success}");
+            Console.WriteLine($"doc --save message-- ${res3.Message}");
+            Console.WriteLine($"doc -  id -- ${deathEventCommand.DeathEvent.Id}");
+
+
+            if (!res3.Success)
+            {
+
+                Console.WriteLine($"doc -failed-  id -- ${deathEventCommand.DeathEvent.Id}");
+
+                throw new Exception(res3.Message);
+
+
+            }
+            if (deathEventCouch.Paid && deathEventCouch.Payment != null)
+            {
+                var paymentRes = await createPayment(deathEventCommand.DeathEvent.Event.Id, deathEventCouch.Payment?.PaymentWayLookupId, deathEventCouch.Payment?.BillNumber);
+                //TODO:if paymentRes == false???
+                Console.WriteLine($"doc --payment created -- ${paymentRes}");
+                if (!paymentRes.succeded)
+                {
+                    deathEventCouch.Failed = true;
+                    deathEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
+
+                }
+                else
+                {
+                    deathEventCouch.paymentSynced = true;
+
+                }
+            }
+            if (deathEventCouch.Certified)
+            {
+
+                var certificateRes = await createCertificate((Guid)deathEventCouch.Event.Id, deathEventCouch.serialNo);
+                if (certificateRes.succeded)
+                {
+                    deathEventCouch.CertificateSynced = true;
+
+                }
+                else
+                {
+                    deathEventCouch.Failed = true;
+                    deathEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
+                }
+            }
+            deathEventCouch.Synced = true;
+            await deathDb.AddOrUpdateAsync(deathEventCouch);
+            return (DeathEventCouch: deathEventCouch, Success: true);
+        }
+
+        private async Task<(AdoptionEventCouch? AdoptionEventCouch, bool Success)> adoptionSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        {
+            var adoptionDb = _couchContext.Client.GetDatabase<AdoptionEventCouch>(dbName);
+            var adoptionEventCouch = adoptionDb.Where(b => b.Id == eventDocId).FirstOrDefault();
+            // eventDocCouch = adoptionEventCouch;
+            Console.WriteLine($"doc --(isnull)-- ${adoptionEventCouch == null}");
+
+
+            if (adoptionEventCouch == null)
+            {
+                Console.WriteLine($"doc --is null ");
+                return (AdoptionEventCouch: adoptionEventCouch, Success: false);
+            }
+            var adoptionExists = _dbContext.BirthEvents.Where(e => e.Id == adoptionEventCouch.Id2).Any();
+            if (adoptionExists)
+            {
+                if (adoptionEventCouch.Exported)
+                {
+                    adoptionEventCouch.Synced = true;
+                    await adoptionDb.AddOrUpdateAsync(adoptionEventCouch);
+                    Console.WriteLine($"doc --synced -- ${adoptionEventCouch.Synced}");
+                    return (AdoptionEventCouch: adoptionEventCouch, Success: false);
+
+                }
+                else
+                {
+                    adoptionEventCouch.Failed = true;
+                    adoptionEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {adoptionEventCouch.Id2}already exists in database while exported flag is false";
+                    await eventDb.AddOrUpdateAsync(adoptionEventCouch);
+                    return (AdoptionEventCouch: adoptionEventCouch, Success: false);
+                }
+            }
+            Console.WriteLine($"registering adoption event");
+
+            Console.WriteLine($"doc --(_id)-- ${adoptionEventCouch.Id}");
+            Console.WriteLine($"doc --Id-- ${adoptionEventCouch.Id2}");
+
+            var officerPersonalInfoId = adoptionEventCouch.Event.CivilRegOfficerId;
+            var uid = _userRepository.GetAll()
+                        .Where(u => u.PersonalInfoId == officerPersonalInfoId)
+                        .Select(u => u.Id).FirstOrDefault();
+            var officerUserId = string.IsNullOrEmpty(uid) ? new Guid() : new Guid(uid);
+
+
+            var adoptionEventCommand = new CreateAdoptionCommand
+            (new AddAdoptionRequest
+            {
+                Id = adoptionEventCouch.Id2,
+                BeforeAdoptionAddressId = adoptionEventCouch.BeforeAdoptionAddressId,
+                ApprovedName = adoptionEventCouch.ApprovedName,
+                BirthCertificateId = adoptionEventCouch.BirthCertificateId,
+                Reason = adoptionEventCouch.Reason,
+                AdoptiveMother = adoptionEventCouch.AdoptiveMother,
+                AdoptiveFather = adoptionEventCouch.AdoptiveFather,
+                Event = adoptionEventCouch.Event,
+                CourtCase = adoptionEventCouch.CourtCase,
+                CreatedAt = adoptionEventCouch.CreatedDateGorg,
+                CreatedBy = officerUserId,
+                IsFromBgService = true
+            });
+            if (adoptionEventCommand.Adoption.AdoptiveMother != null)
+            {
+
+                adoptionEventCommand.Adoption.AdoptiveMother.CreatedAt = adoptionEventCouch.CreatedDateGorg;
+                adoptionEventCommand.Adoption.AdoptiveMother.CreatedBy = officerUserId;
+            }
+            if (adoptionEventCommand.Adoption.AdoptiveFather != null)
+            {
+
+                adoptionEventCommand.Adoption.AdoptiveFather.CreatedAt = adoptionEventCouch.CreatedDateGorg;
+                adoptionEventCommand.Adoption.AdoptiveFather.CreatedBy = officerUserId;
+            }
+            adoptionEventCommand.Adoption.CourtCase.CreatedAt = adoptionEventCouch.CreatedDateGorg;
+            adoptionEventCommand.Adoption.CourtCase.CreatedBy = officerUserId;
+            if (adoptionEventCommand.Adoption.CourtCase.Court != null)
+            {
+                adoptionEventCommand.Adoption.CourtCase.Court.CreatedAt = adoptionEventCouch.CreatedDateGorg;
+                adoptionEventCommand.Adoption.CourtCase.Court.CreatedBy = officerUserId;
+            }
+            adoptionEventCommand.Adoption.Event.CreatedAt = adoptionEventCouch.CreatedDateGorg;
+            adoptionEventCommand.Adoption.Event.CreatedBy = officerUserId;
+            adoptionEventCommand.Adoption.Event.EventOwener.CreatedAt = adoptionEventCouch.CreatedDateGorg;
+            adoptionEventCommand.Adoption.Event.EventOwener.CreatedBy = officerUserId;
+            if (adoptionEventCommand.Adoption.Event.PaymentExamption != null)
+            {
+                adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedAt = adoptionEventCouch.CreatedDateGorg;
+                adoptionEventCommand.Adoption.Event.PaymentExamption.CreatedBy = officerUserId;
+
+            }
+
+            var res4 = await _mediator.Send(adoptionEventCommand);
+            Console.WriteLine($"doc --save succeded-- ${res4.Success}");
+            Console.WriteLine($"doc --save message-- ${res4.Message}");
+            if (!res4.Success)
+            {
+                throw new Exception(res4.Message);
+
+            }
+
+
+            if (adoptionEventCouch.Paid && adoptionEventCouch.Payment != null)
+            {
+                var paymentRes = await createPayment(adoptionEventCommand.Adoption.Event.Id, adoptionEventCouch.Payment?.PaymentWayLookupId, adoptionEventCouch.Payment?.BillNumber);
+                //TODO:if paymentRes == false???
+                Console.WriteLine($"doc --payment created -- ${paymentRes}");
+                if (!paymentRes.succeded)
+                {
+                    adoptionEventCouch.Failed = true;
+                    adoptionEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
+
+                }
+                else
+                {
+                    adoptionEventCouch.paymentSynced = true;
+
+                }
+
+            }
+            if (adoptionEventCouch.Certified)
+            {
+
+                var certificateRes = await createCertificate((Guid)adoptionEventCouch.Event.Id, adoptionEventCouch.serialNo);
+                if (certificateRes.succeded)
+                {
+                    adoptionEventCouch.CertificateSynced = true;
+
+                }
+                else
+                {
+                    adoptionEventCouch.Failed = true;
+                    adoptionEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
+                }
+            }
+            adoptionEventCouch.Synced = true;
+            await adoptionDb.AddOrUpdateAsync(adoptionEventCouch);
+            Console.WriteLine($"doc --synced -- ${adoptionEventCouch.Synced}");
+            return (AdoptionEventCouch: adoptionEventCouch, Success: true);
+        }
+
+        private async Task<(DivorceEventCouch? DivorceEventCouch, bool Success)> divorceSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        {
+            var divorceDb = _couchContext.Client.GetDatabase<DivorceEventCouch>(dbName);
+            var divorceEventCouch = divorceDb.Where(b => b.Id == eventDocId).FirstOrDefault();
+            // eventDocCouch = divorceEventCouch;
+            Console.WriteLine($"doc --(isnull)-- ${divorceEventCouch == null}");
+            Console.WriteLine($"doc --(_id)-- {eventDocId}");
+
+
+            if (divorceEventCouch == null)
+            {
+                Console.WriteLine($"doc --is null ");
+                return (DivorceEventCouch: divorceEventCouch, Success: false);
+            }
+            var divorceExists = _dbContext.BirthEvents.Where(e => e.Id == divorceEventCouch.Id2).Any();
+            if (divorceExists)
+            {
+                if (divorceEventCouch.Exported)
+                {
+                    divorceEventCouch.Synced = true;
+                    await divorceDb.AddOrUpdateAsync(divorceEventCouch);
+                    Console.WriteLine($"doc --synced -- ${divorceEventCouch.Synced}");
+                    return (DivorceEventCouch: divorceEventCouch, Success: false);
+
+                }
+                else
+                {
+                    divorceEventCouch.Failed = true;
+                    divorceEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {divorceEventCouch.Id2}already exists in database while exported flag is false";
+                    await eventDb.AddOrUpdateAsync(divorceEventCouch);
+                    return (DivorceEventCouch: divorceEventCouch, Success: false);
+                }
+            }
+            Console.WriteLine($"registering divorce event");
+
+            Console.WriteLine($"doc --(_id)-- ${divorceEventCouch.Id}");
+            Console.WriteLine($"doc --Id-- ${divorceEventCouch.Id2}");
+
+            var officerPersonalInfoId = divorceEventCouch.Event.CivilRegOfficerId;
+            var uid = _userRepository.GetAll()
+                         .Where(u => u.PersonalInfoId == officerPersonalInfoId)
+                         .Select(u => u.Id).FirstOrDefault();
+            var officerUserId = string.IsNullOrEmpty(uid) ? new Guid() : new Guid(uid);
+
+
+            var divorceEventCommand = new CreateDivorceEventCommand
+
+            {
+                Id = divorceEventCouch.Id2,
+                DivorcedWife = divorceEventCouch.DivorcedWife,
+                WifeBirthCertificateId = divorceEventCouch.WifeBirthCertificateId,
+                HusbandBirthCertificate = divorceEventCouch.HusbandBirthCertificate,
+                DateOfMarriageEt = divorceEventCouch.DateOfMarriageEt,
+                DivorceReason = divorceEventCouch.DivorceReason,
+                CourtCase = divorceEventCouch.CourtCase,
+                NumberOfChildren = divorceEventCouch.NumberOfChildren,
+                Event = divorceEventCouch.Event,
+                CreatedAt = divorceEventCouch.CreatedDateGorg,
+                CreatedBy = officerUserId,
+                IsFromBgService = true
+            };
+
+            divorceEventCommand.CourtCase.CreatedAt = divorceEventCouch.CreatedDateGorg;
+            divorceEventCommand.CourtCase.CreatedBy = officerUserId;
+            if (divorceEventCommand.CourtCase.Court != null)
+            {
+                divorceEventCommand.CourtCase.Court.CreatedAt = divorceEventCouch.CreatedDateGorg;
+                divorceEventCommand.CourtCase.Court.CreatedBy = officerUserId;
+            }
+            divorceEventCommand.Event.CreatedAt = divorceEventCouch.CreatedDateGorg;
+            divorceEventCommand.Event.CreatedBy = officerUserId;
+            divorceEventCommand.Event.EventOwener.CreatedAt = divorceEventCouch.CreatedDateGorg;
+            divorceEventCommand.Event.EventOwener.CreatedBy = officerUserId;
+            if (divorceEventCommand.Event.PaymentExamption != null)
+            {
+                divorceEventCommand.Event.PaymentExamption.CreatedAt = divorceEventCouch.CreatedDateGorg;
+                divorceEventCommand.Event.PaymentExamption.CreatedBy = officerUserId;
+
+            }
+
+            var res5 = await _mediator.Send(divorceEventCommand);
+            Console.WriteLine($"doc --save succeded-- ${res5.Success}");
+            Console.WriteLine($"doc --save message-- ${res5.Message}");
+            if (!res5.Success)
+            {
+                throw new Exception(res5.Message);
+
+
+            }
+            if (divorceEventCouch.Paid && divorceEventCouch.Payment != null)
+            {
+                var paymentRes = await createPayment(divorceEventCommand.Event.Id, divorceEventCouch.Payment?.PaymentWayLookupId, divorceEventCouch.Payment?.BillNumber);
+                //TODO:if paymentRes == false???
+                Console.WriteLine($"doc --payment created -- ${paymentRes}");
+                if (!paymentRes.succeded)
+                {
+                    divorceEventCouch.Failed = true;
+                    divorceEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
+                }
+                else
+                {
+                    divorceEventCouch.paymentSynced = true;
+
+                }
+            }
+            if (divorceEventCouch.Certified)
+            {
+
+                var certificateRes = await createCertificate((Guid)divorceEventCouch.Event.Id, divorceEventCouch.serialNo);
+                if (certificateRes.succeded)
+                {
+                    divorceEventCouch.CertificateSynced = true;
+
+                }
+                else
+                {
+                    divorceEventCouch.Failed = true;
+                    divorceEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
+                }
+            }
+            divorceEventCouch.Synced = true;
+            await divorceDb.AddOrUpdateAsync(divorceEventCouch);
+            Console.WriteLine($"doc --synced -- ${divorceEventCouch.Synced}");
+            return (DivorceEventCouch: divorceEventCouch, Success: true);
         }
 
     }
