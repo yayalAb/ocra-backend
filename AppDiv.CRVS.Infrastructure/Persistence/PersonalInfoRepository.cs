@@ -6,6 +6,7 @@ using AppDiv.CRVS.Infrastructure.Services;
 using AppDiv.CRVS.Domain.Entities;
 using Nest;
 using Microsoft.EntityFrameworkCore;
+using AppDiv.CRVS.Domain;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -57,6 +58,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 return true;
             }
             return false;
+        }
+        public async Task<ApplicationUser?> GetUserByPersonalInfoId(Guid personalInfoId)
+        {
+            return await dbContext.Users.Where(u => u.PersonalInfoId == personalInfoId).FirstOrDefaultAsync();
         }
 
         public bool Exists(Guid id)

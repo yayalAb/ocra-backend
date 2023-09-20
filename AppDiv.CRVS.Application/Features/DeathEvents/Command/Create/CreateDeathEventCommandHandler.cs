@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
 using System.Text.Json;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
 {
@@ -21,6 +22,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
+        private readonly IPersonalInfoRepository _personalInfoRepository;
         private readonly IUserResolverService _userResolverService;
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventRepository eventRepository,
@@ -29,6 +31,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                               IEventPaymentRequestService paymentRequestService,
                                               IAddressLookupRepository addressRepostory,
                                               IFingerprintService fingerprintService,
+                                              IPersonalInfoRepository personalInfoRepository,
                                               IUserResolverService userResolverService)
 
         {
@@ -39,6 +42,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _paymentRequestService = paymentRequestService;
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
+            _personalInfoRepository = personalInfoRepository;
             _userResolverService = userResolverService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
@@ -71,7 +75,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                     {
                         try
                         {
-                            var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
+                            Guid workingAddressId = await HelperService.GetWorkingAddressId(_userResolverService, _personalInfoRepository, request.DeathEvent.IsFromBgService ? request.DeathEvent.Event.CivilRegOfficerId : null);
+                            var address = await _addressRepostory.GetAsync(workingAddressId);
                             // Map the request to the model entity.
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)

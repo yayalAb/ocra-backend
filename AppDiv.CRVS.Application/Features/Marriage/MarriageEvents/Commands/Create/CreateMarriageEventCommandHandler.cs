@@ -101,7 +101,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             CreateMarriageEventCommandResponse.Message = CreateMarriageEventCommandResponse.ValidationErrors[0];
                             CreateMarriageEventCommandResponse.Status = 400;
                         }
-                        var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
+                        Guid workingAddressId = await HelperService.GetWorkingAddressId(_userResolverService,_personalInfoRepository,request.IsFromBgService?request.Event.CivilRegOfficerId:null);
+                        var address = await _addressRepostory.GetAsync(workingAddressId);
                         if (CreateMarriageEventCommandResponse.Success)
                         {
 

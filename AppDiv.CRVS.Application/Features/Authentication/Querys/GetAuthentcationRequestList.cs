@@ -123,7 +123,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  EventId = (request.RequestType == "authentication")  ? w.AuthenticationRequest.Certificate.EventId :
                              request.RequestType == "change" ? w.CorrectionRequest.EventId : null,
                  RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ?
-                     w.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(w.AuthenticationRequest.CertificateId) : w.CorrectionRequest.Id,
+                     w.PaymentExamptionRequest.Id : w.AuthenticationRequest.Certificate.EventId : w.CorrectionRequest.Id,
                  EventType = (w.AuthenticationRequest!.Certificate != null) ? (string)w.AuthenticationRequest.Certificate.Event.EventType :
                                 (string)w.CorrectionRequest.Event.EventType,
                  CertificateId = request.RequestType == "change" ? w.CorrectionRequest.Event.CertificateId : 

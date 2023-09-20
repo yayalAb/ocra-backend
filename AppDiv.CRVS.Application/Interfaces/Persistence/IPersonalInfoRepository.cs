@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.DTOs.ElasticSearchDTOs;
 using AppDiv.CRVS.Application.Features.Search;
 using AppDiv.CRVS.Application.Interfaces.Persistence.Base;
+using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Entities;
 
 namespace AppDiv.CRVS.Application.Interfaces.Persistence
@@ -14,6 +15,8 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     {
         Task<IEnumerable<PersonalInfo>> GetAllAsync();
         Task<PersonalInfo> GetByIdAsync(Guid id);
+        public Task<ApplicationUser?> GetUserByPersonalInfoId(Guid personalInfoId);
+
         Task<List<PersonSearchResponse>> SearchSimilarPersons(SearchSimilarPersonalInfoQuery queryParams);
         public Task<List<PersonSearchResponse>> SearchPersonalInfo(GetPersonalInfoQuery query);
 

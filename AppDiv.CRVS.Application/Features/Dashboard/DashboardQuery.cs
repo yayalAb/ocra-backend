@@ -90,8 +90,9 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
             .Include(x=>x.CorrectionRequests)
             .ThenInclude(x=>x.Request)
             .Where(x=>(x.EventRegDate >= startDate && x.EventRegDate <= EndDate)
-            ||(x.CorrectionRequests.Any(c=>c.CreatedAt>= startDate && c.CreatedAt <= EndDate))
-            ||(x.EventCertificates.Any(c=>c.AuthenticationAt>= startDate && c.AuthenticationAt <= EndDate)))
+            // ||x.CorrectionRequests.Any(c=>c.CreatedAt>= startDate && c.CreatedAt <= EndDate)
+            // ||x.EventCertificates.Any(c=>c.AuthenticationAt>= startDate && c.AuthenticationAt <= EndDate)
+            )
             .Where(x=>x.EventRegisteredAddressId==AddressId||x.EventRegisteredAddress.ParentAddressId==AddressId
             ||x.EventRegisteredAddress.ParentAddress.ParentAddressId==AddressId||x.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId
             ||x.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId);
@@ -107,6 +108,7 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
                     Event = x.Key,
                     Count = x.Count()
                 });
+            
             var EventPivotReport = allEvents.Select(x => new
                 {
                    Event = x.EventType,

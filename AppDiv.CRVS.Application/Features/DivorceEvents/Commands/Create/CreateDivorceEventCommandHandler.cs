@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using AppDiv.CRVS.Utility.Services;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Exceptions;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 {
@@ -85,7 +86,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                         }
                         if (createDivorceEventCommandResponse.Success)
                         {
-                            var address = await _addressRepostory.GetAsync(_userResolverService.GetWorkingAddressId());
+                            Guid workingAddressId = await HelperService.GetWorkingAddressId(_userResolverService, _personalInfoRepository, request.IsFromBgService ? request.Event.CivilRegOfficerId : null);
+                            var address = await _addressRepostory.GetAsync(workingAddressId);
                             request.Event.EventDateEt = request?.CourtCase?.ConfirmedDateEt!;
                             // request.Event.EventAddressId = request?.CourtCase?.Court?.AddressId!;
                             if (request?.CourtCase?.CourtId != null && request?.CourtCase?.CourtId != Guid.Empty)
