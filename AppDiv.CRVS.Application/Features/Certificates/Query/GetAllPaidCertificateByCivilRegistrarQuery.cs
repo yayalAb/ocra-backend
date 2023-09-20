@@ -77,10 +77,16 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                 EventId = e.Id,
                                 CertificateId = e.CertificateId,
                                 EventType = e.EventType,
-                                EventOwnerName = e.EventOwener.FullNameLang,
+                                OwnerFullName = e.EventOwener.FullNameLang,
                                 RequestDate = e.EventRegDateEt,
                                 RequestedBy = e.CivilRegOfficer.FullNameLang,
                                 OfficerId = e.CivilRegOfficerId,
+                                EventDate = e.EventDateEt,
+                                EventRegDate = e.EventRegDateEt,
+                                IsCertified = e.IsCertified,
+                                HasPendingDocumentApproval = e.HasPendingDocumentApproval,
+                                IsReprint = (e.ReprintWaiting&& (bool)e.IsOfflineReg),
+
                             })
                             //   .Select(e => new PaidCertificateDTO
                             //   {
