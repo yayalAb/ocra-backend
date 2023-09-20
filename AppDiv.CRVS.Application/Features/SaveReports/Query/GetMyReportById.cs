@@ -76,11 +76,25 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Query
             }
 
             var Report = await _reportRepo.GetReportData(SavedReport.ReportName, columns, filterse, aggregates);
-
-            return await PaginatedList<object>
+             var reportRes=await PaginatedList<object>
                             .CreateAsync(
                                  Report
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
+
+            var report= new {
+                
+            };                   
+            return new {
+                ReportName =SavedReport.ReportName,
+                Description =SavedReport.Description,
+                ReportTitle =SavedReport.ReportTitle,
+                Agrgate =aggregates,
+                Filter =filterse,
+                Colums =columns,
+                Other =SavedReport.Other,
+                reportRes,
+                report
+            } ;
 
 
         }
