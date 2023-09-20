@@ -152,7 +152,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                     {
                         var updateres = await _elasticClient.UpdateAsync<CertificateIndex>(DocumentPath<CertificateIndex>
                             .Id(updatedCertificateIndex.Id.ToString()),
-                            p => p.Index("certificates")
+                            p => p.Index("certificate")
                                     .Doc(updatedCertificateIndex)
                                     .Refresh(Elasticsearch.Net.Refresh.True)
                                     );
@@ -202,7 +202,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
         {
             return new CertificateIndex
             {
-                Id = certificate.Id,
+                Id = certificate.Id.ToString(),
                 EventId = certificate.Event.Id,
                 EventType = certificate.Event.EventType,
                 NestedEventId = certificate.Event.EventType.ToLower() == "birth"

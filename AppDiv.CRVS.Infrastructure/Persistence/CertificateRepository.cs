@@ -167,7 +167,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return response.Documents.Select(d => new SearchCertificateResponseDTO
             {
-                Id = d.Id,
+                Id = new Guid(d.Id),
                 EventId = d.EventId,
                 NestedEventId = d.NestedEventId,
                 FullName = isAmharic ? d.FullNameAm : d.FullNameOr,
@@ -200,7 +200,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                  .Where(c => c.Status)
                                      .Select(c => new CertificateIndex
                                      {
-                                         Id = c.Id,
+                                         Id = c.Id.ToString(),
                                          EventId = c.Event.Id,
                                          EventType = c.Event.EventType,
                                          NestedEventId = c.Event.EventType.ToLower() == "birth"
