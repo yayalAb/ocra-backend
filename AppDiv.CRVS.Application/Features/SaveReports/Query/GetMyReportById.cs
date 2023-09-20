@@ -54,11 +54,10 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Query
             List<string>? columns = string.IsNullOrEmpty(SavedReport?.Colums) ? null : SavedReport?.Colums?.Split(',').ToList();
             string? filterse = SavedReport?.Filter;
             List<Aggregate>? aggregates = new List<Aggregate>();
-            if (SavedReport?.Agrgate != null && SavedReport?.Agrgate.Length > 2)
+            if (!string.IsNullOrEmpty(SavedReport?.Agrgate ) && SavedReport?.Agrgate.Length > 2&&SavedReport?.Agrgate.ToLower()!="null")
             {
                 JArray jsonArray = JArray.Parse(SavedReport?.Agrgate);
                 string json = JsonConvert.SerializeObject(SavedReport?.Agrgate);
-                Console.WriteLine("Jeson arra : {0}", jsonArray);
                 foreach (var jos in jsonArray)
                 {
                     int aggregateMethodValue = (int)jos["AggregateMethod"];
@@ -75,7 +74,6 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Query
             {
                 aggregates = null;
             }
-            Console.WriteLine("aggragate : {0}", aggregates.ToList());
 
             var Report = await _reportRepo.GetReportData(SavedReport.ReportName, columns, filterse, aggregates);
 
