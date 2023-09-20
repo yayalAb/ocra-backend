@@ -18,12 +18,6 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         public static EventInfoArchive GetEventInfo(Event? events, IDateAndAddressService dateAndAddressService,
         IReportRepostory _reportRepostory)
         {
-            // (string am, string or)? address = (events?.EventRegisteredAddressId == Guid.Empty
-            //    || events?.EventRegisteredAddressId == null) ? null :
-            //    dateAndAddressService.addressFormat(events?.EventRegisteredAddressId);
-
-            // (string[] am, string[] or)? splitedAddress = dateAndAddressService.SplitedAddress(address?.am, address?.or)!;
-            // var convertor = new CustomDateConverter();
             var EventRegAddress=  _reportRepostory.ReturnAddress(events?.EventRegisteredAddressId.ToString()!).Result;
             JArray EventRegAddressjsonObject = JArray.FromObject(EventRegAddress);
             FormatedAddressDto EventRegAddressResponse = EventRegAddressjsonObject.ToObject<List<FormatedAddressDto>>()?.FirstOrDefault()!;
@@ -127,7 +121,14 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
          }
 
 
-            public static  Person GetCorrectionRequestPerson(Person? person,PersonalInfo? personInfo){
+            public static  Person GetCorrectionRequestPerson(Person? person,PersonalInfo? personInfo,ILookupFromId lookupService){
+                var Gender=lookupService.GetLookup(personInfo?.SexLookupId);
+                var Nationality=lookupService.GetLookup(personInfo?.NationalityLookupId);
+                var Religion=lookupService.GetLookup(personInfo?.ReligionLookupId);
+                var MarriageStatus=lookupService.GetLookup(personInfo?.MarriageStatusLookupId);
+                var Nation=lookupService.GetLookup(personInfo?.NationLookupId);
+                var EducationalStatus=lookupService.GetLookup(personInfo?.EducationalStatusLookupId);
+                var TypeOfWork=lookupService.GetLookup(personInfo?.TypeOfWorkLookupId);
                 person.FirstNameAm =personInfo?.FirstName?.Value<string>("am");
                 person.MiddleNameAm =personInfo?.MiddleName?.Value<string>("am");
                 person.LastNameAm = personInfo?.LastName?.Value<string>("am");
@@ -136,27 +137,27 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                 person.MiddleNameOr = personInfo?.MiddleName?.Value<string>("or");
                 person.LastNameOr = personInfo?.LastName?.Value<string>("or");
 
-                person.GenderAm = personInfo?.SexLookup?.Value?.Value<string>("am");
-                person.GenderOr = personInfo?.SexLookup?.Value?.Value<string>("or");
+                person.GenderAm =Gender?.Value?.Value<string>("am");
+                person.GenderOr =Gender?.Value?.Value<string>("or");
 
                 person.NationalId = personInfo?.NationalId;
-                person.NationalityOr = personInfo?.NationalityLookup?.Value?.Value<string>("or");
-                person.NationalityAm = personInfo?.NationalityLookup?.Value?.Value<string>("am");
+                person.NationalityOr = Nationality?.Value?.Value<string>("or");
+                person.NationalityAm = Nationality?.Value?.Value<string>("am");
 
-                person.MarriageStatusOr = personInfo?.MarraigeStatusLookup?.Value?.Value<string>("or");
-                person.MarriageStatusAm = personInfo?.MarraigeStatusLookup?.Value?.Value<string>("am");
+                person.MarriageStatusOr =MarriageStatus?.Value?.Value<string>("or");
+                person.MarriageStatusAm =MarriageStatus?.Value?.Value<string>("am");
 
-                person.ReligionOr =  personInfo?.ReligionLookup?.Value?.Value<string>("or");
-                person.ReligionAm =  personInfo?.ReligionLookup?.Value?.Value<string>("am");
+                person.ReligionOr = Religion?.Value?.Value<string>("or");
+                person.ReligionAm = Religion?.Value?.Value<string>("am");
 
-                person.NationOr = personInfo?.NationLookup?.Value?.Value<string>("or");
-                person.NationAm =  personInfo?.NationLookup?.Value?.Value<string>("am");
+                person.NationOr =Nation?.Value?.Value<string>("or");
+                person.NationAm =Nation?.Value?.Value<string>("am");
 
-                person.EducationalStatusOr = personInfo?.EducationalStatusLookup?.Value?.Value<string>("or");
-                person.EducationalStatusAm = personInfo?.EducationalStatusLookup?.Value?.Value<string>("am");
+                person.EducationalStatusOr = EducationalStatus?.Value?.Value<string>("or");
+                person.EducationalStatusAm = EducationalStatus?.Value?.Value<string>("am");
 
-                person.TypeOfWorkOr =personInfo?.TypeOfWorkLookup?.Value?.Value<string>("or");
-                person.TypeOfWorkAm =personInfo?.TypeOfWorkLookup?.Value?.Value<string>("am");
+                person.TypeOfWorkOr =TypeOfWork?.Value?.Value<string>("or");
+                person.TypeOfWorkAm =TypeOfWork?.Value?.Value<string>("am");
             return person;
          }
           public static  Person GetEventPerson(Person? person,PersonalInfo? personInfo,IReportRepostory _reportRepostory){
@@ -207,7 +208,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             }
             var personInfo = new Person();
             if(IsCorrection){
-             personInfo=GetCorrectionRequestPerson(personInfo,person);
+             personInfo=GetCorrectionRequestPerson(personInfo,person,lookupService);
             }
             else{
                 personInfo=GetEventPerson(personInfo,person , _reportRepostory);

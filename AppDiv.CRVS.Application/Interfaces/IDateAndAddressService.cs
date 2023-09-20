@@ -23,6 +23,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         bool CheckMatchLookup(Guid id, string key, string like);
         public string? GetLookupOr(Guid? id);
         public string? GetLookupAm(Guid? id);
+        public Lookup? GetLookup(Guid? id);
 
     }
 }

@@ -235,6 +235,16 @@ namespace AppDiv.CRVS.Application.Service
             var lookup = _lookupRepository.GetSingle(id);
             return lookup?.Value?.Value<string>("am");
         }
+
+
+
+      public Lookup? GetLookup(Guid? id)
+        {
+            if (id == null)
+                return null;
+            var lookup = _lookupRepository.GetSingle(id);
+            return lookup;
+        }
     }
 }
 
