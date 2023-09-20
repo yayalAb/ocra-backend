@@ -98,7 +98,7 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
             ||x.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId);
             var Approval=new {
                 Authentication = allEvents.Count(e => e.EventCertificates.Where(x=>x.Status==true).FirstOrDefault().AuthenticationStatus==true),
-                Verfication = allEvents.Count(e => e.IsVerified),
+                Verification = allEvents.Count(e => e.IsVerified),
                 Change = allEvents.Sum(e => e.CorrectionRequests.Count(x => x.Request.NextStep == x.Request.currentStep))
             };
             var groupedEvent= allEvents
@@ -109,10 +109,10 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
                     Count = x.Count()
                 });
             
-            var EventPivotReport = allEvents.Select(x => new
+            var EventPivotReport = allEvents.Select(x =>  new DashbordResponse
                 {
                    Event = x.EventType,
-                   status=ReturneventStatus(x.EventType, x.EventDate,x.EventRegDate),
+                   setStatus=ReturneventStatus(x.EventType, x.EventDate,x.EventRegDate),
                    Gender=x.EventOwener.SexLookup.ValueLang,
                    Address=x.EventRegisteredAddressId==AddressId||x.EventRegisteredAddress.ParentAddressId==AddressId?x.EventRegisteredAddress.AddressNameLang:
                    x.EventRegisteredAddress.ParentAddress.ParentAddressId==AddressId? x.EventRegisteredAddress.ParentAddress.AddressNameLang:
@@ -144,7 +144,7 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
                 EventPivotResponse=EventPivotReport
             }; 
         }
-   public static  string ReturneventStatus(string EventType, DateTime eventDate, DateTime EventRegDate){
+   public static  bool ReturneventStatus(string EventType, DateTime eventDate, DateTime EventRegDate){
         int days=0;
             switch(EventType.ToLower()){
                case "birth":
@@ -165,8 +165,27 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
             }
             TimeSpan deff = EventRegDate - eventDate;
             int daysDef = Convert.ToInt32(deff.TotalDays);
-           return daysDef <= days ?"Active":"Delay";
+           return daysDef <= days;
     }
     }
+    public class DashbordResponse{
+
+           public string? Event {get; set;}
+           public int? Active {get; set;}
+           public int? Delay {get; set;}
+           public string? Gender {get; set;}
+           public string? Address {get; set;}
+           public bool setStatus{
+            get{
+                return true;
+            } set{
+              Active=setStatus?1:0;
+              Delay=!setStatus?1:0;
+           }}
+
+
+    }
+
 }
+
        
