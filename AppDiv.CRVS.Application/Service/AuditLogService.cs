@@ -246,13 +246,13 @@ namespace AppDiv.CRVS.Application.Service
         }
         public JObject BirthAudit(JObject content, string action,AuditLog audit)
         {
-            JObject? oldData = null;
+            JObject? oldData = (JObject)content.DeepClone();
             JObject newData;
             var birthIncludes = new List<string> { "EventId", "FatherId", "MotherId" };
 
             if (action == "Update")
             {
-                oldData = Include(GetContent(content), birthIncludes, audit.AuditDate, true);
+                oldData = Include(GetContent(oldData), birthIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
             }
             newData = Include(content?.Value<JObject>("ColumnValues")!, birthIncludes, audit.AuditDate, false);
@@ -262,29 +262,28 @@ namespace AppDiv.CRVS.Application.Service
         }
         public JObject DeathAudit(JObject content, string action,AuditLog audit)
         {
-            JObject? oldData = null;
-            JObject newData;
             var deathIncludes = new List<string> { "EventId" };
+            JObject? oldData = (JObject)content.DeepClone();
 
             if (action == "Update")
             {
-                oldData = Include(GetContent(content), deathIncludes, audit.AuditDate, true);
+                oldData = Include(GetContent(oldData), deathIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
             }
-            newData = Include(content?.Value<JObject>("ColumnValues")!, deathIncludes, audit.AuditDate, false);
+            JObject newData = Include(content?.Value<JObject>("ColumnValues")!, deathIncludes, audit.AuditDate, false);
             newData["Event"] = EventIncludes(newData?.Value<JObject>("Event")!, null, audit.AuditDate, false);
             
             return new JObject() { ["newData"] = ConvertStringToObject(newData), ["oldData"] = ConvertStringToObject(oldData) };
         }
         public JObject MarriageAudit(JObject content, string action,AuditLog audit)
         {
-            JObject? oldData = null;
+            JObject? oldData = (JObject)content.DeepClone();
             JObject newData;
             var marriageIncludes = new List<string> { "EventId", "BrideInfoId" };
 
             if (action == "Update")
             {
-                oldData = Include(GetContent(content), marriageIncludes, audit.AuditDate, true);
+                oldData = Include(GetContent(oldData), marriageIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
             }
             newData = Include(content?.Value<JObject>("ColumnValues")!, marriageIncludes, audit.AuditDate, false);
@@ -294,13 +293,13 @@ namespace AppDiv.CRVS.Application.Service
         }
         public JObject DivorceAudit(JObject content, string action,AuditLog audit)
         {
-            JObject? oldData = null;
+            JObject? oldData = (JObject)content.DeepClone();
             JObject newData;
             var divorceIncludes = new List<string> { "EventId", "CourtCaseId", "DivorcedWifeId" };
 
             if (action == "Update")
             {
-                oldData = Include(GetContent(content), divorceIncludes, audit.AuditDate, true);
+                oldData = Include(GetContent(oldData), divorceIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
                 oldData["CourtCase"]["Court"] = Include(oldData?.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, true);
             }
@@ -312,13 +311,13 @@ namespace AppDiv.CRVS.Application.Service
         }
         public JObject AdoptionAudit(JObject content, string action,AuditLog audit)
         {
-            JObject? oldData = null;
+            JObject? oldData = (JObject)content.DeepClone();
             JObject newData;
             var adoptionIncludes = new List<string> { "EventId", "AdoptiveFatherId", "AdoptiveMotherId", "CourtCaseId" };
 
             if (action == "Update")
             {
-                oldData = Include(GetContent(content), adoptionIncludes, audit.AuditDate, true);
+                oldData = Include(GetContent(oldData), adoptionIncludes, audit.AuditDate, true);
                 oldData["Event"] = EventIncludes(oldData.Value<JObject>("Event")!, null!, audit.AuditDate, true);
                 oldData["CourtCase"]!["Court"] = Include(oldData.Value<JObject>("Event")?.Value<JObject>("CourtCase")!, new List<string> { "CourtId" }, audit.AuditDate, true);
             }
@@ -351,7 +350,7 @@ namespace AppDiv.CRVS.Application.Service
                         content[key] = // GetContent(
                                         _auditlog.GetAll()
                                             .OrderByDescending(a => a.AuditDate)
-                                            .Where(a => DateTime.Compare(a.AuditDate, auditDate) < 0)
+                                            .Where(a => a.AuditDate <= auditDate)
                                             .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
                                             .AuditDataJson!
                                             .Value<JObject>("ColumnValues");
@@ -386,13 +385,13 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         content[key] = 
                         // GetContent(
-                                                 _auditlog.GetAll()
-                                                    .OrderByDescending(a => a.AuditDate)
-                                                    .Where(a => DateTime.Compare(a.AuditDate, auditDate) < 0)
-                                                    .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
-                                                    .AuditDataJson
-                                                    .Value<JObject>("ColumnValues");
-                                                    // );
+                                            _auditlog.GetAll()
+                                                .OrderByDescending(a => a.AuditDate)
+                                                .Where(a => a.AuditDate <= auditDate)
+                                                .FirstOrDefault(a => a.TablePk == property.Value.ToString())?
+                                                .AuditDataJson
+                                                .Value<JObject>("ColumnValues");
+                                                // );
                     }
                 }
             }
@@ -416,7 +415,7 @@ namespace AppDiv.CRVS.Application.Service
                                             // GetContent(
                                                 _auditlog.GetAll()
                                                 .OrderByDescending(a => a.AuditDate)
-                                                .Where(a => DateTime.Compare(a.AuditDate, auditDate) < 0)
+                                                .Where(a => a.AuditDate <= auditDate)
                                                 .FirstOrDefault(a => a.EntityType == "Registrar" && 
                                                     a.AuditData.Contains($"\"EventId\": \"{content.Value<string>("Id")}\""))?
                                                 .AuditDataJson

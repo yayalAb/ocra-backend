@@ -67,14 +67,14 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                             return _archiveGenerator.GetBirthArchivePreview(
                                     CustomMapper.Mapper.Map<BirthEvent>(
                                         ReturnArchiveFromJObject.GetArchive<AddBirthEventRequest>(content)),
-                                    "");
+                                    "", true);
                         }, request.Content),
                         "Update" => Call<JObject, JObject>((content) =>
                         {
                             return _archiveGenerator.GetBirthArchivePreview(
                                     CustomMapper.Mapper.Map<BirthEvent>(
                                         ReturnArchiveFromJObject.GetArchive<UpdateBirthEventCommand>(request.Content)),
-                                    "");
+                                    "", true);
                         }, request.Content)
                     };
                     break;
@@ -85,11 +85,11 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                         _archiveGenerator.GetDeathArchivePreview(
                             CustomMapper.Mapper.Map<DeathEvent>(
                                 ReturnArchiveFromJObject.GetArchive<AddDeathEventRequest>(request.Content)),
-                            ""),
+                            "", true),
                         "Update" => _archiveGenerator.GetDeathArchivePreview(
                             CustomMapper.Mapper.Map<DeathEvent>(
                                 ReturnArchiveFromJObject.GetArchive<UpdateDeathEventCommand>(request.Content)),
-                            ""),
+                            "", true),
                     };
                     break;
                 case "Adoption":
@@ -102,7 +102,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                             var adoption = CustomMapper.Mapper.Map<AdoptionEvent>(createDto);
                             adoption.Event.EventType = "Adoption";
                             adoption.Event.EventAddressId = createDto.CourtCase?.Court?.AddressId;
-                            return _archiveGenerator.GetAdoptionArchivePreview(adoption, "");
+                            return _archiveGenerator.GetAdoptionArchivePreview(adoption, "", true);
                         }, request.Content),
 
                         "Update" => Call<JObject, JObject>((content) =>
@@ -112,7 +112,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                             var adoption = CustomMapper.Mapper.Map<AdoptionEvent>(updateDto);
                             adoption.Event.EventType = "Adoption";
                             adoption.Event.EventAddressId = updateDto.CourtCase?.Court?.AddressId;
-                            return _archiveGenerator.GetAdoptionArchivePreview(adoption,"");
+                            return _archiveGenerator.GetAdoptionArchivePreview(adoption,"", true);
                         }, request.Content),
                     };
                     break;
@@ -125,7 +125,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                             createDto.Event.EventDateEt = createDto.CourtCase.ConfirmedDateEt;
                             var divorce = CustomMapper.Mapper.Map<DivorceEvent>(createDto);
                             divorce.Event.EventType = "Divorce";
-                            return _archiveGenerator.GetDivorceArchivePreview(divorce,"");
+                            return _archiveGenerator.GetDivorceArchivePreview(divorce,"", true);
                         }, request.Content),
                         "Update" => Call<JObject, JObject>((content) =>
                         {
@@ -133,7 +133,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                             updateDto.Event.EventDateEt = updateDto.CourtCase.ConfirmedDateEt;
                             var divorce = CustomMapper.Mapper.Map<DivorceEvent>(updateDto);
                             divorce.Event.EventType = "Divorce";
-                            return _archiveGenerator.GetDivorceArchivePreview(divorce,"");
+                            return _archiveGenerator.GetDivorceArchivePreview(divorce,"", true);
                         }, request.Content),
                         // _archiveGenerator.GetDivorceArchivePreview(
                         //     CustomMapper.Mapper.Map<DivorceEvent>(
@@ -147,12 +147,12 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                         "Create" => Call<JObject, JObject>((content) =>
                         { 
                             var marriage = CustomMapper.Mapper.Map<MarriageEvent>(ReturnArchiveFromJObject.GetArchive<CreateMarriageEventCommand>(request.Content));
-                            return _archiveGenerator.GetMarriageArchivePreview(marriage, "");
+                            return _archiveGenerator.GetMarriageArchivePreview(marriage, "", true);
                         }, request.Content),
                         "Update" => _archiveGenerator.GetMarriageArchivePreview(
                             CustomMapper.Mapper.Map<MarriageEvent>(
                                 ReturnArchiveFromJObject.GetArchive<UpdateMarriageEventCommand>(request.Content)),
-                            ""),
+                            "", true),
                     };
                     break;
                 default:
