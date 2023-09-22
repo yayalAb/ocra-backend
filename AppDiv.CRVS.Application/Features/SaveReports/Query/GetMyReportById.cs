@@ -75,12 +75,23 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Query
                 aggregates = null;
             }
 
-            var Report = await _reportRepo.GetReportData(SavedReport.ReportName, columns, filterse, aggregates);
-
-            return await PaginatedList<object>
+            var Report =  _reportRepo.GetReportData(SavedReport.ReportName, columns, filterse, aggregates).Result;
+             var reportRes=await PaginatedList<object>
                             .CreateAsync(
                                  Report
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
+
+            var other=string.IsNullOrEmpty(SavedReport?.Other)? null : JObject.Parse(SavedReport?.Other);
+            return new {
+                SavedReport.ReportName,
+                SavedReport.Description,
+                SavedReport.ReportTitle,
+                Agrgate =aggregates,
+                Filter =filterse,
+                columns,
+                other,
+                reportRes,
+            } ;
 
 
         }
