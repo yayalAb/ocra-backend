@@ -76,6 +76,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
         {
             float amount = 0;
+            bool IsManualRegistration = false;
             var executionStrategy = _marriageEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -119,6 +120,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                     marriageEvent.Event.IsPaid = true;
                                     marriageEvent.Event.IsOfflineReg = true;
                                     marriageEvent.Event.ReprintWaiting = false;
+                                    IsManualRegistration = true;
                                 }
                                 marriageEvent.Event.EventRegisteredAddressId = request?.Event.EventRegisteredAddressId;
                             }
@@ -187,6 +189,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             await _marriageEventRepository.SaveChangesAsync(cancellationToken);
 
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
+                            CreateMarriageEventCommandResponse.IsManualRegistration = IsManualRegistration;
+                            CreateMarriageEventCommandResponse.EventId = marriageEvent.Event.Id;
                             // }
                             if (transaction != null)
                             {

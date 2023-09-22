@@ -53,6 +53,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         {
             // payment amount for birth event.
             float amount = 0;
+            bool IsManualRegistration = false;
             // Create an execution strategy for the current database.
             var executionStrategy = _birthEventRepository.Database.CreateExecutionStrategy();
             List<PersonalInfoEntry> personalInfoEntries = new List<PersonalInfoEntry>();
@@ -100,6 +101,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                     birthEvent.Event.IsPaid = true;
                                     birthEvent.Event.IsOfflineReg = true;
                                     birthEvent.Event.ReprintWaiting = false;
+                                    IsManualRegistration = true;
                                 }
                                 birthEvent.Event.EventRegisteredAddressId = request.BirthEvent?.Event.EventRegisteredAddressId;
                             }
@@ -157,6 +159,16 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 }
                                 // Save Changes. 
                                 await _birthEventRepository.SaveChangesAsync(cancellationToken);
+                                response.Message = "Birth Event created Successfully";
+                                response.Status = 200;
+                                response.IsManualRegistration = IsManualRegistration;
+                                response.EventId = birthEvent.Event.Id;
+                        if (transaction != null)
+                                {
+                                    await transaction.CommitAsync();
+                                }
+                                _birthEventRepository.TriggerPersonalInfoIndex();
+
                                 // }
                             }
                         }
@@ -166,13 +178,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             response.Status = 400;
                             throw;
                         }
-                        response.Message = "Birth Event created Successfully";
-                        response.Status = 200;
-                        if (transaction != null)
-                        {
-                            await transaction.CommitAsync();
-                        }
-                        _birthEventRepository.TriggerPersonalInfoIndex();
 
                     }
 

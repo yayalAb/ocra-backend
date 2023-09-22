@@ -61,6 +61,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
             float amount = 0;
+            bool IsManualRegistration = false;
             var executionStrategy = _DivorceEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -107,6 +108,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                     divorceEvent.Event.IsPaid = true;
                                     divorceEvent.Event.IsOfflineReg = true;
                                     divorceEvent.Event.ReprintWaiting = false;
+                                    IsManualRegistration = true;
                                 }
                                 divorceEvent.Event.EventRegisteredAddressId = request?.Event?.EventRegisteredAddressId;
                             }
@@ -158,12 +160,16 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             // if (amount != 0 || divorceEvent.Event.IsExampted)
                             // {
                             createDivorceEventCommandResponse.Message = "Divorce event created successfully";
+                            createDivorceEventCommandResponse.IsManualRegistration = IsManualRegistration;
+                            createDivorceEventCommandResponse.EventId = divorceEvent.Event.Id;
+                            
+
                             if (transaction != null)
                             {
                                 await transaction.CommitAsync();
                             }
                             _DivorceEventRepository.TriggerPersonalInfoIndex();
-                            _certificateRepository.TriggerCertificateIndex();
+                            // _certificateRepository.TriggerCertificateIndex();
 
                             // }
                         }

@@ -70,6 +70,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         {
             float amount = 0;
             var executionStrategy = _AdoptionEventRepository.Database.CreateExecutionStrategy();
+            bool IsManualRegistration = false;
 
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -127,6 +128,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         adoptionEvent.Event.IsPaid = true;
                                         adoptionEvent.Event.IsOfflineReg = true;
                                         adoptionEvent.Event.ReprintWaiting = false;
+                                        IsManualRegistration = true;
                                     }
                                     adoptionEvent.Event.EventRegisteredAddressId = request?.Adoption?.Event?.EventRegisteredAddressId;
                                 }
@@ -249,7 +251,9 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
                                     Success = true,
-                                    Message = "Adoption Event created Successfully"
+                                    Message = "Adoption Event created Successfully",
+                                    IsManualRegistration = IsManualRegistration,
+                                    EventId = adoptionEvent.Event.Id
                                 };
                                 // }
 
@@ -262,6 +266,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     Status = 500,
                                     Success = false,
                                     Message = ex.Message
+                                   
+
                                 };
                                 throw;
 

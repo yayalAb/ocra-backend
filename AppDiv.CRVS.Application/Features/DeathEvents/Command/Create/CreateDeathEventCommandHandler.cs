@@ -49,6 +49,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         {
             // Payment amount for death certificate
             float amount = 0;
+            bool IsManualRegistration = false;
             var executionStrategy = _deathEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -91,6 +92,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                     deathEvent.Event.IsPaid = true;
                                     deathEvent.Event.IsOfflineReg = true;
                                     deathEvent.Event.ReprintWaiting = false;
+                                    IsManualRegistration = true;
                                 }
                                 deathEvent.Event.EventRegisteredAddressId = request.DeathEvent?.Event.EventRegisteredAddressId;
                             }
@@ -133,6 +135,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             }
                             // Insert into the database.
                             // var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                            // Set the response to created.
+                            response.Created("Death Event");
+                            response.IsManualRegistration = IsManualRegistration;
+                            response.EventId = deathEvent.Event.Id;
                         }
                         catch (System.Exception ex)
                         {
@@ -140,8 +146,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             throw;
                         }
 
-                        // Set the response to created.
-                        response.Created("Death Event");
                         // Commit the transaction.
                         if (transaction != null)
                         {

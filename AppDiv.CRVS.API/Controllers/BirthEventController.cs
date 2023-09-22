@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Features.BirthEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Delete;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
 using Microsoft.AspNetCore.Mvc;
+using AppDiv.CRVS.Application.Features.Certificates.Query;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -22,6 +23,17 @@ namespace AppDiv.CRVS.API.Controllers
                 var result = await Mediator.Send(command);
                 if (result.Success)
                 {
+                    if (result.IsManualRegistration)
+                    {
+
+                        await Mediator.Send(new GenerateCertificateQuery
+                        {
+                            Id = result.EventId,
+                            CertificateSerialNumber = "manually-registered",
+                            IsPrint = true,
+                            CheckSerialNumber = false
+                        });
+                    }
                     return Ok(result);
                 }
                 else
