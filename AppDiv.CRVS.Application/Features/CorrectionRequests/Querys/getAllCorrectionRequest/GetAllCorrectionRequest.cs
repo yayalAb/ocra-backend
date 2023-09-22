@@ -38,8 +38,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
         {
             var CorrectionRequest = _correctionRequestRepository.GetAll()
             .Include(x => x.Request)
-            .Include(x => x.Event)
-            .ThenInclude(x => x.CivilRegOfficer)
+            .Include(x => x.Event.EventOwener)
+            .Include(x => x.Event.CivilRegOfficer)
             .Where(x => (x.Request.CivilRegOfficerId == request.CivilRegOfficerId)&&(x.Request.currentStep!=x.Request.NextStep));
             if (!string.IsNullOrEmpty(request.SearchString))
             {
@@ -54,7 +54,9 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             var correctionRequestDto = CorrectionRequest.OrderByDescending(x => x.CreatedAt).Select(x => new CorrectionRequestListDTO
             {
                 Id = x.Id,
-                Requestedby = x.Request.CivilRegOfficer.FirstNameLang + " " + x.Request.CivilRegOfficer.MiddleNameLang + " " + x.Request.CivilRegOfficer.LastNameLang,
+                Requestedby = x.Request.CivilRegOfficer.FullNameLang,
+                OwnerFullName = x.Event.EventOwener.FullNameLang!,
+                CertificateId = x.Event.CertificateId!,
                 RequestType = x.Request.RequestType,
                 EventType = x.Event.EventType,
                 RequestDate = new CustomDateConverter(x.CreatedAt).ethiopianDate,
