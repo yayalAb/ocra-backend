@@ -21,18 +21,11 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
         public async Task<object> Handle(SystemAuditDetailQuery request, CancellationToken cancellationToken)
         {
             var audit = _auditLogRepository.GetAll().Where(a => a.AuditId == request.Id).FirstOrDefault();
-            // var response = _mediator.Send(new GetAuditLogQuery());
-            // var data = new JObject();
-            // var eventType =  audit!.EntityType.EndsWith("Event") ? audit.EntityType[..^5] : audit.EntityType;
-            // var newData = await _mediator.Send(new GenerateArchivePreviewQuery { Content = _auditService.GetAuditArchive(audit?.AuditDataJson?.Value<JObject>("ColumnValues")), EventType = eventType, Command = "Update"}, cancellationToken);
-            // var oldData = audit?.AuditDataJson?.Value<string>("Action") == "Insert" ? null : await _mediator.Send(new GenerateArchivePreviewQuery { Content = _auditService.GetAuditArchive(_auditService.GetContent(audit?.AuditDataJson?.Value<JArray>("Changes"))), EventType = eventType, Command = "Update"}, cancellationToken);
+            
             var result = 
                 new 
-                { 
-                    // NewData = (newData as dynamic).Content, 
-                    // OldData =  (oldData as dynamic)?.Content,
-                    // newVal = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")),
-                    OldValue = _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson)),
+                {
+                    OldValue = audit?.Action == "Insert" ? null : _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson)),
                     NewValue = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")),
                 };
             return result;
