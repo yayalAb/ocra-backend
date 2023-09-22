@@ -171,7 +171,7 @@ namespace AppDiv.CRVS.Utility.Services
                 }
                 else
                 {
-                    throw new Exception("message");
+                    throw new Exception("invalid pattern");
                 }
             }
             return (day, month, year);
