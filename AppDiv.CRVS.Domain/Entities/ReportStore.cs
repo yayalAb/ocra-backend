@@ -21,6 +21,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? columnsLang { get; set; }
         public  string? UserGroupsStr { get; set; }
         public  bool? isAddressBased { get; set; }=false;
+        public string? Other { get; set; }
+        
         [NotMapped]
         public List<Guid>? UserGroups
         {

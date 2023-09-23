@@ -1,5 +1,6 @@
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -29,10 +30,13 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
     public class GetReportQueryHandler : IRequestHandler<GetReportQuery, object>
     {
         private readonly IReportRepostory _reportRepository;
+        private readonly IReportStoreRepostory _reportStore;
 
-        public GetReportQueryHandler(IReportRepostory reportRepository)
+
+        public GetReportQueryHandler(IReportRepostory reportRepository,IReportStoreRepostory reportStore)
         {
             _reportRepository = reportRepository;
+            _reportStore = reportStore;
         }
         public async Task<object> Handle(GetReportQuery request, CancellationToken cancellationToken)
         {
@@ -44,12 +48,22 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                     Success = false
                 };
             }
+            var reportStore=_reportStore.GetAll().Where(x=>x.ReportName==request.reportName).FirstOrDefault();
             var Report = await _reportRepository.GetReportData(request.reportName, request.columns, request.filterse, request.aggregates);
 
-            return PaginatedList<object>
+            var report=PaginatedList<object>
                             .CreateAsync(
                                  Report
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
+
+            
+            return new{
+               reportStore.ReportTitle, 
+               reportStore.ReportName,
+               reportStore.columnsLang,
+               reportStore.Other,
+               report
+            };
 
         }
     }
