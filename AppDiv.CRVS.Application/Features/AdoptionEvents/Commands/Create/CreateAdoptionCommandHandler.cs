@@ -29,6 +29,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
         private readonly IEventPaymentRequestService _paymentRequestService;
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IFingerprintService _fingerprintService;
+        private readonly IEventStatusService _eventStatusService;
         private readonly IUserResolverService _userResolverService;
 
         private readonly ISmsService _smsService;
@@ -47,7 +48,8 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                         ISmsService smsService,
                                         IAddressLookupRepository addressRepostory,
                                         IFingerprintService fingerprintService,
-                                        IUserResolverService userResolverService)
+                                        IUserResolverService userResolverService,
+                                        IEventStatusService eventStatusService)
         {
             _AdoptionEventRepository = AdoptionEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -64,6 +66,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
+            _eventStatusService=eventStatusService;
 
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
@@ -133,7 +136,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     adoptionEvent.Event.EventRegisteredAddressId = request?.Adoption?.Event?.EventRegisteredAddressId;
                                 }
                                 adoptionEvent.Event.EventAddressId = request?.Adoption?.CourtCase?.Court?.AddressId;
-
+                                adoptionEvent.Event.Status= _eventStatusService.ReturnEventStatus("Adoption", adoptionEvent.Event.EventDate, adoptionEvent.Event.EventRegDate);
                                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent?.AdoptiveFather?.Id != Guid.Empty)
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);

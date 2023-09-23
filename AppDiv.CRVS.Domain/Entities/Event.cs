@@ -42,6 +42,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool HasPendingDocumentApproval { get; set; } = false;
         public bool OnReprintPaymentRequest { get; set; } = false;
         public bool ReprintWaiting { get; set; } = false;
+        public string? Status { get; set; }="Active";
         public virtual Address EventAddress { get; set; }
         public virtual Address EventRegisteredAddress { get; set; }
 

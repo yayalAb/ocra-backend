@@ -28,6 +28,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
         private readonly IFingerprintService _fingerprintService;
         private readonly IUserResolverService _userResolverService;
         private readonly ICertificateRepository _certificateRepository;
+        private readonly IEventStatusService _eventStatusService;
+
 
         public CreateDivorceEventCommandHandler(IDivorceEventRepository DivorceEventRepository,
                                                 IPersonalInfoRepository personalInfoRepository,
@@ -41,7 +43,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                                 IAddressLookupRepository addressRepostory,
                                                 IFingerprintService fingerprintService,
                                                 IUserResolverService userResolverService,
-                                                ICertificateRepository certificateRepository
+                                                ICertificateRepository certificateRepository,
+                                                IEventStatusService eventStatusService
                                                 )
         {
             _DivorceEventRepository = DivorceEventRepository;
@@ -57,6 +60,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
             _certificateRepository = certificateRepository;
+            _eventStatusService=eventStatusService;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
@@ -96,6 +100,8 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 request.CourtCase.Court = null;
                             }
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
+                            divorceEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", divorceEvent.Event.EventDate, divorceEvent.Event.EventRegDate);
+
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)

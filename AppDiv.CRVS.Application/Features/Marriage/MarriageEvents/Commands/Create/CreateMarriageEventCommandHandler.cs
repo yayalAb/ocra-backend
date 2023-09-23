@@ -35,6 +35,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         private readonly ILogger<CreateMarriageEventCommandHandler> logger;
         private readonly IAddressLookupRepository _addressRepostory;
         private readonly IUserResolverService _userResolverService;
+        private readonly IEventStatusService _eventStatusService;
+
 
         public CreateMarriageEventCommandHandler(IMarriageEventRepository marriageEventRepository,
                                                  IPersonalInfoRepository personalInfoRepository,
@@ -52,7 +54,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                                  ILogger<CreateMarriageEventCommandHandler> logger,
                                                  IAddressLookupRepository addressRepostory,
                                                  IFingerprintService fingerprintService,
-                                                 IUserResolverService userResolverService)
+                                                 IUserResolverService userResolverService,
+                                                 IEventStatusService eventStatusService)
         {
             _marriageEventRepository = marriageEventRepository;
             _personalInfoRepository = personalInfoRepository;
@@ -71,6 +74,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
+            _eventStatusService=eventStatusService;
         }
 
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
@@ -108,6 +112,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                         {
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
+                            marriageEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", marriageEvent.Event.EventDate, marriageEvent.Event.EventRegDate);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)

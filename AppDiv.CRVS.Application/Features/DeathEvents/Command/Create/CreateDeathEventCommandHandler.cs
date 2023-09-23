@@ -24,6 +24,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         private readonly IFingerprintService _fingerprintService;
         private readonly IPersonalInfoRepository _personalInfoRepository;
         private readonly IUserResolverService _userResolverService;
+        private readonly IEventStatusService _eventStatusService;
+
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
@@ -32,7 +34,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                               IAddressLookupRepository addressRepostory,
                                               IFingerprintService fingerprintService,
                                               IPersonalInfoRepository personalInfoRepository,
-                                              IUserResolverService userResolverService)
+                                              IUserResolverService userResolverService,
+                                              IEventStatusService eventStatusService)
 
         {
             _deathEventRepository = deathEventRepository;
@@ -44,6 +47,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _fingerprintService = fingerprintService;
             _personalInfoRepository = personalInfoRepository;
             _userResolverService = userResolverService;
+            _eventStatusService=eventStatusService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -80,6 +84,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var address = await _addressRepostory.GetAsync(workingAddressId);
                             // Map the request to the model entity.
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
+                            deathEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", deathEvent.Event.EventDate, deathEvent.Event.EventRegDate);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)

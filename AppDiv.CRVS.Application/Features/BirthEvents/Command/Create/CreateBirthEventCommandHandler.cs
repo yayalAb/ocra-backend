@@ -25,6 +25,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
         private readonly IFingerprintService _fingerprintService;
         private readonly IUserResolverService _userResolverService;
         private readonly IPersonalInfoRepository _personalInfoRepository;
+        private readonly IEventStatusService _eventStatusService;
+
 
         public CreateBirthEventCommandHandler(IBirthEventRepository birthEventRepository,
                                               IEventRepository eventRepository,
@@ -35,7 +37,8 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                               IAddressLookupRepository addressRepostory,
                                               IFingerprintService fingerprintService,
                                               IUserResolverService userResolverService,
-                                              IPersonalInfoRepository personalInfoRepository
+                                              IPersonalInfoRepository personalInfoRepository,
+                                              IEventStatusService eventStatusService
                                               )
         {
             _eventDocumentService = eventDocumentService;
@@ -48,6 +51,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
             _personalInfoRepository = personalInfoRepository;
+            _eventStatusService=eventStatusService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -89,6 +93,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             var address = await _addressRepostory.GetAsync(workingAddressId);
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
+                            birthEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", birthEvent.Event.EventDate, birthEvent.Event.EventRegDate);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)
