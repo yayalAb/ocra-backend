@@ -35,8 +35,21 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
         public async Task<PlanDTO> Handle(GetPlanByIdQuery request, CancellationToken cancellationToken)
         {
             
-            var selectedPlan = await _planRepository.GetAsync(request.Id);
-            return CustomMapper.Mapper.Map<PlanDTO>(selectedPlan);
+            var selectedPlan = _planRepository.GetAll()
+                .Where(p => p.Id == request.Id)
+                .Select(p => new PlanDTO
+                {
+                    Id = p.Id,
+                    Address = $"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
+                    ActualOccurance = p.ActualOccurance,
+                    PlannedDateEt = p.PlannedDateEt,
+                    TargetAmount = p.TargetAmount,
+                    BudgetYear = p.BudgetYear,
+                    EventType = p.EventType,
+                    PopulationSize = p.PopulationSize,
+                    Remark = p.Remark,
+                }).SingleOrDefault();
+            return selectedPlan;
             // return selectedCustomer;
         }
     }

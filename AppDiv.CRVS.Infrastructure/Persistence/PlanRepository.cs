@@ -17,6 +17,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             _dbContext = dbContext;
         }
+
+        public IQueryable<Plan> GetPlans()
+        {
+            return _dbContext.Plans
+                .Include(p => p.Address.ParentAddress.ParentAddress)
+                .Include(p => p.ParentPlan)
+                .ThenInclude(p => p.Address.ParentAddress.ParentAddress);
+                
+        }
     }
 
 }

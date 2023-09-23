@@ -22,6 +22,10 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
         public string PlannedDateEt { get; set; }
         public int TargetAmount { get; set; }
         public int BudgetYear { get; set; }
+        public Guid? ParentPlanId { get; set; }
+        public Guid AddressId { get; set; }
+        public int ActualOccurance { get; set; }
+        public long PopulationSize { get; set; }
         public string Remark { get; set; } = string.Empty;
 
     }

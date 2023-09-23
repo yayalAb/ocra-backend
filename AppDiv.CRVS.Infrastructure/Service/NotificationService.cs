@@ -201,6 +201,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                          n.Sender.PersonalInfo.LastNameLang,
                         SenderUserName = n.Sender.UserName,
                         SenderId = n.SenderId,
+                        ApprovalType = n.ApprovalType,
                         hasApproval = n.GroupId != null && n.ReceiverId == null
 
 
