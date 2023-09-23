@@ -18,6 +18,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
         public ReportColumsLngDto[] ColumnsLang { get; set; }
         public   List<Guid>? UserGroups { get; set; }
         public  bool? isAddressBased { get; set; }=false;
+        public JObject? Other { get; set; }
+
 
     }
 }

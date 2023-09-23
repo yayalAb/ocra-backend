@@ -228,6 +228,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public (string, string) ReturnAgrgateString(List<Aggregate>? aggregates)
         {
             string groupBySql = "";
+            string orderedBySql = "";
             string aggregateSql = "";
             int x = 0;
             if (aggregates != null && aggregates.Count > 0)
@@ -240,13 +241,25 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     switch (aggregate.AggregateMethod)
                     {
                         case SqlAggregate.GroupBy:
-                            groupBySql += $" GROUP BY {aggregate.PropertyName}";
+                         if(string.IsNullOrEmpty(groupBySql)){
+                                groupBySql = $" GROUP BY {aggregate.PropertyName}";
+                            }else{
+                                groupBySql += $", {aggregate.PropertyName}";
+                            }
                             break;
                         case SqlAggregate.OrderBy:
-                            groupBySql += $" ORDER BY {aggregate.PropertyName} ASC";
+                            if(string.IsNullOrEmpty(orderedBySql)){
+                                orderedBySql = $" ORDER BY {aggregate.PropertyName} ASC";
+                            }else{
+                                orderedBySql += $", {aggregate.PropertyName} ASC";
+                            }
                             break;
                         case SqlAggregate.OrderByDesc:
-                            groupBySql += $" ORDER BY {aggregate.PropertyName} DESC";
+                         if(string.IsNullOrEmpty(orderedBySql)){
+                                orderedBySql = $" ORDER BY {aggregate.PropertyName} DESC";
+                            }else{
+                                orderedBySql += $", {aggregate.PropertyName} DESC";
+                            }
                             break;
                         case SqlAggregate.Count:
                             aggregateSql += $" COUNT({aggregate.PropertyName}) AS Count_{aggregate.PropertyName}";
@@ -275,7 +288,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 }
             }
 
-            return (groupBySql, aggregateSql);
+            return (groupBySql+" "+ orderedBySql, aggregateSql);
 
         }
 
@@ -294,6 +307,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public string RemoveSpecialChar(string StringToSanitize)
         {
             string output = "";
+            if(StringToSanitize.IndexOf("delete", StringComparison.OrdinalIgnoreCase) >= 0){
+                throw new NotFoundException("Delete string is not allowed in report Create");
+            }
             if (!string.IsNullOrEmpty(StringToSanitize))
             {
                 output = Regex.Replace(StringToSanitize, "[;-]", "");
