@@ -43,7 +43,18 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                          EF.Functions.Like(u.TargetAmount.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.PlannedDateEt, "%" + request.SearchString + "%")).OrderByDescending(p => p.CreatedAt);
             }
-            return await plans.PaginateAsync<Plan, PlanDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
+            return await plans.Select(p => new PlanDTO
+                {
+                    Id = p.Id,
+                    ActualOccurance = p.ActualOccurance,
+                    Address = $@"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
+                    TargetAmount = p.TargetAmount,
+                    BudgetYear = p.BudgetYear,
+                    PlannedDateEt = p.PlannedDateEt,
+                    EventType = p.EventType,
+                    PopulationSize = p.PopulationSize
+                })
+            .PaginateAsync<PlanDTO, PlanDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

@@ -16,6 +16,12 @@ namespace AppDiv.CRVS.Domain.Entities
         public string PlannedDateEt { get; set; }
         public uint BudgetYear { get; set; }
         public uint TargetAmount { get; set; }
+        public Guid AddressId { get; set; }
+        public Guid? ParentPlanId { get; set; }
+        public long PopulationSize { get; set; }
+        public int ActualOccurance { get; set; }
+        public Plan ParentPlan { get; set; }
+        public Address Address { get; set; }
         public string Remark { get; set; } = string.Empty;
 
         [NotMapped]

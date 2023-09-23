@@ -12,6 +12,10 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string PlannedDateEt { get; set; }
         public uint TargetAmount { get; set; }
         public uint BudgetYear { get; set; }
+        public Guid? ParentPlanId { get; set; }
+        public Guid AddressId { get; set; }
+        public int ActualOccurance { get; set; }
+        public long PopulationSize { get; set; }
         public string Remark { get; set; } = string.Empty;
     }
 }

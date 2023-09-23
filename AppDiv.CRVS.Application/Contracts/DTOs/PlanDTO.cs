@@ -13,6 +13,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string PlannedDateEt { get; set; }
         public uint TargetAmount { get; set; }
         public uint BudgetYear { get; set; }
+        public string ParentPlan { get; set; }
+        public string Address { get; set; }
+        public int ActualOccurance { get; set; }
+        public long PopulationSize { get; set; }
         public string Remark { get; set; } = string.Empty;
     }
 }
