@@ -24,6 +24,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
         private readonly IFingerprintService _fingerprintService;
         private readonly IPersonalInfoRepository _personalInfoRepository;
         private readonly IUserResolverService _userResolverService;
+        private readonly IEventStatusService _eventStatusService;
+
         public CreateDeathEventCommandHandler(IDeathEventRepository deathEventRepository,
                                               IEventRepository eventRepository,
                                               IEventDocumentService eventDocumentService,
@@ -32,7 +34,8 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                               IAddressLookupRepository addressRepostory,
                                               IFingerprintService fingerprintService,
                                               IPersonalInfoRepository personalInfoRepository,
-                                              IUserResolverService userResolverService)
+                                              IUserResolverService userResolverService,
+                                              IEventStatusService eventStatusService)
 
         {
             _deathEventRepository = deathEventRepository;
@@ -44,11 +47,13 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _fingerprintService = fingerprintService;
             _personalInfoRepository = personalInfoRepository;
             _userResolverService = userResolverService;
+            _eventStatusService=eventStatusService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
             // Payment amount for death certificate
             float amount = 0;
+            bool IsManualRegistration = false;
             var executionStrategy = _deathEventRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
             {
@@ -79,6 +84,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var address = await _addressRepostory.GetAsync(workingAddressId);
                             // Map the request to the model entity.
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
+                            deathEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", deathEvent.Event.EventDate, deathEvent.Event.EventRegDate);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)
@@ -91,6 +97,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                                     deathEvent.Event.IsPaid = true;
                                     deathEvent.Event.IsOfflineReg = true;
                                     deathEvent.Event.ReprintWaiting = false;
+                                    IsManualRegistration = true;
                                 }
                                 deathEvent.Event.EventRegisteredAddressId = request.DeathEvent?.Event.EventRegisteredAddressId;
                             }
@@ -133,6 +140,10 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             }
                             // Insert into the database.
                             // var result = await _deathEventRepository.SaveChangesAsync(cancellationToken);
+                            // Set the response to created.
+                            response.Created("Death Event");
+                            response.IsManualRegistration = IsManualRegistration;
+                            response.EventId = deathEvent.Event.Id;
                         }
                         catch (System.Exception ex)
                         {
@@ -140,8 +151,6 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             throw;
                         }
 
-                        // Set the response to created.
-                        response.Created("Death Event");
                         // Commit the transaction.
                         if (transaction != null)
                         {

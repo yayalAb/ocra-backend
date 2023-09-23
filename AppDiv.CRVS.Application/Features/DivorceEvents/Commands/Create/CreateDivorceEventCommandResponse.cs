@@ -8,12 +8,14 @@ using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
 {
-    public class CreateDivorceEventCommandResponse:BaseResponse
+    public class CreateDivorceEventCommandResponse : BaseResponse
     {
+        public bool IsManualRegistration { get; set; } = false;
+        public Guid EventId { get; set; }
         public CreateDivorceEventCommandResponse() : base()
         {
-                     
+
         }
-      //  public CustomerResponseDTO Customer { get; set; }  
+        //  public CustomerResponseDTO Customer { get; set; }  
     }
 }

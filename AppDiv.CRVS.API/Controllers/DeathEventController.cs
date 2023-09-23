@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Features.Certificates.Query;
 using AppDiv.CRVS.Application.Features.Customers.Query;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Delete;
@@ -26,6 +27,17 @@ namespace AppDiv.CRVS.API.Controllers
                 var result = await Mediator.Send(command);
                 if (result.Success)
                 {
+                    if (result.IsManualRegistration)
+                    {
+
+                        await Mediator.Send(new GenerateCertificateQuery
+                        {
+                            Id = result.EventId,
+                            CertificateSerialNumber = "manually-registered",
+                            IsPrint = true,
+                            CheckSerialNumber = false
+                        });
+                    }
                     return Ok(result);
                 }
                 else

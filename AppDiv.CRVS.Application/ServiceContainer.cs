@@ -52,7 +52,9 @@ namespace AppDiv.CRVS.Application
             services.AddScoped<IWorkHistoryTracker, WorkHistoryTracker>();
             services.AddScoped<IAuditLogService, AuditLogService>();
             services.AddScoped<IFileExtractorService, FileExtractorService>();
-             services.AddScoped<IFingerprintService, FingerprintService>();
+            services.AddScoped<IFingerprintService, FingerprintService>();
+            services.AddScoped<IEventStatusService, EventStatusService>();
+             
             services.AddScoped<HelperService>();
 
 

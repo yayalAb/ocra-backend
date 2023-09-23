@@ -1,6 +1,7 @@
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById;
+using AppDiv.CRVS.Application.Features.Certificates.Query;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,17 @@ namespace AppDiv.CRVS.API.Controllers
             var res = await _mediator.Send(command);
             if (res.Success)
             {
+                if (res.IsManualRegistration && res.EventId != null)
+                {
+                    await _mediator.Send(new GenerateCertificateQuery
+                    {
+                        Id = res.EventId,
+                        CertificateSerialNumber = "manually-registered",
+                        IsPrint = true,
+                        CheckSerialNumber = false
+                    });
+
+                }
                 return Ok(res);
             }
             else

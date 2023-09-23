@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Query;
+using AppDiv.CRVS.Application.Features.Certificates.Query;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -15,6 +16,17 @@ namespace AppDiv.CRVS.API.Controllers
             var res = await Mediator.Send(command);
             if (res.Success)
             {
+                 if (res.IsManualRegistration)
+                    {
+
+                        await Mediator.Send(new GenerateCertificateQuery
+                        {
+                            Id = res.EventId,
+                            CertificateSerialNumber = "manually-registered",
+                            IsPrint = true,
+                            CheckSerialNumber = false
+                        });
+                    }
                 return Ok(res);
 
             }
