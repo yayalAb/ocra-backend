@@ -75,6 +75,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<FingerprintApiKey> FingerprintApiKeys { get; set; }
         public DbSet<EventDuplicate> EventDuplicates { get; set; }
         public DbSet<PersonDuplicate> PersonDuplicates { get; set; }
+        public DbSet<SystemRange> SystemRanges { get; set; }
         public CRVSDbContext(DbContextOptions<CRVSDbContext> options, IUserResolverService userResolverService) : base(options)
         {
             this.ChangeTracker.LazyLoadingEnabled = false;
