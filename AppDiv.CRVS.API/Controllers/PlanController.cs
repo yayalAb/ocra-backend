@@ -96,13 +96,13 @@ namespace AppDiv.CRVS.API.Controllers
                 return res;
             }
         }
-        // [HttpGet]
-        // [Route("GetByParent")]
-        // [ProducesResponseType(StatusCodes.Status200OK)]
-        // public async Task<List<PlanForLookupDTO>> GetByParent([FromQuery] Guid parentId)
-        // {
-        //     return await _mediator.Send(new GetPlanByParntId { Id = parentId });
-        // }
+        [HttpGet]
+        [Route("ParentPlans")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<List<ParentPlanDropdownDTO>> GetParent([FromQuery] GetParentPlanQuery query)
+        {
+            return await _mediator.Send(query);
+        }
 
         // [HttpGet]
         // [Route("DefualtPlan")]

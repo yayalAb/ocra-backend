@@ -47,6 +47,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                 {
                     Id = p.Id,
                     ActualOccurance = p.ActualOccurance,
+                    AddressId = p.AddressId,
                     Address = $@"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
                     TargetAmount = p.TargetAmount,
                     BudgetYear = p.BudgetYear,
