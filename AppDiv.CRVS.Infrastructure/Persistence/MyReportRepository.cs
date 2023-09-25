@@ -7,6 +7,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 {
     public class MyReportRepository : BaseRepository<MyReports>, IMyReportRepository
     {
+        
         private readonly CRVSDbContext _dbContext;
         public MyReportRepository(CRVSDbContext dbContext) : base(dbContext)
         {

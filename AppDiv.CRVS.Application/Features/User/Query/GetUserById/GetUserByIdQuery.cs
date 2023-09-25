@@ -46,6 +46,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
             var currentUserId = _userResolverService.GetUserId();
             var userData = await _userRepository.GetAll().Where(u => u.Id == request.Id)
             .Include(u => u.UserGroups)
+            .Include(u => u.Address)
             .Include(u => u.PersonalInfo)
             .ThenInclude(p => p.ContactInfo)
             .Select(u => new FetchSingleUserResponseDTO
@@ -53,6 +54,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 Id = u.Id,
                 UserName = u.UserName,
                 AddressId = u.AddressId,
+                WorkStartedOn=u.Address.WorkStartedOn,
                 Email = u.Email,
                 Otp = u.Otp,
                 OtpExpiredDate = u.OtpExpiredDate,
@@ -65,7 +67,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query.GetUserById
                 CanRegisterEvent = u.CanRegisterEvent,
 
                 CreatedBy = u.CreatedBy
-            }).FirstOrDefaultAsync();
+            }).FirstOrDefaultAsync(cancellationToken);
 
             if (userData == null)
             {

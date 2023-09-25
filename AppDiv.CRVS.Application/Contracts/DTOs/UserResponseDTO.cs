@@ -25,6 +25,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string AdminLevel { get; set; }
         public string AddressCode { get; set; }
         public bool? CanRegisterEvent { get; set; } 
+        public DateTime? WorkStartedOn {get; set;}
+
 
 
 

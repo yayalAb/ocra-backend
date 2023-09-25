@@ -1,0 +1,31 @@
+1. Address_view
+create view view_address as
+select con.AddressNameStr as Country, reg.AddressNameStr as Region,zone.AddressNameStr as Zone,
+		we.AddressNameStr as woreda,ke.AddressNameStr as Kebele,
+        ifnull(ke.id,ifNull(we.id,ifNull(zone.id,ifNull(reg.id,con.id)))) as addId,
+        con.id as conid,reg.id as regid,zone.id as zoneid,we.id as weId,ke.id keId
+from (select * from Addresses where ParentAddressId is null) as con
+left join Addresses as reg on reg.ParentAddressId = con.id
+left join Addresses as zone on zone.ParentAddressId = reg.id
+left join Addresses as we on we.ParentAddressId=zone.id
+left join Addresses as ke on ke.ParentAddressId=we.id;
+
+#report by Registration date
+select  
+address.Region,
+  COUNT(CASE WHEN ev.Status = 'active' AND gen.ValueStr->>'$.en' ="Male" THEN ev.Status END) AS ActiveMale,
+  COUNT(CASE WHEN ev.Status = 'active' AND gen.ValueStr->>'$.en' ="Female" THEN ev.Status END) AS ActiveFemale,
+  COUNT(CASE WHEN ev.Status = 'Active'  THEN ev.Status END) AS ActiveTotal,
+  COUNT(CASE WHEN ev.Status = 'delay' AND gen.ValueStr->>'$.en' ="Male" THEN ev.Status END) AS DelayMale,
+  COUNT(CASE WHEN ev.Status = 'delay' AND gen.ValueStr->>'$.en' ="Female" THEN ev.Status END) AS DelayFmale,
+  COUNT(CASE WHEN ev.Status = 'delay' THEN ev.Status END) AS DelayTotal,
+  COUNT(CASE WHEN ev.Status = 'late' AND gen.ValueStr->>'$.en' ="Male" THEN ev.Status END) AS LateMale,
+  COUNT(CASE WHEN ev.Status = 'late' AND gen.ValueStr->>'$.en' ="Female" THEN ev.Status END) AS LateFmale,
+  COUNT(CASE WHEN ev.Status = 'late'  THEN ev.Status END) AS LateTotal,
+  COUNT(ev.Status) as Total,
+  ev.EventDate
+from  Events as ev
+Left join PersonalInfos as per on per.id=ev.EventowenerId
+Left join Lookups as gen on gen.id=per.SexLookupId
+Left join view_address as address on address.addId=ev.EventRegisteredAddressId
+where eventType="Birth" group by  address.regid;

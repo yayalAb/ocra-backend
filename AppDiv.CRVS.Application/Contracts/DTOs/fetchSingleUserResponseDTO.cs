@@ -24,6 +24,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public int SelectedAdminType { get; set; } = 0;
         public bool? CanRegisterEvent { get; set; }
         public string FingerPrintApiUrl { get; set; } = "localhost";
+        public DateTime? WorkStartedOn {get;set;}
 
 
 

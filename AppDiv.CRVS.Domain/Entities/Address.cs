@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? OldAddressId { get; set; }
         public Guid? AdminTypeLookupId { get; set; }
         public Guid? AreaTypeLookupId { get; set; }
+        public DateTime? WorkStartedOn {get;set;}
         public Guid? ParentAddressId { get; set; }
         [NotMapped]
         public JObject AddressName
