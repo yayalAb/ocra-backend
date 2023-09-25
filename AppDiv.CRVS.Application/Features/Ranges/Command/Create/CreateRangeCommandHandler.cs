@@ -43,7 +43,7 @@ namespace AppDiv.CRVS.Application.Features.Ranges.Command.Create
 
                 await _rangeRepository.InsertAsync(range, cancellationToken);
                 var result = await _rangeRepository.SaveChangesAsync(cancellationToken);
-
+                response.Message = "Range Created Succesfully";
                 //var customerResponse = CustomerMapper.Mapper.Map<CustomerResponseDTO>(customer);
                 // createCustomerCommandResponse.Customer = customerResponse;          
             }

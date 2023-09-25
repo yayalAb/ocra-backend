@@ -55,6 +55,7 @@ using AppDiv.CRVS.Domain.Entities.Audit;
 using AppDiv.CRVS.Application.Features.Messages.Command.Create;
 using AppDiv.CRVS.Application.Features.Messages.Command.Create;
 using AppDiv.CRVS.Application.CouchModels;
+using AppDiv.CRVS.Application.Features.Ranges.Command.Update;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -135,7 +136,9 @@ namespace AppDiv.CRVS.Application.Mapper
             // CreateMap<PersonalInfo, PersonalInfoByIdDTO>().ReverseMap();
 
 
-
+            CreateMap<AddRangeRequest, SystemRange>();
+            CreateMap<SystemRange, RangeDTO>();
+            CreateMap<UpdateRangeCommand, SystemRange>();
 
             CreateMap<DeathEvent, DeathEventDTO>().ReverseMap();
             CreateMap<DeathEvent, AddDeathEventRequest>().ReverseMap();
