@@ -46,6 +46,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
             
             return plans.Select(p => new ParentPlanDropdownDTO
                 {
+                    Id = p.Id,
                     Plan = ($"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/" +
                             $"{p.Address.ParentAddress!.AddressNameLang}/" +
                             $"{p.Address.AddressNameLang}").Trim('/')
