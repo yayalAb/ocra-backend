@@ -1,4 +1,5 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -27,9 +28,11 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
     public class GetPlanByIdHandler : IRequestHandler<GetPlanByIdQuery, PlanDTO>
     {
         private readonly IPlanRepository _planRepository;
+        private readonly IDateAndAddressService _addressService;
 
-        public GetPlanByIdHandler(IPlanRepository planRepository)
+        public GetPlanByIdHandler(IPlanRepository planRepository, IDateAndAddressService addressService)
         {
+            this._addressService = addressService;
             _planRepository = planRepository;
         }
         public async Task<PlanDTO> Handle(GetPlanByIdQuery request, CancellationToken cancellationToken)
@@ -40,7 +43,8 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                 .Select(p => new PlanDTO
                 {
                     Id = p.Id,
-                    Address = $"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
+                    AddressId = p.AddressId,
+                    ParentPlanId = p.ParentPlanId,
                     ActualOccurance = p.ActualOccurance,
                     PlannedDateEt = p.PlannedDateEt,
                     TargetAmount = p.TargetAmount,
@@ -49,8 +53,10 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     PopulationSize = p.PopulationSize,
                     Remark = p.Remark,
                 }).SingleOrDefault();
+
+            selectedPlan!.AddressResponseDTO = await _addressService.FormatedAddress(selectedPlan.AddressId)!;
+
             return selectedPlan;
-            // return selectedCustomer;
         }
     }
 }

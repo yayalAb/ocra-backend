@@ -190,6 +190,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddTransient<IReportStoreRepostory, ReportStoreRepostory>();
             services.AddTransient<IReportStoreRepostory, ReportStoreRepostory>();
             services.AddTransient<IFingerprintApiKeyRepostory, FingerprintApiKeyRepostory>();
+            
+            services.AddScoped<IRangeRepository, RangeRepository>();
 
 
             services.AddScoped<CRVSDbContextInitializer>();
