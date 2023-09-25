@@ -21,6 +21,7 @@ namespace AppDiv.CRVS.Application.Features.User.Query
 
         public GetUserDetailsByUserNameQueryHandler(IIdentityService identityService)
         {
+            
             _identityService = identityService;
         }
         public async Task<UserResponseDTO> Handle(GetUserDetailsByUserNameQuery request, CancellationToken cancellationToken)

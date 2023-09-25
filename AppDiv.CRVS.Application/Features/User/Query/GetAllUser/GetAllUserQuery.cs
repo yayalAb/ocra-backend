@@ -126,8 +126,6 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
 
             }
 
-
-
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 response2 = response2.Where(u => EF.Functions.Like(u.UserName, "%" + request.SearchString + "%")
@@ -152,6 +150,7 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
                     AdminLevel = ((AdminLevel)user.Address.AdminLevel).ToString(),
                     AddressCode = user.Address.Code,
                     CanRegisterEvent = user.CanRegisterEvent,
+                    WorkStartedOn=user.Address.WorkStartedOn,
                     PersonalInfo = new PersonalInfoDTO
                     {
                         Id = user.PersonalInfo.Id,

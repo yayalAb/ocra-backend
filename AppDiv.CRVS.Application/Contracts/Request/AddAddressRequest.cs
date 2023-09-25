@@ -14,6 +14,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid? AreaTypeLookupId { get; set; }
         public Guid? ParentAddressId { get; set; }
         public Guid? AdminTypeLookupId { get; set; }
-
+        public DateTime? WorkStartedOn {get;set;}
     }
 }

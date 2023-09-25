@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
                 string defualt = (request.DefualtColumns != null && request.DefualtColumns.Count() != 0) ? string.Join(",", request.DefualtColumns) : "";
                  var Report = new ReportStore
                     {
+                        
                         Id = Guid.NewGuid(),
                         ReportName =request.ReportName,
                         ReportTitle =request.ReportTitle,

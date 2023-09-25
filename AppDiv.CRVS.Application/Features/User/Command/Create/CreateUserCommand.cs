@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Contracts.Request;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using AppDiv.CRVS.Application.Contracts.Request;
 using MediatR;
 
 
@@ -16,9 +17,10 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         public int SelectedAdminType { get; set; } = 0;
         public bool? CanRegisterEvent { get; set; } = null;
         public string FingerPrintApiUrl { get; set; } = "localhost";
-
-
-
+        
+        [NotMapped]
+        public DateTime? WorkStartedOn {get;set;}
+        
         // public string Password { get; set; }
         public AddPersonalInfoRequest PersonalInfo { get; set; }
 

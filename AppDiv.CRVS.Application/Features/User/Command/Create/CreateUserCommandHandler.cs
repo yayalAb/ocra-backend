@@ -27,12 +27,14 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
         private readonly IBaseRepository<PersonalInfo> personBaseRepo;
         private readonly IOptions<SMTPServerConfiguration> config;
         private readonly SMTPServerConfiguration _config;
+        private readonly IAddressLookupRepository _addresslookup;
 
         public CreateUserCommandHandler(IIdentityService identityService,
                                         IGroupRepository groupRepository,
                                         IFileService fileService, IMailService mailService,
                                         ISmsService smsService,
                                         IBaseRepository<PersonalInfo> personBaseRepo,
+                                        IAddressLookupRepository addresslookup,
                                         IOptions<SMTPServerConfiguration> config)
         {
             this._groupRepository = groupRepository;
@@ -43,6 +45,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
             this.personBaseRepo = personBaseRepo;
             this.config = config;
             _config = config.Value;
+            _addresslookup=addresslookup;
         }
         public async Task<CreateUserCommandResponse> Handle(CreateUserCommand request, CancellationToken cancellationToken)
         {
@@ -73,7 +76,14 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 user.PhoneNumber = user.PersonalInfo.ContactInfo.Phone;
                 user.PersonalInfo.PhoneNumber = user.PhoneNumber;
                 user.UserGroups = listGroup;
-
+                if(user.Address.WorkStartedOn!=null){
+                var userAddress= await _addresslookup.GetAsync(user?.AddressId);
+                if(userAddress.WorkStartedOn==null){
+                    userAddress.WorkStartedOn=user?.Address?.WorkStartedOn;
+                    await _addresslookup.UpdateAsync(userAddress, x=>x.Id);
+                    await _addresslookup.SaveChangesAsync(cancellationToken);
+                }
+                }
                 var response = await _identityService.createUser(user);
                 if (!response.result.Succeeded)
                 {
