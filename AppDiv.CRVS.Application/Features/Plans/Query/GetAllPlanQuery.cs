@@ -34,25 +34,21 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
         }
         public async Task<PaginatedList<PlanDTO>> Handle(GetAllPlanQuery request, CancellationToken cancellationToken)
         {
-            var plans = _planRepository.GetAll();
+            var plans = _planRepository.GetPlans();
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 plans = plans.Where(
-                    u => EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
+                    u => 
                          EF.Functions.Like(u.BudgetYear.ToString(), "%" + request.SearchString + "%") ||
-                         EF.Functions.Like(u.TargetAmount.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.PlannedDateEt, "%" + request.SearchString + "%")).OrderByDescending(p => p.CreatedAt);
             }
             return await plans.Select(p => new PlanDTO
                 {
                     Id = p.Id,
-                    ActualOccurance = p.ActualOccurance,
                     AddressId = p.AddressId,
                     Address = $@"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
-                    TargetAmount = p.TargetAmount,
                     BudgetYear = p.BudgetYear,
                     PlannedDateEt = p.PlannedDateEt,
-                    EventType = p.EventType,
                     PopulationSize = p.PopulationSize
                 })
             .PaginateAsync<PlanDTO, PlanDTO>(request.PageCount ?? 1, request.PageSize ?? 10);

@@ -1,10 +1,12 @@
 ﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,22 +40,20 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
         public async Task<PlanDTO> Handle(GetPlanByIdQuery request, CancellationToken cancellationToken)
         {
             
-            var selectedPlan = _planRepository.GetAll()
+            var selectedPlan = _planRepository
+                .GetAll()
+                .Include(p => p.EventPlans)
                 .Where(p => p.Id == request.Id)
                 .Select(p => new PlanDTO
                 {
                     Id = p.Id,
                     AddressId = p.AddressId,
                     ParentPlanId = p.ParentPlanId,
-                    ActualOccurance = p.ActualOccurance,
                     PlannedDateEt = p.PlannedDateEt,
-                    TargetAmount = p.TargetAmount,
                     BudgetYear = p.BudgetYear,
-                    EventType = p.EventType,
                     PopulationSize = p.PopulationSize,
-                    Remark = p.Remark,
+                    EventPlans = CustomMapper.Mapper.Map<List<UpdateEventPlan>>(p.EventPlans)
                 }).SingleOrDefault();
-
             selectedPlan!.AddressResponseDTO = await _addressService.FormatedAddress(selectedPlan.AddressId)!;
 
             return selectedPlan;

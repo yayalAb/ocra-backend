@@ -11,18 +11,17 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class Plan : BaseAuditableEntity
     {
-        public string EventType { get; set; }
         public DateTime PlannedDate { get; set; }
         public string PlannedDateEt { get; set; }
-        public uint BudgetYear { get; set; }
-        public uint TargetAmount { get; set; }
+        public uint BudgetYear { get; set; }    
         public Guid AddressId { get; set; }
         public Guid? ParentPlanId { get; set; }
         public long PopulationSize { get; set; }
-        public int ActualOccurance { get; set; }
+        public ICollection<EventPlan> EventPlans { get; set; } = null!;
+        
         public Plan ParentPlan { get; set; }
         public Address Address { get; set; }
-        public string Remark { get; set; } = string.Empty;
+        
 
         [NotMapped]
         public string? _PlannedDateEt

@@ -251,6 +251,8 @@ namespace AppDiv.CRVS.Application.Mapper
             CreateMap<Request, AddRequest>().ReverseMap();
             CreateMap<CorrectionRequest, AddCorrectionRequest>().ReverseMap();
             CreateMap<Plan, AddPlanRequest>().ReverseMap();
+            CreateMap<EventPlan, AddEventPlan>().ReverseMap();
+            CreateMap<EventPlan, UpdateEventPlan>().ReverseMap();
             CreateMap<Plan, PlanDTO>().ReverseMap();
             CreateMap<Plan, UpdatePlanCommand>().ReverseMap();
 

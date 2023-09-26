@@ -29,3 +29,41 @@ Left join PersonalInfos as per on per.id=ev.EventowenerId
 Left join Lookups as gen on gen.id=per.SexLookupId
 Left join view_address as address on address.addId=ev.EventRegisteredAddressId
 where eventType="Birth" group by  address.regid;
+
+#Birth17
+SELECT 
+    a.Zone,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Nurse" THEN l.ValueStr END) AS Nurse,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Doctor" THEN l.ValueStr END) AS Doctor,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Midwifery" THEN l.ValueStr END) AS Midwifery,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Health Officer" THEN l.ValueStr END) AS HealthOfficer,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Nurse Attendance" THEN l.ValueStr END) AS NurseAttendance,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Health Extension Worker" THEN l.ValueStr END) AS HealthExtensionWorker,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Other Health Professionals" THEN l.ValueStr END) AS OtherHealthProfessionals,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Traditional Trained Birth Attendant" THEN l.ValueStr END) AS TraditionalTrainedBirthAttendant,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Traditional Untrained Birth Attendant" THEN l.ValueStr END) AS TraditionalUntrainedBirthAttendant,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Other Non-Trained" THEN l.ValueStr END) AS OtherNonTrained,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Nobody" THEN l.ValueStr END) AS Nobody,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Not stated" THEN l.ValueStr END) AS NotStated,
+    COUNT(n.Id) AS Total
+FROM BirthNotifications as n
+JOIN BirthEvents AS b ON b.Id = BirthEventId
+JOIN Events as e ON e.Id = b.EventId
+JOIN Lookups AS l ON l.Id = n.SkilledProfLookupId
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.regid;
+
+#Birth Site of occur
+SELECT 
+    a.Zone,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Hospital" THEN l.ValueStr END) AS Hospital,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Other Health Institution" THEN l.ValueStr END) AS OtherHealthInstitution,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Home" THEN l.ValueStr END) AS Home,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Other" THEN l.ValueStr END) AS Other,
+    COUNT(CASE WHEN l.ValueStr->>'$.en' ="Not Stated" THEN l.ValueStr END) AS NotStated,
+    COUNT(b.Id) AS Total
+FROM BirthEvents as b
+JOIN Events AS e ON e.Id = b.EventId
+JOIN Lookups AS l ON l.Id = b.FacilityTypeLookupId
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.regid;
