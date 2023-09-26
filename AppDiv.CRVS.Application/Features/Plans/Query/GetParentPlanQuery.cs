@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     && p.AddressId != request.AddressId
                     && p.EventType == request.EventType
                     && p.BudgetYear == request.BudgetYear
-                    && address.AdminLevel + 1 == p.Address.AdminLevel
+                    && address.AdminLevel - 1 == p.Address.AdminLevel
                     );
             return plans.Select(p => new PlanDTO
                 {
