@@ -27,6 +27,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 .ThenInclude(p => p.Address.ParentAddress.ParentAddress);
                 
         }
+
+        public IQueryable<EventPlan> GetEventPlans()
+        {
+            return _dbContext.EventPlans
+                .Include(e => e.Plan);
+        }
     }
 
 }
