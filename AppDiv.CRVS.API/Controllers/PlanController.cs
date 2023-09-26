@@ -27,7 +27,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PaginatedList<PlanDTO>> Get([FromQuery] GetAllPlanQuery query)
+        public async Task<PaginatedList<PlanGridDTO>> Get([FromQuery] GetAllPlanQuery query)
         {
             return await _mediator.Send(query);
         }

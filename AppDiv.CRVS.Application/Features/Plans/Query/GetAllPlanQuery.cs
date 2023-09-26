@@ -17,14 +17,14 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Plans.Query
 {
     // Customer query with List<Customer> response
-    public record GetAllPlanQuery : IRequest<PaginatedList<PlanDTO>>
+    public record GetAllPlanQuery : IRequest<PaginatedList<PlanGridDTO>>
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public string? SearchString { get; set; }
     }
 
-    public class GetAllPlanHandler : IRequestHandler<GetAllPlanQuery, PaginatedList<PlanDTO>>
+    public class GetAllPlanHandler : IRequestHandler<GetAllPlanQuery, PaginatedList<PlanGridDTO>>
     {
         private readonly IPlanRepository _planRepository;
 
@@ -32,30 +32,29 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
         {
             _planRepository = planQueryRepository;
         }
-        public async Task<PaginatedList<PlanDTO>> Handle(GetAllPlanQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<PlanGridDTO>> Handle(GetAllPlanQuery request, CancellationToken cancellationToken)
         {
-            var plans = _planRepository.GetAll();
+            var plans = _planRepository.GetEventPlans();
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 plans = plans.Where(
                     u => EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
-                         EF.Functions.Like(u.BudgetYear.ToString(), "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.Plan.BudgetYear.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.TargetAmount.ToString(), "%" + request.SearchString + "%") ||
-                         EF.Functions.Like(u.PlannedDateEt, "%" + request.SearchString + "%")).OrderByDescending(p => p.CreatedAt);
+                         EF.Functions.Like(u.Plan.PlannedDateEt, "%" + request.SearchString + "%"));
             }
-            return await plans.Select(p => new PlanDTO
+            return await plans.OrderByDescending(p => p.CreatedAt)
+                .Select(p => new PlanGridDTO
                 {
-                    Id = p.Id,
-                    ActualOccurance = p.ActualOccurance,
-                    AddressId = p.AddressId,
-                    Address = $@"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
-                    TargetAmount = p.TargetAmount,
-                    BudgetYear = p.BudgetYear,
-                    PlannedDateEt = p.PlannedDateEt,
+                    Id = p.Plan.Id,
+                    AddressId = p.Plan.AddressId,
                     EventType = p.EventType,
-                    PopulationSize = p.PopulationSize
+                    Address = $@"{p.Plan.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Plan.Address.ParentAddress!.AddressNameLang}/{p.Plan.Address.AddressNameLang}".Trim('/'),
+                    BudgetYear = p.Plan.BudgetYear,
+                    PlannedDateEt = p.Plan.PlannedDateEt,
+                    PopulationSize = p.Plan.PopulationSize
                 })
-            .PaginateAsync<PlanDTO, PlanDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
+            .PaginateAsync<PlanGridDTO, PlanGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Contracts.Request;
 
 namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
 {
@@ -18,15 +19,12 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
     public class UpdatePlanCommand : IRequest<BaseResponse>
     {
         public Guid Id { get; set; }
-        public string EventType { get; set; }
         public string PlannedDateEt { get; set; }
-        public int TargetAmount { get; set; }
-        public int BudgetYear { get; set; }
+        public uint BudgetYear { get; set; }
         public Guid? ParentPlanId { get; set; }
         public Guid AddressId { get; set; }
-        public int ActualOccurance { get; set; }
         public long PopulationSize { get; set; }
-        public string Remark { get; set; } = string.Empty;
+        public ICollection<UpdateEventPlan> EventPlans { get; set; }
 
     }
 
@@ -50,9 +48,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
             }
             catch (Exception exp)
             {
-                response.Status = 400;
-                response.Success = false;
-                response.Message = "Unable to update the plan";
+                response.BadRequest("Unable to update the plan");
                 response.ValidationErrors = new List<string> { exp.Message };
                 return response;
                 // throw new ApplicationException(exp.Message);

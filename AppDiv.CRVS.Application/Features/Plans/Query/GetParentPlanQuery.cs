@@ -48,22 +48,18 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     || p.AddressId.ToString() == formatedAddress.Region 
                     || p.AddressId.ToString() == formatedAddress.Country) 
                     && p.AddressId != request.AddressId
-                    && p.EventType == request.EventType
                     && p.BudgetYear == request.BudgetYear
-                    // && address.AdminLevel + 1 == p.Address.AdminLevel
+                    && address.AdminLevel - 1 == p.Address.AdminLevel
                     );
             return plans.Select(p => new PlanDTO
                 {
                     Id = p.Id,
-                    ActualOccurance = p.ActualOccurance,
                     AddressId = p.AddressId,
                     Address = $@"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
-                    TargetAmount = p.TargetAmount,
                     BudgetYear = p.BudgetYear,
                     PlannedDateEt = p.PlannedDateEt,
-                    EventType = p.EventType,
                     PopulationSize = p.PopulationSize
-                }).SingleOrDefault()!;
+                }).FirstOrDefault()!;
             
             // return plans.Select(p => new ParentPlanDropdownDTO
             //     {

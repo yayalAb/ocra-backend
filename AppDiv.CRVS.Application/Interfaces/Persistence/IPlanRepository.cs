@@ -9,6 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface IPlanRepository : IBaseRepository<Plan>
     {
-
+        IQueryable<Plan> GetPlans();
+        IQueryable<EventPlan> GetEventPlans();
     }
 }

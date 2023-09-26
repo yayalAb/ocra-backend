@@ -21,10 +21,17 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public IQueryable<Plan> GetPlans()
         {
             return _dbContext.Plans
+                .Include(p => p.EventPlans)
                 .Include(p => p.Address.ParentAddress.ParentAddress)
                 .Include(p => p.ParentPlan)
                 .ThenInclude(p => p.Address.ParentAddress.ParentAddress);
                 
+        }
+
+        public IQueryable<EventPlan> GetEventPlans()
+        {
+            return _dbContext.EventPlans
+                .Include(e => e.Plan);
         }
     }
 
