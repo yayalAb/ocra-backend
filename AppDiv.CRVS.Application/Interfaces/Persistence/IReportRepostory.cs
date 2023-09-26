@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
     public interface IReportRepostory
     {
         public Task<BaseResponse> CreateReportAsync(ReportStore Report, CancellationToken cancellationToken);
-        public Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String? filters = "", List<Aggregate>? aggregates = null);
+        public Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String? filters = "", List<Aggregate>? aggregates = null, bool? isAddressBased=false);
         public Task<JObject> GetReports();
         public Task<BaseResponse> UpdateReportQuery(string Viewname, string query);
         public Task<BaseResponse> DeleteReport(string Viewname);

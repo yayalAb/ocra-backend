@@ -29,3 +29,5 @@ Left join PersonalInfos as per on per.id=ev.EventowenerId
 Left join Lookups as gen on gen.id=per.SexLookupId
 Left join view_address as address on address.addId=ev.EventRegisteredAddressId
 where eventType="Birth" group by  address.regid;
+
+
