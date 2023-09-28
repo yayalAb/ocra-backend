@@ -35,7 +35,6 @@ namespace AppDiv.CRVS.Infrastructure
                                         IPaymentRateRepository paymentRateRepository,
                                         ICertificateRepository certificateRepository,
                                         IPersonalInfoRepository personalInfoRepository
-
                                         )
         {
             _logger = logger;
@@ -54,7 +53,6 @@ namespace AppDiv.CRVS.Infrastructure
         {
             try
             {
-
                 // await _context.Database.MigrateAsync();
             }
             catch (Exception ex)
@@ -96,9 +94,7 @@ namespace AppDiv.CRVS.Infrastructure
                 var currentYearSetting = new Setting
                 {
                     Key = "DateSetting",
-                    Value = new JObject{
-                    {"currentYear",DateTime.Now.Year}
-                }
+                    Value = new JObject{ {"currentYear",DateTime.Now.Year} }
                 };
                 await _context.Settings.AddAsync(currentYearSetting);
                 await _context.SaveChangesAsync();
@@ -163,65 +159,47 @@ namespace AppDiv.CRVS.Infrastructure
                 PreferedLanguage = "or",
                 Address = new Address
                 {
-                    AddressName = new JObject{
-                        {"en","Kebele User Address"}
-                      },
+                    AddressName = new JObject{ {"en","Kebele User Address"} },
                     StatisticCode = "code34726746",
                     Code = "cc8989890809",
                     AdminLevel = 1,
                     AreaTypeLookup = new Lookup
                     {
                         Key = "AreaType",
-                        Value = new JObject{
-                        {"en","zone"}
-                      }
+                        Value = new JObject{ {"en","zone"} }
                     },
 
                 },
                 PersonalInfo = new PersonalInfo
                 {
                     // Id = personalInfoId,
-                    FirstName = new JObject{
-                      {"en","admin"} ,
-                    },
-                    MiddleName = new JObject{
-                        {"en","admin"}
-                    },
+                    FirstName = new JObject{ {"en","admin"} , },
+                    MiddleName = new JObject{  {"en","admin"} },
                     NationalId = "jwpi897587348",
                     SexLookup = new Lookup
                     {
                         Key = "sex",
-                        Value = new JObject{
-                        {"en","male"}
-                      }
+                        Value = new JObject{ {"en","male"} }
                     },
                     NationalityLookup = new Lookup
                     {
                         Key = "nationality",
-                        Value = new JObject{
-                        {"en","Ethiopian"}
-                      }
+                        Value = new JObject{  {"en","Ethiopian"} }
                     },
                     EducationalStatusLookup = new Lookup
                     {
                         Key = "Edu",
-                        Value = new JObject{
-                        {"en","Ethiopian"}
-                      }
+                        Value = new JObject{ {"en","Ethiopian"}  }
                     },
                     MarraigeStatusLookup = new Lookup
                     {
                         Key = "MarriageStatus",
-                        Value = new JObject{
-                        {"en","single"}
-                      }
+                        Value = new JObject{  {"en","single"} }
                     },
                     NationLookup = new Lookup
                     {
                         Key = "Nation",
-                        Value = new JObject{
-                        {"en","oromo"}
-                      }
+                        Value = new JObject{  {"en","oromo"} }
                     },
                     ContactInfo = new ContactInfo
                     {
@@ -229,43 +207,33 @@ namespace AppDiv.CRVS.Infrastructure
                     },
                     BirthAddress = new Address
                     {
-                        AddressName = new JObject{
-                        {"en","some place"}
-                      },
+                        AddressName = new JObject{ {"en","some place"} },
                         StatisticCode = "code34726746",
                         Code = "cc8989890809",
                         AdminLevel = 1,
                         AreaTypeLookup = new Lookup
                         {
                             Key = "AreaType",
-                            Value = new JObject{
-                        {"en","zone"}
-                      }
+                            Value = new JObject{ {"en","zone"}  }
                         },
 
                     },
                     ResidentAddress = new Address
                     {
-                        AddressName = new JObject{
-                        {"en","some place"}
-                      },
+                        AddressName = new JObject{ {"en","some place"} },
                         StatisticCode = "code34726746",
                         Code = "cc8989890809",
                         AdminLevel = 1,
                         AreaTypeLookup = new Lookup
                         {
                             Key = "AreaType",
-                            Value = new JObject{
-                        {"en","zone"}
-                      }
+                            Value = new JObject{ {"en","zone"} }
                         },
 
                     },
 
                 },
                 UserGroups = groups,
-
-
             };
 
             var passwordHasher = new PasswordHasher<ApplicationUser>();
