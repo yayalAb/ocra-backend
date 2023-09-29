@@ -92,7 +92,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
             Console.WriteLine("job started marriageApplication sync ....... .......");
             var marriageDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                        .Where(n => n.StartsWith("marriageappplicationcouches"));
+                                        .Where(n => n.StartsWith("ocramarriageappplicationcouches"));
             foreach (string marriageDbName in marriageDbNames)
             {
                 Console.WriteLine($"operation for Db ---  {marriageDbName} ");
@@ -172,7 +172,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             Console.WriteLine("job started event sync ....... .......");
 
             var eventDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                    .Where(n => n.StartsWith("eventcouches")).ToList();
+                                    .Where(n => n.StartsWith("ocraeventcouches")).ToList();
             Console.WriteLine($"db count ---- {eventDbNames.Count}");
 
 
@@ -252,7 +252,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
         public async Task SyncCertificatesAndPayments()
         {
             var eventDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                 .Where(n => n.StartsWith("eventcouch")).ToList();
+                                 .Where(n => n.StartsWith("ocraeventcouches")).ToList();
             Console.WriteLine($"db count ---- {eventDbNames.Count}");
 
 
