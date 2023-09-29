@@ -41,8 +41,7 @@ JOIN BirthEvents AS b ON b.Id = BirthEventId
 JOIN Events as e ON e.Id = b.EventId
 JOIN Lookups AS l ON l.Id = n.SkilledProfLookupId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
-GROUP BY a.keId, l.Id
-ORDER BY e.EventRegDate DESC;
+GROUP BY a.`addId`, n.`SkilledProfLookupId`
 
 #Birth Site of occur 1
 SELECT 
@@ -55,7 +54,7 @@ JOIN Lookups AS l ON l.Id = b.FacilityTypeLookupId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
 JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
-GROUP BY a.keId, l.Id;
+GROUP BY b.`FacilityTypeLookupId`, ad.`AreaTypeLookupId`;
 
 # Birth Site of occur 2
 SELECT 
@@ -66,7 +65,7 @@ FROM BirthEvents AS b
 JOIN Events as e ON e.Id = b.EventId
 JOIN Lookups AS l ON l.Id = b.FacilityLookupId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
-GROUP BY a.keId, l.Id;
+GROUP BY a.`keId`, b.`FacilityLookupId`;
 
 #Crude rate
 SELECT 
@@ -78,7 +77,7 @@ JOIN Events as e ON e.Id = b.EventId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 JOIN `Addresses` AS ad ON ad.`Id` = a.addId
 JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
-GROUP BY a.keId;
+GROUP BY a.keId, ad.`AreaTypeLookupId`;
 
 #Birth2
 SELECT 
@@ -89,4 +88,30 @@ FROM BirthEvents AS b
 JOIN Events as e ON e.Id = b.EventId
 JOIN `Lookups` l ON l.`Id` = b.`TypeOfBirthLookupId`
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
-GROUP BY a.keId;
+GROUP BY a.`addId`, b.`TypeOfBirthLookupId`;
+
+#Birth4 1
+SELECT 
+    ar.`ValueStr` AS AreaType,
+    l.ValueStr AS DeliveryType,
+    COUNT(b.Id) AS Total
+FROM `BirthNotifications` AS n
+JOIN BirthEvents AS b ON b.Id = n.`BirthEventId`
+JOIN Events as e ON e.Id = b.EventId
+JOIN Lookups AS l ON l.Id = n.`DeliveryTypeLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY n.`DeliveryTypeLookupId`, ad.`AreaTypeLookupId`;
+
+#birth4 2
+SELECT 
+    a.*,
+    l.ValueStr AS DeliveryType,
+    COUNT(b.Id) AS Total
+FROM `BirthNotifications` AS n
+JOIN BirthEvents AS b ON b.Id = n.`BirthEventId`
+JOIN Events as e ON e.Id = b.EventId
+JOIN Lookups AS l ON l.Id = n.`DeliveryTypeLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`addId`, n.`DeliveryTypeLookupId`;
