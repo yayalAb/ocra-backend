@@ -104,3 +104,154 @@ JOIN Events as e ON e.Id = b.EventId
 JOIN Lookups AS l ON l.Id = n.`DeliveryTypeLookupId`
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 GROUP BY a.`addId`, n.`DeliveryTypeLookupId`;
+
+#Birth7
+SELECT 
+	MONTHNAME(e.`EventDate`) AS BirthMonth, 
+    MONTHNAME(e.`EventRegDate`) AS RegistrationMonth,
+    COUNT(e.Id) AS Total
+FROM `BirthEvents` AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
+GROUP BY e.`EventDate`, e.`EventRegDate`;
+
+#Birth9 1
+SELECT 
+    ar.`ValueStr` AS AreaType,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`ReligionLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY p.`ReligionLookupId`, ad.`AreaTypeLookupId`;
+
+#Birth9 2
+SELECT 
+    a.*,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`ReligionLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`addId`, p.`ReligionLookupId`;
+
+
+#Birth3
+SELECT
+    f.`ValueStr` AS Facility,
+    l.ValueStr AS Skill,
+    COUNT(n.Id) AS Total
+FROM BirthNotifications as n
+JOIN BirthEvents AS b ON b.Id = BirthEventId
+JOIN Events as e ON e.Id = b.EventId
+JOIN Lookups AS l ON l.Id = n.`SkilledProfLookupId`
+JOIN Lookups AS f ON f.Id = b.`FacilityLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
+GROUP BY b.`FacilityLookupId`, n.`SkilledProfLookupId`;
+
+#Birth11
+SELECT
+	fl.ValueStr AS Facility,
+    wl.ValueStr AS WorkType,
+    COUNT(p.`Id`) AS Total
+FROM `BirthEvents` AS b
+JOIN `Events` AS e ON e.Id = b.`EventId`
+JOIN `PersonalInfos` AS p ON p.Id = b.`MotherId`
+JOIN `Lookups` AS fl ON fl.`Id` = b.`FacilityLookupId`
+JOIN `Lookups` AS wl ON wl.`Id` = p.`TypeOfWorkLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
+GROUP BY b.`FacilityLookupId`, p.`TypeOfWorkLookupId`
+ORDER BY b.`FacilityLookupId`,p.`TypeOfWorkLookupId`;
+
+#Birth12
+SELECT
+	ea.`Region`,
+    ba.`Region`
+FROM `BirthEvents` AS b
+JOIN `Events` AS e ON e.`Id` = b.`EventId`
+JOIN `PersonalInfos` AS p ON p.Id = b.`MotherId`
+JOIN view_address AS ea ON ea.`addId` = e.`EventAddressId`
+JOIN view_address AS ba ON ba.`addId` = p.`BirthAddressId`
+GROUP BY ea.regid, ba.regid
+ORDER BY ea.regid, ba.regid;
+
+#Birth13
+SELECT
+	a.*,
+    e.`Status`,
+    COUNT(b.Id) AS Total
+FROM `BirthEvents` AS b
+JOIN `Events` AS e ON e.`Id` = b.`EventId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.zoneid, e.Status;
+
+#Birth13 2
+SELECT
+	a.woreda,
+    COUNT(ka.`Id`) AS ActiveKebeles,
+    COUNT(e.`Id`) AS Total
+FROM `BirthEvents` AS b
+JOIN `Events` AS e ON e.Id = b.`EventId`
+JOIN view_address as a on a.addId = e.`EventRegisteredAddressId`
+RIGHT JOIN `Addresses` AS ka ON ka.`ParentAddressId` = a.`weId`
+GROUP BY a.`keId`;
+
+#Birth14 1
+SELECT 
+    ar.`ValueStr` AS Education,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY p.`EducationalStatusLookupId`, ad.`AreaTypeLookupId`;
+
+#Birth14 2
+SELECT 
+    a.*,
+    l.ValueStr AS Education,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`addId`, p.`EducationalStatusLookupId`;
+
+
+#Birth18 1
+SELECT 
+    ar.`ValueStr` AS Education,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`FatherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY p.`EducationalStatusLookupId`, ad.`AreaTypeLookupId`;
+
+#Birth18 2
+SELECT 
+    a.*,
+    l.ValueStr AS Education,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`FatherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`addId`, p.`EducationalStatusLookupId`;

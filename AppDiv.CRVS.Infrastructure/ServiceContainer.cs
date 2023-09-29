@@ -26,6 +26,8 @@ using Hangfire;
 using System.Data;
 using Hangfire.MySql;
 using AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs;
+using StackExchange.Redis;
+using Hangfire.Redis.StackExchange;
 // using System.Data;
 // using Hangfire.MySqlStorage;
 // using Hangfire.Core;
@@ -110,25 +112,27 @@ namespace AppDiv.CRVS.Infrastructure
             #endregion identity
 
             #region hangfire
-            string hangfireConnectionString = configuration.GetConnectionString("HangFireConnectionString");
+            // string hangfireConnectionString = configuration.GetConnectionString("HangFireConnectionString");
+            var Redis = ConnectionMultiplexer.Connect(configuration.GetConnectionString("Redis"));
             services.AddHangfire(configuration => configuration
             .UseSimpleAssemblyNameTypeSerializer()
             .UseRecommendedSerializerSettings()
             .UseFilter(new AutomaticRetryAttribute { Attempts = 0 })
-            .UseStorage(
-                new MySqlStorage(
-                    hangfireConnectionString,
-                    new MySqlStorageOptions
-                    {
-                        TransactionIsolationLevel = (System.Transactions.IsolationLevel?)IsolationLevel.ReadCommitted,
-                        QueuePollInterval = TimeSpan.FromSeconds(15),
-                        JobExpirationCheckInterval = TimeSpan.FromHours(1),
-                        CountersAggregateInterval = TimeSpan.FromSeconds(5),//TODO: option config/
-                        PrepareSchemaIfNecessary = true,
-                        DashboardJobListLimit = 50000,
+            .UseRedisStorage(Redis)
+            // .UseStorage(
+            //     new MySqlStorage(
+            //         hangfireConnectionString,
+            //         new MySqlStorageOptions
+            //         {
+            //             TransactionIsolationLevel = (System.Transactions.IsolationLevel?)IsolationLevel.ReadCommitted,
+            //             QueuePollInterval = TimeSpan.FromSeconds(15),
+            //             JobExpirationCheckInterval = TimeSpan.FromHours(1),
+            //             CountersAggregateInterval = TimeSpan.FromSeconds(5),//TODO: option config/
+            //             PrepareSchemaIfNecessary = true,
+            //             DashboardJobListLimit = 50000,
 
-                    }
-                ))
+            //         }
+            //     ))
             );
             // Add the processing server as IHostedService
             services.AddHangfireServer();
