@@ -23,8 +23,6 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
         public List<string>? columns { get; set; }
         public string? filterse { get; set; }
         public List<Aggregate>? aggregates { get; set; }
-        public DateTime? StrartDate { get; set; }
-        public DateTime? EndDate { get; set; }
         public int? PageCount { get; set; } = 1;
         public int? PageSize { get; set; } = 10;
     }
@@ -52,7 +50,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
             }
             var reportStore=_reportStore.GetAll().Where(x=>x.ReportName==request.reportName).FirstOrDefault();
             // ,
-            var Report = await _reportRepository.GetReportData(request.reportName, request.columns, request.filterse, request.aggregates);
+            var Report = await _reportRepository.GetReportData(request.reportName, request.columns, request.filterse, request.aggregates, (bool)reportStore.isAddressBased);
 
             var report=PaginatedList<object>
                             .CreateAsync(
