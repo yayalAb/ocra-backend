@@ -82,3 +82,15 @@ JOIN `Addresses` AS ad ON ad.`Id` = a.addId
 JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
 GROUP BY a.keId
 ORDER BY e.EventRegDate DESC;
+
+#Birth2
+SELECT 
+	a.*,
+    l.`ValueStr` AS TypeOfBirth,
+    COUNT(b.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+RIGHT JOIN `Lookups` l ON l.`Id` = b.`TypeOfBirthLookupId`
+RIGHT JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.keId
+ORDER BY e.EventRegDate DESC;
