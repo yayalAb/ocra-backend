@@ -18,14 +18,13 @@ using System.Threading.Tasks;
 namespace AppDiv.CRVS.Application.Features.Plans.Query
 {
     // Customer query with List<Customer> response
-    public record GetParentPlanQuery : IRequest<PlanDTO>
+    public record GetParentPlanQuery : IRequest<List<PlanGridDTO>>
     {
         public Guid AddressId { get; set; }
-        public string? EventType { get; set; }
         public uint BudgetYear { get; set; }
     }
 
-    public class GetParentPlanHandler : IRequestHandler<GetParentPlanQuery, PlanDTO>
+    public class GetParentPlanHandler : IRequestHandler<GetParentPlanQuery, List<PlanGridDTO>>
     {
         private readonly IPlanRepository _planRepository;
         private readonly IDateAndAddressService _addressService;
@@ -37,39 +36,31 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
             _planRepository = planQueryRepository;
             this._addressService = addressService;
         }
-        public async Task<PlanDTO> Handle(GetParentPlanQuery request, CancellationToken cancellationToken)
+        public async Task<List<PlanGridDTO>> Handle(GetParentPlanQuery request, CancellationToken cancellationToken)
         {
             var address = _addressRepository.GetSingle(request.AddressId);
             var formatedAddress = await _addressService.FormatedAddress(request.AddressId)!;
-            var plans = _planRepository.GetAll()
-                .Where(p => (p.AddressId.ToString() == formatedAddress.Kebele 
-                    || p.AddressId.ToString() == formatedAddress.Woreda 
-                    || p.AddressId.ToString() == formatedAddress.Zone 
-                    || p.AddressId.ToString() == formatedAddress.Region 
-                    || p.AddressId.ToString() == formatedAddress.Country) 
-                    && p.AddressId != request.AddressId
-                    && p.BudgetYear == request.BudgetYear
-                    && address.AdminLevel - 1 == p.Address.AdminLevel
+            var plans = _planRepository.GetEventPlans()
+                .Where(p => (p.Plan.AddressId.ToString() == formatedAddress.Kebele 
+                    || p.Plan.AddressId.ToString() == formatedAddress.Woreda 
+                    || p.Plan.AddressId.ToString() == formatedAddress.Zone 
+                    || p.Plan.AddressId.ToString() == formatedAddress.Region 
+                    || p.Plan.AddressId.ToString() == formatedAddress.Country) 
+                    && p.Plan.AddressId != request.AddressId
+                    && p.Plan.BudgetYear == request.BudgetYear
+                    && address.AdminLevel - 1 == p.Plan.Address.AdminLevel
                     );
-            return plans.Select(p => new PlanDTO
+            return plans.Select(p => new PlanGridDTO
                 {
-                    Id = p.Id,
-                    AddressId = p.AddressId,
-                    Address = $@"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Address.ParentAddress!.AddressNameLang}/{p.Address.AddressNameLang}".Trim('/'),
-                    BudgetYear = p.BudgetYear,
-                    PlannedDateEt = p.PlannedDateEt,
-                    PopulationSize = p.PopulationSize
-                }).FirstOrDefault()!;
-            
-            // return plans.Select(p => new ParentPlanDropdownDTO
-            //     {
-            //         Id = p.Id,
-            //         Plan = ($"{p.Address.ParentAddress!.ParentAddress!.AddressNameLang}/" +
-            //                 $"{p.Address.ParentAddress!.AddressNameLang}/" +
-            //                 $"{p.Address.AddressNameLang}").Trim('/')
-            //               + $", {p.EventType}, {p.BudgetYear}",
-            //         TargetAmount = p.TargetAmount
-            //     }).ToList();
+                    Id = p.Plan.Id,
+                    AddressId = p.Plan.AddressId,
+                    EventType = p.EventType,
+                    TargetAmount = p.TargetAmount,
+                    Address = $@"{p.Plan.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Plan.Address.ParentAddress!.AddressNameLang}/{p.Plan.Address.AddressNameLang}".Trim('/'),
+                    BudgetYear = p.Plan.BudgetYear,
+                    PlannedDateEt = p.Plan.PlannedDateEt,
+                    PopulationSize = p.Plan.PopulationSize
+                }).ToList();
         }
     }
 }

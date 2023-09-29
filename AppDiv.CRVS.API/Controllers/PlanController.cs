@@ -99,7 +99,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("ParentPlans")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<PlanDTO> GetParent([FromQuery] GetParentPlanQuery query)
+        public async Task<List<PlanGridDTO>> GetParent([FromQuery] GetParentPlanQuery query)
         {
             return await _mediator.Send(query);
         }
