@@ -458,7 +458,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (address,addressGroupby,userAddress?.Id);
         }
 
-        private (string, string )AddAddressandDateFilter(string reportName, string groupBySql, string filters){
+        private (string, string )AddAddressandDateFilter(string reportName, string groupBySql, string filters,bool isAddressBased=false){
               var colums=GetReportColums(reportName);
              
              if(colums.Result!=null&&colums.Result.Count()>0){
@@ -480,14 +480,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     else{
                       filters+=$"and {address.Item1} =={ address.Item3}";
                     }
-                    if(string.IsNullOrEmpty(groupBySql)){
-                      groupBySql=$"GROUP BY {address.Item2} ";
+                    if(isAddressBased){
+                        if(string.IsNullOrEmpty(groupBySql)){
+                        groupBySql=$"GROUP BY {address.Item2} ";
 
-                    }
-                    else{
-                      groupBySql+=$", {address.Item2}";
-                    }
-                    
+                        }
+                        else{
+                        groupBySql+=$", {address.Item2}";
+                        }
+                    } 
                  }
              }
             return (groupBySql,filters);
