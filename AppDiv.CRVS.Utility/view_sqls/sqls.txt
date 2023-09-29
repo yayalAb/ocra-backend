@@ -115,3 +115,39 @@ JOIN Events as e ON e.Id = b.EventId
 JOIN Lookups AS l ON l.Id = n.`DeliveryTypeLookupId`
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 GROUP BY a.`addId`, n.`DeliveryTypeLookupId`;
+
+#Birth7
+SELECT 
+	MONTHNAME(e.`EventDate`) AS BirthMonth, 
+    MONTHNAME(e.`EventRegDate`) AS RegistrationMonth,
+    COUNT(e.Id) AS Total
+FROM `BirthEvents` AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY MONTHNAME(e.`EventDate`), MONTHNAME(e.`EventRegDate`);
+
+#Birth9 1
+SELECT 
+    ar.`ValueStr` AS AreaType,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`ReligionLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY p.`ReligionLookupId`, ad.`AreaTypeLookupId`;
+
+#Birth9 2
+SELECT 
+    a.*,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`ReligionLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`addId`, p.`ReligionLookupId`;
