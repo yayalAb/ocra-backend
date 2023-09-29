@@ -30,6 +30,32 @@ Left join Lookups as gen on gen.id=per.SexLookupId
 Left join view_address as address on address.addId=ev.EventRegisteredAddressId
 where eventType="Birth" group by  address.regid;
 
+#BirthAge
+SELECT
+	ar.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS yearRange,
+    COUNT(YEAR(ev.EventRegDate) - YEAR(ev.EventDate)) AS Count
+FROM Events AS ev
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.EventRegDate) - YEAR(ev.EventDate) 
+		between ren.Start and ren.End
+JOIN `Addresses` AS ad ON ad.`Id` = ev.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+JOIN PersonalInfos AS per ON per.id = ev.EventowenerId where (ev.EventType='birth')
+GROUP BY ren.id, `AreaTypeLookupId`;
+
+#birth age 2
+SELECT
+	a.*,
+	CONCAT(ren.Start, - ren.End) AS yearRange,
+    COUNT(YEAR(ev.EventRegDate) - YEAR(ev.EventDate)) AS Count
+FROM Events AS ev
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.EventRegDate) - YEAR(ev.EventDate) 
+		between ren.Start and ren.End
+JOIN view_address as a on a.addId = ev.`EventRegisteredAddressId`
+JOIN PersonalInfos AS per ON per.id = ev.EventowenerId where (ev.EventType='birth')
+GROUP BY ren.id, a.`addId`;
 
 #Birth17
 SELECT 
