@@ -32,7 +32,7 @@ namespace AppDiv.CRVS.Domain.Entities
             }
             set
             {
-                UserGroupsStr =(string.IsNullOrEmpty(value.ToString()) ||value.Count==0) ? "[]":value.ToString();
+                UserGroupsStr =(string.IsNullOrEmpty(value.ToString()) ||value.Count==0) ? "[]":JsonConvert.SerializeObject(value);
             }
         }
 

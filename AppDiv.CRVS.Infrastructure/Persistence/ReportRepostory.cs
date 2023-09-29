@@ -21,11 +21,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
     {
         private readonly CRVSDbContext _DbContext;
         private readonly IReportStoreRepostory _reportStor;
+        private readonly IUserResolverService _userResolver;
+        private readonly IAddressLookupRepository _addressLookupRepo;
 
-        public ReportRepostory(CRVSDbContext dbContext, IReportStoreRepostory reportStor)
+        public ReportRepostory(IAddressLookupRepository addressLookupRepo,IUserResolverService userResolver,CRVSDbContext dbContext, IReportStoreRepostory reportStor)
         {
             _DbContext = dbContext;
             _reportStor = reportStor;
+            _userResolver=userResolver;
+            _addressLookupRepo=addressLookupRepo;
         }
         public async Task<BaseResponse> CreateReportAsync(ReportStore Report, CancellationToken cancellationToken)
             // string reportName, string query, string Description, string[]? Colums, string? ReportTitle, string columnsLang, CancellationToken cancellationToken)
@@ -111,8 +115,20 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
-        public async Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String filters = "", List<Aggregate>? aggregates = null)
+        public async Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String filters = "", List<Aggregate>? aggregates = null, bool? isAddressBased=false)
         {
+             var colums=GetReportColums(reportName);
+             
+             if(colums.Result!=null&&colums.Result.Count()>0){
+                 if(colums.Result.Contains("EventDate") && !filters.Contains("EventDate")){
+                    if(string.IsNullOrEmpty(filters)){
+                      filters=$"EventDate >{ DateTime.Now } ";
+
+                    }else{
+                      filters=$"and EventDate >{ DateTime.Now } ";
+                    }
+                 }
+             }
             var ReportInfo = _reportStor.GetAll().Where(x => x.ReportName == reportName).FirstOrDefault();
             if (ReportInfo == null)
             {
@@ -310,6 +326,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             if(StringToSanitize.IndexOf("delete", StringComparison.OrdinalIgnoreCase) >= 0){
                 throw new NotFoundException("Delete string is not allowed in report Create");
             }
+             if(StringToSanitize.IndexOf("alter", StringComparison.OrdinalIgnoreCase) >= 0){
+                throw new NotFoundException("Alter string is not allowed in report Create");
+            }
             if (!string.IsNullOrEmpty(StringToSanitize))
             {
                 output = Regex.Replace(StringToSanitize, "[;-]", "");
@@ -408,6 +427,73 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return result;
         }
+        private (string, string,Guid? )ReturnFilterAddress(){
+            var userAddress=  _addressLookupRepo.GetAll().Where(x=>x.Id==_userResolver.GetWorkingAddressId()).FirstOrDefault();
+            string address="";
+            string addressGroupby="";
+            if(userAddress!=null){
+                switch(userAddress.AdminLevel){
+                    case 1:
+                       address="conid";
+                       addressGroupby="regid";
+                       break;
+                    case 2:
+                       address="regid";
+                       addressGroupby="zone";
+                       break;
+                    case 3:
+                       address="zoneid";
+                       addressGroupby="weid";
+                       break;
+                    case 4:
+                       address="weid";
+                       addressGroupby="keid";
+                       break;
+                    case 5:
+                       address="keid";
+                       addressGroupby="keid";
+                       break;
+                }
+            }
+            return (address,addressGroupby,userAddress?.Id);
+        }
+
+        private (string, string )AddAddressandDateFilter(string reportName, string groupBySql, string filters,bool isAddressBased=false){
+              var colums=GetReportColums(reportName);
+             
+             if(colums.Result!=null&&colums.Result.Count()>0){
+                 if(colums.Result.Contains("EventDate") && !filters.Contains("EventDate")){
+                    if(string.IsNullOrEmpty(filters)){
+                      filters=$"EventDate >{ DateTime.Now } ";
+
+                    }else{
+                      filters +=$"and EventDate >{ DateTime.Now } ";
+                    }
+                 }
+
+               if(colums.Result.Contains("EventRegisteredAddressId") && !filters.Contains("EventRegisteredAddressId")){
+                    var address=ReturnFilterAddress();
+                    if(string.IsNullOrEmpty(filters)){
+                      filters=$"{address.Item1} =={ address.Item3} ";
+
+                    }
+                    else{
+                      filters+=$"and {address.Item1} =={ address.Item3}";
+                    }
+                    if(isAddressBased){
+                        if(string.IsNullOrEmpty(groupBySql)){
+                        groupBySql=$"GROUP BY {address.Item2} ";
+
+                        }
+                        else{
+                        groupBySql+=$", {address.Item2}";
+                        }
+                    } 
+                 }
+             }
+            return (groupBySql,filters);
+        }
+
 
 
 
