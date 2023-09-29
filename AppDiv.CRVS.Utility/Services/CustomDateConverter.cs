@@ -183,11 +183,14 @@ namespace AppDiv.CRVS.Utility.Services
             this.EthiopicToGregorian(etDate);
             return DateTime.Now;
         }
-        public (DateTime,DateTime) BugYear(string satertDate, string endDate)
-        { 
-            DateTime startDateG=this.EthiopicToGregorian(satertDate);
-            DateTime endDateG=this.EthiopicToGregorian(endDate);
-            return (startDateG,endDateG);
+        public (DateTime,DateTime) BugYear(DateTime satertDate, DateTime endDate)
+        {   
+            string startdate=this.GregorianToEthiopic(satertDate);
+            int endYear=this.getSplitted(this.GregorianToEthiopic(endDate)).year ;
+           
+            // DateTime startDateG=this(satertDate);
+            // DateTime endDateG=this.EthiopicToGregorian(endDate);
+            return (DateTime.Now,DateTime.Now);
         }
 
         //    
