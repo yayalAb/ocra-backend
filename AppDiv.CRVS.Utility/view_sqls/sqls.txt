@@ -124,7 +124,8 @@ SELECT
 FROM `BirthEvents` AS b
 JOIN Events as e ON e.Id = b.EventId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
-GROUP BY MONTHNAME(e.`EventDate`), MONTHNAME(e.`EventRegDate`);
+WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
+GROUP BY e.`EventDate`, e.`EventRegDate`;
 
 #Birth9 1
 SELECT 
@@ -151,3 +152,35 @@ JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
 JOIN Lookups AS l ON l.Id = p.`ReligionLookupId`
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 GROUP BY a.`addId`, p.`ReligionLookupId`;
+
+
+#Birth3
+SELECT
+    f.`ValueStr` AS Facility,
+    l.ValueStr AS Skill,
+    COUNT(n.Id) AS Total
+FROM BirthNotifications as n
+JOIN BirthEvents AS b ON b.Id = BirthEventId
+JOIN Events as e ON e.Id = b.EventId
+JOIN Lookups AS l ON l.Id = n.`SkilledProfLookupId`
+JOIN Lookups AS f ON f.Id = b.`FacilityLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
+GROUP BY b.`FacilityLookupId`, n.`SkilledProfLookupId`;
+
+#Birth11
+SELECT
+	fl.ValueStr AS Facility,
+    wl.ValueStr AS WorkType,
+    COUNT(p.`Id`) AS Total
+FROM `BirthEvents` AS b
+JOIN `Events` AS e ON e.Id = b.`EventId`
+JOIN `PersonalInfos` AS p ON p.Id = b.`MotherId`
+JOIN `Lookups` AS fl ON fl.`Id` = b.`FacilityLookupId`
+JOIN `Lookups` AS wl ON wl.`Id` = p.`TypeOfWorkLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
+GROUP BY b.`FacilityLookupId`, p.`TypeOfWorkLookupId`
+ORDER BY b.`FacilityLookupId`,p.`TypeOfWorkLookupId`;
+
+
