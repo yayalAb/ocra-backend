@@ -183,4 +183,16 @@ WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
 GROUP BY b.`FacilityLookupId`, p.`TypeOfWorkLookupId`
 ORDER BY b.`FacilityLookupId`,p.`TypeOfWorkLookupId`;
 
+#Birth12
+SELECT
+	ea.`Region`,
+    ba.`Region`
+FROM `BirthEvents` AS b
+JOIN `Events` AS e ON e.`Id` = b.`EventId`
+JOIN `PersonalInfos` AS p ON p.Id = b.`MotherId`
+JOIN view_address AS ea ON ea.`addId` = e.`EventAddressId`
+JOIN view_address AS ba ON ba.`addId` = p.`BirthAddressId`
+GROUP BY ea.regid, ba.regid
+ORDER BY ea.regid, ba.regid;
+
 
