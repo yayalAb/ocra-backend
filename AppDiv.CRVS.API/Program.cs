@@ -187,7 +187,7 @@ if (app.Environment.IsDevelopment())
     {
         var initialiser = scope.ServiceProvider.GetRequiredService<CRVSDbContextInitializer>();
         await initialiser.InitialiseAsync();
-        await initialiser.SeedAsync();
+        //await initialiser.SeedAsync();
     }
     app.UseSwagger();
     app.UseSwaggerUI();

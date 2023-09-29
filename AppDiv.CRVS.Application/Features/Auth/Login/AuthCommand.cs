@@ -42,18 +42,18 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
               private readonly IMyReportRepository _myReportRepository;
 
         public AuthCommandHandler(IHttpContextAccessor httpContext,
-                                  ILoginHistoryRepository loginHistoryRepository,
-                                  IIdentityService identityService,
-                                  ITokenGeneratorService tokenGenerator,
-                                  ILogger<AuthCommandHandler> logger,
-                                  IUserRepository userRepository,
-                                  HelperService helperService,
-                                  IMailService mailService,
-                                  IOptions<SMTPServerConfiguration> config,
-                                  ISmsService smsService,
-                                  IDateAndAddressService addressService,
-                                  IReportStoreRepostory reportRepository,
-                                  IMyReportRepository myReportRepository)
+                                ILoginHistoryRepository loginHistoryRepository,
+                                IIdentityService identityService,
+                                ITokenGeneratorService tokenGenerator,
+                                ILogger<AuthCommandHandler> logger,
+                                IUserRepository userRepository,
+                                HelperService helperService,
+                                IMailService mailService,
+                                IOptions<SMTPServerConfiguration> config,
+                                ISmsService smsService,
+                                IDateAndAddressService addressService,
+                                IReportStoreRepostory reportRepository,
+                                IMyReportRepository myReportRepository)
         {
             _identityService = identityService;
             _tokenGenerator = tokenGenerator;
@@ -88,7 +88,6 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                     Name = request.UserName,
                     isFirstTime = response.status == AuthStatus.FirstTimeLogin,
                     isOtpUnverified = response.status == AuthStatus.OtpUnverified,
-           
                 };
 
             }
@@ -165,23 +164,22 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 string marriageApplication = Enum.GetName<Page>(Page.MarriageApplication)?.ToLower()!;
                 string marriageApplicationList = Enum.GetName<Page>(Page.MarriageApplicationList)?.ToLower()!;
 
-                userRoles.Where(p =>
-                           p.page.ToLower() == marriage
-                           || p.page.ToLower() == birth
-                           || p.page.ToLower() == adoption
-                           || p.page.ToLower() == death
-                           || p.page.ToLower() == divorce
-                           || p.page.ToLower() == marriageApplication
-                           || p.page.ToLower() == marriageApplicationList)
-                           .ToList().ForEach(r =>
-                   {
-                       r.canAdd = true;
-                       r.canView = true;
-                       r.canUpdate = true;
-                       r.canViewDetail = true;
-                       r.canDelete = true;
-                   });
-            }
+                var pageNamesToMatch = new List<string>
+                    { "marriage","birth","adoption","death","divorce","marriageapplication","marriageapplicationlist"};
+
+                    userRoles
+                        .Where(p => pageNamesToMatch.Contains(p.page.ToLower()))
+                        .ToList()
+                        .ForEach(r =>
+                        {
+                            r.canAdd = true;
+                            r.canView = true;
+                            r.canUpdate = true;
+                            r.canViewDetail = true;
+                            r.canDelete = true;
+                        });
+                    }
+
             var LoginHis = new LoginHistory
             {
                 Id = Guid.NewGuid(),
@@ -201,8 +199,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                         ReportName = repo.ReportName,
                                         ReportTitle =repo.ReportTitle
                                     }).ToList();
-                  List<Guid> GroupIds=userData.UserGroups.Select(g => g.Id).ToList();
-                  var Report = _reportRepository.GetAll()
+                List<Guid> GroupIds=userData.UserGroups.Select(g => g.Id).ToList();
+                var Report = _reportRepository.GetAll()
                                     .Select(repo => new ReportStoreDTO
                                     {
                                         Id = repo.Id,
@@ -223,7 +221,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 Token = token,
                 PreferedLanguage = userData?.PreferedLanguage,
                 PersonalInfoId = userData.PersonalInfoId,
-                GroupIds = userData.UserGroups.Select(g => g.Id).ToList(),
+                GroupIds = GroupIds,
                 Roles = userRoles.ToList(),
                 FirstName = userData.PersonalInfo?.FirstName,
                 MiddleName = userData.PersonalInfo?.MiddleName,
