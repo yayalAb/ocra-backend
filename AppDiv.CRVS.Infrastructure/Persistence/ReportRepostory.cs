@@ -115,20 +115,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
-        public async Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String filters = "", List<Aggregate>? aggregates = null, bool? isAddressBased=false)
+        public async Task<List<object>> GetReportData(string reportName, List<string>? columns = null, String filters = "", List<Aggregate>? aggregates = null, bool isAddressBased=false)
         {
-             var colums=GetReportColums(reportName);
-             
-             if(colums.Result!=null&&colums.Result.Count()>0){
-                 if(colums.Result.Contains("EventDate") && !filters.Contains("EventDate")){
-                    if(string.IsNullOrEmpty(filters)){
-                      filters=$"EventDate >{ DateTime.Now } ";
-
-                    }else{
-                      filters=$"and EventDate >{ DateTime.Now } ";
-                    }
-                 }
-             }
             var ReportInfo = _reportStor.GetAll().Where(x => x.ReportName == reportName).FirstOrDefault();
             if (ReportInfo == null)
             {
@@ -149,7 +137,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 aggregateSql = response.Aggregate;
             }
             var sql = "";
-            Console.WriteLine("Sql statment1 {0} {1}", aggregateSql, columns);
+        //    var Addressresponse=AddAddressandDateFilter(reportName ,groupBySql,  filters, isAddressBased);
+        //     groupBySql=Addressresponse.Item1;
+        //     filters=Addressresponse.Item2;
+
             if (!string.IsNullOrEmpty(aggregateSql) && aggregateSql.Length > 0)
             {
                 
@@ -458,16 +449,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (address,addressGroupby,userAddress?.Id);
         }
 
-        private (string, string )AddAddressandDateFilter(string reportName, string groupBySql, string filters,bool isAddressBased=false){
+        private (string, string )AddAddressandDateFilter(string reportName, string? groupBySql, string? filters,bool isAddressBased=false){
               var colums=GetReportColums(reportName);
              
-             if(colums.Result!=null&&colums.Result.Count()>0){
-                 if(colums.Result.Contains("EventDate") && !filters.Contains("EventDate")){
+             if(colums?.Result!=null&&colums?.Result?.Count()>0){
+                 if((bool)colums?.Result?.Contains("EventDate") && !(bool)filters?.Contains("EventDate")){
                     if(string.IsNullOrEmpty(filters)){
-                      filters=$"EventDate >{ DateTime.Now } ";
+                      filters=$"EventDate >{ DateTime.Now.AddYears(-1) } ";
 
                     }else{
-                      filters +=$"and EventDate >{ DateTime.Now } ";
+                      filters +=$"and EventDate >{ DateTime.Now.AddYears(-1) } ";
                     }
                  }
 
