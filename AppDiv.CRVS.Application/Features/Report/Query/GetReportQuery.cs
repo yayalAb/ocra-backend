@@ -7,6 +7,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -56,11 +57,13 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                             .CreateAsync(
                                  Report
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
+            var columnsLang= JsonConvert.DeserializeObject(reportStore.columnsLang); 
+            var Other= JsonConvert.DeserializeObject(reportStore.Other);              
             return new{
                reportStore.ReportTitle, 
                reportStore.ReportName,
-               reportStore.columnsLang,
-               reportStore.Other,
+               columnsLang,
+               Other,
                report
             };
 

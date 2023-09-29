@@ -13,6 +13,8 @@ using System.Text.Json;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Domain.Entities;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using AppDiv.CRVS.Utility.Services;
 
 namespace AppDiv.CRVS.Infrastructure.Persistence
 {
@@ -126,10 +128,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             string groupBySql = "";
             string aggregateSql = "";
             string SelectedColumns = columns?.Count() > 0 ? string.Join(",", columns) : string.IsNullOrEmpty(ReportInfo.DefualtColumns) ? "*" : ReportInfo.DefualtColumns;
-            if (!string.IsNullOrEmpty(filters))
-            {
-                filters = $"WHERE {filters}";
-            }
             if (aggregates?.Count() > 0)
             {
                 (string Group, string Aggregate) response = ReturnAgrgateString(aggregates);
@@ -137,9 +135,14 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 aggregateSql = response.Aggregate;
             }
             var sql = "";
-        //    var Addressresponse=AddAddressandDateFilter(reportName ,groupBySql,  filters, isAddressBased);
-        //     groupBySql=Addressresponse.Item1;
-        //     filters=Addressresponse.Item2;
+            var Addressresponse=AddAddressandDateFilter(reportName ,groupBySql,  filters,SelectedColumns, isAddressBased);
+            groupBySql=Addressresponse.Item1;
+            filters=Addressresponse.Item2;
+            SelectedColumns=Addressresponse.Item3;
+            if (!string.IsNullOrEmpty(filters))
+            {
+                filters = $"WHERE {filters}";
+            }
 
             if (!string.IsNullOrEmpty(aggregateSql) && aggregateSql.Length > 0)
             {
@@ -449,29 +452,36 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return (address,addressGroupby,userAddress?.Id);
         }
 
-        private (string, string )AddAddressandDateFilter(string reportName, string? groupBySql, string? filters,bool isAddressBased=false){
-              var colums=GetReportColums(reportName);
-             
-             if(colums?.Result!=null&&colums?.Result?.Count()>0){
-                 if((bool)colums?.Result?.Contains("EventDate") && !(bool)filters?.Contains("EventDate")){
+        private (string?, string?, string ) AddAddressandDateFilter(string reportName, string? groupBySql, string? filters,string ColumsList,bool isAddressBased=false){
+              var colums=GetReportColums(reportName).GetAwaiter().GetResult;
+              var colums2=colums.Invoke().ToArray();
+             if(colums2!=null&&colums2?.Count()>0){
+                DateTime TodaysDate=DateTime.Now.AddYears(-1);
+               var _convertor = new CustomDateConverter();
+                 string TodaysDateStr = TodaysDate.ToString("yyyy/M/d H:mm:ss");
+                 if((bool)colums2?.Contains("EventDate")){
                     if(string.IsNullOrEmpty(filters)){
-                      filters=$"EventDate >{ DateTime.Now.AddYears(-1) } ";
+                      filters=$"EventDate > '{ TodaysDateStr }' ";
 
                     }else{
-                      filters +=$"and EventDate >{ DateTime.Now.AddYears(-1) } ";
+                      filters +=$"and EventDate > '{ TodaysDateStr }' ";
                     }
                  }
 
-               if(colums.Result.Contains("EventRegisteredAddressId") && !filters.Contains("EventRegisteredAddressId")){
-                    var address=ReturnFilterAddress();
-                    if(string.IsNullOrEmpty(filters)){
-                      filters=$"{address.Item1} =={ address.Item3} ";
-
-                    }
-                    else{
-                      filters+=$"and {address.Item1} =={ address.Item3}";
-                    }
                     if(isAddressBased){
+                    var address=ReturnFilterAddress();
+                    if(!string.IsNullOrEmpty(address.Item1) && !string.IsNullOrEmpty(address.Item2)){
+                        if(!string.IsNullOrEmpty(address.Item1)){
+
+                            if(string.IsNullOrEmpty(filters)){
+                            filters=$"{address.Item1} ='{ address.Item3}' ";
+
+                            }
+                            else{
+                            filters+=$"and {address.Item1} ='{ address.Item3}'";
+                        }
+                    }
+                        ColumsList=ColumsList+", "+address.Item2;
                         if(string.IsNullOrEmpty(groupBySql)){
                         groupBySql=$"GROUP BY {address.Item2} ";
 
@@ -482,7 +492,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     } 
                  }
              }
-            return (groupBySql,filters);
+            return (groupBySql,filters,ColumsList);
         }
 
 
