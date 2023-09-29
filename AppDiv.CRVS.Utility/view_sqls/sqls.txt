@@ -196,3 +196,66 @@ GROUP BY ea.regid, ba.regid
 ORDER BY ea.regid, ba.regid;
 
 
+SELECT
+	distinct ba.`Region`,
+    ba.`Region`,
+    ra.`Region`,
+    COUNT(p.`Id`) AS Total
+FROM `Events` AS e
+JOIN `PersonalInfos` AS p ON p.Id = e.`EventOwenerId`
+JOIN view_address as ba on ba.addId = p.`BirthAddressId`
+JOIN view_address as ra on ra.addId = p.`ResidentAddressId`
+GROUP BY ba.regid, ra.regid;
+
+#Birth14 1
+SELECT 
+    ar.`ValueStr` AS Education,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY p.`EducationalStatusLookupId`, ad.`AreaTypeLookupId`;
+
+#Birth14 2
+SELECT 
+    a.*,
+    l.ValueStr AS Education,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`MotherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`addId`, p.`EducationalStatusLookupId`;
+
+
+#Birth18 1
+SELECT 
+    ar.`ValueStr` AS Education,
+    l.ValueStr AS Religion,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`FatherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY p.`EducationalStatusLookupId`, ad.`AreaTypeLookupId`;
+
+#Birth18 2
+SELECT 
+    a.*,
+    l.ValueStr AS Education,
+    COUNT(p.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = b.`FatherId`
+JOIN Lookups AS l ON l.Id = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`addId`, p.`EducationalStatusLookupId`;
