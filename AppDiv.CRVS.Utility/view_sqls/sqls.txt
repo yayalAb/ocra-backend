@@ -55,8 +55,7 @@ JOIN Lookups AS l ON l.Id = b.FacilityTypeLookupId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
 JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
-GROUP BY a.keId, l.Id
-ORDER BY e.EventRegDate DESC;
+GROUP BY a.keId, l.Id;
 
 # Birth Site of occur 2
 SELECT 
@@ -64,11 +63,10 @@ SELECT
     l.ValueStr AS Faculty,
     COUNT(b.Id) AS Total
 FROM BirthEvents AS b
-RIGHT JOIN Events as e ON e.Id = b.EventId
+JOIN Events as e ON e.Id = b.EventId
 JOIN Lookups AS l ON l.Id = b.FacilityLookupId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
-GROUP BY a.keId, l.Id
-ORDER BY e.EventRegDate DESC;
+GROUP BY a.keId, l.Id;
 
 #Crude rate
 SELECT 
@@ -77,11 +75,10 @@ SELECT
     COUNT(b.Id) AS Total
 FROM BirthEvents AS b
 JOIN Events as e ON e.Id = b.EventId
-RIGHT JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 JOIN `Addresses` AS ad ON ad.`Id` = a.addId
 JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
-GROUP BY a.keId
-ORDER BY e.EventRegDate DESC;
+GROUP BY a.keId;
 
 #Birth2
 SELECT 
@@ -90,7 +87,6 @@ SELECT
     COUNT(b.Id) AS Total
 FROM BirthEvents AS b
 JOIN Events as e ON e.Id = b.EventId
-RIGHT JOIN `Lookups` l ON l.`Id` = b.`TypeOfBirthLookupId`
-RIGHT JOIN view_address as a on a.addId = e.EventRegisteredAddressId
-GROUP BY a.keId
-ORDER BY e.EventRegDate DESC;
+JOIN `Lookups` l ON l.`Id` = b.`TypeOfBirthLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.keId;
