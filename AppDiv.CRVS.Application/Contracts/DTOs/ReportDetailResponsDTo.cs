@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Contracts.DTOs
 {
@@ -12,7 +13,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? Description { get; set; }
         public string? DefualtColumns { get; set; }
         public string? Query { get; set; }
-         public List<ReportColumsLngDto>? ColumnsLang { get; set; }
+        public List<ReportColumsLngDto>? ColumnsLang { get; set; }
+        public   List<Guid>? UserGroups { get; set; }
+        public  bool? isAddressBased { get; set; }=false;
+        public JObject? Other { get; set; }
         
     }
 }

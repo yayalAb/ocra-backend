@@ -497,12 +497,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
              if(colums2!=null&&colums2?.Count()>0){
                var _convertor = new CustomDateConverter();
                  string TodaysDateStr =_convertor.GetBudgetYear();// TodaysDate.ToString("yyyy/M/d H:mm:ss");
-                 if((bool)colums2?.Contains("EventDate") && (string.IsNullOrEmpty(filters)|| !filters.Contains("EventDate") )){
+                 if((bool)colums2?.Contains("EventRegDate") && (string.IsNullOrEmpty(filters)|| !filters.Contains("EventRegDate") )){
                     if(string.IsNullOrEmpty(filters)){
-                      filters=$"EventDate > '{ TodaysDateStr }' ";
+                      filters=$"EventRegDate > '{ TodaysDateStr }' ";
 
                     }else{
-                      filters +=$"and EventDate > '{ TodaysDateStr }' ";
+                      filters +=$"and EventRegDate > '{ TodaysDateStr }' ";
                     }
                  }
 
