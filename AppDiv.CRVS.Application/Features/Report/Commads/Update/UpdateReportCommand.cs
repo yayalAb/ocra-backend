@@ -56,7 +56,6 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
                 UserGroups=request.UserGroups,
                 isAddressBased=request.isAddressBased,
                 Other=request.Other.ToString()
-            
             };
             try
             {

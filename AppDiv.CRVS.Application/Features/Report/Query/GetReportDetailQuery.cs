@@ -5,7 +5,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using MediatR;
-
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.Report.Query
 {
@@ -34,7 +34,9 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                 DefualtColumns=Report.DefualtColumns,
                 Query=Report.Query,
                 ColumnsLang=JsonSerializer.Deserialize<List<ReportColumsLngDto>>(Report.columnsLang),
-
+                UserGroups=Report.UserGroups,
+                isAddressBased=Report.isAddressBased,
+                Other=string.IsNullOrEmpty(Report.Other)? null : JObject.Parse(Report.Other)
             };
             return response;
         }

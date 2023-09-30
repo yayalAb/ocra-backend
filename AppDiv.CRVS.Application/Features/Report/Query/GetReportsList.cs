@@ -39,7 +39,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                                             {
                                                 Id = repo.Id,
                                                 ReportName = repo.ReportName,
-                                                ReportTitle =repo.ReportTitle
+                                                ReportTitle =repo.ReportTitle,
+                                                Groups=repo.UserGroups
                                             }).ToList();
 
             return await PaginatedList<ReportStoreDTO>
