@@ -127,7 +127,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             var reportData = new JObject();
             string groupBySql = "";
             string aggregateSql = "";
-            string SelectedColumns = columns?.Count() > 0 ? string.Join(",", columns) : string.IsNullOrEmpty(ReportInfo.DefualtColumns) ? "*" : ReportInfo.DefualtColumns;
+            string SelectedColumns = columns?.Count() > 0 ? string.Join(",", columns) : string.IsNullOrEmpty(ReportInfo.DefualtColumns) ?ReturnLanguageBasedColums(reportName,"*") :ReturnLanguageBasedColums("",ReportInfo.DefualtColumns);
             if (aggregates?.Count() > 0)
             {
                 (string Group, string Aggregate) response = ReturnAgrgateString(aggregates);
@@ -421,10 +421,49 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
             return result;
         }
-        private (string, string,Guid? )ReturnFilterAddress(){
-            var userAddress=  _addressLookupRepo.GetAll().Where(x=>x.Id==_userResolver.GetWorkingAddressId()).FirstOrDefault();
+        private (string, string,Guid? )ReturnFilterAddress( string ? filters, string groupBySql){
+            string[] addressArray = { "Country", "Region", "Zone", "Woreda", "Kebele", "addId",
+                                     "conid","regid","zoneid","weId","keId" };
+            bool containFilterAddress=false;    
+            bool containGroupByAddress=false;
             string address="";
-            string addressGroupby="";
+            string addressGroupby="";                      
+             
+            if(!string.IsNullOrEmpty(filters)){
+                containFilterAddress = addressArray.Any(str => filters.Contains(str));
+            }
+            if(!string.IsNullOrEmpty(groupBySql)){
+              containGroupByAddress = addressArray.Any(str => groupBySql.Contains(str));
+            }
+            if(containFilterAddress && containGroupByAddress){
+                return("","",Guid.Empty);
+            }
+            if(containFilterAddress && !containGroupByAddress){
+                 if(!string.IsNullOrEmpty(filters)){
+                    string? matchedString = addressArray.FirstOrDefault(str => filters.Contains(str));
+                switch(matchedString){
+                    case "conid":
+                       addressGroupby="regid";
+                       break;
+                    case "regid":
+                       addressGroupby="zoneid";
+                       break;
+                    case "zoneid":
+                       addressGroupby="weid";
+                       break;
+                    case "weid":
+                       addressGroupby="keid";
+                       break;
+                    case "keid":
+                       addressGroupby="keid";
+                       break;
+                  }
+                 }
+
+                 return ("",addressGroupby,Guid.Empty);
+
+            }
+            var userAddress=  _addressLookupRepo.GetAll().Where(x=>x.Id==_userResolver.GetWorkingAddressId()).FirstOrDefault();
             if(userAddress!=null){
                 switch(userAddress.AdminLevel){
                     case 1:
@@ -456,10 +495,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
               var colums=GetReportColums(reportName).GetAwaiter().GetResult;
               var colums2=colums.Invoke().ToArray();
              if(colums2!=null&&colums2?.Count()>0){
-                DateTime TodaysDate=DateTime.Now.AddYears(-1);
                var _convertor = new CustomDateConverter();
-                 string TodaysDateStr = TodaysDate.ToString("yyyy/M/d H:mm:ss");
-                 if((bool)colums2?.Contains("EventDate")){
+                 string TodaysDateStr =_convertor.GetBudgetYear();// TodaysDate.ToString("yyyy/M/d H:mm:ss");
+                 if((bool)colums2?.Contains("EventDate") && (string.IsNullOrEmpty(filters)|| !filters.Contains("EventDate") )){
                     if(string.IsNullOrEmpty(filters)){
                       filters=$"EventDate > '{ TodaysDateStr }' ";
 
@@ -468,9 +506,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     }
                  }
 
-                    if(isAddressBased){
-                    var address=ReturnFilterAddress();
-                    if(!string.IsNullOrEmpty(address.Item1) && !string.IsNullOrEmpty(address.Item2)){
+                if(isAddressBased){
+                    var address=ReturnFilterAddress(filters, groupBySql);
                         if(!string.IsNullOrEmpty(address.Item1)){
 
                             if(string.IsNullOrEmpty(filters)){
@@ -481,6 +518,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             filters+=$"and {address.Item1} ='{ address.Item3}'";
                         }
                     }
+                    if(!string.IsNullOrEmpty(address.Item2)){
                         ColumsList=ColumsList+", "+address.Item2;
                         if(string.IsNullOrEmpty(groupBySql)){
                         groupBySql=$"GROUP BY {address.Item2} ";
@@ -489,12 +527,27 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         else{
                         groupBySql+=$", {address.Item2}";
                         }
-                    } 
+                    }
                  }
              }
             return (groupBySql,filters,ColumsList);
         }
+     
+     private string ReturnLanguageBasedColums(string reportName, string colums){
+        string lang=_userResolver.GetLocale();
+        lang=lang.ToLower()=="am"?"or":"am";
+        string[] stringArray ;
+        if(colums=="*"){
+            var colums2=GetReportColums(reportName).GetAwaiter().GetResult;
+            stringArray=colums2.Invoke().ToArray();
+        }else{
+            stringArray = colums.Split(',');
+        }
+        var filteredStrings = stringArray.Where(str => !str.ToLower().EndsWith(lang));
+        string resultString = string.Join(",", filteredStrings);
 
+         return resultString;
+        }
 
 
 

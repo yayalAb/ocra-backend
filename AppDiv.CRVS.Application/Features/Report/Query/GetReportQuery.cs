@@ -57,8 +57,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                             .CreateAsync(
                                  Report
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
-            var columnsLang= JsonConvert.DeserializeObject(reportStore.columnsLang); 
-            var Other= JsonConvert.DeserializeObject(reportStore.Other);              
+            var columnsLang=string.IsNullOrEmpty(reportStore.columnsLang)?"":JsonConvert.DeserializeObject(reportStore.columnsLang); 
+            var Other=string.IsNullOrEmpty(reportStore.Other)?"": JsonConvert.DeserializeObject(reportStore.Other);              
             return new{
                reportStore.ReportTitle, 
                reportStore.ReportName,

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Primitives;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Infrastructure.Services
@@ -198,11 +199,16 @@ namespace AppDiv.CRVS.Infrastructure.Services
 
         public string GetLocale()
         {
-            if (httpContext.HttpContext != null && httpContext.HttpContext.Request.Query.ContainsKey("locale"))
+            var httpContext = new HttpContextAccessor().HttpContext;
+            if (httpContext != null && httpContext.Request.Headers.ContainsKey("lang"))
             {
-                return httpContext.HttpContext.Request.Query["locale"].ToArray()[0];
+                httpContext.Request.Headers.TryGetValue("lang", out StringValues headerValue);
+                return headerValue.FirstOrDefault();
             }
-            return string.Empty;
+            else
+            {
+                return "or";
+            }
         }
     }
 }
