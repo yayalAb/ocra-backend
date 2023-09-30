@@ -10,6 +10,27 @@ left join Addresses as zone on zone.ParentAddressId = reg.id
 left join Addresses as we on we.ParentAddressId=zone.id
 left join Addresses as ke on ke.ParentAddressId=we.id;
 
+
+#Report by Registration Date Sum
+select 
+	address.*,
+    COUNT(DISTINCT address.`keId`) AS TotalKebeles,
+	ev.EventDate,
+    ev.Status,
+    count(ev.id) as Total
+from  Events as ev
+Left join PersonalInfos as per on per.id=ev.EventowenerId
+Left join view_address as address on address.addId = ev.EventRegisteredAddressId
+group by  address.`keId`, ev.Status, ev.`EventType`;
+
+#Registration by Zone
+SELECT
+	a.`Zone`,
+    e.`EventType`
+FROM `Events` AS e
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.zoneid, e.`EventType`;
+
 #report by Registration date
 select address.woreda,ev.EventDate,gen.ValueStr as gender,ev.Status,count(ev.id) as ecount
 from  Events as ev
@@ -19,6 +40,32 @@ Left join view_address as address on address.addId=ev.EventRegisteredAddressId
 where eventType="Birth"
 group by  address.weId, ev.Status,gen.id;
 
+#BirthAge
+SELECT
+	ar.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS yearRange,
+    COUNT(YEAR(ev.EventRegDate) - YEAR(ev.EventDate)) AS Count
+FROM Events AS ev
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.EventRegDate) - YEAR(ev.EventDate) 
+		between ren.Start and ren.End
+JOIN `Addresses` AS ad ON ad.`Id` = ev.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+JOIN PersonalInfos AS per ON per.id = ev.EventowenerId where (ev.EventType='birth')
+GROUP BY ren.id, `AreaTypeLookupId`;
+
+#birth age 2
+SELECT
+	a.*,
+	CONCAT(ren.Start, - ren.End) AS yearRange,
+    COUNT(YEAR(ev.EventRegDate) - YEAR(ev.EventDate)) AS Count
+FROM Events AS ev
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.EventRegDate) - YEAR(ev.EventDate) 
+		between ren.Start and ren.End
+JOIN view_address as a on a.addId = ev.`EventRegisteredAddressId`
+JOIN PersonalInfos AS per ON per.id = ev.EventowenerId where (ev.EventType='birth')
+GROUP BY ren.id, a.`addId`;
 
 #Birth17
 SELECT 
@@ -32,6 +79,21 @@ JOIN Lookups AS l ON l.Id = n.SkilledProfLookupId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 GROUP BY a.`addId`, n.`SkilledProfLookupId`
 
+#Birth Weight
+SELECT
+	sl.`ValueStr` AS Gender,
+	CONCAT(ren.Start, - ren.End) AS WeightRange,
+    COUNT(n.Id) AS Count
+FROM Events AS ev
+JOIN `BirthEvents` AS b ON b.EventId = ev.`Id`
+JOIN `BirthNotifications` AS n ON n.`BirthEventId` = b.`Id`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'weightRange' AND 
+    	n.`WeightAtBirth` BETWEEN ren.Start and ren.End
+JOIN PersonalInfos AS per ON per.id = ev.EventowenerId 
+JOIN `Lookups` AS sl ON sl.Id = per.`SexLookupId`
+GROUP BY ren.id, per.`SexLookupId`;
+
 #Birth Site of occur 1
 SELECT 
     ar.`ValueStr` AS AreaType,
@@ -40,7 +102,6 @@ SELECT
 FROM BirthEvents AS b
 JOIN Events as e ON e.Id = b.EventId
 JOIN Lookups AS l ON l.Id = b.FacilityTypeLookupId
-JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
 JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
 GROUP BY b.`FacilityTypeLookupId`, ad.`AreaTypeLookupId`;
@@ -55,6 +116,46 @@ JOIN Events as e ON e.Id = b.EventId
 JOIN Lookups AS l ON l.Id = b.FacilityLookupId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 GROUP BY a.`keId`, b.`FacilityLookupId`;
+
+#Birth20
+SELECT
+	al.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS WeightRange,
+    COUNT(n.Id) AS Count
+FROM Events AS ev
+JOIN `BirthEvents` AS b ON b.EventId = ev.`Id`
+JOIN `BirthNotifications` AS n ON n.`BirthEventId` = b.`Id`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'weightRange' AND 
+    	n.`WeightAtBirth` BETWEEN ren.Start and ren.End
+JOIN `Addresses` AS ea ON ea.`Id` = ev.`EventAddressId`
+JOIN `Lookups` AS al ON al.Id = ea.`AreaTypeLookupId`
+GROUP BY ren.id, ea.`AreaTypeLookupId`;
+
+#Birth1 1
+SELECT 
+    ar.`ValueStr` AS AreaType,
+    sl.ValueStr AS Gender,
+    COUNT(b.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = e.`EventOwenerId`
+JOIN Lookups AS sl ON sl.Id = p.`SexLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY p.`SexLookupId`, ad.`AreaTypeLookupId`;
+
+#Birth1 2
+SELECT 
+    a.*,
+    l.ValueStr AS Gender,
+    COUNT(b.Id) AS Total
+FROM BirthEvents AS b
+JOIN Events as e ON e.Id = b.EventId
+JOIN `PersonalInfos` AS p ON p.`Id` = e.`EventOwenerId`
+JOIN Lookups AS l ON l.Id = p.`SexLookupId`
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+GROUP BY a.`keId`, p.`SexLookupId`;
 
 #Crude rate
 SELECT 
@@ -105,6 +206,35 @@ JOIN Lookups AS l ON l.Id = n.`DeliveryTypeLookupId`
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 GROUP BY a.`addId`, n.`DeliveryTypeLookupId`;
 
+#Birth6 1
+SELECT
+	ar.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS YearRange,
+    COUNT(YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`)) AS Count
+FROM Events AS ev
+JOIN `BirthEvents` AS b ON b.`EventId` = ev.`Id`
+JOIN PersonalInfos AS per ON per.`Id` = b.`MotherId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN `Addresses` AS ad ON ad.`Id` = ev.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY ren.id, `AreaTypeLookupId`;
+
+#Birth6 2
+SELECT
+	a.*,
+	CONCAT(ren.Start, - ren.End) AS yearRange,
+    COUNT(YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`)) AS Count
+FROM Events AS ev
+JOIN `BirthEvents` AS b ON b.`EventId` = ev.`Id`
+JOIN PersonalInfos AS per ON per.id = b.`MotherId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN view_address as a on a.addId = ev.`EventRegisteredAddressId`
+GROUP BY ren.id, a.`addId`;
+
 #Birth7
 SELECT 
 	MONTHNAME(e.`EventDate`) AS BirthMonth, 
@@ -115,6 +245,24 @@ JOIN Events as e ON e.Id = b.EventId
 JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
 GROUP BY e.`EventDate`, e.`EventRegDate`;
+
+#Birth8
+SELECT
+	al.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS MotherAge,
+    ml.`ValueStr` AS MaritalStatus,
+    COUNT(per.`Id`) AS Count
+FROM Events AS ev
+JOIN `BirthEvents` AS b ON b.`EventId` = ev.`Id`
+JOIN PersonalInfos AS per ON per.`Id` = b.`MotherId`
+JOIN `Lookups` AS ml ON ml.Id = per.`MarriageStatusLookupId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN `Addresses` AS a ON a.Id = ev.`EventRegisteredAddressId`
+JOIN `Lookups` AS al ON al.Id = a.`AreaTypeLookupId`
+GROUP BY a.`AreaTypeLookupId`, ren.id, per.`MarriageStatusLookupId`;
+
 
 #Birth9 1
 SELECT 
@@ -157,6 +305,22 @@ JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 WHERE a.regid = "d17132e8-ee91-11ed-bffd-321f02af6a03"
 GROUP BY b.`FacilityLookupId`, n.`SkilledProfLookupId`;
 
+#Birth10
+SELECT
+	al.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS MotherAge,
+    ml.`ValueStr` AS MaritalStatus,
+    COUNT(per.`Id`) AS Count
+FROM Events AS ev
+JOIN `BirthEvents` AS b ON b.`EventId` = ev.`Id`
+JOIN PersonalInfos AS per ON per.`Id` = b.`MotherId`
+JOIN `Lookups` AS ml ON ml.Id = per.`EducationalStatusLookupId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN `Addresses` AS a ON a.Id = ev.`EventRegisteredAddressId`
+JOIN `Lookups` AS al ON al.Id = a.`AreaTypeLookupId`
+
 #Birth11
 SELECT
 	fl.ValueStr AS Facility,
@@ -196,14 +360,14 @@ GROUP BY a.zoneid, e.Status;
 
 #Birth13 2
 SELECT
-	a.woreda,
-    COUNT(ka.`Id`) AS ActiveKebeles,
+	a.`Zone`,
+    COUNT(DISTINCT ka.`Id`) AS ActiveKebeles,
     COUNT(e.`Id`) AS Total
 FROM `BirthEvents` AS b
 JOIN `Events` AS e ON e.Id = b.`EventId`
 JOIN view_address as a on a.addId = e.`EventRegisteredAddressId`
 RIGHT JOIN `Addresses` AS ka ON ka.`ParentAddressId` = a.`weId`
-GROUP BY a.`keId`;
+GROUP BY a.zoneid;
 
 #Birth14 1
 SELECT 
