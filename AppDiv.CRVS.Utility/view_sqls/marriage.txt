@@ -1,0 +1,95 @@
+#Type of  Marriage 
+SELECT 
+	a.*, 
+	ml.`ValueStr` AS MarriageType,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `Lookups` ml ON ml.`Id` = m.`MarriageTypeId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`, m.`MarriageTypeId`;
+
+#Region by registration status 
+SELECT
+	a.*,
+    e.`Status`,
+    COUNT(e.Id) AS Total
+FROM `Events` AS e
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE e.`EventType` = "Marriage"
+GROUP BY a.zoneid, e.Status;
+
+#Marriage1
+SELECT
+	a.*,
+    MONTHNAME(e.`EventDate`) AS Months,
+    COUNT(e.Id) AS Total
+FROM `Events` AS e
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE e.`EventType` = "Marriage"
+GROUP BY a.zoneid, e.Status;
+
+#Marriage1
+SELECT 
+	a.*, 
+	ml.`ValueStr` AS MarriageType,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `Lookups` ml ON ml.`Id` = m.`MarriageTypeId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`, m.`MarriageTypeId`;
+
+#Marriage7 1
+SELECT 
+	al.`ValueStr` AS AreaType,
+    ml.`ValueStr` AS MaritalStatus,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
+JOIN `Lookups` ml ON ml.`Id` = p.`MarriageStatusLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS al ON al.Id = ad.`AreaTypeLookupId`
+GROUP BY ad.`AreaTypeLookupId`, p.`MarriageStatusLookupId`;
+
+#Marriage7 2
+SELECT 
+	a.*,
+    ml.`ValueStr` AS MaritalStatus,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
+JOIN `Lookups` ml ON ml.`Id` = p.`MarriageStatusLookupId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`, p.`MarriageStatusLookupId`;
+
+#Bridem by age, Usual residence 1
+SELECT
+	ar.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS AgeRange,
+    COUNT(YEAR(e.`EventDate`) - YEAR(p.`BirthDate`)) AS Count
+FROM Events AS e
+JOIN `MarriageEvents` AS m ON m.`EventId` = e.`Id`
+JOIN PersonalInfos AS p ON p.`Id` = m.`BrideInfoId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(e.`EventDate`) - YEAR(p.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY ren.id, ad.`AreaTypeLookupId`;
+
+#Bridem by age, Usual residence 2
+SELECT
+	a.*,
+	CONCAT(ren.Start, - ren.End) AS yearRange,
+    COUNT(YEAR(e.`EventDate`) - YEAR(p.`BirthDate`)) AS Count
+FROM Events AS e
+JOIN `MarriageEvents` m ON m.`EventId` = e.`Id`
+JOIN PersonalInfos AS p ON p.id = m.`BrideInfoId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(e.`EventDate`) - YEAR(p.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN view_address as a on a.addId = e.`EventRegisteredAddressId`
+GROUP BY ren.id, a.`addId`;
