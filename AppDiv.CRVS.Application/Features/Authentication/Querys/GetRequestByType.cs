@@ -67,6 +67,12 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                     .ThenInclude(x => x.Event)
                     .ThenInclude(x => x.EventOwener);
             }
+            else if(request.RequestType == "authVer")
+            {
+                RequestList = RequestList
+                    .Include(x => x.Request.AuthenticationRequest.Certificate.Event.EventOwener)
+                    .Include(x => x.Request.VerficationRequest.Event.EventOwener);
+            }
             if (request.Status == "approved")
             {
                 RequestList = RequestList.Where(r => r.ApprovalStatus == true);
@@ -81,7 +87,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             }
                  
             
-             
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 RequestList = RequestList.Where(
@@ -93,7 +98,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                          EF.Functions.Like(u.CreatedAt.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.Request.NextStep.ToString()!, "%" + request.SearchString + "%"));
             }
-            var RequestListDto = RequestList.Where(x => x.Request.RequestType == request.RequestType && x.CivilRegOfficerId == _ResolverService.GetUserId())
+
+            var RequestListDto = RequestList.Where(x => (request.RequestType == "authVer" 
+                ? ( x.Request.RequestType == "change" || x.Request.RequestType == "Authentication") : x.Request.RequestType == request.RequestType)  && 
+                  (request.RequestType == "authVer" ? x.Request.CivilRegOfficerId == _ResolverService.GetUserPersonalId() : x.CivilRegOfficerId == _ResolverService.GetUserId()))
              .OrderByDescending(w => w.CreatedAt)
              .Select(t => new AuthenticationRequestListDTO
              {
@@ -101,21 +109,21 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OfficerId = Guid.Parse(t.CivilRegOfficerId),
                  RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
                  RequestType = t.Request.RequestType,
-                 EventId = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.EventId :
-                             request.RequestType == "change" ? t.Request.CorrectionRequest.EventId :
-                                request.RequestType == "verification" ? t.Request.VerficationRequest.EventId : null,
+                 EventId = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.EventId :
+                             t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.EventId :
+                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.EventId : null,
                  RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ?
                      t.Request.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
-                 EventType = (request.RequestType == "authentication")  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
-                             request.RequestType == "change" ? t.Request.CorrectionRequest.Event.EventType :
-                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.EventType : string.Empty,
-                 CertificateId = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest.Certificate.Event.CertificateId :
-                                 request.RequestType == "change" ? t.Request.CorrectionRequest.Event.CertificateId :
-                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
+                 EventType = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
+                             t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventType :
+                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventType : string.Empty,
+                 CertificateId = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.CertificateId :
+                                 t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.CertificateId :
+                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
                                 
-                 OwnerFullName = (request.RequestType == "authentication") ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
-                                    request.RequestType == "change" ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
-                                request.RequestType == "verification" ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
+                 OwnerFullName = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
+                                    t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
+                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
                  CurrentStep = t.Request.currentStep,
                  NextStep = t.Request.NextStep,
                  RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
