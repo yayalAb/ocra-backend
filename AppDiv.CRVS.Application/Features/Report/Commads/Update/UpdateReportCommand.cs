@@ -6,10 +6,12 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
@@ -24,7 +26,9 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
         public string[]? DefualtColumns { get; set; }
         public string? query { get; set; }
         public ReportColumsLngDto[] ColumnsLang { get; set; }
-
+        public   List<Guid>? UserGroups { get; set; }
+        public  bool? isAddressBased { get; set; }=false;
+        public JObject? Other { get; set; }
 
     }
 
@@ -48,6 +52,11 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
                 ReportTitle = request.ReportTitle,
                 Description = request.Description,
                 DefualtColumns = (request?.DefualtColumns == null || request?.DefualtColumns.Count() == 0) ? "" : string.Join(",", request?.DefualtColumns),
+                columnsLang=JsonSerializer.Serialize(request.ColumnsLang),
+                UserGroups=request.UserGroups,
+                isAddressBased=request.isAddressBased,
+                Other=request.Other.ToString()
+            
             };
             try
             {
@@ -65,7 +74,6 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
 
             var modifiedreportStore = _reportStoreRepository.GetAll().Where(x => x.Id == request.Id).FirstOrDefault();
             var reportStoreResponse = CustomMapper.Mapper.Map<ReportStore>(modifiedreportStore);
-
             return reportStoreResponse;
         }
     }
