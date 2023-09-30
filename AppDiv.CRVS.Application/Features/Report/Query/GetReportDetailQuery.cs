@@ -1,6 +1,7 @@
 using System.Text.Json;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
@@ -26,6 +27,9 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
         }
         public async Task<ReportDetailResponsDTo> Handle(GetReportDetailQuery request, CancellationToken cancellationToken)
         {
+            if(request.Id==null||request.Id==Guid.Empty){
+                throw new NotFoundException("Report Id must not be Empty");
+            }
             var Report = await _reportRepository.GetAsync(request.Id);
             var response=new ReportDetailResponsDTo{
                 ReportName=Report.ReportName,
@@ -33,7 +37,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                 Description=Report.Description,
                 DefualtColumns=Report.DefualtColumns,
                 Query=Report.Query,
-                ColumnsLang=JsonSerializer.Deserialize<List<ReportColumsLngDto>>(Report.columnsLang),
+                ColumnsLang=string.IsNullOrEmpty(Report.columnsLang)? null : JsonSerializer.Deserialize<List<ReportColumsLngDto>>(Report.columnsLang),
                 UserGroups=Report.UserGroups,
                 isAddressBased=Report.isAddressBased,
                 Other=string.IsNullOrEmpty(Report.Other)? null : JObject.Parse(Report.Other)
