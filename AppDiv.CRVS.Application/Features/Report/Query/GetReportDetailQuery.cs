@@ -31,6 +31,10 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                 throw new NotFoundException("Report Id must not be Empty");
             }
             var Report = await _reportRepository.GetAsync(request.Id);
+
+            if(Report==null){
+               throw new NotFoundException("Report with the given Id does't Found"); 
+            }
             var response=new ReportDetailResponsDTo{
                 ReportName=Report.ReportName,
                 ReportTitle=Report.ReportTitle,
@@ -41,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                 UserGroups=Report.UserGroups,
                 isAddressBased=Report.isAddressBased,
                 Other=string.IsNullOrEmpty(Report.Other)? null : JObject.Parse(Report.Other)
-            };
+             };
             return response;
         }
     }
