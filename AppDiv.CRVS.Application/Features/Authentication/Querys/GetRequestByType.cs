@@ -75,6 +75,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             {
                 RequestList = RequestList.Where(r => r.ApprovalStatus == false);
             }
+            else if (request.Status == "rejectedOnce")
+            {
+                RequestList = RequestList.Where(r => r.ApprovalStatus == false && r.CurrentStep == 0);
+            }
                  
             
              
