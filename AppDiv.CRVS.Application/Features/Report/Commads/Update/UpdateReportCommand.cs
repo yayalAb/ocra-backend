@@ -1,5 +1,6 @@
 
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
@@ -43,7 +44,13 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
         }
         public async Task<ReportStore> Handle(UpdateReportCommand request, CancellationToken cancellationToken)
         {
-            // var customerEntity = CustomerMapper.Mapper.Map<Customer>(request);
+            if(request.Id==null||request.Id==Guid.Empty){
+                throw new NotFoundException("Report Id must not be Empty");
+            }
+            var Report = await _reportStoreRepository.GetAsync(request.Id);
+            if(Report==null){
+                throw new NotFoundException("Report with the given Id does't Found"); 
+                }
 
             var reportStore = new ReportStore()
             {
@@ -52,10 +59,10 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
                 ReportTitle = request.ReportTitle,
                 Description = request.Description,
                 DefualtColumns = (request?.DefualtColumns == null || request?.DefualtColumns.Count() == 0) ? "" : string.Join(",", request?.DefualtColumns),
-                columnsLang=JsonSerializer.Serialize(request.ColumnsLang),
-                UserGroups=request.UserGroups,
-                isAddressBased=request.isAddressBased,
-                Other=request.Other.ToString()
+                columnsLang= JsonSerializer.Serialize(request?.ColumnsLang),
+                UserGroups=request?.UserGroups,
+                isAddressBased=request?.isAddressBased,
+                Other=request?.Other?.ToString()
             };
             try
             {
@@ -68,7 +75,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
             }
             catch (Exception exp)
             {
-                throw new ApplicationException(exp.Message);
+                throw new NotFoundException(exp.Message);
             }
 
             var modifiedreportStore = _reportStoreRepository.GetAll().Where(x => x.Id == request.Id).FirstOrDefault();

@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpDelete("Delete")]
-        public async Task<ActionResult> Delete([FromQuery] DeleteReportCommand query)
+        public async Task<ActionResult> Delete([FromBody] DeleteReportCommand query)
         {
             var result = await _mediator.Send(query);
             return Ok(result);

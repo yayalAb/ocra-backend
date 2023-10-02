@@ -101,26 +101,16 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
-
-        [HttpDelete("Delete/{id}")]
-        public async Task<BaseResponse> DeleteMyReport(Guid Id)
+       [HttpDelete("Delete")]
+        public async Task<IActionResult> DeleteMyReport([FromBody] DeleteMyReportCommand command)
         {
-            try
+            var res = await _mediator.Send(command);
+            if (res.Success)
             {
-                string result = string.Empty;
-                return await _mediator.Send(new DeleteMyReportCommand { Id = Id });
+                return Ok(res);
             }
-            catch (Exception exp)
-            {
-                var res = new BaseResponse
-                {
-                    Success = false,
-                    Message = exp.Message
-                };
-                return res;
-            }
+            return BadRequest(res);
         }
-
 
 
 

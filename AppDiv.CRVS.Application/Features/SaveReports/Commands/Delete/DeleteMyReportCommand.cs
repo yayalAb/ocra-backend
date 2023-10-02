@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands.Delete
     // Customer create command with BaseResponse response
     public class DeleteMyReportCommand : IRequest<BaseResponse>
     {
-        public Guid Id { get; set; }
+        public Guid[] Ids { get; set; }
 
     }
 
@@ -28,18 +28,20 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands.Delete
         {
             try
             {
-                if (request.Id == null || request.Id == Guid.Empty)
+                if (request.Ids.Length == 0 || request.Ids == null)
                 {
                     throw new NotFoundException("Report With the given Id Does not Found");
-
                 }
-                var report = await _myReportRepository.GetAsync(request.Id);
+                foreach(Guid Id in request.Ids){
+                                    var report = await _myReportRepository.GetAsync(Id);
                 if (report == null)
                 {
                     throw new NotFoundException("Report With the given Id Does not Found");
                 }
-                await _myReportRepository.DeleteAsync(request.Id);
+                await _myReportRepository.DeleteAsync(Id);
                 await _myReportRepository.SaveChangesAsync(cancellationToken);
+
+                }
             }
             catch (Exception exp)
             {
