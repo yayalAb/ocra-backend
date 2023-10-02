@@ -1,4 +1,5 @@
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
@@ -9,7 +10,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Delete
     // Customer create command with BaseResponse response
     public class DeleteReportCommand : IRequest<BaseResponse>
     {
-        public Guid Id { get; set; }
+        public Guid[] Ids { get; set; }
 
     }
 
@@ -28,18 +29,29 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Delete
         {
             try
             {
-                var SelectedReport = await _reportStoreRepository.GetAsync(request.Id);
+                if(request.Ids==null||request.Ids.Length==0){
+                        throw new NotFoundException("Report Id must not be Empty");
+                    }
+                foreach(Guid Id in request.Ids){
+                var SelectedReport = await _reportStoreRepository.GetAsync(Id);
+
                 if (SelectedReport != null)
                 {
                     await _reportRepository.DeleteReport(SelectedReport?.ReportName);
                 }
+                else{
+                    throw new NotFoundException("Report with the given Id does't Found"); 
+                }
 
-                await _reportStoreRepository.DeleteAsync(request.Id);
+                await _reportStoreRepository.DeleteAsync(Id);
                 await _reportStoreRepository.SaveChangesAsync(cancellationToken);
+
+                }    
+
             }
             catch (Exception exp)
             {
-                throw (new ApplicationException(exp.Message));
+                throw new NotFoundException(exp.Message);
             }
 
             var res = new BaseResponse
