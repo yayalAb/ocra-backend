@@ -180,8 +180,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
 
                 var eventDb = _couchContext.Client.GetDatabase<BaseEventCouch>(dbName);
-                var unsyncedEventDocs = eventDb;
-                // .Where(e => !(e.Synced) && !(e.Failed));
+                var unsyncedEventDocs = eventDb.Where(e => !(e.Synced) && !(e.Failed));
                 Console.WriteLine($"db name ------- {dbName}");
 
                 Console.WriteLine($"unsynced count -- {unsyncedEventDocs.ToList().Count()}");
@@ -198,10 +197,6 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                try
                                {
                                    Console.WriteLine($"doc --eventType-- ${eventDoc.EventType}");
-                                //    var officerPersonalInfoId = new Guid();
-                                //    string? uid = "";
-                                //    var officerUserId = new Guid();
-
                                    switch (eventDoc.EventType.ToLower())
                                    {
 
