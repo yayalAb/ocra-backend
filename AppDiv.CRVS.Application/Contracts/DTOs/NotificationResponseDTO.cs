@@ -13,7 +13,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? RequestId { get; set; }
         public Guid? GroupId { get; set; }
         public string? ReceiverId { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string? CreatedAt { get; set; }
         public string SenderUserName { get; set; }
         public string SenderFullName { get; set; }
         public string ApprovalType { get; set; }
