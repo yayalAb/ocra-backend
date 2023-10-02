@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using AutoMapper;
@@ -16,6 +17,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
     public record GetMarriageEventByIdQuery : IRequest<UpdateMarriageEventCommand>
     {
         public Guid Id { get; set; }
+        public Guid? TransactionId { get; set; }
     }
 
     public class GetMarriageEventByIdQueryHandler : IRequestHandler<GetMarriageEventByIdQuery, UpdateMarriageEventCommand>
@@ -23,13 +25,19 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
         private readonly IMarriageEventRepository _MarriageEventRepository;
         private readonly IDateAndAddressService _AddressService;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly IMediator _mediator;
         private readonly IMapper _mapper;
 
-        public GetMarriageEventByIdQueryHandler(IMarriageEventRepository MarriageEventRepository, IMapper mapper, IDateAndAddressService AddressService, IEventDocumentService eventDocumentService)
+        public GetMarriageEventByIdQueryHandler(IMarriageEventRepository MarriageEventRepository, 
+            IMapper mapper, 
+            IDateAndAddressService AddressService, 
+            IEventDocumentService eventDocumentService,
+            IMediator mediator)
         {
             _MarriageEventRepository = MarriageEventRepository;
             _AddressService = AddressService;
             _eventDocumentService = eventDocumentService;
+            this._mediator = mediator;
             _mapper = mapper;
         }
         public async Task<UpdateMarriageEventCommand> Handle(GetMarriageEventByIdQuery request, CancellationToken cancellationToken)
@@ -83,6 +91,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
                 Wife = _eventDocumentService.getSingleFingerprintUrls(MarriageEvent.BrideInfo?.Id.ToString()),
                 Witness = MarriageEvent.Witnesses.Select(w => _eventDocumentService.getSingleFingerprintUrls(w.WitnessPersonalInfo?.Id.ToString()).ToList())
             };
+            if (request.TransactionId is not null)
+            {
+                MarriageEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
+            }
 
             return MarriageEvent;
         }

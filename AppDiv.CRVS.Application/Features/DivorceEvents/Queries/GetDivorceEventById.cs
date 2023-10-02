@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
 using AppDiv.CRVS.Utility.Contracts;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
@@ -15,6 +16,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
     public record GetDivorceEventByIdQuery : IRequest<UpdateDivorceEventCommand>
     {
         public Guid Id { get; set; }
+        public Guid? TransactionId { get; set; }
     }
 
     public class GetDivorceEventByIdQueryHandler : IRequestHandler<GetDivorceEventByIdQuery, UpdateDivorceEventCommand>
@@ -24,13 +26,20 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
 
         private readonly IMapper _mapper;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly IMediator _mediator;
 
-        public GetDivorceEventByIdQueryHandler(IDivorceEventRepository DivorceEventRepository, IDateAndAddressService AddressService, IMapper mapper, IEventDocumentService eventDocumentService)
+        public GetDivorceEventByIdQueryHandler(
+            IDivorceEventRepository DivorceEventRepository, 
+            IDateAndAddressService AddressService, 
+            IMapper mapper, 
+            IEventDocumentService eventDocumentService,
+            IMediator mediator)
         {
             _DivorceEventRepository = DivorceEventRepository;
             _AddressService = AddressService;
             _mapper = mapper;
             _eventDocumentService = eventDocumentService;
+            this._mediator = mediator;
         }
         public async Task<UpdateDivorceEventCommand> Handle(GetDivorceEventByIdQuery request, CancellationToken cancellationToken)
         {
@@ -65,6 +74,10 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
                 Husband = _eventDocumentService.getSingleFingerprintUrls(DivorceEvent.Event.EventOwener?.Id.ToString()),
                 Wife = _eventDocumentService.getSingleFingerprintUrls(DivorceEvent.DivorcedWife?.Id.ToString())
             };
+            if (request.TransactionId is not null)
+            {
+                DivorceEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
+            }
 
             return DivorceEvent;
         }

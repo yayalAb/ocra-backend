@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public virtual CourtCaseDTO? CourtCase { get; set; }
         public virtual AdoptionEventDTO Event { get; set; }
         public AddressResponseDTOE? BeforeAdoptionAddressResponseDTO { get; set; }
-
+        public NotificationData? Comment { get; set; } = null;
 
 
     }
