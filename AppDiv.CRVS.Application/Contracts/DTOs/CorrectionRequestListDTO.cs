@@ -14,6 +14,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? EventType { get; set; }
         public string? RequestType { get; set; }
         public string? RequestDate { get; set; }
+        public string? RegiteredDate { get; set; }
+        public string? ResponsbleGroup { get; set; }
         public int? CurrentStatus { get; set; }
         public bool? CanEdit { get; set; }
 

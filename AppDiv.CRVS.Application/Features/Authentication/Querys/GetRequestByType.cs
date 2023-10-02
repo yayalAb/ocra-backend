@@ -44,6 +44,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         public async Task<PaginatedList<AuthenticationRequestListDTO>> Handle(GetRequestByType request, CancellationToken cancellationToken)
         {
             var RequestList = _transactionService.GetAll()
+                  .Include(x=>x.CivilRegOfficer)
+                  .ThenInclude(x=>x.UserGroups)
                  .AsQueryable();
             if (request.RequestType == "change")
             {
@@ -125,6 +127,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  CurrentStep = t.Request.currentStep,
                  NextStep = t.Request.NextStep,
                  RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
+                 ActionBy=t.CivilRegOfficer.UserName,
+                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault()
+
+
              });
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
