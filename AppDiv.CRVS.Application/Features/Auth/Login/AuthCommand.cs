@@ -101,7 +101,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 var res = await _identityService.ReGenerateOtp(response.userId, newOtp, newOtpExpiredDate);
                 if (!res.result.Succeeded)
                 {
-                    throw new AuthenticationException(string.Join(",", response.result.Errors));
+                    throw new AuthenticationException(string.Join(",", res.result.Errors));
                 }
                 //send otp by email    
                 var content = newOtp + "is your new otp code";

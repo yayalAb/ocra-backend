@@ -105,5 +105,10 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return Ok(await Mediator.Send(command));
         }
+         [HttpPost("resend-otp")]
+        public async Task<IActionResult> ResendOtp([FromBody] ResendOtpCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
     }
 }
