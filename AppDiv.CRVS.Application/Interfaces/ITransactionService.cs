@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task<Guid> CreateTransaction(TransactionRequestDTO transactionObj);
         IQueryable<Transaction> GetAllGrid();
         IQueryable<Transaction> GetAll();
+        Transaction GetTransaction(Guid? id);
 
     }
 }

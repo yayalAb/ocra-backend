@@ -67,12 +67,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                     .ThenInclude(x => x.Event)
                     .ThenInclude(x => x.EventOwener);
             }
-            else if(request.RequestType == "authVer")
-            {
-                RequestList = RequestList
-                    .Include(x => x.Request.AuthenticationRequest.Certificate.Event.EventOwener)
-                    .Include(x => x.Request.VerficationRequest.Event.EventOwener);
-            }
             if (request.Status == "approved")
             {
                 RequestList = RequestList.Where(r => r.ApprovalStatus == true);
@@ -84,6 +78,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             else if (request.Status == "rejectedOnce")
             {
                 RequestList = RequestList.Where(r => r.ApprovalStatus == false && r.CurrentStep == 0);
+            }
+            else if (request.Status == "inprogress")
+            {
+                RequestList = RequestList.Where(r => r.Request.currentStep == 0 && r.Request.IsRejected == false);
             }
                  
             
@@ -99,9 +97,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                          EF.Functions.Like(u.Request.NextStep.ToString()!, "%" + request.SearchString + "%"));
             }
 
-            var RequestListDto = RequestList.Where(x => (request.RequestType == "authVer" 
-                ? ( x.Request.RequestType == "verification" || x.Request.RequestType == "authentication") : x.Request.RequestType == request.RequestType)  && 
-                  (request.RequestType == "authVer" ? x.Request.CivilRegOfficerId == _ResolverService.GetUserPersonalId() : x.CivilRegOfficerId == _ResolverService.GetUserId()))
+            var RequestListDto = RequestList.Where(x =>  x.Request.RequestType == request.RequestType && 
+                  (request.IsYourRequestList ? x.Request.CivilRegOfficerId == _ResolverService.GetUserPersonalId() : x.CivilRegOfficerId == _ResolverService.GetUserId()))
              .OrderByDescending(w => w.CreatedAt)
              .Select(t => new AuthenticationRequestListDTO
              {

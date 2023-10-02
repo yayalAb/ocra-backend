@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Contracts.DTOs;
+﻿using System.Threading;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Contracts.DTOs.CertificatesContent;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Create;
@@ -29,6 +30,8 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         public JObject Content { get; set; }
         public Guid? TemplateId { get; set; }
         public bool? IsAuthenticated { get; set; } = false;
+        public Guid? NestedEventId { get; set; }
+        public string EventType { get; set; }
         public NotificationData? NotificationData { get; set; }
 
     }
@@ -39,12 +42,9 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
     {
         public Guid Id { get; set; }
         public Guid? RequestId { get; set; }
+        public Guid? TransactionId { get; set; }
         public string? CertificateSerialNumber { get; set; }
         public bool IsPrint { get; set; } = false;
-
-
-
-
     }
 
     public class GenerateArchiveHandler : IRequestHandler<GenerateArchiveQuery, object>
@@ -57,6 +57,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
         private readonly IBirthEventRepository _IBirthEventRepository;
         private readonly ICertificateTemplateRepository _ICertificateTemplateRepository;
         private readonly IArchiveGenerator _archiveGenerator;
+        private readonly ITransactionService _transactionService;
 
 
         public GenerateArchiveHandler(
@@ -67,7 +68,8 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
                                         IEventRepository eventRepository,
                                         IUserRepository userRepository,
                                         IRequestRepostory requestRepostory,
-                                        IUserResolverService userResolverService)
+                                        IUserResolverService userResolverService,
+                                        ITransactionService transactionService)
         {
             _certificateRepository = CertificateRepository;
             _eventRepository = eventRepository;
@@ -77,6 +79,7 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             _userRepository = userRepository;
             _requestRepostory = requestRepostory;
             _userResolverService = userResolverService;
+            _transactionService = transactionService;
         }
         public async Task<object> Handle(GenerateArchiveQuery request, CancellationToken cancellationToken)
         {
@@ -126,29 +129,54 @@ namespace AppDiv.CRVS.Application.Features.Archives.Query
             response.Content = certificate;
             response.TemplateId = certificateTemplateId?.Id;
             response.IsAuthenticated = Authenticated;
+            response.EventType = selectedEvent.EventType;
+            response.NestedEventId = content.BirthEvent != null ? content.BirthEvent!.Id :
+                                     content.DeathEventNavigation != null ? content.DeathEventNavigation!.Id :
+                                     content.MarriageEvent != null ? content.MarriageEvent.Id :
+                                     content.DivorceEvent != null ? content.DivorceEvent.Id :
+                                     content.AdoptionEvent.Id != null ? content.AdoptionEvent.Id : null;
+
             
             if (request.RequestId != null)
             {
-                var notification = await _requestRepostory.GetAll()
+                if (request.TransactionId != null)
+                {
+                    var transaction = _transactionService.GetTransaction(request.TransactionId);
+
+                    response.NotificationData = new NotificationData
+                    {
+                        Message = transaction.Remark,
+                        ApprovalType = transaction.Request.RequestType,
+                        SenderId = transaction.Request.CivilRegOfficer.ApplicationUser.Id,
+                        SenderUserName = transaction.Request.CivilRegOfficer.ApplicationUser.UserName,
+                        SenderFullName = transaction.Request.CivilRegOfficer.FullNameLang,
+                        Date = (new CustomDateConverter(transaction.CreatedAt)).ethiopianDate
+                    };
+                }
+                else
+                {
+                    var notification = await _requestRepostory.GetAll()
                                     .Include(r => r.Notification)
                                     .ThenInclude(n => n.Sender)
                                     .ThenInclude(s => s.PersonalInfo)
                                     .Where(r => r.Id == request.RequestId)
                                     .Select(r => r.Notification).FirstOrDefaultAsync(cancellationToken);
-                if (notification != null)
-                {
-                    response.NotificationData = new NotificationData
+                
+                    if (notification != null)
                     {
+                        response.NotificationData = new NotificationData
+                        {
 
-                        Message = notification.MessageStr,
-                        ApprovalType = notification.ApprovalType,
-                        SenderId = notification.SenderId,
-                        SenderUserName = notification.Sender.UserName,
-                        SenderFullName = notification.Sender.PersonalInfo.FirstNameLang + " " +
-                                                 notification.Sender.PersonalInfo.MiddleNameLang + " " +
-                                                 notification.Sender.PersonalInfo.LastNameLang,
-                        Date = (new CustomDateConverter(notification.CreatedAt)).ethiopianDate
-                    };
+                            Message = notification.MessageStr,
+                            ApprovalType = notification.ApprovalType,
+                            SenderId = notification.SenderId,
+                            SenderUserName = notification.Sender.UserName,
+                            SenderFullName = notification.Sender.PersonalInfo.FirstNameLang + " " +
+                                                    notification.Sender.PersonalInfo.MiddleNameLang + " " +
+                                                    notification.Sender.PersonalInfo.LastNameLang,
+                            Date = (new CustomDateConverter(notification.CreatedAt)).ethiopianDate
+                        };
+                    }
                 }
             }
             return response;
