@@ -11,6 +11,7 @@ using AppDiv.CRVS.Infrastructure.Hub;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using Newtonsoft.Json.Linq;
+using AppDiv.CRVS.Utility.Services;
 // using AppDiv.CRVS.Utility.Hub;
 
 namespace AppDiv.CRVS.Infrastructure.Service
@@ -70,7 +71,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         RequestId = n.RequestId,
                         GroupId = n.GroupId,
                         ReceiverId = n.ReceiverId,
-                        CreatedAt = n.CreatedAt,
+                        CreatedAt = new CustomDateConverter( n.CreatedAt).ethiopianDate,
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang + " " +
                                          n.Sender.PersonalInfo.MiddleNameLang + " " +
                                          n.Sender.PersonalInfo.LastNameLang,
@@ -195,7 +196,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         NotificationObjId = n.NotificationObjId,
                         RequestId = n.RequestId,
                         GroupId = n.GroupId,
-                        CreatedAt = n.CreatedAt,
+                        CreatedAt =  new CustomDateConverter( n.CreatedAt).ethiopianDate,
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang + " " +
                                          n.Sender.PersonalInfo.MiddleNameLang + " " +
                                          n.Sender.PersonalInfo.LastNameLang,

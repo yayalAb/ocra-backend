@@ -319,3 +319,59 @@ JOIN Lookups as edu on edu.Id = per.MarriageStatusLookupId
 JOIN Lookups as gend on gend.Id = per.SexLookupId
 where gend.ValueStr LIKE '%Female%'
 GROUP BY ren.id , a.addId,MarriageStatusLookupId;
+
+-- #Death6 duplicate with sheet7
+-- 
+-- #Death7 registration status by reg address region
+SELECT
+   ifnull(Region,Country) as address,
+   ev.Status as RegistrationStatus,
+    ev.EventRegDate,
+    COUNT(d.Id) AS Count
+FROM
+    DeathEvents AS d
+JOIN Events as ev ON ev.Id = d.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+GROUP BY  ifnull(regid,conid), ev.Status;
+-- Basi
+-- 
+-- 
+-- Death duplicate with death4
+-- 
+-- f6.2 ????
+
+-- #report2 death registration month by gender
+SELECT
+	a.*,
+    substring(EventRegDateEt,4,2) as EventRegisteredMonth,
+    l.ValueStr as Gender,
+    right(EventRegDateEt,4) as EventRegYear,
+    COUNT(d.Id) AS Count
+FROM
+    DeathEvents AS d
+JOIN Events as ev ON ev.Id = d.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+JOIN PersonalInfos as per on per.Id = ev.EventOwenerId
+JOIN Lookups as l on l.Id = per.SexLookupId
+GROUP BY  l.Id, EventRegisteredMonth,EventRegYear, a.addid
+order by EventRegYear ,EventRegisteredMonth; 
+
+-- #report2 death registration month by age range
+SELECT CONCAT(ren.Start, - ren.End) AS yearRange,
+    a.*,
+    substring(EventRegDateEt,4,2) as EventRegisteredMonth,
+    right(EventRegDateEt,4) as EventRegYear,
+    ren.Start, ren.End ,
+    YEAR(ev.EventDate)- YEAR(per.BirthDate) AS Age,
+    COUNT(d.Id) AS Count
+FROM
+    DeathEvents AS d
+JOIN Events as ev ON ev.Id = d.EventId
+LEFT JOIN
+    PersonalInfos AS per ON per.id = ev.EventowenerId
+LEFT JOIN
+    SystemRanges AS ren ON ren.Key = 'ageRange' and YEAR(ev.EventDate)- YEAR(per.BirthDate) between ren.Start and ren.End
+JOIN view_address as a on a.addId = per.ResidentAddressId
+GROUP BY ren.id , a.addId,EventRegisteredMonth,EventRegYear
+order by EventRegYear ,EventRegisteredMonth;
+
