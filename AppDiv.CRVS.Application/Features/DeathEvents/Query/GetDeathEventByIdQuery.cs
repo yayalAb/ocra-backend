@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using MediatR;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
 
 namespace AppDiv.CRVS.Application.Features.Customers.Query
 {
@@ -10,10 +11,12 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     public class GetDeathEventByIdQuery : IRequest<DeathEventDTO>
     {
         public Guid Id { get; private set; }
+        public Guid? TransactionId { get; private set; }
 
-        public GetDeathEventByIdQuery(Guid Id)
+        public GetDeathEventByIdQuery(Guid Id, Guid? transactionId)
         {
             this.Id = Id;
+            this.TransactionId = transactionId;
         }
 
     }
@@ -23,12 +26,17 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         private readonly IDeathEventRepository _deathEventRepository;
         private readonly IDateAndAddressService _AddressService;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly IMediator _mediator;
 
-        public GetDeathEventByIdHandler(IDeathEventRepository deathEventRepository, IDateAndAddressService AddressService, IEventDocumentService eventDocumentService)
+        public GetDeathEventByIdHandler(IDeathEventRepository deathEventRepository, 
+            IDateAndAddressService AddressService, 
+            IEventDocumentService eventDocumentService,
+            IMediator mediator)
         {
             _deathEventRepository = deathEventRepository;
             _AddressService = AddressService;
             _eventDocumentService = eventDocumentService;
+            this._mediator = mediator;
         }
         public async Task<DeathEventDTO> Handle(GetDeathEventByIdQuery request, CancellationToken cancellationToken)
         {
@@ -54,6 +62,10 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 Deceased = _eventDocumentService.getSingleFingerprintUrls(DeathEvent.Event.EventOwener?.Id.ToString()),
                 Registrar = _eventDocumentService.getSingleFingerprintUrls(DeathEvent.Event.EventRegistrar?.RegistrarInfo?.Id.ToString())
             };
+            if (request.TransactionId is not null)
+            {
+                DeathEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
+            }
             return DeathEvent!;
         }
     }

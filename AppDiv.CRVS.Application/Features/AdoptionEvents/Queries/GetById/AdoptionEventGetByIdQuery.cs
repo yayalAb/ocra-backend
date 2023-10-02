@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
+using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Utility.Contracts;
 using AutoMapper;
@@ -18,6 +19,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
     public record AdoptionEventGetByIdQuery : IRequest<AdoptionDTO>
     {
         public Guid Id { get; set; }
+        public Guid? TransactionId { get; set; }
     }
 
     public class AdoptionEventGetByIdQueryHandler : IRequestHandler<AdoptionEventGetByIdQuery, AdoptionDTO>
@@ -26,13 +28,19 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
         private readonly IDateAndAddressService _AddressService;
         private readonly IMapper _mapper;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly IMediator _mediator;
 
-        public AdoptionEventGetByIdQueryHandler(IDateAndAddressService AddressService, IAdoptionEventRepository adoptionEventRepository, IMapper mapper, IEventDocumentService EventDocumentService)
+        public AdoptionEventGetByIdQueryHandler(IDateAndAddressService AddressService, 
+            IAdoptionEventRepository adoptionEventRepository, 
+            IMapper mapper, 
+            IEventDocumentService EventDocumentService,
+            IMediator mediator)
         {
             _adoptionEventRepository = adoptionEventRepository;
             _AddressService = AddressService;
             _mapper = mapper;
             _eventDocumentService = EventDocumentService;
+            this._mediator = mediator;
         }
         public async Task<AdoptionDTO> Handle(AdoptionEventGetByIdQuery request, CancellationToken cancellationToken)
         {
@@ -69,6 +77,11 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
                 Father = _eventDocumentService.getSingleFingerprintUrls(adoptionEvent.AdoptiveFather?.Id.ToString()),
                 Child = _eventDocumentService.getSingleFingerprintUrls(adoptionEvent.Event.EventOwener?.Id.ToString())
             };
+            if (request.TransactionId is not null)
+            {
+                adoptionEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
+            }
+
             return adoptionEvent;
         }
     }

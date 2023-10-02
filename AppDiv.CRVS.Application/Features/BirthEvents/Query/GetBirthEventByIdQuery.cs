@@ -3,6 +3,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
+using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using MediatR;
@@ -18,10 +19,11 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     public class GetBirthEventByIdQuery : IRequest<BirthEventDTO>
     {
         public Guid Id { get; private set; }
-
-        public GetBirthEventByIdQuery(Guid Id)
+        public Guid? TransactionId { get; set; }
+        public GetBirthEventByIdQuery(Guid Id, Guid? transactionId)
         {
             this.Id = Id;
+            TransactionId = transactionId;
         }
 
     }
@@ -31,12 +33,17 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         private readonly IBirthEventRepository _BirthEventRepository;
         private readonly IDateAndAddressService _AddressService;
         private readonly IEventDocumentService _eventDocumentService;
+        private readonly IMediator _mediator;
 
-        public GetBirthEventByIdHandler(IBirthEventRepository BirthEventRepository, IDateAndAddressService AddressService, IEventDocumentService eventDocumentService)
+        public GetBirthEventByIdHandler(IBirthEventRepository BirthEventRepository, 
+            IDateAndAddressService AddressService, 
+            IEventDocumentService eventDocumentService,
+            IMediator mediator)
         {
             _BirthEventRepository = BirthEventRepository;
             _AddressService = AddressService;
             _eventDocumentService = eventDocumentService;
+            _mediator = mediator;
         }
         public async Task<BirthEventDTO> Handle(GetBirthEventByIdQuery request, CancellationToken cancellationToken)
         {
@@ -76,6 +83,10 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 Child = _eventDocumentService.getSingleFingerprintUrls(BirthEvent.Event.EventOwener?.Id.ToString()),
                 Registrar = _eventDocumentService.getSingleFingerprintUrls(BirthEvent.Event.EventRegistrar?.RegistrarInfo?.Id.ToString())
             };
+            if (request.TransactionId is not null)
+            {
+                BirthEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
+            }
             return BirthEvent!;
         }
     }

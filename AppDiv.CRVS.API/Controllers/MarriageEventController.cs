@@ -51,11 +51,11 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(res);
             }
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> updateMarriageEvent(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> updateMarriageEvent([FromRoute] Guid id, [FromRoute] Guid? transactionId)
         {
 
-            return Ok(await Mediator.Send(new GetMarriageEventByIdQuery { Id = id }));
+            return Ok(await Mediator.Send(new GetMarriageEventByIdQuery { Id = id, TransactionId = transactionId }));
         }
     }
 }

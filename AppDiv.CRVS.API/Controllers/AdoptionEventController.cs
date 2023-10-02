@@ -61,11 +61,11 @@ namespace AppDiv.CRVS.API.Controllers
             }
 
         }
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetAdoptionEventById(Guid id)
+        [HttpGet]
+        public async Task<IActionResult> GetAdoptionEventById([FromRoute] Guid id, [FromRoute] Guid? transactionId)
         {
 
-            return Ok(await _mediator.Send(new AdoptionEventGetByIdQuery { Id = id }));
+            return Ok(await _mediator.Send(new AdoptionEventGetByIdQuery { Id = id, TransactionId = transactionId }));
         }
 
     }

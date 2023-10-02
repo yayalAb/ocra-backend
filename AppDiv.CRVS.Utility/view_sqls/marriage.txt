@@ -93,3 +93,14 @@ JOIN SystemRanges AS ren
 		between ren.Start and ren.End
 JOIN view_address as a on a.addId = e.`EventRegisteredAddressId`
 GROUP BY ren.id, a.`addId`;
+
+# Marriage11
+SELECT
+	a.*,
+    e.`Status`,
+    COUNT(e.Id) AS Total
+FROM `Events` AS e
+JOIN view_address as a on a.addId = e.EventRegisteredAddressId
+WHERE e.`EventType` = "Marriage"
+GROUP BY a.zoneid, e.Status;
+

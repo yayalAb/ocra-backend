@@ -58,11 +58,11 @@ namespace AppDiv.CRVS.API.Controllers
             return await Mediator.Send(query);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<DeathEventDTO> Get(Guid id)
+        public async Task<DeathEventDTO> Get([FromRoute] Guid id, [FromRoute] Guid? transactionId)
         {
-            return await Mediator.Send(new GetDeathEventByIdQuery(id));
+            return await Mediator.Send(new GetDeathEventByIdQuery(id, transactionId));
         }
 
 

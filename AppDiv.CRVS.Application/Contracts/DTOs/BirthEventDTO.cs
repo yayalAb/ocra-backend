@@ -25,5 +25,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         // public virtual AddressDTO BirthPlace { get; set; }
         public virtual EventDTO Event { get; set; }
         public virtual BirthNotificationDTO? BirthNotification { get; set; }
+        public NotificationData? Comment { get; set; } = null;
     }
 }
