@@ -29,6 +29,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public bool? IsCertified { get; set; }
         public bool? HasPendingDocumentApproval { get; set; }
         public bool? IsReprint { get; set; }
+        public string ? ActionBy { get; set; }
+        public string ? UserGroups { get; set; }
         
 
     }

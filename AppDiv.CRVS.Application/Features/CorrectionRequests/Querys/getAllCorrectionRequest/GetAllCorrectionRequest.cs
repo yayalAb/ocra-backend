@@ -59,6 +59,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
                 CertificateId = x.Event.CertificateId!,
                 RequestType = x.Request.RequestType,
                 EventType = x.Event.EventType,
+                RegiteredDate=x.Event._EventRegDateEt,
+                ResponsbleGroup="",
                 RequestDate = new CustomDateConverter(x.CreatedAt).ethiopianDate,
                 CurrentStatus = x.Request.currentStep+1,
                 CanEdit = x.Request.currentStep == 0,

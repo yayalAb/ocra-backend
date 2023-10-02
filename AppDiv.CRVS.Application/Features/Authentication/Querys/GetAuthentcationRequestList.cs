@@ -64,6 +64,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .ThenInclude(x => x.EventOwener)
                  .Include(x => x.CorrectionRequest)
                  .ThenInclude(x => x.Event.EventOwener)
+                 .Include(x=>x.VerficationRequest)
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
@@ -133,6 +134,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                                 w.CorrectionRequest.Event.EventOwener.FullNameLang,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
+                 EventRegDate=!string.IsNullOrEmpty(w.CorrectionRequest.Event.EventRegDateEt)? w.CorrectionRequest.Event.EventRegDateEt :
+                 !string.IsNullOrEmpty(w.AuthenticationRequest.Certificate.Event.EventRegDateEt)?w.AuthenticationRequest.Certificate.Event.EventRegDateEt:
+                  !string.IsNullOrEmpty(w.VerficationRequest.Event.EventRegDateEt)?w.VerficationRequest.Event.EventRegDateEt:"",
                  RequestDate =new CustomDateConverter(w.CreatedAt).ethiopianDate,
                  CanEdit = ((w.currentStep == 0) && (w.CivilRegOfficerId == userGroup.PersonalInfoId)),
                  CanApprove = userGroup.UserGroups.Select(x => x.Id)
