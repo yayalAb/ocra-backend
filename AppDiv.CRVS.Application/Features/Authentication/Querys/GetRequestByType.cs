@@ -100,7 +100,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             }
 
             var RequestListDto = RequestList.Where(x => (request.RequestType == "authVer" 
-                ? ( x.Request.RequestType == "change" || x.Request.RequestType == "Authentication") : x.Request.RequestType == request.RequestType)  && 
+                ? ( x.Request.RequestType == "verification" || x.Request.RequestType == "authentication") : x.Request.RequestType == request.RequestType)  && 
                   (request.RequestType == "authVer" ? x.Request.CivilRegOfficerId == _ResolverService.GetUserPersonalId() : x.CivilRegOfficerId == _ResolverService.GetUserId()))
              .OrderByDescending(w => w.CreatedAt)
              .Select(t => new AuthenticationRequestListDTO
