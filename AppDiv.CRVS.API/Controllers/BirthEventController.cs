@@ -50,7 +50,7 @@ namespace AppDiv.CRVS.API.Controllers
         // Get birth event by id
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<BirthEventDTO> Get([FromRoute] Guid id, [FromRoute]Guid? transactionId = null)
+        public async Task<BirthEventDTO> Get([FromRoute] Guid id, [FromQuery]Guid? transactionId = null)
         {
             return await Mediator.Send(new GetBirthEventByIdQuery(id, transactionId));
         }

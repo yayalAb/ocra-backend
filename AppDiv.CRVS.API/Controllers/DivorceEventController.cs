@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpGet]
-        public async Task<IActionResult> updateDivorceEvent([FromRoute]Guid id, [FromRoute] Guid? transactionId)
+        public async Task<IActionResult> updateDivorceEvent([FromRoute]Guid id, [FromQuery] Guid? transactionId)
         {
 
             return Ok(await Mediator.Send(new GetDivorceEventByIdQuery { Id = id, TransactionId = transactionId }));
