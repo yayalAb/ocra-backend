@@ -104,3 +104,30 @@ JOIN view_address as a on a.addId = e.EventRegisteredAddressId
 WHERE e.`EventType` = "Marriage"
 GROUP BY a.zoneid, e.Status;
 
+
+#groom by age & Usual residence 1
+SELECT
+	ar.`ValueStr` AS AreaType,
+	CONCAT(ren.Start, - ren.End) AS AgeRange,
+    COUNT(YEAR(e.`EventDate`) - YEAR(p.`BirthDate`)) AS Count
+FROM Events AS e
+JOIN PersonalInfos AS p ON p.`Id` = e.`EventOwenerId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(e.`EventDate`) - YEAR(p.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY ren.id, ad.`AreaTypeLookupId`;
+
+#groom by age & Usual residence 2
+SELECT
+	a.*,
+	CONCAT(ren.Start, - ren.End) AS yearRange,
+    COUNT(YEAR(e.`EventDate`) - YEAR(p.`BirthDate`)) AS Count
+FROM Events AS e
+JOIN PersonalInfos AS p ON p.id = e.`EventOwenerId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(e.`EventDate`) - YEAR(p.`BirthDate`) 
+		between ren.Start and ren.End
+JOIN view_address as a on a.addId = e.`EventRegisteredAddressId`
+GROUP BY ren.id, a.`addId`;

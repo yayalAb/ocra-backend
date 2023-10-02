@@ -102,7 +102,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              .OrderByDescending(w => w.CreatedAt)
              .Select(t => new AuthenticationRequestListDTO
              {
-                 Id = t.Id,
+                 Id = t.Request.Id,
+                 TransactionId = t.Id,
                  OfficerId = Guid.Parse(t.CivilRegOfficerId),
                  RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
                  RequestType = t.Request.RequestType,

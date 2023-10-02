@@ -9,6 +9,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class AuthenticationRequestListDTO
     {
         public Guid Id { get; set; }
+        public Guid? TransactionId { get; set; }
         public string? RequestedBy { get; set; }
         public string? RequestType { get; set; }
         public string EventType { get; set; }
