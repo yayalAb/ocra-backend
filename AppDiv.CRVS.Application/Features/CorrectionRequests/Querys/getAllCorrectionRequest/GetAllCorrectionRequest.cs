@@ -64,11 +64,11 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
                 var converter=new CustomDateConverter();
                 DateTime startDate=converter.EthiopicToGregorian(request.StartDate);
                 DateTime endDate=converter.EthiopicToGregorian(request.EndDate);
-                CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt<=startDate &&x.CreatedAt>= endDate );
+                CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt>=startDate &&x.CreatedAt<= endDate );
             }
             else{
               DateTime lastMonth=DateTime.Now.AddDays(-30);
-              CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt<=lastMonth);  
+              CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt >= lastMonth);  
             }
 
             if (!string.IsNullOrEmpty(request.SearchString))

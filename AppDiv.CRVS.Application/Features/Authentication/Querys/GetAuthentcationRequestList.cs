@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         
 
     }
+    
     public class GetAuthentcationRequestListHandler : IRequestHandler<GetAuthentcationRequestList, object>
     {
         private readonly IAuthenticationRepository _AuthenticationRepository;
