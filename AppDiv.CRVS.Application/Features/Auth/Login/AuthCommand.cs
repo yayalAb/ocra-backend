@@ -21,8 +21,13 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
 {
     public class AuthCommand : IRequest<AuthResponseDTO>
     {
-        public string UserName { get; set; }
-        public string Password { get; set; }
+        public string? UserName { get; set; }
+        public string? Password { get; set; }
+        public bool SendOTP { get; set; }= false;
+        public bool FromVerifyOtpCmd { get; set; } = false;
+        public string? UserId { get; set; }
+        public IList<string>? Roles { get; set; }
+
     }
 
     public class AuthCommandHandler : IRequestHandler<AuthCommand, AuthResponseDTO>
@@ -39,7 +44,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
         private readonly IHttpContextAccessor _httpContext;
         private readonly SMTPServerConfiguration _config;
         private readonly IReportStoreRepostory _reportRepository;
-              private readonly IMyReportRepository _myReportRepository;
+        private readonly IMyReportRepository _myReportRepository;
 
         public AuthCommandHandler(IHttpContextAccessor httpContext,
                                 ILoginHistoryRepository loginHistoryRepository,
@@ -66,60 +71,78 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             _loginHistoryRepository = loginHistoryRepository;
             _httpContext = httpContext;
             _config = config.Value;
-            _reportRepository=reportRepository;
-            _myReportRepository=myReportRepository;
+            _reportRepository = reportRepository;
+            _myReportRepository = myReportRepository;
         }
 
         public async Task<AuthResponseDTO> Handle(AuthCommand request, CancellationToken cancellationToken)
         {
+            string? userId = "";
+            IList<string>? roles = new List<string>();
 
-            var response = await _identityService.AuthenticateUser(request.UserName, request.Password);
-            //if locked or unauthenticated or diactivated
-            if (!response.result.Succeeded)
+            if (!request.FromVerifyOtpCmd)
             {
-                throw new AuthenticationException(string.Join(",", response.result.Errors));
-            }
-            if (response.status == AuthStatus.FirstTimeLogin || response.status == AuthStatus.OtpUnverified)
-            {
-
-                return new AuthResponseDTO
+                if (string.IsNullOrEmpty(request.UserName) || string.IsNullOrEmpty(request.Password))
                 {
-                    UserId = response.userId,
-                    Name = request.UserName,
-                    isFirstTime = response.status == AuthStatus.FirstTimeLogin,
-                    isOtpUnverified = response.status == AuthStatus.OtpUnverified,
-                };
-
-            }
-            //\\\\\\\\\\\
-
-            // otp expired , generate new otp 
-            if (response.status == AuthStatus.OtpExpired)
-            {
-                var newOtp = HelperService.GeneratePassword();
-                var newOtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
-                var res = await _identityService.ReGenerateOtp(response.userId, newOtp, newOtpExpiredDate);
-                if (!res.result.Succeeded)
-                {
-                    throw new AuthenticationException(string.Join(",", res.result.Errors));
+                    throw new BadRequestException("invalid username or password");
                 }
-                //send otp by email    
-                var content = newOtp + "is your new otp code";
-                var subject = "OCRVS";
-                await _mailService.SendAsync(body: content, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: res.email, cancellationToken);
 
-                //send otp by phone 
-                await _smsService.SendSMS(res.phone, subject + "\n" + content);
-                return new AuthResponseDTO
+                var response = await _identityService.AuthenticateUser(request.UserName, request.Password);
+                //if locked or unauthenticated or diactivated
+                if (!response.result.Succeeded)
                 {
-                    UserId = response.userId,
-                    Name = request.UserName,
-                    isOtpExpired = true
-                };
+                    throw new AuthenticationException(string.Join(",", response.result.Errors));
+                }
+                userId = response.userId;
+                roles = response.roles;
+                if (response.status == AuthStatus.FirstTimeLogin || response.status == AuthStatus.OtpUnverified)
+                {
+
+                    return new AuthResponseDTO
+                    {
+                        UserId = response.userId,
+                        Name = request.UserName,
+                        isFirstTime = response.status == AuthStatus.FirstTimeLogin,
+                        isOtpUnverified = response.status == AuthStatus.OtpUnverified,
+                    };
+
+                }
+                //\\\\\\\\\\\
+
+                // otp expired , generate new otp 
+                if (response.status == AuthStatus.OtpExpired || request.SendOTP)
+                {
+                    var newOtp = HelperService.GeneratePassword();
+                    var newOtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
+                    var res = await _identityService.ReGenerateOtp(response.userId, newOtp, newOtpExpiredDate);
+                    if (!res.result.Succeeded)
+                    {
+                        throw new AuthenticationException(string.Join(",", res.result.Errors));
+                    }
+                    //send otp by email    
+                    var content = newOtp + "is your new otp code";
+                    var subject = "OCRVS";
+                    await _mailService.SendAsync(body: content, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: res.email, cancellationToken);
+
+                    //send otp by phone 
+                    await _smsService.SendSMS(res.phone, subject + "\n" + content);
+                    return new AuthResponseDTO
+                    {
+                        UserId = response.userId,
+                        Name = request.UserName,
+                        isOtpExpired = true
+                    };
+                }
             }
             ////\\\\\\\\
+            if (request.FromVerifyOtpCmd)
+            {
+                userId = request.UserId;
+                roles = request.Roles;
 
-            //else if active
+            }
+
+            //else if active or from verifyOtpcommand
             var explicitLoadedProperties = new Dictionary<string, Utility.Contracts.NavigationPropertyType>
                                                 {
                                                     { "UserGroups", NavigationPropertyType.COLLECTION },
@@ -127,10 +150,10 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                                     { "PersonalInfo", NavigationPropertyType.REFERENCE }
 
                                                 };
-            var userData = await _userRepository.GetWithAsync(response.userId, explicitLoadedProperties);
+            var userData = await _userRepository.GetWithAsync(userId, explicitLoadedProperties);
 
 
-            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, response.roles, userData.AddressId, userData.Address.AdminLevel));
+            string token = _tokenGenerator.GenerateJWTToken((userData.Id, userData.UserName, userData.PersonalInfoId, roles, userData.AddressId, userData.Address.AdminLevel));
 
 
             var userRoles = userData.UserGroups.SelectMany(ug => ug.Roles
@@ -167,23 +190,23 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 var pageNamesToMatch = new List<string>
                     { "marriage","birth","adoption","death","divorce","marriageapplication","marriageapplicationlist"};
 
-                    userRoles
-                        .Where(p => pageNamesToMatch.Contains(p.page.ToLower()))
-                        .ToList()
-                        .ForEach(r =>
-                        {
-                            r.canAdd = true;
-                            r.canView = true;
-                            r.canUpdate = true;
-                            r.canViewDetail = true;
-                            r.canDelete = true;
-                        });
-                    }
+                userRoles
+                    .Where(p => pageNamesToMatch.Contains(p.page.ToLower()))
+                    .ToList()
+                    .ForEach(r =>
+                    {
+                        r.canAdd = true;
+                        r.canView = true;
+                        r.canUpdate = true;
+                        r.canViewDetail = true;
+                        r.canDelete = true;
+                    });
+            }
 
             var LoginHis = new LoginHistory
             {
                 Id = Guid.NewGuid(),
-                UserId = response.userId,
+                UserId = userId,
                 EventType = "Login",
                 EventDate = DateTime.Now,
                 IpAddress = _httpContext.HttpContext?.Connection.RemoteIpAddress?.ToString(),
@@ -192,25 +215,25 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             };
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
-            var MyReport= _myReportRepository.GetAll().Where(x => x.ReportOwnerId.ToString() == userData.Id)
+            var MyReport = _myReportRepository.GetAll().Where(x => x.ReportOwnerId.ToString() == userData.Id)
             .Select(repo => new ReportStoreDTO
-                                    {
-                                        Id = repo.Id,
-                                        ReportName = repo.ReportName,
-                                        ReportTitle =repo.ReportTitle
-                                    }).ToList();
-                List<Guid> GroupIds=userData.UserGroups.Select(g => g.Id).ToList();
-                var Report = _reportRepository.GetAll()
-                                    .Select(repo => new ReportStoreDTO
-                                    {
-                                        Id = repo.Id,
-                                        ReportName = repo.ReportName,
-                                        ReportTitle = repo.ReportTitle,
-                                        Groups = JsonConvert.DeserializeObject<List<Guid>>(repo.UserGroupsStr),
-                                    })
-                                    .AsEnumerable()
-                                    .Where(report => report.Groups != null && GroupIds != null && report.Groups.Intersect(GroupIds).Any())
-                                    .ToList();
+            {
+                Id = repo.Id,
+                ReportName = repo.ReportName,
+                ReportTitle = repo.ReportTitle
+            }).ToList();
+            List<Guid> GroupIds = userData.UserGroups.Select(g => g.Id).ToList();
+            var Report = _reportRepository.GetAll()
+                                .Select(repo => new ReportStoreDTO
+                                {
+                                    Id = repo.Id,
+                                    ReportName = repo.ReportName,
+                                    ReportTitle = repo.ReportTitle,
+                                    Groups = JsonConvert.DeserializeObject<List<Guid>>(repo.UserGroupsStr),
+                                })
+                                .AsEnumerable()
+                                .Where(report => report.Groups != null && GroupIds != null && report.Groups.Intersect(GroupIds).Any())
+                                .ToList();
             return new AuthResponseDTO()
             {
                 UserId = userData.Id,
@@ -229,8 +252,8 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                 CanRegisterEvent = userData.CanRegisterEvent,
                 FingerPrintApiUrl = userData.FingerPrintApiUrl,
                 Address = await _addressService.FormatedAddress(userData.AddressId)!,
-                Reports=Report,
-                MyReports=MyReport
+                Reports = Report,
+                MyReports = MyReport
             };
         }
     }
