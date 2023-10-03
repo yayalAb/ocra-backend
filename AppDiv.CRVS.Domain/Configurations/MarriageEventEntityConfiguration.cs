@@ -29,6 +29,14 @@ namespace AppDiv.CRVS.Domain.Configuration
             .OnDelete(DeleteBehavior.Restrict)
              .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasOne(m => m.BridePriviousMaritalStatusLookup)
+                .WithMany(l => l.BridePriviousMaritalStatus)
+                .HasForeignKey(m => m.BridePriviousMeritalStatusLookupId);
+            
+            builder.HasOne(m => m.GroomPriviousMaritalStatusLookup)
+                .WithMany(l => l.GroomPriviousMaritalStatus)
+                .HasForeignKey(m => m.GroomPriviousMeritalStatusLookupId);
+
 
         }
     }
