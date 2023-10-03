@@ -14,6 +14,7 @@ using MediatR;
 // using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using AppDiv.CRVS.Application.Features.Authentication.Commands.delete;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -81,6 +82,17 @@ namespace AppDiv.CRVS.API.Controllers
         {
             return await _mediator.Send(query);
         }
+        [HttpDelete("Delete")]
+        public async Task<IActionResult> deleteRequest([FromBody] deleteRequestCommands command)
+        {
+            var res = await _mediator.Send(command);
+            if (res.Success)
+            {
+                return Ok(res);
+            }
+            return BadRequest(res);
+        }
+
 
 
 

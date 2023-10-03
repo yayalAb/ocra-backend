@@ -12,6 +12,7 @@ namespace AppDiv.CRVS.Domain.Entities
 {
     public class PersonalInfo : BaseAuditableEntity
     {
+        
         public string? FirstNameStr { get; set; }
         public string? MiddleNameStr { get; set; }
         public string? LastNameStr { get; set; }

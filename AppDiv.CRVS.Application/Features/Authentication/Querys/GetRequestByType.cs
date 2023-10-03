@@ -49,6 +49,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
               var RequestList = _transactionService.GetAll()
                   .Include(x=>x.CivilRegOfficer)
                   .ThenInclude(x=>x.UserGroups)
+                  .Include(x=>x.Request).Where(x=>x.Request.isDeleted==false)
                  .AsQueryable();
             if(!string.IsNullOrEmpty(request.startDate)&&!string.IsNullOrEmpty(request.endDate)){
                 var converter=new CustomDateConverter();
