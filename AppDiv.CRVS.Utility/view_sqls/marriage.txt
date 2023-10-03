@@ -1,4 +1,5 @@
 #Type of  Marriage 
+#Table 2. Region by Type of Marriage(Registration Place)
 SELECT 
 	a.*, 
 	ml.`ValueStr` AS MarriageType,
@@ -131,3 +132,139 @@ JOIN SystemRanges AS ren
 		between ren.Start and ren.End
 JOIN view_address as a on a.addId = e.`EventRegisteredAddressId`
 GROUP BY ren.id, a.`addId`;
+
+#Marriage3 1
+SELECT 
+	al.`ValueStr` AS AreaType,
+    ml.`ValueStr` AS TypeOfWork,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
+JOIN `Lookups` ml ON ml.`Id` = p.`TypeOfWorkLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS al ON al.Id = ad.`AreaTypeLookupId`
+GROUP BY ad.`AreaTypeLookupId`, p.`TypeOfWorkLookupId`;
+
+#Marriage3 2
+SELECT 
+	a.*,
+    ml.`ValueStr` AS TypeOfWork,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
+JOIN `Lookups` ml ON ml.`Id` = p.`TypeOfWorkLookupId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`, p.`TypeOfWorkLookupId`;
+
+#Marriage4 1
+SELECT 
+	al.`ValueStr` AS AreaType,
+    ml.`ValueStr` AS TypeOfWork,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = e.`EventOwenerId`
+JOIN `Lookups` ml ON ml.`Id` = p.`TypeOfWorkLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS al ON al.Id = ad.`AreaTypeLookupId`
+GROUP BY ad.`AreaTypeLookupId`, p.`TypeOfWorkLookupId`;
+
+#Marriage4 2
+SELECT 
+	a.*,
+    ml.`ValueStr` AS TypeOfWork,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = e.`EventOwenerId`
+JOIN `Lookups` ml ON ml.`Id` = p.`TypeOfWorkLookupId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`, p.`TypeOfWorkLookupId`;
+
+#Marriage 5
+SELECT 
+	al.`ValueStr` AS AreaType,
+    ml.`ValueStr` AS Education,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
+JOIN `Lookups` ml ON ml.`Id` = p.`EducationalStatusLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS al ON al.Id = ad.`AreaTypeLookupId`
+GROUP BY ad.`AreaTypeLookupId`, p.`EducationalStatusLookupId`;
+
+#Marriage5 2
+SELECT 
+	a.*,
+    ml.`ValueStr` AS Education,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
+JOIN `Lookups` ml ON ml.`Id` = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`, p.`EducationalStatusLookupId`;
+
+#Marriage6 1
+SELECT 
+	al.`ValueStr` AS AreaType,
+    ml.`ValueStr` AS Education,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = e.`EventOwenerId`
+JOIN `Lookups` ml ON ml.`Id` = p.`EducationalStatusLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS al ON al.Id = ad.`AreaTypeLookupId`
+GROUP BY ad.`AreaTypeLookupId`, p.`EducationalStatusLookupId`;
+
+#Marriage6 2
+SELECT 
+	a.*,
+    ml.`ValueStr` AS Education,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `PersonalInfos` p ON p.`Id` = e.`EventOwenerId`
+JOIN `Lookups` ml ON ml.`Id` = p.`EducationalStatusLookupId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`, p.`EducationalStatusLookupId`;
+
+#Marriage9 duplicate
+#Marriage 10 duplicate
+#Marriage 12 duplicate
+#Marriage 13 duplicate
+#bride marriage by UR & Occuputi duplicate
+#groom marriage by UR & Occuputi duplicate
+#Bride Ed duplicate
+#groom Ed duplicate
+#Table 5. BR City, BR Region, Age of the Bride by Education(Usual Residence)
+SELECT
+	CONCAT(ren.Start, - ren.End) AS Age,
+    ml.`ValueStr` AS Education,
+    COUNT(per.`Id`) AS Count
+FROM Events AS ev
+JOIN `MarriageEvents` AS b ON b.`EventId` = ev.`Id`
+JOIN PersonalInfos AS per ON per.`Id` = b.`BrideInfoId`
+JOIN `Lookups` AS ml ON ml.Id = per.`EducationalStatusLookupId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`) 
+		between ren.Start and ren.End
+GROUP BY per.`EducationalStatusLookupId`,ren.`Id`;
+
+#Table 6. GR City, GR Region, Age of the Groom by Education(Usual Residence)
+SELECT
+	CONCAT(ren.Start, - ren.End) AS Age,
+    ml.`ValueStr` AS Education,
+    COUNT(per.`Id`) AS Count
+FROM Events AS ev
+JOIN `MarriageEvents` AS b ON b.`EventId` = ev.`Id`
+JOIN PersonalInfos AS per ON per.`Id` = ev.`EventOwenerId`
+JOIN `Lookups` AS ml ON ml.Id = per.`EducationalStatusLookupId`
+JOIN SystemRanges AS ren 
+	ON ren.Key = 'ageRange' and YEAR(ev.`EventDate`) - YEAR(per.`BirthDate`) 
+		between ren.Start and ren.End
+GROUP BY per.`EducationalStatusLookupId`,ren.`Id`;
