@@ -35,9 +35,9 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
         public int SelectedAdminType { get; set; }
         public bool? CanRegisterEvent { get; set; } = null;
         public string FingerPrintApiUrl { get; set; } = "localhost";
-        
+
         [NotMapped]
-        public DateTime? WorkStartedOn {get;set;}
+        public DateTime? WorkStartedOn { get; set; }
 
 
         public UpdatePersonalInfoRequest PersonalInfo { get; set; }
@@ -69,7 +69,7 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
             this.personBaseRepo = personBaseRepo;
             this._groupRepository = groupRepository;
             _identityService = identityService;
-            _addresslookup=addresslookup;
+            _addresslookup = addresslookup;
         }
         public async Task<UserResponseDTO> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
@@ -141,14 +141,15 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Update
                             FingerPrintApiUrl = request.FingerPrintApiUrl,
                             CanRegisterEvent = request.CanRegisterEvent
                         };
-                          if(user.Address.WorkStartedOn!=null){
-                            var userAddress= await _addresslookup.GetAsync(user?.AddressId);
-                            if(userAddress.WorkStartedOn==null){
-                                userAddress.WorkStartedOn=request?.WorkStartedOn;
-                                await _addresslookup.UpdateAsync(userAddress, x=>x.Id);
-                                await _addresslookup.SaveChangesAsync(cancellationToken);
-                            }
-                            }
+
+                        var userAddress = await _addresslookup.GetAsync(user.AddressId);
+                        if (userAddress.WorkStartedOn == null)
+                        {
+                            userAddress.WorkStartedOn = request?.WorkStartedOn;
+                            await _addresslookup.UpdateAsync(userAddress, x => x.Id);
+                            await _addresslookup.SaveChangesAsync(cancellationToken);
+                        }
+
 
                         try
                         {
