@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public string? SearchString { get; set; }
-
+        
 
     }
     public class GetAuthentcationRequestListHandler : IRequestHandler<GetAuthentcationRequestList, object>

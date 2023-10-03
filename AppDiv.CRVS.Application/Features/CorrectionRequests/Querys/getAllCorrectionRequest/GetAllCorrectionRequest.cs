@@ -24,6 +24,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public string? SearchString { get; set; }
+        public string? StartDate  { get; set; }
+        public string? EndDate  { get; set; }
     }
 
     public class GetAllCorrectionRequestHandler : IRequestHandler<GetAllCorrectionRequest, PaginatedList<CorrectionRequestListDTO>>
@@ -57,6 +59,18 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             .Include(x => x.Event.CivilRegOfficer)
             .Where(x => (x.Request.CivilRegOfficerId == request.CivilRegOfficerId)
             &&(x.Request.currentStep!=x.Request.NextStep));
+
+            if(!string.IsNullOrEmpty(request.StartDate) && !string.IsNullOrEmpty(request.EndDate)){
+                var converter=new CustomDateConverter();
+                DateTime startDate=converter.EthiopicToGregorian(request.StartDate);
+                DateTime endDate=converter.EthiopicToGregorian(request.EndDate);
+                CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt<=startDate &&x.CreatedAt>= endDate );
+            }
+            else{
+              DateTime lastMonth=DateTime.Now.AddDays(-30);
+              CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt<=lastMonth);  
+            }
+
             if (!string.IsNullOrEmpty(request.SearchString))
             {
                 CorrectionRequest = CorrectionRequest.Where(

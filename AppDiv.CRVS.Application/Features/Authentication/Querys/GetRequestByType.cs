@@ -18,6 +18,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
         public string? SearchString { get; set; }
+        public string? startDate { get; set; }
+        public string? endDate { get; set; }
     }
     public class GetRequestByTypeHandler : IRequestHandler<GetRequestByType, PaginatedList<AuthenticationRequestListDTO>>
     {
@@ -43,10 +45,20 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<PaginatedList<AuthenticationRequestListDTO>> Handle(GetRequestByType request, CancellationToken cancellationToken)
         {
-            var RequestList = _transactionService.GetAll()
+              var RequestList = _transactionService.GetAll()
                   .Include(x=>x.CivilRegOfficer)
                   .ThenInclude(x=>x.UserGroups)
                  .AsQueryable();
+            if(!string.IsNullOrEmpty(request.startDate)&&!string.IsNullOrEmpty(request.endDate)){
+                var converter=new CustomDateConverter();
+                DateTime startDate=converter.EthiopicToGregorian(request.startDate);
+                DateTime endDate=converter.EthiopicToGregorian(request.endDate);
+                RequestList=RequestList.Where(x=>x.CreatedAt<=startDate &&x.CreatedAt>= endDate );
+            }
+            else{
+                DateTime lastMonth=DateTime.Now.AddDays(-30);
+                RequestList=RequestList.Where(x=>x.CreatedAt<=lastMonth);
+            }
             if (request.RequestType == "change")
             {
                 RequestList = RequestList.Include(x => x.Request)
