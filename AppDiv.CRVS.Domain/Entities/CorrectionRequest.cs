@@ -13,6 +13,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool RequestStatus { get; set; } = false;
         public string ContentStr { get; set; }
         public Guid RequestId { get; set; }
+        public bool HasPayment { get; set; }=false;
 
         [NotMapped]
         public JArray? Description

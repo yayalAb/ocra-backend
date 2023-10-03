@@ -13,5 +13,6 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public Guid EventId { get; set; }
         public JObject Content { get; set; }
         public AddRequest Request { get; set; }
+       public bool HasPayment { get; set; }=false;
     }
 }

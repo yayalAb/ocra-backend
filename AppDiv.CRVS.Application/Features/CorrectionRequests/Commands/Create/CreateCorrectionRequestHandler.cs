@@ -91,11 +91,16 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         }
                         else
                         {
-                            (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest(events.EventType, events, "change", null, false, false, cancellationToken);
-                            if (payment.amount == 0 || payment.amount == 0.0)
-                            {
-                                hasWorkflow = false;
+                            if(request.CorrectionRequest.HasPayment){
+                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest(events.EventType, events, "change", null, false, false, cancellationToken);
+                                if (payment.amount == 0 || payment.amount == 0.0)
+                                {
+                                    hasWorkflow = false;
+                                }
+                            }else{
+                              hasWorkflow = false;  
                             }
+                           
                         }
                         if(hasWorkflow){
                         var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
