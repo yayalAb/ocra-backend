@@ -6,6 +6,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
     {
         public string RequestType { get; set; } = "change";
         public string Status { get; set; }
+        public bool IsYourRequestList { get; set; } = false;
     }
     public class GetCountHandler : IRequestHandler<GetCount, int>
     {
@@ -19,7 +20,14 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<int> Handle(GetCount request, CancellationToken cancellationToken)
         {
-            var list = await _mediator.Send(new GetRequestByType { RequestType = request.RequestType, Status = request.Status, PageCount = 1, PageSize = 1 });
+            var list = await _mediator.Send(new GetRequestByType 
+                { 
+                    RequestType = request.RequestType, 
+                    Status = request.Status, 
+                    IsYourRequestList = request.IsYourRequestList, 
+                    PageCount = 1, 
+                    PageSize = 1 
+                });
             return list.TotalCount;
         }
     }
