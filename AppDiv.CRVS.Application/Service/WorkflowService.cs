@@ -270,11 +270,13 @@ namespace AppDiv.CRVS.Application.Service
             var requestHaspayment = _requestRepostory.GetAll()
             .Include(x => x.Workflow)
             .ThenInclude(x => x.Steps)
+            .Include(x=>x.CorrectionRequest)
             .Include(x => x.PaymentRequest)
             .ThenInclude(x => x.Payment)
             .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
             ).FirstOrDefault();
-            if (requestHaspayment != null)
+
+            if (requestHaspayment != null&&(requestHaspayment.CorrectionRequest==null||requestHaspayment.CorrectionRequest.HasPayment))
             {
                 if (requestHaspayment?.PaymentRequest == null)
                 {
