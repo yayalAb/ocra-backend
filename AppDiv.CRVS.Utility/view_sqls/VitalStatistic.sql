@@ -82,6 +82,7 @@ order by EventRegYear;
 -- 
 -- T3.10 ??
 -- T3.11 - we dont have unknown data
+-- 
 -- F4.1 Live birth by year
 SELECT
 	a.*,
@@ -127,4 +128,62 @@ order by yearRange;
 -- F4.4 ?? dont have population of female by age group for now
 -- F5.4 ?? dont have population  by age group for now
 -- F5.4 ?? dont have population  by age group for now
+-- F6.1 , 6.2 ?? cause of death is json 
 
+-- F7.2  1 Marriages by year and age of bride
+SELECT
+	-- a.*,
+	YEAR(ev.EventDate)- YEAR(per.BirthDate) AS BrideAge,
+    right(EventRegDateEt,4) as EventRegYear,
+    COUNT(m.Id) AS Count
+FROM
+    MarriageEvents AS m
+JOIN Events as ev ON ev.Id = m.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+JOIN PersonalInfos as per on per.Id = m.BrideInfoId
+GROUP BY a.addId, BrideAge , EventRegYear
+order by BrideAge; 
+
+
+-- F7.2 2 Marriages by year and age of groom
+SELECT
+	-- a.*,
+	YEAR(ev.EventDate)- YEAR(per.BirthDate) AS GroomAge,
+    right(EventRegDateEt,4) as EventRegYear,
+    COUNT(m.Id) AS Count
+FROM
+    MarriageEvents AS m
+JOIN Events as ev ON ev.Id = m.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+JOIN PersonalInfos as per on per.Id = ev.EventOwenerId
+GROUP BY a.addId, GroomAge , EventRegYear
+order by GroomAge; 
+
+-- F7.4  1 divorce by year and age of wife
+SELECT
+	-- a.*,
+	YEAR(ev.EventDate)- YEAR(per.BirthDate) AS WifeAge,
+    right(EventRegDateEt,4) as EventRegYear,
+    COUNT(div.Id) AS Count
+FROM
+    DivorceEvents AS div
+JOIN Events as ev ON ev.Id = div.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+JOIN PersonalInfos as per on per.Id = div.DivorcedWifeId
+GROUP BY a.addId, WifeAge , EventRegYear
+order by WifeAge; 
+
+
+-- F7.4 2 divorce by year and age of husband
+SELECT
+	-- a.*,
+	YEAR(ev.EventDate)- YEAR(per.BirthDate) AS HusbandAge,
+    right(EventRegDateEt,4) as EventRegYear,
+    COUNT(div.Id) AS Count
+FROM
+    DivorceEvents AS div
+JOIN Events as ev ON ev.Id = div.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+JOIN PersonalInfos as per on per.Id = ev.EventOwenerId
+GROUP BY a.addId, HusbandAge , EventRegYear
+order by HusbandAge; 
