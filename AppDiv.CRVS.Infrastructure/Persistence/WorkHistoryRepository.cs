@@ -34,7 +34,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             return _dbContext.WorkHistories
                             .AsNoTracking()
                             .Include(w => w.UserGroups)
-                            .Include(w => w.User)
+                            .Include(w => w.User.PersonalInfo)
                             .Include(w => w.Address)
                             .ThenInclude(a => a.ParentAddress)
                             .ThenInclude(a => a.ParentAddress);

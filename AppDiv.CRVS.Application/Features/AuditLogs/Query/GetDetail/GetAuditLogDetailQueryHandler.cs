@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Features.Archives.Query;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
@@ -20,7 +21,10 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
         }
         public async Task<object> Handle(GetAuditLogDetailQuery request, CancellationToken cancellationToken)
         {
-            var audit = _auditLogRepository.GetAll().Where(a => a.AuditId == request.Id).FirstOrDefault();
+            var audit = _auditLogRepository.GetAll()
+                .Include(a => a.AuditUser.PersonalInfo)
+                .Where(a => a.AuditId == request.Id)
+                .FirstOrDefault();
             // var response = _mediator.Send(new GetAuditLogQuery());
             var eventType =  audit!.EntityType.EndsWith("Event") ? audit.EntityType[..^5] : audit.EntityType;
             var data = _auditService.EventAudit(audit);
@@ -32,6 +36,8 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
                 {
                     NewData = (newData as dynamic).Content, 
                     OldData =  (oldData as dynamic)?.Content,
+                    UserId = audit.AuditUserId,
+                    UserFullName = audit.AuditUser.PersonalInfo.FullNameLang
                     // Values = _auditService.EventAudit(audit),
                 };
             return result;

@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid? Id { get; set; }
         public string? UserName { get; set; }
+        public string? UserFullName { get; set; }
+        public string? UserId { get; set; }
         public string? StartDate { get; set; }
         public string? EndDate { get; set; }
         public string? Roles { get; set; }
@@ -20,6 +22,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
             var convertor = new CustomDateConverter();
             Id = history?.Id;
             UserName = history?.User.UserName;
+            UserFullName = history?.User?.PersonalInfo.FullNameLang;
+            UserId = history?.UserId;
             StartDate = convertor.GregorianToEthiopic(history!.StartDate);
             EndDate = convertor.GregorianToEthiopic(history!.CreatedAt);
             Roles = string.Join(", ",history?.UserGroups?.Select(g => g.GroupName)!);   

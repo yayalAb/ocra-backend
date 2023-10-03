@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     {
         public Guid? Id { get; set; }
         public string? UserName { get; set; }
+        public string? UserFullName { get; set; }
+        public string? UserId { get; set; }
         public string? Action { get; set; }
         public string? IpAddress { get; set; }
         public string? AuditDate { get; set; }
@@ -21,6 +23,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
             Id = history?.Id;
             AuditDate = history?.EventDate is not null ? convertor.GregorianToEthiopic((DateTime)history.EventDate) : null;
             UserName = history?.User.UserName;
+            UserId = history?.UserId;
+            UserFullName = history?.User.PersonalInfo.FullNameLang;
             Address = $"{history?.User?.Address?.ParentAddress?.ParentAddress?.AddressNameLang}/{history?.User?.Address?.ParentAddress?.AddressNameLang}/{history?.User?.Address?.AddressNameLang}".Trim('/');
             Action = history?.EventType;
             IpAddress = history?.IpAddress;

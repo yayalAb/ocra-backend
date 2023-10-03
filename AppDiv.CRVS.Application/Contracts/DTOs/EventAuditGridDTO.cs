@@ -14,6 +14,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? Id { get; set; }
         public string? TablePkId { get; set; }
         public string? UserName { get; set; }
+        public string? UserFullName { get; set; }
+        public string? UserId { get; set; }
+
         public string? Action { get; set; }
         public string? AuditedEntity { get; set; }
         public string? AuditDate { get; set; }
@@ -26,6 +29,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
             TablePkId = audit?.TablePk;
             AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
             UserName = audit?.AuditUser?.UserName;
+            UserFullName = audit?.AuditUser.PersonalInfo.FullNameLang;
+            UserId = audit?.AuditUserId;
             AuditedEntity = audit?.EntityType;
             Address = $"{audit?.Address?.ParentAddress?.ParentAddress?.AddressNameLang}/{audit?.Address?.ParentAddress?.AddressNameLang}/{audit?.Address?.AddressNameLang}".Trim('/');
             Action = audit?.Action;

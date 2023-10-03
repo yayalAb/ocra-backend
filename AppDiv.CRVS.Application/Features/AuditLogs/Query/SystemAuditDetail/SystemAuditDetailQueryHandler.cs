@@ -2,6 +2,7 @@ using AppDiv.CRVS.Application.Features.Archives.Query;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
@@ -20,13 +21,18 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
         }
         public async Task<object> Handle(SystemAuditDetailQuery request, CancellationToken cancellationToken)
         {
-            var audit = _auditLogRepository.GetAll().Where(a => a.AuditId == request.Id).FirstOrDefault();
+            var audit = _auditLogRepository.GetAll()
+                .Include(a => a.AuditUser.PersonalInfo)
+                .Where(a => a.AuditId == request.Id)
+                .FirstOrDefault();
             
             var result = 
                 new 
                 {
                     OldValue = audit?.Action == "Insert" ? null : _auditService.GetNestedElements(_auditService.GetContent(audit?.AuditDataJson)),
                     NewValue = _auditService.GetNestedElements(audit?.AuditDataJson?.Value<JObject>("ColumnValues")),
+                    UserFullName = audit?.AuditUser.PersonalInfo.FullNameLang,
+                    UserId = audit?.AuditUserId
                 };
             return result;
         }
