@@ -303,7 +303,7 @@ namespace AppDiv.CRVS.Application.Service
             await _userManager.UpdateAsync(user);
             return (Result.Success(), user.Email, user.PhoneNumber);
         }
-        public async Task<Result> VerifyOtp(string userName, string otp)
+        public async Task<(Result result , string? userId , IList<string>? roles)> VerifyOtp(string userName, string otp)
         {
             var user = await _userManager.Users.Where(x => x.UserName == userName).FirstOrDefaultAsync();
             if (user == null)
@@ -317,8 +317,9 @@ namespace AppDiv.CRVS.Application.Service
             user.Otp = null;
             user.OtpExpiredDate = DateTime.Now.AddDays(_helperService.getOtpExpiryDurationSetting());
             await _userManager.UpdateAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
-            return Result.Success();
+            return (result:Result.Success(), userId:user.Id, roles);
         }
         public async Task<Result> DeleteUser(string userId)
         {

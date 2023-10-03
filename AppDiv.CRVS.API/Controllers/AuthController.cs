@@ -103,9 +103,23 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("VerifyOtp")]
         public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            var verifyRes = await Mediator.Send(command);
+            if (verifyRes.Success)
+            {
+                return Ok(await Mediator.Send(new AuthCommand
+                {
+                    SendOTP = false,
+                    FromVerifyOtpCmd = true,
+                    UserId = verifyRes.UserId,
+                    Roles = verifyRes.Roles
+                }));
+            }
+            else
+            {
+                return BadRequest(verifyRes);
+            }
         }
-         [HttpPost("resend-otp")]
+        [HttpPost("resend-otp")]
         public async Task<IActionResult> ResendOtp([FromBody] ResendOtpCommand command)
         {
             return Ok(await Mediator.Send(command));
