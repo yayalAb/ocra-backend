@@ -18,6 +18,8 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
         public string? BirthCertificateBrideId { get; set; }
         public bool HasCamera { get; set; } = false;
         public bool HasVideo { get; set; } = false;
+        public Guid? BridePriviousMeritalStatusLookupId { get; set; }
+        public Guid? GroomPriviousMeritalStatusLookupId { get; set; }
         public virtual BrideInfoDTO BrideInfo { get; set; }
         public virtual AddEventForMarriageRequest Event { get; set; }
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }

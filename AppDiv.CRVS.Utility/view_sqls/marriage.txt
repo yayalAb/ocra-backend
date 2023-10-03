@@ -22,15 +22,19 @@ GROUP BY a.zoneid, e.Status;
 
 #Marriage1
 SELECT
-	a.*,
-    MONTHNAME(e.`EventDate`) AS Months,
-    COUNT(e.Id) AS Total
-FROM `Events` AS e
-JOIN view_address as a on a.addId = e.EventRegisteredAddressId
-WHERE e.`EventType` = "Marriage"
-GROUP BY a.zoneid, e.Status;
+    a.*,
+    substring(EventRegDateEt,4,2) as EventRegisteredMonth,
+    substring(EventDateEt,4,2) as EventDateMonth,
+    right(EventRegDateEt,4) as EventRegYear,
+    COUNT(m.Id) AS Count
+FROM `MarriageEvents` m
+JOIN Events as ev ON ev.Id = m.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+GROUP BY EventRegisteredAddressId ,EventRegisteredMonth,EventRegYear ,EventDateMonth
+order by EventRegYear ,EventRegisteredMonth,EventDateMonth;
 
-#Marriage1
+
+#Marriage2
 SELECT 
 	a.*, 
 	ml.`ValueStr` AS MarriageType,
@@ -43,28 +47,49 @@ GROUP BY a.`keId`, m.`MarriageTypeId`;
 
 #Marriage7 1
 SELECT 
-	al.`ValueStr` AS AreaType,
-    ml.`ValueStr` AS MaritalStatus,
-    COUNT(m.`Id`) AS Total
+	ar.`ValueStr` AS AreaType,
+    ml.`ValueStr` AS PriviousMeritalStatus,
+    COUNT(m.Id) AS Count
 FROM `MarriageEvents` m
 JOIN `Events` e ON e.`Id` = m.`EventId`
-JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
-JOIN `Lookups` ml ON ml.`Id` = p.`MarriageStatusLookupId`
+JOIN `Lookups` ml ON ml.`Id` = m.`BridePriviousMeritalStatusLookupId`
 JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
-JOIN `Lookups` AS al ON al.Id = ad.`AreaTypeLookupId`
-GROUP BY ad.`AreaTypeLookupId`, p.`MarriageStatusLookupId`;
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY ad.`AreaTypeLookupId`, m.`BridePriviousMeritalStatusLookupId`;
 
 #Marriage7 2
 SELECT 
 	a.*,
-    ml.`ValueStr` AS MaritalStatus,
+    ml.`ValueStr` AS PriviousMeritalStatus,
     COUNT(m.`Id`) AS Total
 FROM `MarriageEvents` m
 JOIN `Events` e ON e.`Id` = m.`EventId`
-JOIN `PersonalInfos` p ON p.`Id` = m.`BrideInfoId`
-JOIN `Lookups` ml ON ml.`Id` = p.`MarriageStatusLookupId`
+JOIN `Lookups` ml ON ml.`Id` = m.`BridePriviousMeritalStatusLookupId`
 JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
-GROUP BY a.`keId`, p.`MarriageStatusLookupId`;
+GROUP BY a.`keId`,m.`BridePriviousMeritalStatusLookupId` ;
+
+#Groom privious merital status 1
+SELECT 
+	ar.`ValueStr` AS AreaType,
+    ml.`ValueStr` AS PriviousMeritalStatus,
+    COUNT(m.Id) AS Count
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `Lookups` ml ON ml.`Id` = m.`GroomPriviousMeritalStatusLookupId`
+JOIN `Addresses` AS ad ON ad.`Id` = e.`EventRegisteredAddressId`
+JOIN `Lookups` AS ar ON ar.Id = ad.`AreaTypeLookupId`
+GROUP BY ad.`AreaTypeLookupId`, m.`GroomPriviousMeritalStatusLookupId`;
+ 
+#Groom privious merital status 2
+SELECT 
+	a.*,
+    ml.`ValueStr` AS PriviousMeritalStatus,
+    COUNT(m.`Id`) AS Total
+FROM `MarriageEvents` m
+JOIN `Events` e ON e.`Id` = m.`EventId`
+JOIN `Lookups` ml ON ml.`Id` = m.`GroomPriviousMeritalStatusLookupId`
+JOIN view_address as a on a.`addId` = e.`EventRegisteredAddressId`
+GROUP BY a.`keId`,m.`GroomPriviousMeritalStatusLookupId`;
 
 #Bridem by age, Usual residence 1
 SELECT

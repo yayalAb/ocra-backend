@@ -6,7 +6,6 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public Guid BrideInfoId { get; set; }
         public string? BirthCertificateGroomId { get; set; }
-
         public string? BirthCertificateBrideId { get; set; }
 
         public Guid MarriageTypeId { get; set; }
@@ -15,9 +14,13 @@ namespace AppDiv.CRVS.Domain.Entities
         public bool IsDivorced { get; set; }
         public bool HasCamera { get; set; } = false;
         public bool HasVideo { get; set; } = false;
+        public Guid? BridePriviousMeritalStatusLookupId { get; set; }
+        public Guid? GroomPriviousMeritalStatusLookupId { get; set; }
         public virtual PersonalInfo BrideInfo { get; set; }
         public virtual Lookup MarriageType { get; set; }
-        public virtual Event Event { get; set; }
+        public virtual Lookup BridePriviousMaritalStatusLookup { get; set; }
+        public virtual Lookup GroomPriviousMaritalStatusLookup { get; set; }
+        public virtual Event Event { get; set; }        
         public virtual MarriageApplication Application { get; set; }
         public virtual ICollection<Witness> Witnesses { get; set; }
     }
