@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         
 
     }
+
     public class GetAuthentcationRequestListHandler : IRequestHandler<GetAuthentcationRequestList, object>
     {
         private readonly IAuthenticationRepository _AuthenticationRepository;
@@ -69,6 +70,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
               .Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
+              &&(wf.isDeleted==false)
                &&(wf.PaymentRequest==null)&&(wf.CorrectionRequest!=null||wf.AuthenticationRequest!=null)));
 
              if (userGroup.Address.AdminLevel == 1)
@@ -140,8 +142,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  RequestDate =new CustomDateConverter(w.CreatedAt).ethiopianDate,
                  CanEdit = ((w.currentStep == 0) && (w.CivilRegOfficerId == userGroup.PersonalInfoId)),
                  CanApprove = userGroup.UserGroups.Select(x => x.Id)
-                 .FirstOrDefault() == w.Workflow.Steps.Where(g => g.step == w.NextStep)
-                 .Select(x => x.UserGroupId).FirstOrDefault()
+                 .ToList().Contains((Guid)w.Workflow.Steps.Where(g => g.step == w.NextStep)
+                 .Select(x => x.UserGroupId).FirstOrDefault())
              });
 
 

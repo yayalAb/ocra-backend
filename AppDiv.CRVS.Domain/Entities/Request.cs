@@ -10,6 +10,7 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public string RequestType { get; set; }
         public Guid CivilRegOfficerId { get; set; }
+
         public int currentStep { get; set; }
         public int? NextStep { get; set; }
         public Guid WorkflowId { get; set; }
@@ -23,6 +24,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<Transaction> Transactions { get; set; }
         public virtual Notification Notification { get; set; }
         public virtual Workflow Workflow { get; set; }
+        public bool isDeleted  { get; set; }=false;
 
     }
 }

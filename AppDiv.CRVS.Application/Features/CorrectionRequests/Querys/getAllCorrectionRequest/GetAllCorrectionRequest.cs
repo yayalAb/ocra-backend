@@ -57,18 +57,18 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             .ThenInclude(x=>x.Steps)
             .ThenInclude(x=>x.UserGroup)
             .Include(x => x.Event.CivilRegOfficer)
-            .Where(x => (x.Request.CivilRegOfficerId == request.CivilRegOfficerId)
+            .Where(x => (x.Request.CivilRegOfficerId == request.CivilRegOfficerId)&&(x.Request.isDeleted==false)
             &&(x.Request.currentStep!=x.Request.NextStep));
 
             if(!string.IsNullOrEmpty(request.StartDate) && !string.IsNullOrEmpty(request.EndDate)){
                 var converter=new CustomDateConverter();
                 DateTime startDate=converter.EthiopicToGregorian(request.StartDate);
                 DateTime endDate=converter.EthiopicToGregorian(request.EndDate);
-                CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt<=startDate &&x.CreatedAt>= endDate );
+                CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt>=startDate &&x.CreatedAt<= endDate );
             }
             else{
               DateTime lastMonth=DateTime.Now.AddDays(-30);
-              CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt<=lastMonth);  
+              CorrectionRequest = CorrectionRequest.Where(x=>x.CreatedAt >= lastMonth);  
             }
 
             if (!string.IsNullOrEmpty(request.SearchString))

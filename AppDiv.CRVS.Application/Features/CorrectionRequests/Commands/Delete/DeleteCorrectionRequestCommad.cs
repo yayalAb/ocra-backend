@@ -41,6 +41,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Delete
                 if(correctionRequest.Request.currentStep!=0){   
                     throw  new NotFoundException("You Can not delete this Request It Is Approved");
                 }
+                correctionRequest.Request.isDeleted=true;
+                await _requestRepostory.UpdateAsync(correctionRequest.Request, x=>x.Id);
                 await _correctionRequestRepository.DeleteAsync(id);
             }  
                 await _correctionRequestRepository.SaveChangesAsync(cancellationToken);
