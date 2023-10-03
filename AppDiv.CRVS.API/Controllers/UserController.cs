@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Data;
 using AppDiv.CRVS.Application.Features.User.Command.CheckDuplication;
 using AppDiv.CRVS.Application.Features.Auth.YourTeam;
+using AppDiv.CRVS.Application.Features.User.Command.UpdateUserName;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -106,6 +107,20 @@ namespace AppDiv.CRVS.API.Controllers
                 var result = await Mediator.Send(command);
                 if (result.Status != 200)
                     return BadRequest(result);
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+
+        [HttpPut("UpdateUserNameOrEmail")]
+        public async Task<ActionResult> UpdateUserName([FromBody] UpdateUserNameCommand command)
+        {
+            try
+            {
+                var result = await Mediator.Send(command);
                 return Ok(result);
             }
             catch (Exception exp)
