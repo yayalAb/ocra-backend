@@ -8,6 +8,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public Guid? MotherId { get; set; }
         public Guid? FacilityTypeLookupId { get; set; }
         public Guid? FacilityLookupId { get; set; }
+        public string? Description { get; set; }
         public Guid? BirthPlaceId { get; set; }
         public Guid? TypeOfBirthLookupId { get; set; }
         public Guid? EventId { get; set; }
