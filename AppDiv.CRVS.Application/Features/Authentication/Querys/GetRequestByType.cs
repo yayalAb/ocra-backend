@@ -142,7 +142,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  NextStep = t.Request.NextStep,
                  RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
                  ActionBy=t.CivilRegOfficer.UserName,
-                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault()
+                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault(),
+                 ActionDate=new CustomDateConverter(t.CreatedAt).ethiopianDate
 
 
              });
