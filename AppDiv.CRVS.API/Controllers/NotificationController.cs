@@ -4,6 +4,8 @@ using AppDiv.CRVS.Application.Features.Notification.Commands.UpdateSeenStatus;
 using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByGroupId;
 using Microsoft.AspNetCore.SignalR;
 using AppDiv.CRVS.Infrastructure.Hub;
+using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
 // using AppDiv.CRVS.Utility.Hub;
 
 namespace AppDiv.CRVS.API.Controllers
@@ -38,6 +40,20 @@ namespace AppDiv.CRVS.API.Controllers
 
 
             return Ok("notification sent");
+        }
+
+        [HttpGet("Data")]
+        public async Task<NotificationData?> GetNotificationData([FromQuery] Guid? requestId, [FromQuery] Guid? transactionId)
+        {
+            if (requestId != null)
+            {
+                return await Mediator.Send(new GetNotificationByIdQuery { Id = (Guid)requestId });
+            }
+            else if(transactionId != null)
+            {
+                return await Mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)transactionId });
+            }
+            return null;
         }
 
     }

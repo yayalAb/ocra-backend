@@ -61,8 +61,9 @@ namespace AppDiv.CRVS.Infrastructure.Service
         public Transaction GetTransaction(Guid? id)
         {
             return _context.Transactions
+                .Include(t => t.CivilRegOfficer.PersonalInfo)
                 .Include(t => t.Request)
-                .ThenInclude(r => r.CivilRegOfficer.ApplicationUser)
+                // .ThenInclude(r => r.CivilRegOfficer.ApplicationUser)
                 .SingleOrDefault(t => t.Id == id);
         }
     }

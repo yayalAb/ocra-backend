@@ -107,6 +107,28 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
 
         }
+
+        public async Task<NotificationData?> GetNotification(Guid requestId)
+        {
+            var notification =  await _context.Requests
+                                    .Include(r => r.Notification)
+                                    .ThenInclude(n => n.Sender)
+                                    .ThenInclude(s => s.PersonalInfo)
+                                    .Select(r => r.Notification)
+                                    .FirstOrDefaultAsync();
+            
+            return notification == null ? null :
+             new NotificationData
+                {
+                    Message = notification.MessageStr,
+                    ApprovalType = notification.ApprovalType,
+                    SenderId = notification.SenderId,
+                    SenderUserName = notification.Sender.UserName,
+                    SenderFullName = notification.Sender.PersonalInfo.FullNameLang,
+                    Date = (new CustomDateConverter(notification.CreatedAt)).ethiopianDate
+                };
+            
+        }
         public async Task RemoveNotification(Guid notificationId)
         {
             var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
