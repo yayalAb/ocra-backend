@@ -25,6 +25,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Appr
     {
         public Guid RequestId { get; set; }
         public string? Remark { get; set; }
+        public JArray? RejectionReasons { get; set; }
         public bool IsApprove { get; set; }
         public Guid? ReasonLookupId { get; set; }
     }
@@ -39,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Appr
         }
         public async Task<BaseResponse> Handle(PaymentExamptionApproval request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.RequestId, "payment exemption", request.IsApprove, request.Remark, request.ReasonLookupId, false, cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.RequestId, "payment exemption", request.IsApprove, request.Remark, request.RejectionReasons, request.ReasonLookupId, false, cancellationToken);
             if (response.Item1)
             {
                 try

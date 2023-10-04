@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using MediatR;
+using Newtonsoft.Json.Linq;
 
 
 namespace AppDiv.CRVS.Application.Features.Certificates.Command.Verify
@@ -14,6 +15,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Verify
         public Guid EventId { get; set; }
         public bool IsApprove { get; set; }
         public string? Comment { get; set; }
+        public JArray? RejectionReasons { get; set; }
         public Guid? ReasonLookupId { get; set; }
     }
 
@@ -49,7 +51,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Command.Verify
             {
                 throw new NotFoundException($"verification request for  event with id = {request.EventId} is not found");
             }
-            var response = await _WorkflowService.ApproveService(verficationRequest.RequestId, "verification", request.IsApprove, request.Comment, request.ReasonLookupId, false, cancellationToken);
+            var response = await _WorkflowService.ApproveService(verficationRequest.RequestId, "verification", request.IsApprove, request.Comment, request.RejectionReasons, request.ReasonLookupId, false, cancellationToken);
             if (response.Item1)
             {
                 try

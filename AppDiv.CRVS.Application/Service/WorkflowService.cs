@@ -9,6 +9,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -109,7 +110,7 @@ namespace AppDiv.CRVS.Application.Service
             }
             return (Guid)groupId;
         }
-        public async Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, string? Remark, Guid? ReasonLookupId, bool paymentAdded, CancellationToken cancellationToken)
+        public async Task<(bool, Guid)> ApproveService(Guid RequestId, string workflowType, bool IsApprove, string? Remark, JArray? RejectionReasons, Guid? ReasonLookupId, bool paymentAdded, CancellationToken cancellationToken)
         {
             var request = _requestRepostory.GetAll()
             .Include(x => x.AuthenticationRequest).ThenInclude(a => a.Certificate)
@@ -183,6 +184,7 @@ namespace AppDiv.CRVS.Application.Service
                         RequestId = request.Id,
                         CivilRegOfficerId = userId,
                         Remark = Remark,
+                        RejectionReasons = RejectionReasons,
                         ReasonLookupId = ReasonLookupId
                     };
 

@@ -82,7 +82,7 @@ namespace AppDiv.CRVS.Application.Service
                 workflow = _WorkflowRepo.GetAll()
                 .Include(x => x.Steps)
                 .Where(x => x.workflowName == requst.Request.RequestType).FirstOrDefault();
-                 response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, true, cancellationToken);
+                 response = await _WorkflowService.ApproveService(requst.Request.Id, requst.Request.RequestType, true, "approved After payment", null, null, true, cancellationToken);
                 }
                 if (response.Item1 || workflow?.Steps?.FirstOrDefault() == null||requst.Request==null)
                 {

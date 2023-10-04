@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         public Guid RequestId { get; set; }
         public bool IsApprove { get; set; }
         public string? Comment { get; set; }
+        public JArray? RejectionReasons { get; set; }
         public Guid? ReasonLookupId { get; set; }
     }
     public class AuthenticatCommandHandler : IRequestHandler<AuthenticatCommand, BaseResponse>
@@ -42,7 +43,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         }
         public async Task<BaseResponse> Handle(AuthenticatCommand request, CancellationToken cancellationToken)
         {
-            var response = await _WorkflowService.ApproveService(request.RequestId, "authentication", request.IsApprove, request.Comment, request.ReasonLookupId, false, cancellationToken);
+            var response = await _WorkflowService.ApproveService(request.RequestId, "authentication", request.IsApprove, request.Comment, request.RejectionReasons, request.ReasonLookupId, false, cancellationToken);
             if (response.Item1)
             {
                 try
