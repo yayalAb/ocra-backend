@@ -12,7 +12,8 @@ namespace AppDiv.CRVS.Domain.Entities
     {
         public Guid PlanId { get; set; }
         public string EventType { get; set; }
-        public uint TargetAmount { get; set; }
+        public uint ActiveTargetAmount { get; set; }
+        public uint OtherTargetAmount { get; set; }
         public int ActualOccurance { get; set; }
         public string RemarkStr { get; set; } = string.Empty;
 

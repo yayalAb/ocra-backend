@@ -19,7 +19,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     public class AddEventPlan
     {
         public string EventType { get; set; }
-        public uint TargetAmount { get; set; }
+        public uint ActiveTargetAmount { get; set; }
+        public uint OtherTargetAmount { get; set; }
         public int ActualOccurance { get; set; }
         public JObject Remark { get; set; }
     }
@@ -27,7 +28,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
     {
         public Guid Id { get; set; }
         public string EventType { get; set; }
-        public uint TargetAmount { get; set; }
+        public uint ActiveTargetAmount { get; set; }
+        public uint OtherTargetAmount { get; set; }
         public int ActualOccurance { get; set; }
         public JObject Remark { get; set; }
     }

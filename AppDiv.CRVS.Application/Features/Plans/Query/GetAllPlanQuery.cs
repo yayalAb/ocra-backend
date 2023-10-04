@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                 plans = plans.Where(
                     u => EF.Functions.Like(u.EventType, "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.Plan.BudgetYear.ToString(), "%" + request.SearchString + "%") ||
-                         EF.Functions.Like(u.TargetAmount.ToString(), "%" + request.SearchString + "%") ||
+                         EF.Functions.Like(u.ActiveTargetAmount.ToString(), "%" + request.SearchString + "%") ||
                          EF.Functions.Like(u.Plan.PlannedDateEt, "%" + request.SearchString + "%"));
             }
             return await plans.OrderByDescending(p => p.CreatedAt)
@@ -49,7 +49,8 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     Id = p.Plan.Id,
                     AddressId = p.Plan.AddressId,
                     EventType = p.EventType,
-                    TargetAmount = p.TargetAmount,
+                    ActiveTargetAmount = p.ActiveTargetAmount,
+                    OtherTargetAmount = p.OtherTargetAmount,
                     Address = $@"{p.Plan.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Plan.Address.ParentAddress!.AddressNameLang}/{p.Plan.Address.AddressNameLang}".Trim('/'),
                     BudgetYear = p.Plan.BudgetYear,
                     PlannedDateEt = p.Plan.PlannedDateEt,
