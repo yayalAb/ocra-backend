@@ -17,6 +17,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
         public Guid Id { get; set; }
         public JArray? Description { get; set; }
         public JObject Content { get; set; }
+        public bool HasPayment { get; set; }=false;
     }
     public class updateCorrectionRequestCommandHandler : IRequestHandler<updateCorrectionRequestCommand, BaseResponse>
     {
@@ -48,6 +49,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             correctionRequestData.Description = request.Description;
             correctionRequestData.Content = request.Content;
             correctionRequestData.Request.IsRejected = false;
+            correctionRequestData.HasPayment=request.HasPayment;
 
             try
             {
