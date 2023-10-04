@@ -18,6 +18,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? ResponsbleGroup { get; set; }
         public int? CurrentStatus { get; set; }
         public bool? CanEdit { get; set; }
+        public string? EventRegDate { get; set; }
 
     }
 }

@@ -49,7 +49,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
               var RequestList = _transactionService.GetAll()
                   .Include(x=>x.CivilRegOfficer)
                   .ThenInclude(x=>x.UserGroups)
-                  .Include(x=>x.Request).Where(x=>x.Request.isDeleted==false)
+                  .Include(r=>r.Request)
+                  .Include(x=>x.Workflow)
+                  .ThenInclude(x=>x.Steps).Where(x=>x.Request.isDeleted==false)
                  .AsQueryable();
             if(!string.IsNullOrEmpty(request.startDate)&&!string.IsNullOrEmpty(request.endDate)){
                 var converter=new CustomDateConverter();
@@ -97,7 +99,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             }
             else if (request.Status == "inprogress")
             {
-                RequestList = RequestList.Where(r => r.Request.currentStep == 0 && r.Request.IsRejected == false);
+                RequestList = RequestList
+                 .Where(r => r.Request.currentStep != r.Request.NextStep && r.Request.IsRejected == false);
             }
                  
             
@@ -138,11 +141,17 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OwnerFullName = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
                                     t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
                                 t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
+                 
+                 EventRegDate =(t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventDateEt :
+                                    t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventDateEt: 
+                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventDateEt : "",
                  CurrentStep = t.Request.currentStep,
                  NextStep = t.Request.NextStep,
                  RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
                  ActionBy=t.CivilRegOfficer.UserName,
-                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault()
+                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault(),
+                 ActionDate=new CustomDateConverter(t.CreatedAt).ethiopianDate,
+                 ResponsbleGroup=t.Request.Workflow.Steps.Where(s=>s.step==t.Request.NextStep).Select(x=>x.UserGroup.GroupName).SingleOrDefault()
 
 
              });

@@ -32,6 +32,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public bool? IsReprint { get; set; }
         public string ? ActionBy { get; set; }
         public string ? UserGroups { get; set; }
+        public string? ActionDate { get; set; }
         
 
     }
