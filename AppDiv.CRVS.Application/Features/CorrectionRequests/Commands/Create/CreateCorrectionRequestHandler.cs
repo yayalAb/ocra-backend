@@ -62,6 +62,16 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 
         public async Task<BaseResponse> Handle(CreateCorrectionRequest request, CancellationToken cancellationToken)
         {
+            var checkCorrectionRequest=_CorrectionRepository.GetAll()
+            .Include(x=>x.Request)
+            .Where(x=>x.EventId==request.CorrectionRequest.EventId
+            && x.Request.currentStep==0).FirstOrDefault();
+            var response = new BaseResponse();
+            if(checkCorrectionRequest!=null){
+                response.Message="there is a correction request for the given event Id";
+                response.Success=false;
+                return response;    
+            }
             bool hasWorkflow = false;
             var executionStrategy = _CorrectionRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>
@@ -71,7 +81,6 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                     try
 
                     {
-                        var response = new BaseResponse();
                         request.CorrectionRequest.Request.RequestType = "change";
                         request.CorrectionRequest.Request.currentStep = 0;
                         var CorrectionRequest = CustomMapper.Mapper.Map<CorrectionRequest>(request.CorrectionRequest);
