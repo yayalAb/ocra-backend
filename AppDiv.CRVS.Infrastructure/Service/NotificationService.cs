@@ -115,7 +115,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                     .ThenInclude(n => n.Sender)
                                     .ThenInclude(s => s.PersonalInfo)
                                     .Select(r => r.Notification)
-                                    .FirstOrDefaultAsync();
+                                    .FirstOrDefaultAsync(n => n.RequestId == requestId);
             
             return notification == null ? null :
              new NotificationData
