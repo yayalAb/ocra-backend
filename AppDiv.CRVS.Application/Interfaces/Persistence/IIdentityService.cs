@@ -33,7 +33,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task<Result> UnlockUserAsync(string userName);
         public Task<(Result result , string? userId , IList<string>? roles)> VerifyOtp(string userName, string otp);
         public Task<(Result result, string? email, string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry);
-        Task<bool> Exists(string arg, string searchBy);
+        Task<(bool exists , string? userId)> Exists(string arg, string searchBy);
         // string GetUserGroupId(string userId);
     }
 }

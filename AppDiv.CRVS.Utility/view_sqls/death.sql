@@ -333,12 +333,35 @@ FROM
 JOIN Events as ev ON ev.Id = d.EventId
 JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
 GROUP BY  ifnull(regid,conid), ev.Status;
--- Basi
+-- Basi 1 death by region and facility type
+SELECT
+   ifnull(Region,Country) as address,
+   l.ValueStr as facilityType,
+    COUNT(d.Id) AS Count
+FROM
+    DeathEvents AS d
+JOIN Events as ev ON ev.Id = d.EventId
+JOIN view_address as a on a.addId = ev.EventRegisteredAddressId
+JOIN Lookups as l on l.Id = d.FacilityTypeLookupId
+GROUP BY  ifnull(regid,conid), d.FacilityTypeLookupId;
+
+-- Basi 2 death by areatype and facility type
+SELECT
+   atyp.ValueStr as areaType,
+   fatype.ValueStr as facilityType,
+    COUNT(d.Id) AS Count
+FROM
+    DeathEvents AS d
+JOIN Events as ev ON ev.Id = d.EventId
+JOIN view_address as a on a.addId = ev.EventAddressId
+JOIN Lookups as fatype on fatype.Id = d.FacilityTypeLookupId
+JOIN Lookups as atyp on atyp.Id = a.AreaTypeId
+GROUP BY  atyp.Id, d.FacilityTypeLookupId;
 -- 
 -- 
 -- Death duplicate with death4
 -- 
--- f6.2 ????
+-- f6.2 ???? cause of death is jobject
 
 -- #report2 death registration month by gender
 SELECT

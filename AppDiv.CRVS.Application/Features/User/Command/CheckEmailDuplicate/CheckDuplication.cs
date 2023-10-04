@@ -44,11 +44,11 @@ namespace AppDiv.CRVS.Application.Features.User.Command.CheckDuplication
                 throw new BadRequestException("Atleast one check criteria(email , username , phoneNumber, GroupName) is needed to check for duplication ");
             }
             var res = request.Email != null
-                        ? await _identityService.Exists(request.Email, "email")
+                        ?( await _identityService.Exists(request.Email, "email")).exists
                         :request.UserName != null
-                        ? await _identityService.Exists(request.UserName, "username")
+                        ? (await _identityService.Exists(request.UserName, "username")).exists
                         :request.PhoneNumber != null
-                        ? await _identityService.Exists(request.PhoneNumber, "phone")
+                        ? (await _identityService.Exists(request.PhoneNumber, "phone")).exists
                         :request.GroupName != null
                         ? await _group.AnyAsync(g => g.GroupName.Replace(" ", "") == request.GroupName.Replace(" ", ""))
                         :false;

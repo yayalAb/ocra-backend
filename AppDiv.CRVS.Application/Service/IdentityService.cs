@@ -338,20 +338,24 @@ namespace AppDiv.CRVS.Application.Service
             return Result.Success();
         }
 
-        public async Task<bool> Exists(string arg, string searchBy)
+        public async Task<(bool exists , string? userId)> Exists(string arg, string searchBy)
         {
+            ApplicationUser? user;
             switch (searchBy.ToLower())
             {
                 case "email":
-                    return (await _userManager.FindByEmailAsync(arg)) != null;
+                    user = await _userManager.FindByEmailAsync(arg);
+                   break;
                 case "username":
-                    return (await _userManager.FindByNameAsync(arg)) != null;
+                    user = await _userManager.FindByNameAsync(arg);
+                    break;
                 case "phone":
-                    return await _userManager.Users.Where(u => u.PhoneNumber == arg).AnyAsync();
+                    user =  _userManager.Users.Where(u => u.PhoneNumber == arg).FirstOrDefault();
+                    break;
                 default:
                     throw new NotFoundException("invalid search by string");
             }
-            return (await _userManager.FindByNameAsync(arg)) != null;
+               return (exists: user!= null, userId : user?.Id);
         }
 
 
