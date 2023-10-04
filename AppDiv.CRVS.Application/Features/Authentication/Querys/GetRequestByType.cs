@@ -138,6 +138,10 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  OwnerFullName = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
                                     t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
                                 t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
+                 
+                 EventRegDate =(t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventDateEt :
+                                    t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventDateEt: 
+                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventDateEt : "",
                  CurrentStep = t.Request.currentStep,
                  NextStep = t.Request.NextStep,
                  RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
