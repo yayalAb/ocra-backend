@@ -30,6 +30,10 @@ namespace AppDiv.CRVS.Domain.Configurations
                 .WithOne(n => n.Request)
                 .HasForeignKey<Notification>(n => n.RequestId)
                 .OnDelete(DeleteBehavior.Cascade);
+            builder.HasOne(m => m.ProfileChangeRequest)
+                    .WithOne(n => n.Request)
+                    .HasForeignKey<ProfileChangeRequest>(n => n.RequestId)
+                    .OnDelete(DeleteBehavior.Cascade);
 
         }
 

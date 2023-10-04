@@ -3,12 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
+using AppDiv.CRVS.Application.Features.User.Command.Update;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Domain;
+using AppDiv.CRVS.Domain.Repositories;
 using MediatR;
 using Newtonsoft.Json.Linq;
 
@@ -18,9 +22,11 @@ namespace AppDiv.CRVS.Application.Service
     {
 
         private readonly IMediator _mediator;
+
         public ContentValidator(IMediator mediator)
         {
             this._mediator = mediator;
+           
         }
         public async Task<BaseResponse> ValidateAsync(string eventType, JObject content, bool IsUpdate = true)
         {
@@ -62,6 +68,41 @@ namespace AppDiv.CRVS.Application.Service
                     default:
                         throw new ArgumentException($"Invalid eventType: {eventType}");
                 }
+            }
+            catch (System.Exception e)
+            {
+                response.BadRequest("Unable to parse the Content..." + e.Message);
+                // throw;
+            }
+            return response;
+        }
+        public async Task<BaseResponse> ValidateUserDataAsync(ApplicationUser oldData, JObject content, bool IsUpdate = true)
+        {
+            var response = new BaseResponse();
+            try
+            {
+                var newUserObj = content.ToObject<UpdateUserRequest>();
+        
+
+                UpdateUserCommand updateUserCommand = new UpdateUserCommand{
+                    Id = oldData.Id,
+                    UserName = oldData.UserName,
+                    Status = oldData.Status,
+                    Email = oldData.Email,
+                    PreferedLanguage = newUserObj.PreferedLanguage,
+                    AddressId = newUserObj.AddressId,
+                    UserImage = newUserObj.UserImage,
+                    UserGroups = oldData.UserGroups.Select(g => g.Id).ToList(),
+                    SelectedAdminType = oldData.SelectedAdminType,
+                    CanRegisterEvent = oldData.CanRegisterEvent,
+                    FingerPrintApiUrl = oldData.FingerPrintApiUrl,
+                    IsFromCommand = true,
+                    ValidateFirst = !IsUpdate,
+                    PersonalInfo = newUserObj.PersonalInfo
+
+                };
+                response = await _mediator.Send(updateUserCommand);
+     
             }
             catch (System.Exception e)
             {

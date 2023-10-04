@@ -56,6 +56,7 @@ using AppDiv.CRVS.Application.Features.Messages.Command.Create;
 using AppDiv.CRVS.Application.Features.Messages.Command.Create;
 using AppDiv.CRVS.Application.CouchModels;
 using AppDiv.CRVS.Application.Features.Ranges.Command.Update;
+using AppDiv.CRVS.Application.Features.ProfileChangeRequests.Commands.Create;
 
 namespace AppDiv.CRVS.Application.Mapper
 {
@@ -280,6 +281,7 @@ namespace AppDiv.CRVS.Application.Mapper
 
 
             CreateMap<CreateMessageCommand, Message>().ReverseMap();
+            CreateMap<CreateProfileChangeRequestCommand, ProfileChangeRequest>();
 
             // CreateMap<MarriageApplicationCouch , CreateMarriageApplicationCommand>()
             // .ForPath(x => x.BrideInfo.BirthAddressResponseDTO, opt => opt.Ignore())

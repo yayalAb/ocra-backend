@@ -18,6 +18,11 @@ namespace AppDiv.CRVS.Domain.Configuration
             builder.HasMany(m => m.Notifications)
             .WithOne(n => n.Sender)
             .HasForeignKey(n => n.SenderId);
+
+             builder.HasMany(m => m.ProfileChangeRequests)
+            .WithOne(n => n.User)
+            .HasForeignKey(n => n.UserId)
+            .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
