@@ -52,7 +52,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             DeathEvent!.Event.EventAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventAddressId)!;
             DeathEvent!.Event.EventOwener.BirthAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.BirthAddressId)!;
             DeathEvent!.Event.EventOwener.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventOwener?.ResidentAddressId)!;
-            if (DeathEvent?.Event.EventRegistrar.RegistrarInfo != null)
+            if (DeathEvent?.Event?.EventRegistrar?.RegistrarInfo != null)
             {
                 DeathEvent!.Event.EventRegistrar.RegistrarInfo.BirthAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.BirthAddressId)!;
                 DeathEvent!.Event.EventRegistrar.RegistrarInfo.ResidentAddressResponseDTO = await _AddressService.FormatedAddress(DeathEvent?.Event?.EventRegistrar.RegistrarInfo?.ResidentAddressId)!;
