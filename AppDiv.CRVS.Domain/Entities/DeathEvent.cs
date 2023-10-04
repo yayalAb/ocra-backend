@@ -10,6 +10,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? BirthCertificateId { get; set; }
         public Guid? FacilityTypeLookupId { get; set; }
         public Guid? FacilityLookupId { get; set; }
+        public string? Description { get; set; }
         public Guid? DuringDeathId { get; set; }
         public Guid? DeathPlaceId { get; set; }
         public string? PlaceOfFuneralStr { get; set; }
