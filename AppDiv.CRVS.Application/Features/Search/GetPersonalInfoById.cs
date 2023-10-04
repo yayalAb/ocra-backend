@@ -20,11 +20,13 @@ namespace AppDiv.CRVS.Application.Features.Search
     {
         private readonly IPersonalInfoRepository _PersonaInfoRepository;
         private readonly IDateAndAddressService _AddressService;
+        private readonly IEventDocumentService _eventDocumentService;
 
-        public GetPersonalInfoByIdHandler(IPersonalInfoRepository PersonaInfoRepository, IDateAndAddressService AddressService)
+        public GetPersonalInfoByIdHandler(IPersonalInfoRepository PersonaInfoRepository, IDateAndAddressService AddressService , IEventDocumentService eventDocumentService)
         {
             _PersonaInfoRepository = PersonaInfoRepository;
             _AddressService = AddressService;
+            _eventDocumentService = eventDocumentService;
         }
         public async Task<object> Handle(GetPersonalInfoById request, CancellationToken cancellationToken)
         {
@@ -59,7 +61,7 @@ namespace AppDiv.CRVS.Application.Features.Search
             }).FirstOrDefault();
             SelectedPerson.BirthAddressResponseDTO = await _AddressService?.FormatedAddress(SelectedPerson?.BirthAddressId);
             SelectedPerson.ResidentAddressResponseDTO = await _AddressService?.FormatedAddress(SelectedPerson?.ResidentAddressId);
-
+            SelectedPerson.FingerPrints =_eventDocumentService.getSingleFingerprintUrls(SelectedPerson.Id.ToString()); 
             return SelectedPerson;
         }
     }

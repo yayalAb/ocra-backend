@@ -22,8 +22,8 @@ namespace AppDiv.CRVS.Domain
         public string? PasswordResetOtp { get; set; }
         public DateTime? PasswordResetOtpExpiredDate { get; set; }
         public int SelectedAdminType { get; set; } = 0;
-        public bool? CanRegisterEvent {get;set;} = null;
-        public string FingerPrintApiUrl {get; set; } = "localhost";
+        public bool? CanRegisterEvent { get; set; } = null;
+        public string FingerPrintApiUrl { get; set; } = "localhost";
         public virtual PersonalInfo PersonalInfo { get; set; }
         public virtual Address Address { get; set; }
         public virtual ICollection<UserGroup> UserGroups { get; set; }
@@ -35,8 +35,9 @@ namespace AppDiv.CRVS.Domain
         public virtual ICollection<AuditLog> AuditLogs { get; set; }
         // public virtual ICollection<WorkHistory> WorkerHistories { get; set; }
 
-        public virtual ICollection<Message> SentMessages {get; set; }
-        public virtual ICollection<Message> ReceivedMessages {get; set; }
+        public virtual ICollection<Message> SentMessages { get; set; }
+        public virtual ICollection<Message> ReceivedMessages { get; set; }
+        public virtual ICollection<ProfileChangeRequest> ProfileChangeRequests { get; set; }
 
     }
 }

@@ -14,7 +14,8 @@ namespace AppDiv.CRVS.Domain.Enums
        change,
        certificateStore,
        message,
-       paymentExemption
+       paymentExemption,
+       profileChange
     }
     
 }
