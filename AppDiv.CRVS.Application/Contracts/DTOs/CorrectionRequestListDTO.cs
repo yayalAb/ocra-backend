@@ -8,7 +8,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
     public class CorrectionRequestListDTO
     {
         public Guid Id { get; set; }
-        public string? Requestedby { get; set; }
+        public string? RequestedBy { get; set; }
         public string OwnerFullName { get; set; }
         public string CertificateId { get; set; }
         public string? EventType { get; set; }

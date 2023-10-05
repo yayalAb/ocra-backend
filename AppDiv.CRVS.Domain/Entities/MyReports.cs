@@ -21,6 +21,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public string? Other { get; set; }
         public bool? IsShared { get; set; }
         public Guid? SharedFrom { get; set; }
+        public Guid? ReportGroupId { get; set; }
+        public virtual Lookup ReportGroup { get; set; }
         [NotMapped]
         public JObject ReportTitle
         {

@@ -17,6 +17,7 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands
         public string? Filter { get; set; }
         public string[]? Colums { get; set; }
         public JObject? Other { get; set; }
+        public Guid? ReportGroupId { get; set; }
 
 
     }

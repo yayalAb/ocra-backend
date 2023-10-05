@@ -15,6 +15,7 @@ using AppDiv.CRVS.Utility.Config;
 using AppDiv.CRVS.Domain.Enums;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace AppDiv.CRVS.Application.Features.Auth.Login
 
@@ -215,12 +216,15 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             };
             await _loginHistoryRepository.InsertAsync(LoginHis, cancellationToken);
             await _loginHistoryRepository.SaveChangesAsync(cancellationToken);
-            var MyReport = _myReportRepository.GetAll().Where(x => x.ReportOwnerId.ToString() == userData.Id)
+            var MyReport = _myReportRepository.GetAll()
+            .Include(x=>x.ReportGroup)
+            .Where(x => x.ReportOwnerId.ToString() == userData.Id)
             .Select(repo => new ReportStoreDTO
             {
                 Id = repo.Id,
                 ReportName = repo.ReportName,
-                ReportTitle = repo.ReportTitleLang
+                ReportTitle = repo.ReportTitleLang,
+                ReportGroup=repo.ReportGroup.ValueLang
             }).ToList();
             List<Guid> GroupIds = userData.UserGroups.Select(g => g.Id).ToList();
             var Report = _reportRepository.GetAll()
