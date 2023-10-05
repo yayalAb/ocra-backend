@@ -74,7 +74,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             {
                 "approved" => RequestList.Where(r => r.Request.IsRejected == false && (request.IsYourRequestList ? r.Request.currentStep == r.Request.NextStep : r.ApprovalStatus == true)),
                 "rejected" => RequestList.Where(r => r.ApprovalStatus == false && r.Request.IsRejected == true),
-                "rejectedOnce" => RequestList.Where(r => r.ApprovalStatus == false && r.Request.IsRejected == true && r.CurrentStep == 0),
+                "rejectedOnce" => RequestList.Where(r => r.Request.IsRejected == true && r.Request.currentStep == 0),
                 "inprogress" => RequestList.Where(r => r.Request.currentStep != r.Request.NextStep && r.Request.IsRejected == false),
                 _ => RequestList // Default case when the status doesn't match any of the above conditions
             };
