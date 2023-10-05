@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.Domain.Entities
                 UserGroupsStr =(string.IsNullOrEmpty(value.ToString()) ||value.Count==0) ? "[]":JsonConvert.SerializeObject(value);
             }
         }
-         [NotMapped]
+        [NotMapped]
         public JObject ReportTitle
         {
             get
@@ -49,7 +49,7 @@ namespace AppDiv.CRVS.Domain.Entities
                 ReportTitleStr = value.ToString();
             }
         }
-                [NotMapped]
+        [NotMapped]
         public string? ReportTitleLang
         {
             get

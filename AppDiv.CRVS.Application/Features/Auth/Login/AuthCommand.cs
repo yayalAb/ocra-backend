@@ -220,7 +220,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             {
                 Id = repo.Id,
                 ReportName = repo.ReportName,
-                ReportTitle = repo.ReportTitle
+                ReportTitle = repo.ReportTitleLang
             }).ToList();
             List<Guid> GroupIds = userData.UserGroups.Select(g => g.Id).ToList();
             var Report = _reportRepository.GetAll()
