@@ -84,7 +84,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             var correctionRequestDto = CorrectionRequest.OrderByDescending(x => x.CreatedAt).Select(x => new CorrectionRequestListDTO
             {
                 Id = x.Id,
-                Requestedby = x.Request.CivilRegOfficer.FullNameLang,
+                RequestedBy = x.Request.CivilRegOfficer.FullNameLang,
                 OwnerFullName = x.Event.EventOwener.FullNameLang!,
                 CertificateId = x.Event.CertificateId!,
                 RequestType = x.Request.RequestType,

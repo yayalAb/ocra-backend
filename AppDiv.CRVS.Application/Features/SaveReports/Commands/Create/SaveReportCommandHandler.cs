@@ -59,6 +59,8 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands
                     Other = request?.Other?.ToString(),
                     IsShared = false,
                     SharedFrom = Guid.Empty,
+                    ReportGroupId=request?.ReportGroupId
+                    
                 };
                 await _ReportRepository.InsertAsync(Report, cancellationToken);
                 await _ReportRepository.SaveChangesAsync(cancellationToken);
