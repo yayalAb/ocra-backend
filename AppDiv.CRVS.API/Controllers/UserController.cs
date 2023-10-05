@@ -6,12 +6,7 @@ using AppDiv.CRVS.Application.Features.User.Command.Delete;
 using AppDiv.CRVS.Application.Features.User.Command.Update;
 using AppDiv.CRVS.Application.Features.User.Query;
 using AppDiv.CRVS.Application.Features.User.Query.GetUserById;
-using AppDiv.CRVS.Domain;
-using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 using AppDiv.CRVS.Application.Features.User.Command.CheckDuplication;
 using AppDiv.CRVS.Application.Features.Auth.YourTeam;
 using AppDiv.CRVS.Application.Features.User.Command.UpdateUserName;
@@ -144,6 +139,7 @@ namespace AppDiv.CRVS.API.Controllers
                 return BadRequest(exp.Message);
             }
         }
+     
         [HttpPost("CheckDuplication")]
         public async Task<ActionResult> CheckDuplicateEmail([FromBody] CheckDuplicationCommand command)
         {

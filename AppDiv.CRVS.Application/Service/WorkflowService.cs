@@ -8,6 +8,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
+using CouchDB.Driver.Query.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
@@ -118,6 +119,7 @@ namespace AppDiv.CRVS.Application.Service
             .Include(x => x.VerficationRequest)
             .Include(x => x.Notification)
             .Include(x => x.PaymentExamptionRequest)
+            .Include(x => x.ProfileChangeRequest)
             .Include(x => x.VerficationRequest)
             .Where(x => x.Id == RequestId).FirstOrDefault();
             if (request == null)
@@ -133,7 +135,8 @@ namespace AppDiv.CRVS.Application.Service
             {
                 ReturnId = (request?.AuthenticationRequest?.Id == null || request?.AuthenticationRequest?.Id == Guid.Empty) ?
                   (request?.CorrectionRequest?.EventId == null || request?.CorrectionRequest?.EventId == Guid.Empty) ?
-                  request.PaymentExamptionRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
+                  (request?.ProfileChangeRequest?.Id == null || request?.ProfileChangeRequest?.Id == Guid.Empty) ?
+                  request.PaymentExamptionRequest.Id : request.ProfileChangeRequest.Id : request.CorrectionRequest.EventId : request.AuthenticationRequest.CertificateId;
             }
 
             if (request.currentStep >= 0 && request.currentStep < this.GetLastWorkflow(workflowType))
@@ -198,16 +201,33 @@ namespace AppDiv.CRVS.Application.Service
                                            .GetAll()
                                            .Where(c => c.Id == request.AuthenticationRequest.CertificateId)
                                            .Select(c => c.EventId).FirstOrDefault()
-                                           : request.VerficationRequest.EventId;
+                                           : request.VerficationRequest?.EventId;
 
                     Guid? notificationObjId = request.CorrectionRequest != null
                                            ? request.CorrectionRequest.Id
+                                           : request.ProfileChangeRequest != null
+                                           ? request.ProfileChangeRequest.Id
                                            : eventId;
 
                     Guid? eventRegisteredId = _EventRepository.GetAll()
                                                 .Where(e => e.Id == eventId)
                                                 .Select(e => e.EventRegisteredAddressId)
                                                 .FirstOrDefault();
+                    Guid? userAddressId = null;
+                    if (request.ProfileChangeRequest != null)
+                    {
+                        userAddressId = _userRepository.GetAll()
+                                            .Where(u => u.Id == request.ProfileChangeRequest.UserId)
+                                            .Select(u => u.AddressId)
+                                            .FirstOrDefault();
+                        if (userAddressId == null)
+                        {
+                            throw new NotFoundException("address of user who requested profilechange is not found");
+                        }
+
+                    }
+                    //
+                    var approvalAddressId = request.ProfileChangeRequest != null? userAddressId : eventRegisteredId;
 
                     //remove old notification from db and socket
                     if (request.Notification?.Id != null)
@@ -224,7 +244,7 @@ namespace AppDiv.CRVS.Application.Service
                             Guid receiverGroupId = this.GetReceiverGroupId(workflowType, (int)request.NextStep);
 
                             await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
-                                            receiverGroupId, request.Id, userId, eventRegisteredId, IsApprove ? "approve" : "reject", null);
+                                            receiverGroupId, request.Id, userId, approvalAddressId, IsApprove ? "approve" : "reject", null);
                         }
                         //TODO:ie:final rejection or approval , send notification to the civilRegOfficer who created the request
                         else
@@ -236,7 +256,7 @@ namespace AppDiv.CRVS.Application.Service
                             {
                                 await notificationService.CreateNotification((Guid)notificationObjId, workflowType!, Remark ?? "",
                                                null, request.Id,
-                                             userId, eventRegisteredId, IsApprove ? "approve" : "reject", recieverId);
+                                             userId, approvalAddressId, IsApprove ? "approve" : "reject", recieverId);
                             }
 
                         }
@@ -272,13 +292,13 @@ namespace AppDiv.CRVS.Application.Service
             var requestHaspayment = _requestRepostory.GetAll()
             .Include(x => x.Workflow)
             .ThenInclude(x => x.Steps)
-            .Include(x=>x.CorrectionRequest)
+            .Include(x => x.CorrectionRequest)
             .Include(x => x.PaymentRequest)
             .ThenInclude(x => x.Payment)
             .Where(re => ((re.Id == RequestId && re.Workflow.HasPayment) && (re.Workflow.PaymentStep == Step))
             ).FirstOrDefault();
 
-            if (requestHaspayment != null&&(requestHaspayment.CorrectionRequest==null||requestHaspayment.CorrectionRequest.HasPayment))
+            if (requestHaspayment != null && (requestHaspayment.CorrectionRequest == null || requestHaspayment.CorrectionRequest.HasPayment))
             {
                 if (requestHaspayment?.PaymentRequest == null)
                 {
