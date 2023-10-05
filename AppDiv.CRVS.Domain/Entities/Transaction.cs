@@ -20,7 +20,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual Lookup ReasonLookup { get; set; }
         
         [NotMapped]
-        public JArray RejectionReasonsArray
+        public JArray RejectionReasons
         {
             set 
             {
