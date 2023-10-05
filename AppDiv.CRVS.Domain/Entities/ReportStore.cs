@@ -14,7 +14,7 @@ namespace AppDiv.CRVS.Domain.Entities
     public class ReportStore : BaseAuditableEntity
     {
         public string? ReportName { get; set; }
-        public string? ReportTitle { get; set; }
+        public string? ReportTitleStr { get; set; }
         public string? Description { get; set; }
         public string? DefualtColumns { get; set; }
         public string? Query { get; set; }
@@ -22,6 +22,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public  string? UserGroupsStr { get; set; }
         public  bool? isAddressBased { get; set; }=false;
         public string? Other { get; set; }
+        public Guid? ReportGroupId { get; set; }
+        public virtual Lookup ReportGroup { get; set; }
         
         [NotMapped]
         public List<Guid>? UserGroups
@@ -35,7 +37,25 @@ namespace AppDiv.CRVS.Domain.Entities
                 UserGroupsStr =(string.IsNullOrEmpty(value.ToString()) ||value.Count==0) ? "[]":JsonConvert.SerializeObject(value);
             }
         }
-
-
+         [NotMapped]
+        public JObject ReportTitle
+        {
+            get
+            {
+                return JsonConvert.DeserializeObject<JObject>(string.IsNullOrEmpty(ReportTitleStr) ? "{}" : ReportTitleStr);
+            }
+            set
+            {
+                ReportTitleStr = value.ToString();
+            }
+        }
+                [NotMapped]
+        public string? ReportTitleLang
+        {
+            get
+            {
+                return ReportTitle.Value<string>(lang);
+            }
+        }
     }
 }

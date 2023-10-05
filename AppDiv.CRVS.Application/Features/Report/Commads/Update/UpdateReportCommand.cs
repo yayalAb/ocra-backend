@@ -22,7 +22,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
     {
         public Guid Id { get; set; }
         public string? ReportName { get; set; }
-        public string? ReportTitle { get; set; }
+        public JObject? ReportTitle { get; set; }
         public string? Description { get; set; }
         public string[]? DefualtColumns { get; set; }
         public string? query { get; set; }
@@ -30,6 +30,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
         public   List<Guid>? UserGroups { get; set; }
         public  bool? isAddressBased { get; set; }=false;
         public JObject? Other { get; set; }
+        public Guid? ReportGroupId { get; set; }
 
     }
 
@@ -62,7 +63,9 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
                 columnsLang= JsonSerializer.Serialize(request?.ColumnsLang),
                 UserGroups=request?.UserGroups,
                 isAddressBased=request?.isAddressBased,
-                Other=request?.Other?.ToString()
+                Other=request?.Other?.ToString(),
+                ReportGroupId=request.ReportGroupId
+
             };
             try
             {

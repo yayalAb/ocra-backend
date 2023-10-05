@@ -12,5 +12,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string? ReportName { get; set; }
         public string? ReportTitle { get; set; }
         public List<Guid>? Groups { get; set; }
+        public string? ReportGroup { get; set; }
+
     }
 }

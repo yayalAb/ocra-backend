@@ -74,8 +74,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public virtual ICollection<CertificateHistory> ReasonLookupNavigation { get; set; }
         public virtual ICollection<Transaction> TransactionReasonLookup { get; set; }
         public virtual ICollection<SupportingDocument> SupportingDocumentTypeNavigation {get;set;}
-
-
+        public virtual ICollection<ReportStore> ReportGroupNavigation {get;set;}
+        
 
         // public virtual ICollection<PaymentRate> PaymentRateNationNavigation { get; set; }
         [NotMapped]

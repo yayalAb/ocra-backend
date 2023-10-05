@@ -228,7 +228,7 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
                                 {
                                     Id = repo.Id,
                                     ReportName = repo.ReportName,
-                                    ReportTitle = repo.ReportTitle,
+                                    ReportTitle = repo.ReportTitleLang,
                                     Groups = JsonConvert.DeserializeObject<List<Guid>>(repo.UserGroupsStr),
                                 })
                                 .AsEnumerable()

@@ -49,7 +49,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
                         columnsLang=JsonSerializer.Serialize(request.ColumnsLang),
                         UserGroups=request.UserGroups,
                         isAddressBased=request.isAddressBased,
-                        Other=request.Other.ToString()
+                        Other=request.Other.ToString(),
+                        ReportGroupId=request.ReportGroupId
                     };
                 await _ReportRepository.CreateReportAsync(Report, cancellationToken);
                 CreateReportCommadResponse.Message = "Report created successfully";
