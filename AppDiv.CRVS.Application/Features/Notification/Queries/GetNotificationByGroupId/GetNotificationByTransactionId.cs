@@ -31,9 +31,9 @@ namespace AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransact
             {
                 Message = transaction.Remark,
                 ApprovalType = transaction.Request.RequestType,
-                SenderId = transaction.Request.CivilRegOfficer.ApplicationUser.Id,
-                SenderUserName = transaction.Request.CivilRegOfficer.ApplicationUser.UserName,
-                SenderFullName = transaction.Request.CivilRegOfficer.FullNameLang,
+                SenderId = transaction.CivilRegOfficer.Id,
+                SenderUserName = transaction.CivilRegOfficer.UserName,
+                SenderFullName = transaction.CivilRegOfficer.PersonalInfo.FullNameLang,
                 Date = (new CustomDateConverter(transaction.CreatedAt)).ethiopianDate
             };
         }

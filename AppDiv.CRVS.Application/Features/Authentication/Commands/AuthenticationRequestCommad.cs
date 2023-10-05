@@ -27,6 +27,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
         public Guid CivilRegOfficer { get; set; }
 
         public string? Remark { get; set; }
+        public JArray? RejectionReasons { get; set; }
     }
     public class AuthenticationRequestCommadHandler : IRequestHandler<AuthenticationRequestCommad, BaseResponse>
     {
@@ -123,7 +124,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Commands
                 WorkflowId = Workflow.Id,
                 RequestId = AuthenticationRequest.RequestId,
                 CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
-                Remark = request.Remark
+                Remark = request.Remark,
+                RejectionReasons = request.RejectionReasons
             };
             await _transactionService.CreateTransaction(NewTranscation);
             

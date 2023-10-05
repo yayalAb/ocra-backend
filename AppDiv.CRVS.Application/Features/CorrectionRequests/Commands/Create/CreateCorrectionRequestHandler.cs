@@ -145,7 +145,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                             WorkflowId = Workflow.Id,
                             RequestId = CorrectionRequest.RequestId,
                             CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
-                            Remark = "Correction Request"
+                            Remark = "Correction Request",
+                            RejectionReasons = new JArray()
                         };
 
                         await _transactionService.CreateTransaction(NewTranscation);

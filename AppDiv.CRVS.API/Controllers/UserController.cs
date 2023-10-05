@@ -15,6 +15,7 @@ using System.Data;
 using AppDiv.CRVS.Application.Features.User.Command.CheckDuplication;
 using AppDiv.CRVS.Application.Features.Auth.YourTeam;
 using AppDiv.CRVS.Application.Features.User.Command.UpdateUserName;
+using AppDiv.CRVS.Application.Features.ProfileChangeRequests.Commands.Create;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -121,6 +122,21 @@ namespace AppDiv.CRVS.API.Controllers
             try
             {
                 var result = await Mediator.Send(command);
+                return Ok(result);
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+        [HttpPut("createProfileChangeRequest")]
+        public async Task<ActionResult> profileChangeRequest([FromBody] CreateProfileChangeRequestCommand command)
+        {
+            try
+            {
+                var result = await Mediator.Send(command);
+                if (result.Status != 200)
+                    return BadRequest(result);
                 return Ok(result);
             }
             catch (Exception exp)
