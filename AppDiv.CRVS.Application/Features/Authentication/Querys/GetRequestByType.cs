@@ -63,44 +63,25 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                 DateTime lastMonth=DateTime.Now.AddDays(-30);
                 RequestList=RequestList.Where(x=>x.CreatedAt >= lastMonth);
             }
-            if (request.RequestType == "change")
+            RequestList = request.RequestType switch
             {
-                RequestList = RequestList.Include(x => x.Request)
-                                .ThenInclude(x => x.CorrectionRequest)
-                                .ThenInclude(x => x.Event)
-                                .ThenInclude(x => x.EventOwener);
-            }
-            else if (request.RequestType == "authentication")
+                "change" => RequestList.Include(x => x.Request.CorrectionRequest.Event.EventOwener),
+                "authentication" => RequestList.Include(x => x.Request.AuthenticationRequest.Certificate.Event.EventOwener),
+                "verification" => RequestList.Include(x => x.Request.VerficationRequest.Event.EventOwener),
+                _ => RequestList // Default case when the request type doesn't match any of the above conditions
+            };
+            RequestList = request.Status switch
             {
-                RequestList = RequestList.Include(x => x.Request)
-                    .ThenInclude(x => x.AuthenticationRequest)
-                    .ThenInclude(x => x.Certificate)
-                    .ThenInclude(x => x.Event)
-                    .ThenInclude(x => x.EventOwener);
-            }
-            else if (request.RequestType == "verification")
-            {
-                RequestList = RequestList.Include(x => x.Request)
-                    .ThenInclude(x => x.VerficationRequest)
-                    .ThenInclude(x => x.Event)
-                    .ThenInclude(x => x.EventOwener);
-            }
-            if (request.Status == "approved")
-            {
-                RequestList = RequestList.Where(r => r.ApprovalStatus == true);
-            }
-            else if (request.Status == "rejected")
-            {
-                RequestList = RequestList.Where(r => r.ApprovalStatus == false);
-            }
-            else if (request.Status == "rejectedOnce")
-            {
-                RequestList = RequestList.Where(r => r.ApprovalStatus == false && r.CurrentStep == 0);
-            }
-            else if (request.Status == "inprogress")
+                "approved" => RequestList.Where(r => r.Request.IsRejected == false && (request.IsYourRequestList ? r.Request.currentStep == r.Request.NextStep : r.ApprovalStatus == true)),
+                "rejected" => RequestList.Where(r => r.ApprovalStatus == false && r.Request.IsRejected == true),
+                "rejectedOnce" => RequestList.Where(r => r.ApprovalStatus == false && r.Request.IsRejected == true && r.CurrentStep == 0),
+                "inprogress" => RequestList.Where(r => r.Request.currentStep != r.Request.NextStep && r.Request.IsRejected == false),
+                _ => RequestList // Default case when the status doesn't match any of the above conditions
+            };
+            if (request.IsYourRequestList)
             {
                 RequestList = RequestList
-                 .Where(r => r.Request.currentStep != r.Request.NextStep && r.Request.IsRejected == false);
+                    .Where(r => r.Request.CivilRegOfficerId == r.CivilRegOfficer.PersonalInfoId);
             }
                  
             
@@ -121,37 +102,37 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              .OrderByDescending(w => w.CreatedAt)
              .Select(t => new AuthenticationRequestListDTO
              {
-                 Id = t.Request.Id,
-                 TransactionId = t.Id,
-                 OfficerId = Guid.Parse(t.CivilRegOfficerId),
-                 RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
-                 RequestType = t.Request.RequestType,
-                 EventId = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.EventId :
-                             t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.EventId :
-                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.EventId : null,
-                 RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ?
-                     t.Request.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
-                 EventType = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
-                             t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventType :
-                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventType : string.Empty,
-                 CertificateId = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.CertificateId :
-                                 t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.CertificateId :
-                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
-                                
-                 OwnerFullName = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
-                                    t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
-                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
-                 
-                 EventRegDate =(t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventDateEt :
-                                    t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventDateEt: 
-                                t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventDateEt : "",
-                 CurrentStep = t.Request.currentStep,
-                 NextStep = t.Request.NextStep,
-                 RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
-                 ActionBy=t.CivilRegOfficer.UserName,
-                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault(),
-                 ActionDate=new CustomDateConverter(t.CreatedAt).ethiopianDate,
-                 ResponsbleGroup=t.Request.Workflow.Steps.Where(s=>s.step==t.Request.NextStep).Select(x=>x.UserGroup.GroupName).SingleOrDefault()
+                Id = t.Request.Id,
+                TransactionId = t.Id,
+                OfficerId = Guid.Parse(t.CivilRegOfficerId),
+                RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
+                RequestType = t.Request.RequestType,
+                EventId = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.EventId :
+                            t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.EventId :
+                            t.Request.VerficationRequest != null ? t.Request.VerficationRequest.EventId : null,
+                RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ?
+                    t.Request.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
+                EventType = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
+                            t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventType :
+                            t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventType : string.Empty,
+                CertificateId = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.CertificateId :
+                                t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.CertificateId :
+                            t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.CertificateId : string.Empty,
+                            
+                OwnerFullName = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
+                                t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
+                            t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
+                
+                EventRegDate =(t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventDateEt :
+                                t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventDateEt: 
+                            t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventDateEt : "",
+                CurrentStep = t.Request.currentStep,
+                NextStep = t.Request.NextStep,
+                RequestDate =new CustomDateConverter(t.Request.CreatedAt).ethiopianDate,
+                ActionBy=t.CivilRegOfficer.UserName,
+                UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault(),
+                ActionDate=new CustomDateConverter(t.CreatedAt).ethiopianDate,
+                ResponsbleGroup=t.Request.Workflow.Steps.Where(s=>s.step==t.Request.NextStep).Select(x=>x.UserGroup.GroupName).SingleOrDefault()
 
 
              });
