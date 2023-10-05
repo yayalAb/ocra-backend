@@ -30,7 +30,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
             if(request.Id==null||request.Id==Guid.Empty){
                 throw new NotFoundException("Report Id must not be Empty");
             }
-            var Report = await _reportRepository.GetAsync(request.Id);
+            var Report = _reportRepository.GetAll().Where(x=>x.Id==request.Id).FirstOrDefault();
 
             if(Report==null){
                throw new NotFoundException("Report with the given Id does't Found"); 
@@ -44,7 +44,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                 ColumnsLang=string.IsNullOrEmpty(Report.columnsLang)? null : JsonSerializer.Deserialize<List<ReportColumsLngDto>>(Report.columnsLang),
                 UserGroups=Report.UserGroups,
                 isAddressBased=Report.isAddressBased,
-                Other=string.IsNullOrEmpty(Report.Other)? null : JObject.Parse(Report.Other)
+                Other=string.IsNullOrEmpty(Report.Other)? null : JObject.Parse(Report.Other),
+                ReportGroup=Report.ReportGroup.ValueLang
              };
             return response;
         }

@@ -61,7 +61,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
             var Other=string.IsNullOrEmpty(reportStore.Other)?"": JsonConvert.DeserializeObject(reportStore.Other);              
             return new{
                reportStore.ReportTitle, 
-               reportStore.ReportName,
+               reportStore.ReportTitleLang,
                columnsLang,
                Other,
                report

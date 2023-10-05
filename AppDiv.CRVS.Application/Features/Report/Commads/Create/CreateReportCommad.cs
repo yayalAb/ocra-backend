@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
     public class CreateReportCommad : IRequest<CreateReportCommadResponse>
     {
         public string ReportName { get; set; } = "";
-        public string ReportTitle { get; set; } = "";
+        public JObject ReportTitle { get; set; }
         public string Query { get; set; } = "";
         public string? Description { get; set; }
         public string[]? DefualtColumns { get; set; }
@@ -19,6 +19,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
         public   List<Guid>? UserGroups { get; set; }
         public  bool? isAddressBased { get; set; }=false;
         public JObject? Other { get; set; }
+        public Guid? ReportGroupId { get; set; }
 
 
     }

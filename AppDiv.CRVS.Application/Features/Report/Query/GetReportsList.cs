@@ -35,12 +35,14 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
         public async Task<PaginatedList<ReportStoreDTO>> Handle(GetReportsList request, CancellationToken cancellationToken)
         {
             var Report = _reportRepository.GetAll()
+                                .Include(x=>x.ReportGroup)
                                 .Select(repo => new ReportStoreDTO
                                             {
                                                 Id = repo.Id,
                                                 ReportName = repo.ReportName,
-                                                ReportTitle =repo.ReportTitle,
-                                                Groups=repo.UserGroups
+                                                ReportTitle =repo.ReportTitleLang,
+                                                Groups=repo.UserGroups,
+                                                ReportGroup=repo.ReportGroup.ValueLang
                                             }).ToList();
 
             return await PaginatedList<ReportStoreDTO>
