@@ -65,13 +65,14 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             var checkCorrectionRequest=_CorrectionRepository.GetAll()
             .Include(x=>x.Request)
             .Where(x=>x.EventId==request.CorrectionRequest.EventId
-            && x.Request.currentStep==0).FirstOrDefault();
+            && (x.Request.currentStep!=x.Request.NextStep||x.Request.IsRejected==false) ).FirstOrDefault();
             var response = new BaseResponse();
             if(checkCorrectionRequest!=null){
                 response.Message="there is a correction request for the given event Id";
                 response.Success=false;
                 return response;    
             }
+
             bool hasWorkflow = false;
             var executionStrategy = _CorrectionRepository.Database.CreateExecutionStrategy();
             return await executionStrategy.ExecuteAsync(async () =>

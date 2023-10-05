@@ -25,16 +25,20 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
         private readonly IEventDocumentService _eventDocumentService;
         private readonly IEventRepository _eventRepository;
         private readonly IContentValidator _contentValidator;
+        private readonly IWorkflowService _WorkflowService;
+
 
         public updateCorrectionRequestCommandHandler(ICorrectionRequestRepostory CorrectionRequestRepostory,
                                                     IEventDocumentService eventDocumentService,
                                                     IEventRepository eventRepository,
-                                                    IContentValidator contentValidator)
+                                                    IContentValidator contentValidator,
+                                                    IWorkflowService WorkflowService)
         {
             _CorrectionRequestRepostory = CorrectionRequestRepostory;
             _eventDocumentService = eventDocumentService;
             _eventRepository = eventRepository;
             this._contentValidator = contentValidator;
+            _WorkflowService=WorkflowService;
         }
         public async Task<BaseResponse> Handle(updateCorrectionRequestCommand request, CancellationToken cancellationToken)
         {
@@ -42,15 +46,15 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             var correctionRequestData = _CorrectionRequestRepostory.GetAll()
             .Include(x => x.Request)
             .Where(x => x.Id == request.Id).FirstOrDefault();
-            if (correctionRequestData.Request.currentStep != 0)
-            {
-                 response.BadRequest("you can not edit this request it is Approved");
+            if(correctionRequestData.Request==null||(correctionRequestData.Request.currentStep==correctionRequestData.Request.NextStep)){
+               throw new NotFoundException("you can not edit this request b/c it is approved"); 
             }
             correctionRequestData.Description = request.Description;
             correctionRequestData.Content = request.Content;
             correctionRequestData.Request.IsRejected = false;
             correctionRequestData.HasPayment=request.HasPayment;
-
+            correctionRequestData.Request.currentStep=0;
+            correctionRequestData.Request.NextStep=_WorkflowService.GetNextStep("change", 0, true);
             try
             {
                 var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
