@@ -74,14 +74,17 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             {
                 "approved" => RequestList.Where(r => r.Request.IsRejected == false && (request.IsYourRequestList ? r.Request.currentStep == r.Request.NextStep : r.ApprovalStatus == true)),
                 "rejected" => RequestList.Where(r => r.ApprovalStatus == false && r.Request.IsRejected == true),
-                "rejectedOnce" => RequestList.Where(r => r.Request.IsRejected == true && r.Request.currentStep == 0),
+                "rejectedOnce" => RequestList.Where(r => r.ApprovalStatus == false && r.Request.IsRejected == true && r.CurrentStep == 0),
                 "inprogress" => RequestList.Where(r => r.Request.currentStep != r.Request.NextStep && r.Request.IsRejected == false),
                 _ => RequestList // Default case when the status doesn't match any of the above conditions
             };
             if (request.IsYourRequestList)
             {
                 RequestList = RequestList
-                    .Where(r => r.Request.CivilRegOfficerId == r.CivilRegOfficer.PersonalInfoId);
+                    .Where(r => r.Request.CivilRegOfficerId != r.CivilRegOfficer.PersonalInfoId)
+                    .Where(c => _transactionService.GetAll()
+                        .Where(t => t.RequestId == c.RequestId && t.CreatedAt > c.CreatedAt)
+                        .Count() == 0);
             }
                  
             
@@ -133,8 +136,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault(),
                 ActionDate=new CustomDateConverter(t.CreatedAt).ethiopianDate,
                 ResponsbleGroup=t.Request.Workflow.Steps.Where(s=>s.step==t.Request.NextStep).Select(x=>x.UserGroup.GroupName).SingleOrDefault()
-
-
              });
             var List = await PaginatedList<AuthenticationRequestListDTO>
                              .CreateAsync(
