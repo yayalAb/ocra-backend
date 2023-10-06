@@ -63,11 +63,10 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
                 {
                     return validationResponse;
                 }
-                var supportingDocuments = GetSupportingDocuments(request.Content, "eventSupportingDocuments", out JObject newContent);
-                var examptionDocuments = GetSupportingDocuments(newContent, "paymentExamption", out JObject finalContent);
-                _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments, examptionDocuments, events.EventType);
-                correctionRequestData.Content = finalContent;
-
+                var supportingDocuments = GetSupportingDocumentsMe(correctionRequestData.Content, "eventSupportingDocuments");
+                var examptionDocuments = GetSupportingDocumentsMe(supportingDocuments.Item1, "paymentExamption");
+                _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments.Item2, examptionDocuments.Item2, events?.EventType);
+                correctionRequestData.Content = examptionDocuments.Item1;
                 await _CorrectionRequestRepostory.UpdateAsync(correctionRequestData, x => x.Id);
                 await _CorrectionRequestRepostory.SaveChangesAsync(cancellationToken);
                 // var events = await _eventRepository.GetAsync(correctionRequestData.EventId);
@@ -79,8 +78,10 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
             }
             return response;
         }
-        private ICollection<AddSupportingDocumentRequest> GetSupportingDocuments(JObject content, string type, out JObject modifiedContent)
+                private (JObject, List<AddSupportingDocumentRequest>) GetSupportingDocumentsMe(JObject content, string type)
         {
+
+            var supportingDocuments = new List<AddSupportingDocumentRequest>();
             try
             {
                 var contentList = type switch
@@ -88,46 +89,29 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands.Update
                     "eventSupportingDocuments" => content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments"),
                     "paymentExamption" => content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")
                 };
-                var supportingDocuments = new List<AddSupportingDocumentRequest>();
                 if (contentList != null)
                 {
-                    for (int i = 0; i < contentList.Count; i++)
+                    foreach (JObject item in contentList.ToList())
                     {
-                        JToken sup = contentList[i];
-                        AddSupportingDocumentRequest file = sup?.ToObject<AddSupportingDocumentRequest>();
-                        if (file.Id != null)
+                        if
+                        (item["id"] == null)
                         {
-                            if (type == "eventSupportingDocuments")
-                                content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments")?[i].Remove();
-                            else
-                                content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")?[i].Remove();
-                            continue;
+                            item["id"] = Guid.NewGuid().ToString();
+                            supportingDocuments.Add(item.ToObject<AddSupportingDocumentRequest>());
+                            item["base64String"] = "";
                         }
-                        file.Id = Guid.NewGuid();
-                        var newFile = new AddSupportingDocumentRequest
-                        {
-                            Id = file.Id,
-                            Description = file.Description,
-                            Label = file.Label,
-                            Type = file.Type,
-                            base64String = file?.base64String
-                        };
-                        supportingDocuments.Add(file);
-                        newFile.base64String = "null";
-                        JToken supdoc = JToken.FromObject(newFile);
-                        if (type == "eventSupportingDocuments")
-                            content?.Value<JObject>("event")?.Value<JArray>("eventSupportingDocuments")?[i].Replace(supdoc);
                         else
-                            content?.Value<JObject>("event")?.Value<JObject>("paymentExamption")?.Value<JArray>("supportingDocuments")?[i].Replace(supdoc);
+                        {
+                            contentList.Remove(item);
+                        }
                     }
                 }
-                modifiedContent = content;
-                return supportingDocuments;
             }
             catch (System.Exception)
             {
                 throw;
             }
+            return (content, supportingDocuments);
         }
     }
 }

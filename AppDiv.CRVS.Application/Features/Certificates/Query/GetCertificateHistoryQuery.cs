@@ -63,6 +63,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             .Include(x => x.CorrectionRequests)
             .Where(x => x.Id == selectedEvent.EventId)
             .Select(da => new
+            
             {
                 Registered = da,
                 payment = da.EventPaymentRequest.FirstOrDefault().Payment,
