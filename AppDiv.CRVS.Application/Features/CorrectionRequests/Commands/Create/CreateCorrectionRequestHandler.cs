@@ -62,15 +62,16 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
 
         public async Task<BaseResponse> Handle(CreateCorrectionRequest request, CancellationToken cancellationToken)
         {
-            var checkCorrectionRequest=_CorrectionRepository.GetAll()
-            .Include(x=>x.Request)
-            .Where(x=>x.EventId==request.CorrectionRequest.EventId
-            && (x.Request.currentStep!=x.Request.NextStep||x.Request.IsRejected==false) ).FirstOrDefault();
+            var checkCorrectionRequest = _CorrectionRepository.GetAll()
+            .Include(x => x.Request)
+            .Where(x => x.EventId == request.CorrectionRequest.EventId
+            && (x.Request.currentStep != x.Request.NextStep || x.Request.IsRejected == false)).FirstOrDefault();
             var response = new BaseResponse();
-            if(checkCorrectionRequest!=null){
-                response.Message="there is a correction request for the given event Id";
-                response.Success=false;
-                return response;    
+            if (checkCorrectionRequest != null)
+            {
+                response.Message = "there is a correction request for the given event Id";
+                response.Success = false;
+                return response;
             }
 
             bool hasWorkflow = false;
@@ -101,31 +102,36 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         }
                         else
                         {
-                            if(request.CorrectionRequest.HasPayment){
-                                 (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest(events.EventType, events, "change", null, false, false, cancellationToken);
+                            if (request.CorrectionRequest.HasPayment)
+                            {
+                                (float amount, string code) payment = await _paymentRequestService.CreatePaymentRequest(events.EventType, events, "change", null, false, false, cancellationToken);
                                 if (payment.amount == 0 || payment.amount == 0.0)
                                 {
                                     hasWorkflow = false;
                                 }
-                            }else{
-                              hasWorkflow = false;  
                             }
-                           
+                            else
+                            {
+                                hasWorkflow = false;
+                            }
+
                         }
-                        if(hasWorkflow){
-                        var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
-                        if (validationResponse.Status != 200)
+                        if (hasWorkflow)
                         {
-                            return validationResponse;
+                            var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
+                            if (validationResponse.Status != 200)
+                            {
+                                return validationResponse;
+                            }
                         }
-                        }  
                         var supportingDocuments = GetSupportingDocumentsMe(CorrectionRequest.Content, "eventSupportingDocuments");
                         var examptionDocuments = GetSupportingDocumentsMe(supportingDocuments.Item1, "paymentExamption");
                         _eventDocumentService.SaveCorrectionRequestSupportingDocuments(supportingDocuments.Item2, examptionDocuments.Item2, events?.EventType);
                         CorrectionRequest.Content = examptionDocuments.Item1;
-                        if(!hasWorkflow){
-                        var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
-                        await transaction.CommitAsync();
+                        if (!hasWorkflow)
+                        {
+                            var validationResponse = await _contentValidator.ValidateAsync(events.EventType, CorrectionRequest.Content, hasWorkflow);
+                            await transaction.CommitAsync();
 
                             return response;
                         }
@@ -138,6 +144,8 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                         {
                             throw new NotFoundException("user not found");
                         }
+                        var description = request.CorrectionRequest.Description?.ToObject<List<LanguageModel>>()?.FirstOrDefault();
+
                         var NewTranscation = new TransactionRequestDTO
                         {
                             CurrentStep = 0,
@@ -145,14 +153,14 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
                             WorkflowId = Workflow.Id,
                             RequestId = CorrectionRequest.RequestId,
                             CivilRegOfficerId = userId,//_UserResolverService.GetUserId().ToString(),
-                            Remark = "Correction Request",
+                            Remark = description == null ? "correction request" : "or : " + description.or + "\n" + "am: " + description.am,
                             RejectionReasons = new JArray()
                         };
 
                         await _transactionService.CreateTransaction(NewTranscation);
-                        await _notificationService.CreateNotification(CorrectionRequest.Id, Enum.GetName<NotificationType>(NotificationType.change)!, "Correction Request",
+                        await _notificationService.CreateNotification(CorrectionRequest.Id, Enum.GetName<NotificationType>(NotificationType.change)!, NewTranscation.Remark,
                                            _WorkflowService.GetReceiverGroupId(Enum.GetName<NotificationType>(NotificationType.change)!, (int)CorrectionRequest.Request.NextStep), CorrectionRequest.RequestId,
-                                         userId,events.EventRegisteredAddressId,"request",null);
+                                         userId, events.EventRegisteredAddressId, "request", null);
                         await transaction.CommitAsync();
 
                         return response;
