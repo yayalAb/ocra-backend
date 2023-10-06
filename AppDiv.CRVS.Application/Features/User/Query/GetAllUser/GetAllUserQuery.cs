@@ -130,6 +130,9 @@ namespace AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser
             {
                 response2 = response2.Where(u => EF.Functions.Like(u.UserName, "%" + request.SearchString + "%")
                                             || EF.Functions.Like(u.Email, "%" + request.SearchString + "%")
+                                            || EF.Functions.Like(u.PersonalInfo.FirstNameStr, "%" + request.SearchString + "%")
+                                            || EF.Functions.Like(u.PersonalInfo.MiddleNameStr, "%" + request.SearchString + "%")
+                                            || EF.Functions.Like(u.PersonalInfo.LastNameStr, "%" + request.SearchString + "%")
                                             || EF.Functions.Like(u.PhoneNumber, "%" + request.SearchString + "%"));
             }
 
