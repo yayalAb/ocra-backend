@@ -228,12 +228,14 @@ namespace AppDiv.CRVS.Application.Features.Auth.Login
             }).ToList();
             List<Guid> GroupIds = userData.UserGroups.Select(g => g.Id).ToList();
             var Report = _reportRepository.GetAll()
+                                .Include(x=>x.ReportGroup)
                                 .Select(repo => new ReportStoreDTO
                                 {
                                     Id = repo.Id,
                                     ReportName = repo.ReportName,
                                     ReportTitle = repo.ReportTitleLang,
                                     Groups = JsonConvert.DeserializeObject<List<Guid>>(repo.UserGroupsStr),
+                                    ReportGroup=repo.ReportGroup.ValueLang
                                 })
                                 .AsEnumerable()
                                 .Where(report => report.Groups != null && GroupIds != null && report.Groups.Intersect(GroupIds).Any())
