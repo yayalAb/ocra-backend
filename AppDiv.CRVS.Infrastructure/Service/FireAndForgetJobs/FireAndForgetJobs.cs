@@ -257,7 +257,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                                                         + " " + (certificate.Event?.EventOwener?.LastName == null ? null : certificate.Event.EventOwener.LastName.Value<string>("or")),
                 EventAddressAm = certificate.Event?.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("am"),
                 EventAddressOr = certificate.Event?.EventAddress == null ? null : certificate.Event.EventAddress.AddressName.Value<string>("or"),
-                EventRegisteredAddressId = certificate.Event?.EventRegisteredAddressId == null ? null : certificate.Event?.EventRegisteredAddressId.ToString(),
+                EventRegisteredAddressId = certificate.Event?.EventRegisteredAddressId == null ? null : certificate.Event?.EventRegisteredAddressId,
                 EventRegisteredAddressAm = certificate.Event.EventRegisteredAddress == null ? null : certificate.Event.EventRegisteredAddress.AddressName.Value<string>("am"),
                 EventRegisteredAddressOr = certificate.Event.EventRegisteredAddress == null ? null : certificate.Event.EventRegisteredAddress.AddressName.Value<string>("or"),
                 Status = certificate.Status
