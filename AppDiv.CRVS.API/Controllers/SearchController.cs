@@ -65,9 +65,9 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("SearchCertificate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<object> SearchCertificate([FromQuery] string SearchString)
+        public async Task<object> SearchCertificate([FromQuery] SearchCertificateQuery query)
         {
-            return await _mediator.Send(new SearchCertificateQuery { SearchString = SearchString });
+            return await _mediator.Send(query);
         }
 
         [HttpGet]
