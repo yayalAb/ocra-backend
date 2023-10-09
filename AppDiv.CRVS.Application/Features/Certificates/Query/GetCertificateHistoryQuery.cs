@@ -6,6 +6,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
+using AppDiv.CRVS.Utility.Services;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -37,6 +38,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
         }
         public async Task<EventHistoryDto> Handle(GetCertificateHistoryQuery request, CancellationToken cancellationToken)
         {
+             var convertor = new CustomDateConverter();
 
             var selectedEvent = _CertificateRepository.GetAll()
             .Where(x => x.Id == request.Id)
@@ -82,7 +84,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             .Select(h => new EventHistory
             {
                 Action = "Reprinted",
-                Date = h.CreatedAt.ToString(),
+                Date = convertor.GregorianToEthiopic(h.CreatedAt),
                 By = h.CivilRegOfficer.FirstNameLang + " " + h.CivilRegOfficer.MiddleNameLang + " " + h.CivilRegOfficer.LastNameLang,
                 Type = h.CivilRegOfficer.ApplicationUser.UserGroups.Select(x => x.GroupName).FirstOrDefault(),
                 Address = h.CivilRegOfficer.ApplicationUser.Address.AddressNameLang
@@ -112,7 +114,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 var history = new EventHistory
                 {
                     Action = "paid",
-                    Date = events?.payment?.CreatedAt.ToString(),
+                    Date = convertor.GregorianToEthiopic((DateTime)events?.payment?.CreatedAt),
                     By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
                     Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
                     Address = events?.certificate?.FirstOrDefault().Event?.EventAddress?.AddressNameLang,
@@ -130,7 +132,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 var history = new EventHistory
                 {
                     Action = "certificate",
-                    Date = events?.certificate?.FirstOrDefault().CreatedAt.ToString(),
+                    Date = convertor.GregorianToEthiopic((DateTime)events?.certificate?.FirstOrDefault().CreatedAt),
                     By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
                     Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
                     Address = events?.certificate?.FirstOrDefault().Event?.EventAddress?.AddressNameLang,
