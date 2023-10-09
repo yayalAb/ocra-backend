@@ -85,6 +85,13 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                         .Where(t => t.RequestId == c.RequestId && t.CreatedAt > c.CreatedAt)
                         .Count() == 0);
             }
+            else
+            {
+                RequestList = RequestList
+                    .Where(c => _transactionService.GetAll()
+                        .Where(t => t.RequestId == c.RequestId && t.CreatedAt < c.CreatedAt)
+                        .Count() == 0);
+            }
                  
             
             if (!string.IsNullOrEmpty(request.SearchString))
