@@ -19,7 +19,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
     public record AdoptionEventGetByIdQuery : IRequest<AdoptionDTO>
     {
         public Guid Id { get; set; }
-        public Guid? TransactionId { get; set; }
     }
 
     public class AdoptionEventGetByIdQueryHandler : IRequestHandler<AdoptionEventGetByIdQuery, AdoptionDTO>
@@ -77,10 +76,6 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById
                 Father = _eventDocumentService.getSingleFingerprintUrls(adoptionEvent.AdoptiveFather?.Id.ToString()),
                 Child = _eventDocumentService.getSingleFingerprintUrls(adoptionEvent.Event.EventOwener?.Id.ToString())
             };
-            if (request.TransactionId is not null)
-            {
-                adoptionEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
-            }
 
             return adoptionEvent;
         }

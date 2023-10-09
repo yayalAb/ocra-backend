@@ -11,12 +11,10 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     public class GetDeathEventByIdQuery : IRequest<DeathEventDTO>
     {
         public Guid Id { get; private set; }
-        public Guid? TransactionId { get; private set; }
 
-        public GetDeathEventByIdQuery(Guid Id, Guid? transactionId)
+        public GetDeathEventByIdQuery(Guid Id)
         {
             this.Id = Id;
-            this.TransactionId = transactionId;
         }
 
     }
@@ -62,10 +60,6 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 Deceased = _eventDocumentService.getSingleFingerprintUrls(DeathEvent.Event.EventOwener?.Id.ToString()),
                 Registrar = _eventDocumentService.getSingleFingerprintUrls(DeathEvent.Event.EventRegistrar?.RegistrarInfo?.Id.ToString())
             };
-            if (request.TransactionId is not null)
-            {
-                DeathEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
-            }
             return DeathEvent!;
         }
     }

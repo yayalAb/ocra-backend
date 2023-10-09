@@ -16,7 +16,6 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
     public record GetDivorceEventByIdQuery : IRequest<UpdateDivorceEventCommand>
     {
         public Guid Id { get; set; }
-        public Guid? TransactionId { get; set; }
     }
 
     public class GetDivorceEventByIdQueryHandler : IRequestHandler<GetDivorceEventByIdQuery, UpdateDivorceEventCommand>
@@ -74,11 +73,6 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Query
                 Husband = _eventDocumentService.getSingleFingerprintUrls(DivorceEvent.Event.EventOwener?.Id.ToString()),
                 Wife = _eventDocumentService.getSingleFingerprintUrls(DivorceEvent.DivorcedWife?.Id.ToString())
             };
-            if (request.TransactionId is not null)
-            {
-                DivorceEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
-            }
-
             return DivorceEvent;
         }
     }

@@ -19,11 +19,9 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
     public class GetBirthEventByIdQuery : IRequest<BirthEventDTO>
     {
         public Guid Id { get; private set; }
-        public Guid? TransactionId { get; set; }
-        public GetBirthEventByIdQuery(Guid Id, Guid? transactionId)
+        public GetBirthEventByIdQuery(Guid Id)
         {
             this.Id = Id;
-            TransactionId = transactionId;
         }
 
     }
@@ -83,10 +81,6 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 Child = _eventDocumentService.getSingleFingerprintUrls(BirthEvent.Event.EventOwener?.Id.ToString()),
                 Registrar = _eventDocumentService.getSingleFingerprintUrls(BirthEvent.Event.EventRegistrar?.RegistrarInfo?.Id.ToString())
             };
-            if (request.TransactionId is not null)
-            {
-                BirthEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
-            }
             return BirthEvent!;
         }
     }

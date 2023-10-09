@@ -51,19 +51,15 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> updateDivorceEvent(Guid id, [FromQuery] Guid? transactionId)
+        public async Task<IActionResult> GetById(Guid id)
         {
-
-            return Ok(await Mediator.Send(new GetDivorceEventByIdQuery { Id = id, TransactionId = transactionId }));
-
+            return Ok(await Mediator.Send(new GetDivorceEventByIdQuery { Id = id }));
         }
         [HttpGet]
         [Route("getWife/{id}")]
         public async Task<IActionResult> getWives(Guid id)
         {
-
             return Ok(await Mediator.Send(new GetWivesQuery { HusbandId = id }));
-
         }
     }
 }
