@@ -85,13 +85,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                         .Where(t => t.RequestId == c.RequestId && t.CreatedAt > c.CreatedAt)
                         .Count() == 0);
             }
-            else
-            {
-                RequestList = RequestList
-                    .Where(c => _transactionService.GetAll()
-                        .Where(t => t.RequestId == c.RequestId && c.Request.CivilRegOfficerId == t.CivilRegOfficer.PersonalInfoId)
-                        .Count() != 0);
-            }
                  
             
             if (!string.IsNullOrEmpty(request.SearchString))
@@ -112,7 +105,14 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              .Select(t => new AuthenticationRequestListDTO
              {
                 Id = t.Request.Id,
-                TransactionId = t.Id,
+                TransactionId = request.IsYourRequestList 
+                                ? t.Id 
+                                : _transactionService.GetAll()
+                                    .Include(it => it.Request)
+                                    .Include(it => it.CivilRegOfficer)
+                                    .Where(it => it.Id == t.Id && it.Request.CivilRegOfficerId == it.CivilRegOfficer.PersonalInfoId)
+                                    .Select(it => it.Id)
+                                    .SingleOrDefault(),
                 OfficerId = Guid.Parse(t.CivilRegOfficerId),
                 RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
                 RequestType = t.Request.RequestType,
