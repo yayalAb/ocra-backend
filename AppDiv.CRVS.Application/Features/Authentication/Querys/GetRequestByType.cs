@@ -81,7 +81,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             if (request.IsYourRequestList)
             {
                 RequestList = RequestList
-                    .Where(r => r.Request.CivilRegOfficerId != r.CivilRegOfficer.PersonalInfoId)
                     .Where(c => _transactionService.GetAll()
                         .Where(t => t.RequestId == c.RequestId && t.CreatedAt > c.CreatedAt)
                         .Count() == 0);
