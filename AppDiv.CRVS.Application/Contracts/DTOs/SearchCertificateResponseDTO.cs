@@ -13,6 +13,7 @@ public class SearchCertificateResponseDTO
     public string? CivilRegOfficerName {get; set;}
     public string? EventAddress {get; set; }
     public string? EventRegisteredAddress {get; set; }
+    public Guid? EventRegisteredAddressId {get;set;}
     public string? Address { get; set; }
     public string? NationalId { get; set; }
     public string? CertificateId { get; set; }

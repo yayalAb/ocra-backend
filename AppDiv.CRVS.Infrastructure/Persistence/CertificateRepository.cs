@@ -91,6 +91,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 throw new NotFoundException("Invalid user working address please login first");
             }
             string? workingAddressIdStr = workingAddressId.ToString();
+            string requestAddress = query.AddressId?.ToString();
             var response = await _elasticClient.SearchAsync<CertificateIndex>(s => s
                     .Index("certificate")
                     .Source(src => src
@@ -125,16 +126,15 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                     q.Bool(b => b
                     .Must(
                             mu => mu.Match(m => m.Field(f => f.Status.ToString()).Query("true")
-                            )
-                            ,
+                            ),
+                            query.OwnKebele ?
+                                 mu => mu.QueryString(d => d.Query('*' + workingAddressIdStr + '*'))
+                                : mu => !(mu.QueryString(d => d.Query('*' + workingAddressIdStr + '*'))),
+                            !(query.OwnKebele) && requestAddress != null ?
+                           mu => mu.Term(m => m.EventRegisteredAddressId, requestAddress) : null
 
-
-                            mu => mu.QueryString(d => d.Query('*' + workingAddressIdStr + '*'))
-
-                        // mu =>mu.Term(t => t.Field(f => f.EventRegisteredAddressId).Value(workingAddressIdStr))
-
-
-                        ))
+                        )
+                        )
                         &&
                     (q.Wildcard(w => w
                             .Field(f => f.CertificateSerialNumber).Value($"*{query.SearchString}*").CaseInsensitive(true)
@@ -176,11 +176,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 Address = isAmharic ? d.AddressAm : d.AddressOr,
                 EventAddress = isAmharic ? d.EventAddressAm : d.EventAddressOr,
                 EventRegisteredAddress = isAmharic ? d.EventRegisteredAddressAm : d.EventRegisteredAddressOr,
+                EventRegisteredAddressId = d.EventRegisteredAddressId,
                 NationalId = d.NationalId,
                 CertificateId = d.CertificateId,
                 EventType = d.EventType,
                 CertificateSerialNumber = d.CertificateSerialNumber,
-                CanViewDetail = d.EventRegisteredAddressId == workingAddressIdStr,
+                CanViewDetail = d.EventRegisteredAddressId.ToString() == workingAddressIdStr,
                 Status = d.Status
             }).ToList();
         }
@@ -195,6 +196,16 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             }
             if (!_elasticClient.Indices.Exists("certificate").Exists && _dbContext.Certificates.Any())
             {
+
+                _elasticClient.Indices.Create("certificate", c => c
+                                                .Map<CertificateIndex>(map => map
+                                                    .Properties(props => props
+                                                        .Keyword(k => k
+                                                            .Name(f => f.EventRegisteredAddressId)
+                                                        )
+                                                    )
+                                                )
+                                        );
                 _elasticClient
                                  .IndexMany<CertificateIndex>(_dbContext.Certificates
                                  .Where(c => c.Status)
@@ -255,7 +266,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                                                         + " " + (c.Event.EventOwener.LastName == null ? null : c.Event.EventOwener.LastName.Value<string>("or")),
                                          EventAddressAm = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("am"),
                                          EventAddressOr = c.Event.EventAddress == null ? null : c.Event.EventAddress.AddressName.Value<string>("or"),
-                                         EventRegisteredAddressId = c.Event.EventRegisteredAddressId == null ? null : c.Event.EventRegisteredAddressId.ToString(),
+                                         EventRegisteredAddressId = c.Event.EventRegisteredAddressId == null ? null : c.Event.EventRegisteredAddressId,
                                          EventRegisteredAddressAm = c.Event.EventRegisteredAddress == null ? null : c.Event.EventRegisteredAddress.AddressName.Value<string>("am"),
                                          EventRegisteredAddressOr = c.Event.EventRegisteredAddress == null ? null : c.Event.EventRegisteredAddress.AddressName.Value<string>("or"),
                                          Status = c.Status

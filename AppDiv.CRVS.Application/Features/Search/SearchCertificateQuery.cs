@@ -11,6 +11,8 @@ namespace AppDiv.CRVS.Application.Features.Search
     public class SearchCertificateQuery : IRequest<object>
     {
         public string SearchString { get; set; }
+        public bool OwnKebele { get; set; } = true;
+        public Guid? AddressId { get; set; }
 
     }
 
