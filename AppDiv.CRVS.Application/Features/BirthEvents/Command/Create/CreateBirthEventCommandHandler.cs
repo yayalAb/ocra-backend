@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
             _personalInfoRepository = personalInfoRepository;
-            _eventStatusService=eventStatusService;
+            _eventStatusService = eventStatusService;
         }
         public async Task<CreateBirthEventCommandResponse> Handle(CreateBirthEventCommand request, CancellationToken cancellationToken)
         {
@@ -93,7 +93,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             var address = await _addressRepostory.GetAsync(workingAddressId);
                             // Map the request to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request.BirthEvent);
-                            birthEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", birthEvent.Event.EventDate, birthEvent.Event.EventRegDate);
+                            birthEvent.Event.Status = _eventStatusService.ReturnEventStatus("birth", birthEvent.Event.EventDate, birthEvent.Event.EventRegDate);
                             if (request.BirthEvent?.Event?.EventRegisteredAddressId != null && request.BirthEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)
@@ -125,16 +125,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null ? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
                             // Separate profile photos from supporting documents.
-                            var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
+                            var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, birthEvent.Event.EventSupportingDocuments);
                             // var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(fingerprints,cancellationToken);
                             // if(!FingerPrintResponse.Success){ 
                             //       response.Message="Duplicated Fingerprint";
                             //       response.Success=false; 
                             //       return response;
                             //     }
-                            _eventDocumentService.savePhotos(userPhotos);
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
-                            _eventDocumentService.saveFingerPrints(fingerprints);
+                            _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                            _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                            _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
 
                             // For non exempted documents 
                             if ((!birthEvent.Event.IsExampted) && (address != null && address?.AdminLevel == 5))
@@ -168,7 +170,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 response.Status = 200;
                                 response.IsManualRegistration = IsManualRegistration;
                                 response.EventId = birthEvent.Event.Id;
-                        if (transaction != null)
+                                if (transaction != null)
                                 {
                                     await transaction.CommitAsync();
                                 }

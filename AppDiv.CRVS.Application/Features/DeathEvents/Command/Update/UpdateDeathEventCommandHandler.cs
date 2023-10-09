@@ -64,9 +64,9 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         }
                         // Identify new and old supporting documents.
                         var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null).ToList();
-                        var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null)||(request.IsFromCommand && doc.Id != null)).ToList();
-                        var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null)||(!request.IsFromCommand && doc.Id != null)).ToList();
-                        var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null)||(!request.IsFromCommand && doc.Id != null)).ToList();
+                        var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null) || (request.IsFromCommand && doc.Id != null)).ToList();
+                        var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null) || (!request.IsFromCommand && doc.Id != null)).ToList();
+                        var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null) || (!request.IsFromCommand && doc.Id != null)).ToList();
                         // Map the reques to model eintity.
                         var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request);
                         deathEvent.Event.EventType = "Death";
@@ -76,7 +76,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         deathEvent.Event.HasPendingDocumentApproval = SelectedEvent.HasPendingDocumentApproval;
                         deathEvent.Event.IsOfflineReg = SelectedEvent.IsOfflineReg;
                         // Set the supporting documents to null.
-                       
+
                         // Set the daeth status of the person to true.
                         deathEvent.Event.EventOwener.DeathStatus = true;
                         // Update the Death Event.
@@ -98,10 +98,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Update
                         {
                             // Save the supporting documents.
                             var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, deathEvent.EventId, deathEvent.Event.PaymentExamption?.Id, cancellationToken);
-                            var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                            _eventDocumentService.savePhotos(userPhotos);
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
-                            _eventDocumentService.saveFingerPrints(fingerprints);
+                            var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                            _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                            _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Death");
+                            _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
 
                         }
                         else

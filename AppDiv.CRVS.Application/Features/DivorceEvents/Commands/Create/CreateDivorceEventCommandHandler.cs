@@ -60,7 +60,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
             _certificateRepository = certificateRepository;
-            _eventStatusService=eventStatusService;
+            _eventStatusService = eventStatusService;
         }
         public async Task<CreateDivorceEventCommandResponse> Handle(CreateDivorceEventCommand request, CancellationToken cancellationToken)
         {
@@ -100,7 +100,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                                 request.CourtCase.Court = null;
                             }
                             var divorceEvent = CustomMapper.Mapper.Map<DivorceEvent>(request);
-                            divorceEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", divorceEvent.Event.EventDate, divorceEvent.Event.EventRegDate);
+                            divorceEvent.Event.Status = _eventStatusService.ReturnEventStatus("birth", divorceEvent.Event.EventDate, divorceEvent.Event.EventRegDate);
 
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
@@ -129,9 +129,11 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             // await _DivorceEventRepository.SaveChangesAsync(cancellationToken);
 
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, divorceEvent.Event.EventSupportingDocuments);
-                            _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
-                            _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+                            _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                            _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
+                            _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                             //    var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
                             //         createDivorceEventCommandResponse.Message ="Duplicated Fingerprint";
@@ -168,7 +170,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             createDivorceEventCommandResponse.Message = "Divorce event created successfully";
                             createDivorceEventCommandResponse.IsManualRegistration = IsManualRegistration;
                             createDivorceEventCommandResponse.EventId = divorceEvent.Event.Id;
-                            
+
 
                             if (transaction != null)
                             {

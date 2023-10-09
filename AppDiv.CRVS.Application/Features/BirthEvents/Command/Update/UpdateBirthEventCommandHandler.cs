@@ -70,10 +70,10 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             // Get newly added supporting documents and examption documents.
                             var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => doc.Id == null)?.ToList();
 
-                            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc =>(!request.IsFromCommand && doc.Id == null)||(request.IsFromCommand && doc.Id != null))?.ToList();
+                            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null) || (request.IsFromCommand && doc.Id != null))?.ToList();
                             // Get old supporting documents and examption documents.
-                            var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null)||(request.IsFromCommand && doc.Id != null)).ToList();
-                            var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null)||(request.IsFromCommand && doc.Id != null)).ToList();
+                            var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null) || (request.IsFromCommand && doc.Id != null)).ToList();
+                            var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null) || (request.IsFromCommand && doc.Id != null)).ToList();
                             // Map the reques to the model entity.
                             var birthEvent = CustomMapper.Mapper.Map<BirthEvent>(request);
                             birthEvent.Event.EventType = "Birth";
@@ -91,7 +91,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                             {
                                 birthEvent.Event.HasPendingDocumentApproval = true;
                             }
-                           
+
                             // person ids
                             var personIds = new PersonIdObj
                             {
@@ -100,12 +100,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 ChildId = birthEvent.Event.EventOwener != null ? birthEvent.Event.EventOwener.Id : birthEvent.Event.EventOwenerId,
                                 RegistrarId = birthEvent.Event.EventRegistrar?.RegistrarInfo != null ? birthEvent.Event.EventRegistrar?.RegistrarInfo.Id : birthEvent.Event.EventRegistrar?.RegistrarInfoId
                             };
-                             // Set the supporting documents and exemption documents null
-                                birthEvent.Event.EventSupportingDocuments = null!;
-                                if (birthEvent.Event.PaymentExamption != null)
-                                {
-                                    birthEvent.Event.PaymentExamption.SupportingDocuments = null!;
-                                }
+                            // Set the supporting documents and exemption documents null
+                            birthEvent.Event.EventSupportingDocuments = null!;
+                            if (birthEvent.Event.PaymentExamption != null)
+                            {
+                                birthEvent.Event.PaymentExamption.SupportingDocuments = null!;
+                            }
                             // for requests not from correction request
                             await _birthEventRepository.UpdateAll(birthEvent, _paymentRequestService, cancellationToken);
                             birthEvent.Event.IsCertified = false;
@@ -114,17 +114,18 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
                                 // Save the newly added supporting documents and exemption documents.
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 // var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
-                                var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                                _eventDocumentService.savePhotos(userPhotos);
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
-                                _eventDocumentService.saveFingerPrints(fingerprints);
+                                var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
+                                _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                                _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Birth");
+                                _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
 
                             }
                             else
                             {
                                 // Move the supporting documents form temporary to permenant place.
                                 birthEvent.Event.IsCertified = false;
-                                var docs =await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
+                                var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs!, examptionsupportingDocs!, (Guid)birthEvent.EventId, birthEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var result = await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 var (userPhotos, otherDocs) = _eventDocumentService.ExtractOldSupportingDocs(personIds, docs.supportingDocs);
                                 if (userPhotos != null && (userPhotos.Count != 0))
@@ -142,7 +143,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 
                             }
                             // Update the birth event.
-                                _birthEventRepository.TriggerPersonalInfoIndex();
+                            _birthEventRepository.TriggerPersonalInfoIndex();
 
 
                         }
@@ -152,7 +153,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Update
 
                             throw new ApplicationException(ex.Message);
                         }
-                         
+
                         // Set response to created.
                         response.Updated("Birth Event");
                     }

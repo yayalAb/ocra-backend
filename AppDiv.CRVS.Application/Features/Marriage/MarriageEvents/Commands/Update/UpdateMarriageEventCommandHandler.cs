@@ -95,10 +95,10 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                                 return updateMarriageEventCommandResponse;
                             }
 
-                            var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null)||(request.IsFromCommand && doc.Id != null)).ToList();
-                            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null)||(request.IsFromCommand && doc.Id != null)).ToList();
-                            var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null)||(!request.IsFromCommand && doc.Id != null)).ToList();
-                            var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null)||(!request.IsFromCommand && doc.Id != null)).ToList();
+                            var supportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null) || (request.IsFromCommand && doc.Id != null)).ToList();
+                            var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (!request.IsFromCommand && doc.Id == null) || (request.IsFromCommand && doc.Id != null)).ToList();
+                            var correctionSupportingDocs = request.Event.EventSupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null) || (!request.IsFromCommand && doc.Id != null)).ToList();
+                            var correctionExamptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => (request.IsFromCommand && doc.Id == null) || (!request.IsFromCommand && doc.Id != null)).ToList();
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
                             marriageEvent.Event.EventType = "Marriage";
@@ -145,12 +145,14 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
                             await _marriageEventRepository.EFUpdateAsync(marriageEvent, _paymentRequestService, cancellationToken);
                             if (!request.IsFromCommand)
                             {
-                            
+
                                 var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, marriageEvent.EventId, marriageEvent.Event.PaymentExamption?.Id, cancellationToken);
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Marriage");
-                                _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+                                _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                                _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Marriage");
+                                _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
 
                             }
                             else
