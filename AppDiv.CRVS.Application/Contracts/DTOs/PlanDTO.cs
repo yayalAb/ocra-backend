@@ -26,8 +26,8 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid Id { get; set; }
         public string EventType { get; set; }
         public string PlannedDateEt { get; set; }
-        public uint ActiveTargetAmount { get; set; }
-        public uint OtherTargetAmount { get; set; }
+        public uint? ActiveTargetAmount { get; set; }
+        public uint? OtherTargetAmount { get; set; }
         public uint BudgetYear { get; set; }
         public Guid? ParentPlanId { get; set; }
         public Guid AddressId { get; set; }
