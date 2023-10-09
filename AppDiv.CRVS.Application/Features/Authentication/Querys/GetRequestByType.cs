@@ -108,9 +108,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                 TransactionId = request.IsYourRequestList 
                                 ? t.Id 
                                 : _transactionService.GetAll()
-                                    .Include(it => it.Request)
-                                    .Include(it => it.CivilRegOfficer)
-                                    .Where(it => it.Id == t.Id && it.Request.CivilRegOfficerId == it.CivilRegOfficer.PersonalInfoId)
+                                    .Where(it => it.RequestId == t.RequestId && it.CurrentStep == 0 && it.ApprovalStatus == true)
                                     .Select(it => it.Id)
                                     .SingleOrDefault(),
                 OfficerId = Guid.Parse(t.CivilRegOfficerId),
