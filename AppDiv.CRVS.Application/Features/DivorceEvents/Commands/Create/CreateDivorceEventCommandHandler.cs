@@ -132,7 +132,7 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                             _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
 
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
+                            _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, divorceEvent.Event.PaymentExamption?.SupportingDocuments, "Divorce");
                             _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                             //    var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 

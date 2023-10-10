@@ -204,7 +204,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                                 _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
 
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
+                                _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                                 _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                                 // var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                                 // if(!FingerPrintResponse.Success){ 

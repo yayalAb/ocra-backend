@@ -7,6 +7,7 @@ using AppDiv.CRVS.Application.Mapper;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Domain.Models;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 
 namespace AppDiv.CRVS.Application.Service
@@ -52,7 +53,7 @@ namespace AppDiv.CRVS.Application.Service
                         .Contains("id"))
                         .ToList();
         }
-        public bool saveSupportingDocuments(ICollection<SupportingDocument> eventDocs, ICollection<SupportingDocument>? examptionDocs, string eventType)
+        public bool saveSupportingDocuments(List<(string? personId, SupportingDocument doc)> eventDocs, ICollection<SupportingDocument>? examptionDocs, string eventType)
         {
 
             var supportingDocFolder = Path.Combine("Resources", "SupportingDocuments", eventType);
@@ -61,9 +62,15 @@ namespace AppDiv.CRVS.Application.Service
             var fullPathExamption = Path.Combine(Directory.GetCurrentDirectory(), examptiondocFolder);
 
 
-            eventDocs?.ToList().ForEach(doc =>
+            eventDocs?.ToList().ForEach(d =>
             {
-                _fileService.UploadBase64FileAsync(doc.base64String, doc.Id.ToString(), fullPathSupporting, FileMode.Create);
+                var fullPath = fullPathSupporting;
+                if (d.personId != null)
+                {
+                    fullPath = Path.Combine(fullPathSupporting, d.personId);
+                }
+
+                _fileService.UploadBase64FileAsync(d.doc.base64String, d.doc.Id.ToString(), fullPath, FileMode.Create);
             });
             examptionDocs?.ToList().ForEach(doc =>
             {
@@ -179,7 +186,7 @@ namespace AppDiv.CRVS.Application.Service
             var separatedDocs = extractSupportingDocs(personIds, docs.supportingDocs);
             savePhotos(separatedDocs.UserPhoto);
             savePhotos(separatedDocs.Signatures, "Signatures");
-            saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, savedEvent.EventType);
+            saveSupportingDocuments(separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, savedEvent.EventType);
             saveFingerPrints(separatedDocs.FingerPrints);
             return (userPhotos: separatedDocs.UserPhoto, fingerPrint: separatedDocs.FingerPrints);
         }
@@ -211,6 +218,26 @@ namespace AppDiv.CRVS.Application.Service
             return (supportingDocs: mappedDocs, examptionDocs: mappedExamptionDocs);
         }
 
+
+        public void saveUserDocs(Dictionary<string, List<(string name, string value)>> userDocs)
+        {
+            if (userDocs.Values != null)
+            {
+                var mainFolder = Path.Combine("Resources", "UserDocuments");
+                userDocs.ToList().ForEach(userData =>
+                {
+                    var fullPath = Path.Combine(Directory.GetCurrentDirectory(), mainFolder, userData.Key);//userDoc.key is personId
+                    if (userData.Value != null)
+                    {
+                        userData.Value.ForEach(async doc =>
+                        {
+                            await _fileService.UploadBase64FileAsync(doc.value, doc.name, fullPath, FileMode.Create);
+                        });
+                    }
+
+                });
+            }
+        }
         public void savePhotos(Dictionary<string, string> personPhotos, string folderName = "PersonPhotos")
         {
             var folder = Path.Combine("Resources", folderName);
@@ -268,242 +295,225 @@ namespace AppDiv.CRVS.Application.Service
         {
             Dictionary<string, string> userPhotos = new();
             Dictionary<string, string> signatures = new();
-            Dictionary<string, List<(string name, string value)>> userDocs = new();
+            List<(string? personId, SupportingDocument doc)> otherDocs = new();
 
             Dictionary<string, List<BiometricImagesAtt>?> fingerPrint = new Dictionary<string, List<BiometricImagesAtt>?>();
-            supportingDocs.Where(d => d.Type == _webCamTypeLookupId || d.Type == _fingerprintTypeLookupId || d.Type == _signatureTypeLookupId || _userDocTypeLookupId.Where(ul => ul.Id == d.Id).Any() || d.Type == new Guid("8f735355-8ee8-43a7-8c09-c50b40497152")).ToList().ForEach(doc =>
+            var allDocs = supportingDocs.ToList();
+            List<Guid> removedIds = new();
+            for (int j = 0; j < allDocs.Count; j++)
             {
-                if (idObj.WifeId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
                 {
-                    if (doc.Type == _webCamTypeLookupId)
+                    var doc = allDocs[j];
+                    if (idObj.WifeId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Bride)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Wife)!.ToLower())
                     {
-                        userPhotos.Add(idObj.WifeId.ToString()!, doc.base64String);
-                    }
-                    else if (doc.Type == _fingerprintTypeLookupId)
-                    {
-                        fingerPrint.Add(idObj.WifeId?.ToString()!, doc.FingerPrint);
-                    }
-                    else if (_userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Any())
-                    {
-                        var docType = _userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                        userDocs.TryGetValue(idObj.WifeId.ToString(), out List<(string name, string value)> existingList);
-                        (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: doc.base64String));
-
-                        userDocs[idObj.WifeId.ToString()!] = existingList;
-                    }
-                    else
-                    {
-                        signatures.Add(idObj.WifeId.ToString()!, doc.base64String);
-                    }
-
-                    supportingDocs.ToList().Remove(doc);
-                }
-                else if (idObj.MotherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Mother)!.ToLower())
-                {
-                    if (doc.Type == _webCamTypeLookupId)
-                    {
-                        userPhotos.Add(idObj.MotherId.ToString()!, doc.base64String);
-                    }
-                    else if (doc.Type == _fingerprintTypeLookupId)
-                    {
-                        fingerPrint.Add(idObj.MotherId?.ToString()!, doc.FingerPrint);
-                    }
-                    else if (_userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Any())
-                    {
-                        var docType = _userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                        userDocs.TryGetValue(idObj.MotherId.ToString(), out List<(string name, string value)> existingList);
-                        (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: doc.base64String));
-
-                        userDocs[idObj.MotherId.ToString()!] = existingList;
-                    }
-                    else
-                    {
-                        signatures.Add(idObj.MotherId.ToString()!, doc.base64String);
-                    }
-
-                    supportingDocs.ToList().Remove(doc);
-                }
-                else if (idObj.FatherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Father)!.ToLower())
-                {
-                    if (doc.Type == _webCamTypeLookupId)
-                    {
-                        userPhotos.Add(idObj.FatherId.ToString()!, doc.base64String);
-                    }
-                    else if (doc.Type == _fingerprintTypeLookupId)
-                    {
-                        fingerPrint.Add(idObj.FatherId?.ToString()!, doc.FingerPrint);
-                    }
-                    else if (_userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Any())
-                    {
-                        var docType = _userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                        userDocs.TryGetValue(idObj.FatherId.ToString(), out List<(string name, string value)> existingList);
-                        (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: doc.base64String));
-
-                        userDocs[idObj.FatherId.ToString()!] = existingList;
-                    }
-                    else
-                    {
-                        signatures.Add(idObj.FatherId.ToString()!, doc.base64String);
-
-                    }
-
-                    supportingDocs.ToList().Remove(doc);
-                }
-                else if (idObj.ChildId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
-                {
-                    if (doc.Type == _webCamTypeLookupId)
-                    {
-                        userPhotos.Add(idObj.ChildId.ToString()!, doc.base64String);
-                    }
-                    else if (doc.Type == _fingerprintTypeLookupId)
-                    {
-                        fingerPrint.Add(idObj.ChildId?.ToString()!, doc.FingerPrint);
-                    }
-                    else if (_userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Any())
-                    {
-                        var docType = _userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                        userDocs.TryGetValue(idObj.ChildId.ToString(), out List<(string name, string value)> existingList);
-                        (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: doc.base64String));
-
-                        userDocs[idObj.ChildId.ToString()!] = existingList;
-                    }
-                    else
-                    {
-                        signatures.Add(idObj.ChildId.ToString()!, doc.base64String);
-
-                    }
-
-                    supportingDocs.ToList().Remove(doc);
-                }
-                else if (idObj.HusbandId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Husband)!.ToLower())
-                {
-                    if (doc.Type == _webCamTypeLookupId)
-                    {
-                        userPhotos.Add(idObj.HusbandId.ToString()!, doc.base64String);
-
-                    }
-                    else if (doc.Type == _fingerprintTypeLookupId)
-                    {
-                        fingerPrint.Add(idObj.HusbandId.ToString()!, doc.FingerPrint);
-
-                    }
-                    else if (_userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Any())
-                    {
-                        var docType = _userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                        userDocs.TryGetValue(idObj.HusbandId.ToString(), out List<(string name, string value)> existingList);
-                        (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: doc.base64String));
-
-                        userDocs[idObj.HusbandId.ToString()!] = existingList;
-                    }
-                    else
-                    {
-                        signatures.Add(idObj.HusbandId.ToString()!, doc.base64String);
-
-                    }
-                    supportingDocs.ToList().Remove(doc);
-                }
-                else if (idObj.RegistrarId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Registrar)!.ToLower())
-                {
-                    Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ registerar");
-
-                    if (doc.Type == _webCamTypeLookupId)
-                    {
-                        userPhotos.Add(idObj.RegistrarId.ToString()!, doc.base64String);
-
-                    }
-                    else if (doc.Type == _fingerprintTypeLookupId)
-                    {
-                        fingerPrint.Add(idObj.RegistrarId.ToString()!, doc.FingerPrint);
-
-                    }
-                    else if (_userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Any())
-                    {
-                        var docType = _userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                        userDocs.TryGetValue(idObj.RegistrarId.ToString(), out List<(string name, string value)> existingList);
-                        (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: doc.base64String));
-
-                        userDocs[idObj.RegistrarId.ToString()!] = existingList;
-                    }
-                    else
-                    {
-                        signatures.Add(idObj.RegistrarId.ToString()!, doc.base64String);
-
-                    }
-                    supportingDocs.ToList().Remove(doc);
-                }
-                else if (idObj.DeceasedId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Deceased)!.ToLower())
-                {
-                    if (doc.Type == _webCamTypeLookupId)
-                    {
-                        userPhotos.Add(idObj.DeceasedId.ToString()!, doc.base64String);
-                    }
-                    else if (doc.Type == _fingerprintTypeLookupId)
-                    {
-                        fingerPrint.Add(idObj.DeceasedId.ToString()!, doc.FingerPrint);
-
-                    }
-                    else if (_userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Any())
-                    {
-                        var docType = _userDocTypeLookupId.Where(ul => ul.Id == doc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                        userDocs.TryGetValue(idObj.DeceasedId.ToString(), out List<(string name, string value)> existingList);
-                        (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: doc.base64String));
-
-                        userDocs[idObj.DeceasedId.ToString()!] = existingList;
-                    }
-                    else
-                    {
-                        signatures.Add(idObj.DeceasedId.ToString()!, doc.base64String);
-                    }
-                    supportingDocs.ToList().Remove(doc);
-                }
-            });
-            if (idObj.WitnessIds != null)
-            {
-
-                for (int i = 0; i < idObj.WitnessIds?.Count; i++)
-                {
-
-                    var witnessDoc = supportingDocs
-                                .Where(doc => (doc.Type == _webCamTypeLookupId || doc.Type == _fingerprintTypeLookupId)
-                                && doc.Label.ToLower() == $"{Enum.GetName<DocumentLabel>(DocumentLabel.Witness)?.ToLower()}{i}")
-                                .FirstOrDefault();
-
-                    if (witnessDoc != null)
-                    {
-                        var witnessId = idObj.WitnessIds.ToList()[i].ToString();
-                        if (witnessDoc.Type == _webCamTypeLookupId)
+                        if (doc.Type == _webCamTypeLookupId)
                         {
-                            userPhotos.Add(witnessId, witnessDoc.base64String);
+                            userPhotos.Add(idObj.WifeId.ToString()!, doc.base64String);
                         }
-                        else if (witnessDoc.Type == _fingerprintTypeLookupId)
+                        else if (doc.Type == _fingerprintTypeLookupId)
                         {
-                            fingerPrint.Add(witnessId, witnessDoc.FingerPrint);
-
+                            fingerPrint.Add(idObj.WifeId?.ToString()!, doc.FingerPrint);
                         }
-                        else if (_userDocTypeLookupId.Where(ul => ul.Id == witnessDoc.Type).Any())
+                        else if (_signatureTypeLookupId == doc.Type)
                         {
-                            var docType = _userDocTypeLookupId.Where(ul => ul.Id == witnessDoc.Type).Select(ul => ul.Value.Value<string>("en")).First();
-                            userDocs.TryGetValue(witnessId, out List<(string name, string value)> existingList);
-                            (existingList ??= new List<(string name, string value)>()).Add((name: docType, value: witnessDoc.base64String));
 
-                            userDocs[witnessId!] = existingList;
+                            signatures.Add(idObj.WifeId.ToString()!, doc.base64String);
                         }
                         else
                         {
-                            signatures.Add(witnessId, witnessDoc.base64String);
+                            otherDocs.Add((personId: idObj.WifeId.ToString(), doc: doc));
                         }
-                        supportingDocs.ToList().Remove(witnessDoc);
+                        removedIds.Add(doc.Id);
+
+
+                    }
+                    else if (idObj.MotherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Mother)!.ToLower())
+                    {
+                        if (doc.Type == _webCamTypeLookupId)
+                        {
+                            userPhotos.Add(idObj.MotherId.ToString()!, doc.base64String);
+                        }
+                        else if (doc.Type == _fingerprintTypeLookupId)
+                        {
+                            fingerPrint.Add(idObj.MotherId?.ToString()!, doc.FingerPrint);
+                        }
+                        else if (_signatureTypeLookupId == doc.Type)
+                        {
+
+                            signatures.Add(idObj.MotherId.ToString()!, doc.base64String);
+                        }
+                        else
+                        {
+                            otherDocs.Add((personId: idObj.MotherId.ToString(), doc: doc));
+                        };
+                        removedIds.Add(doc.Id);
+
+                    }
+                    else if (idObj.FatherId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Father)!.ToLower())
+                    {
+                        if (doc.Type == _webCamTypeLookupId)
+                        {
+                            userPhotos.Add(idObj.FatherId.ToString()!, doc.base64String);
+                        }
+                        else if (doc.Type == _fingerprintTypeLookupId)
+                        {
+                            fingerPrint.Add(idObj.FatherId?.ToString()!, doc.FingerPrint);
+                        }
+                        else if (_signatureTypeLookupId == doc.Type)
+                        {
+
+                            signatures.Add(idObj.FatherId.ToString()!, doc.base64String);
+                        }
+                        else
+                        {
+                            otherDocs.Add((personId: idObj.FatherId.ToString(), doc: doc));
+                        }
+                        removedIds.Add(doc.Id);
+
+                    }
+                    else if (idObj.ChildId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Child)!.ToLower())
+                    {
+                        if (doc.Type == _webCamTypeLookupId)
+                        {
+                            userPhotos.Add(idObj.ChildId.ToString()!, doc.base64String);
+                        }
+                        else if (doc.Type == _fingerprintTypeLookupId)
+                        {
+                            fingerPrint.Add(idObj.ChildId?.ToString()!, doc.FingerPrint);
+                        }
+                        else if (_signatureTypeLookupId == doc.Type)
+                        {
+
+                            signatures.Add(idObj.ChildId.ToString()!, doc.base64String);
+                        }
+                        else
+                        {
+                            otherDocs.Add((personId: idObj.ChildId.ToString(), doc: doc));
+                        }
+                        removedIds.Add(doc.Id);
+
+                    }
+                    else if (idObj.HusbandId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Groom)!.ToLower() || doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Husband)!.ToLower())
+                    {
+                        if (doc.Type == _webCamTypeLookupId)
+                        {
+                            userPhotos.Add(idObj.HusbandId.ToString()!, doc.base64String);
+
+                        }
+                        else if (doc.Type == _fingerprintTypeLookupId)
+                        {
+                            fingerPrint.Add(idObj.HusbandId.ToString()!, doc.FingerPrint);
+
+                        }
+                        else if (_signatureTypeLookupId == doc.Type)
+                        {
+
+                            signatures.Add(idObj.HusbandId.ToString()!, doc.base64String);
+                        }
+                        else
+                        {
+                            otherDocs.Add((personId: idObj.HusbandId.ToString(), doc: doc));
+                        }
+                        removedIds.Add(doc.Id);
+
+                    }
+                    else if (idObj.RegistrarId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Registrar)!.ToLower())
+                    {
+                        Console.WriteLine("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ registerar");
+
+                        if (doc.Type == _webCamTypeLookupId)
+                        {
+                            userPhotos.Add(idObj.RegistrarId.ToString()!, doc.base64String);
+
+                        }
+                        else if (doc.Type == _fingerprintTypeLookupId)
+                        {
+                            fingerPrint.Add(idObj.RegistrarId.ToString()!, doc.FingerPrint);
+
+                        }
+                        else if (_signatureTypeLookupId == doc.Type)
+                        {
+
+                            signatures.Add(idObj.RegistrarId.ToString()!, doc.base64String);
+                        }
+                        else
+                        {
+                            otherDocs.Add((personId: idObj.RegistrarId.ToString(), doc: doc));
+                        }
+                        removedIds.Add(doc.Id);
+
+                    }
+                    else if (idObj.DeceasedId != null && doc.Label.ToLower() == Enum.GetName<DocumentLabel>(DocumentLabel.Deceased)!.ToLower())
+                    {
+                        if (doc.Type == _webCamTypeLookupId)
+                        {
+                            userPhotos.Add(idObj.DeceasedId.ToString()!, doc.base64String);
+                        }
+                        else if (doc.Type == _fingerprintTypeLookupId)
+                        {
+                            fingerPrint.Add(idObj.DeceasedId.ToString()!, doc.FingerPrint);
+
+                        }
+                        else if (_signatureTypeLookupId == doc.Type)
+                        {
+
+                            signatures.Add(idObj.DeceasedId.ToString()!, doc.base64String);
+                        }
+                        else
+                        {
+                            otherDocs.Add((personId: idObj.DeceasedId.ToString(), doc: doc));
+                        }
+                        removedIds.Add(doc.Id);
+                    }
+                };
+                if (idObj.WitnessIds != null)
+                {
+
+                    for (int i = 0; i < idObj.WitnessIds?.Count; i++)
+                    {
+
+                        var witnessDoc = supportingDocs
+                                    .Where(doc => (doc.Type == _webCamTypeLookupId || doc.Type == _fingerprintTypeLookupId)
+                                    && doc.Label.ToLower() == $"{Enum.GetName<DocumentLabel>(DocumentLabel.Witness)?.ToLower()}{i}")
+                                    .FirstOrDefault();
+
+                        if (witnessDoc != null)
+                        {
+                            var witnessId = idObj.WitnessIds.ToList()[i].ToString();
+                            if (witnessDoc.Type == _webCamTypeLookupId)
+                            {
+                                userPhotos.Add(witnessId, witnessDoc.base64String);
+                            }
+                            else if (witnessDoc.Type == _fingerprintTypeLookupId)
+                            {
+                                fingerPrint.Add(witnessId, witnessDoc.FingerPrint);
+
+                            }
+                            else if (_signatureTypeLookupId == witnessDoc.Type)
+                            {
+
+                                signatures.Add(witnessId, witnessDoc.base64String);
+                            }
+                            else
+                            {
+                                otherDocs.Add((personId: witnessId, doc: witnessDoc));
+                            }
+                            removedIds.Add(witnessDoc.Id);
+
+                        }
                     }
                 }
             }
+            allDocs.Where(d => !(removedIds.Contains(d.Id))).ToList().ForEach(doc =>
+            {
+                otherDocs.Add((personId: null, doc));
+            });
             return new ExtractedDocDTO
             {
                 UserPhoto = userPhotos,
                 FingerPrints = fingerPrint,
                 Signatures = signatures,
-                OtherDocs = supportingDocs,
-                UserDocs = userDocs
-
+                OtherDocs = otherDocs,
             };
 
         }
@@ -581,6 +591,32 @@ namespace AppDiv.CRVS.Application.Service
                                 }
 
                             }).ToList();
+        }
+        public List<object> getPersonEventSupportingDocs(string? personId)
+        {
+            List<object> response = new();
+            List<string> eventList = new List<string> { "Adoption", "Birth", "Death", "Divorce", "Marriage" };
+            eventList.ForEach(eventType =>
+            {
+
+                var eventDocs = _fileService.GetFileNamesInfolder(Path.Combine("Resources", "SupportingDocuments", eventType, personId))
+                                     .ToList();
+                eventDocs.ForEach(url =>
+                {
+                    var dbDoc = _supportingDocumentRepository.GetAll().Include(d => d.TypeLookup).Where(d => d.Id == new Guid(Path.GetFileNameWithoutExtension(url))).FirstOrDefault();
+                    if (dbDoc != null)
+                    {
+                        response.Add(new
+                        {
+                            docType = dbDoc.TypeLookup.Value.Value<string>("en"),
+                            eventType = eventType,
+                            url = url
+                        });
+                    }
+                });
+            });
+
+            return response;
         }
 
     }

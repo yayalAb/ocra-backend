@@ -125,7 +125,9 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
                                 _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                                 _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Divorce");
+                          
+
+                                _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Divorce");
                                 _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
 
                             }

@@ -134,8 +134,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             //     }
                             _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                             _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
-
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                            _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                             _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
 
                             // For non exempted documents 
