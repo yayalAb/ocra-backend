@@ -57,25 +57,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
 
             marriageInfo.BrideBirthCertificateId = marriage.MarriageEvent.BirthCertificateBrideId;
             marriageInfo.GroomBirthCertificateId = marriage.MarriageEvent.BirthCertificateGroomId;
-
-            marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(marriage.MarriageEvent.MarriageTypeId);
-            marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(marriage.MarriageEvent.MarriageTypeId);
-
-            // foreach (var w in marriage.MarriageEvent.Witnesses)
-            // {
-            //     if (w.WitnessForLookup.ValueStr.ToLower().Contains( "bride"))
-            //     {
-            //         var brideWitness = CustomMapper.Mapper.Map<WitnessArchive>
-            //                                     (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
-            //         marriageInfo?.BrideWitnesses?.Add(brideWitness);
-            //     }
-            //     if (w.WitnessForLookup.ValueStr.ToLower().Contains( "groom"))
-            //     {
-            //         var groomWitness = CustomMapper.Mapper.Map<WitnessArchive>
-            //                                     (ReturnPerson.GetPerson(w.WitnessPersonalInfo, _dateAndAddressService, _lookupService));
-            //         marriageInfo?.GroomWitnesses?.Add(groomWitness);
-            //     }
-            // }
+            var marriageType = _lookupService.GetLookup(marriage.MarriageEvent.MarriageTypeId);
+            marriageInfo.MarriageTypeOr = marriage.MarriageEvent.MarriageType?.Value?.Value<string>("or") ?? marriageType?.Value?.Value<string>("or");
+            marriageInfo.MarriageTypeAm = marriage.MarriageEvent.MarriageType?.Value?.Value<string>("am") ?? marriageType?.Value?.Value<string>("am");
             return marriageInfo;
         }
 
@@ -100,7 +84,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return marriageInfo;
 
         }
-        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo, bool IsCorrection=false)
+        public MarriageArchiveDTO GetMarriagePreviewArchive(MarriageEvent marriage, string? BirthCertNo, bool IsCorrection=true)
         {
             marriage.Event.MarriageEvent = marriage;
             if (marriage.Event.CivilRegOfficer == null && marriage.Event.CivilRegOfficerId != null)
