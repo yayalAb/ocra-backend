@@ -68,7 +68,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             
             {
                 Registered = da,
-                payment = da.EventPaymentRequest.FirstOrDefault().Payment,
+                payment = da.EventPaymentRequest,
                 certificate = da.EventCertificates,
                 correction = da.CorrectionRequests
             }).FirstOrDefault();
@@ -111,31 +111,34 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             }
             if (events?.payment != null)
             {
-                var history = new EventHistory
+                foreach (var pay in events?.payment){
+                    var history = new EventHistory
                 {
-                    Action = "paid",
-                    Date = convertor.GregorianToEthiopic((DateTime)events?.payment?.CreatedAt),
+                    Action =pay.Payment.PaymentRequest.Reason.Value<string>("en"),
+                    Date = convertor.GregorianToEthiopic((DateTime)pay?.CreatedAt),
                     By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
                     Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
                     Address = events?.certificate?.FirstOrDefault().Event?.EventAddress?.AddressNameLang,
-
                 };
                 if (history == null)
                 {
                     throw new NotFoundException("An Error occered on history generatin");
                 }
                 selectedEvent.Historys.Add(history);
+                }
+               
             }
 
             if (events?.certificate != null)
             {
+                foreach(var cert in events?.certificate ){
                 var history = new EventHistory
                 {
-                    Action = "certificate",
-                    Date = convertor.GregorianToEthiopic((DateTime)events?.certificate?.FirstOrDefault().CreatedAt),
+                    Action = "certified",
+                    Date = convertor.GregorianToEthiopic((DateTime)cert?.CreatedAt),
                     By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
-                    Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
-                    Address = events?.certificate?.FirstOrDefault().Event?.EventAddress?.AddressNameLang,
+                    Type = cert?.Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
+                    Address = cert?.Event?.EventAddress?.AddressNameLang,
 
                 };
                 if (history == null)
@@ -143,6 +146,8 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                     throw new NotFoundException("An Error occered on history generatin");
                 }
                 selectedEvent.Historys.Add(history);
+                }
+
             }
 
             return CustomMapper.Mapper.Map<EventHistoryDto>(selectedEvent);
