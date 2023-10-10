@@ -72,7 +72,7 @@ namespace AppDiv.CRVS.Application.Features.ProfileChangeRequests.Query.GetForApp
                 content.UserImage,
                 content.AddressId,
                 content.FingerPrintApiUrl,
-                PersonalInfo = ReturnPerson.GetPerson(mappedPerson, _dateAndAddressService, _lookupService, _reportRepostory),
+                PersonalInfo = ReturnPerson.GetPerson(mappedPerson, _dateAndAddressService, _lookupService, _reportRepostory,true),
                 // PersonalInfo = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(content.PersonalInfo)
 
             };
