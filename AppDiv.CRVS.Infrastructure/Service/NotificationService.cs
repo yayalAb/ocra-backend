@@ -132,6 +132,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
         public async Task RemoveNotification(Guid notificationId)
         {
             var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
+        
             if (notification != null)
             {
                 _context.Notifications.Remove(notification);
@@ -156,6 +157,8 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     if (addressResponse?.Kebele != null)
                         await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Kebele).RemoveNotification(notificationId);
                 }
+            }else{
+                throw new NotFoundException($"notification with id { notificationId} is not found");
             }
         }
 
