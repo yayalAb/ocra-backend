@@ -48,10 +48,12 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             deathInfo.BirthCertificateId = death?.DeathEventNavigation?.BirthCertificateId;
             deathInfo.PlaceOfFuneralAm = death?.DeathEventNavigation?.PlaceOfFuneral?.Value<string>("am");
             deathInfo.PlaceOfFuneralOr = death?.DeathEventNavigation?.PlaceOfFuneral?.Value<string>("or");
-            deathInfo.DuringDeathAm = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupOr(death?.DeathEventNavigation?.DuringDeathId);
-            deathInfo.DuringDeathOr = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupAm(death?.DeathEventNavigation?.DuringDeathId);
-            deathInfo.FacilityTypeAm = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupOr(death?.DeathEventNavigation?.FacilityTypeLookupId);
-            deathInfo.FacilityTypeOr = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupAm(death?.DeathEventNavigation?.FacilityTypeLookupId);
+            var duringDeath = _lookupService.GetLookup(death?.DeathEventNavigation?.DuringDeathId);
+            deathInfo.DuringDeathAm = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("am") ?? duringDeath?.Value?.Value<string>("am");
+            deathInfo.DuringDeathOr = death?.DeathEventNavigation?.DuringDeathLookup?.Value?.Value<string>("or") ?? duringDeath?.Value?.Value<string>("or");
+            var facilityType = _lookupService.GetLookup(death?.DeathEventNavigation?.FacilityTypeLookupId);
+            deathInfo.FacilityTypeAm = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("am") ?? facilityType?.Value?.Value<string>("am");
+            deathInfo.FacilityTypeOr = death?.DeathEventNavigation?.FacilityTypeLookup?.Value?.Value<string>("or") ?? facilityType?.Value?.Value<string>("or");
             deathInfo.EventCountryOr = EventAddressResponse?.CountryOr;
             deathInfo.EventCountryAm = EventAddressResponse?.CountryAm;
             deathInfo.EventRegionOr = EventAddressResponse?.RegionOr;
@@ -70,13 +72,14 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         private DeathNotificationArchive GetNotification(DeathNotification death)
         {
             // var causeOfDeath = JArray.Parse(death?.CauseOfDeath);
+            var couseOfDeathInfoType = _lookupService.GetLookup(death?.CauseOfDeathInfoTypeLookupId);
             return new DeathNotificationArchive
             {
                 CauseOfDeath = death?.CauseOfDeathArray.Select(c => c?.Value<string>("reason")).ToList(),
                 // CauseOfDeathTwo = (string?)death?.CauseOfDeathArray?.ElementAtOrDefault(1)?.Value<string>("reason"),
                 // CauseOfDeathThree = (string?)death?.CauseOfDeathArray?.ElementAtOrDefault(2)?.Value<string>("reason"),
-                CauseOfDeathInfoTypeOr = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(death?.CauseOfDeathInfoTypeLookupId),
-                CauseOfDeathInfoTypeAm = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(death?.CauseOfDeathInfoTypeLookupId),
+                CauseOfDeathInfoTypeOr = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("or") ?? couseOfDeathInfoType?.Value?.Value<string>("or"),
+                CauseOfDeathInfoTypeAm = death?.CauseOfDeathInfoTypeLookup?.Value?.Value<string>("am") ?? couseOfDeathInfoType?.Value?.Value<string>("am"),
                 DeathNotificationSerialNumber = death?.DeathNotificationSerialNumber,
             };
         }
@@ -85,16 +88,18 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
         {
             if (reg is null) return new RegistrarArchive();
             RegistrarArchive regInfo = CustomMapper.Mapper.Map<RegistrarArchive>(ReturnPerson.GetPerson(reg?.RegistrarInfo, _dateAndAddressService, _lookupService,_reportRepostory));
-            regInfo.RelationShipOr = reg?.RelationshipLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(reg?.RelationshipLookupId);
-            regInfo.RelationShipAm = reg?.RelationshipLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(reg?.RelationshipLookupId);
+            var relationship = _lookupService.GetLookup(reg?.RelationshipLookupId);
+            regInfo.RelationShipOr = reg?.RelationshipLookup?.Value?.Value<string>("or") ?? relationship?.Value?.Value<string>("or");
+            regInfo.RelationShipAm = reg?.RelationshipLookup?.Value?.Value<string>("am") ?? relationship?.Value?.Value<string>("am");
             return regInfo;
         }
         private DeceasedPerson GetDeceased(PersonalInfo deceased, bool IsCorrection)
         {
             if(deceased is null) return new DeceasedPerson();
             DeceasedPerson deceasedInfo = CustomMapper.Mapper.Map<DeceasedPerson>(ReturnPerson.GetPerson(deceased, _dateAndAddressService, _lookupService,_reportRepostory,IsCorrection));
-            deceasedInfo.TitileAm = deceased?.TitleLookup?.Value?.Value<string>("am") ?? _lookupService.GetLookupAm(deceased?.TitleLookupId);
-            deceasedInfo.TitileOr = deceased?.TitleLookup?.Value?.Value<string>("or") ?? _lookupService.GetLookupOr(deceased?.TitleLookupId);
+            var title = _lookupService.GetLookup(deceased?.TitleLookupId);
+            deceasedInfo.TitileAm = deceased?.TitleLookup?.Value?.Value<string>("am") ?? title?.Value?.Value<string>("am");
+            deceasedInfo.TitileOr = deceased?.TitleLookup?.Value?.Value<string>("or") ?? title?.Value?.Value<string>("or");
             return deceasedInfo;
         }
         public DeathArchiveDTO GetDeathArchive(Event death, string? BirthCertNo, bool IsCorrection=false)
