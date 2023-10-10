@@ -65,7 +65,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Commands
             var checkCorrectionRequest = _CorrectionRepository.GetAll()
             .Include(x => x.Request)
             .Where(x => x.EventId == request.CorrectionRequest.EventId
-            && (x.Request.currentStep != x.Request.NextStep || x.Request.IsRejected == false)).FirstOrDefault();
+            && (x.Request.currentStep != x.Request.NextStep && x.Request.IsRejected == false)).FirstOrDefault();
             var response = new BaseResponse();
             if (checkCorrectionRequest != null)
             {
