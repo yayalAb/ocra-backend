@@ -118,7 +118,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return adoptionInfo;
 
         }
-        public AdoptionArchiveDTO GetAdoptionPreviewArchive(AdoptionEvent adoption, string? BirthCertNo,bool IsCorrection=false)
+        public AdoptionArchiveDTO GetAdoptionPreviewArchive(AdoptionEvent adoption, string? BirthCertNo,bool IsCorrection=true)
         {
             var child = adoption.Event.EventOwener == null ?
                                     _person.GetAll().Where(p => p.Id == adoption.Event.EventOwenerId)
@@ -155,9 +155,9 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             adoption.Event.AdoptionEvent = adoption;
             // return new AdoptionArchiveDTO()
             // {
-            adoptionArchive.Child = child == null ? null : GetChild(child);
-            adoptionArchive.Mother = mother == null ? null : GetMother(mother);
-            adoptionArchive.Father = father == null ? null : GetFather(father);
+            adoptionArchive.Child = child == null ? null : GetChild(child, IsCorrection);
+            adoptionArchive.Mother = mother == null ? null : GetMother(mother, IsCorrection);
+            adoptionArchive.Father = father == null ? null : GetFather(father, IsCorrection);
             adoptionArchive.Court = GetCourt(adoption.CourtCase);
             adoptionArchive.EventInfo = GetEventInfo(adoption.Event);
             adoptionArchive.EventSupportingDocuments = CustomMapper.Mapper.Map<IList<SupportingDocumentDTO>>(adoption.Event?.EventSupportingDocuments);

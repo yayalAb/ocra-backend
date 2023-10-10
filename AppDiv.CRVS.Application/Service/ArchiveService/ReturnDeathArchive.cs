@@ -138,7 +138,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
                         .ProjectTo<SupportingDocumentDTO>(CustomMapper.Mapper.ConfigurationProvider).ToList();
             return deathInfo;
         }
-        public DeathArchiveDTO GetDeathPreviewArchive(DeathEvent death, string? BirthCertNo, bool IsCorrection=false)
+        public DeathArchiveDTO GetDeathPreviewArchive(DeathEvent death, string? BirthCertNo, bool IsCorrection = true)
         {
             death.Event.DeathEventNavigation = death;
             if (death.Event.CivilRegOfficer == null && death.Event.CivilRegOfficerId != null)

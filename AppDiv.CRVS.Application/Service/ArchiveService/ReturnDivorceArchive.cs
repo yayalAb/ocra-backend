@@ -108,7 +108,7 @@ namespace AppDiv.CRVS.Application.Service.ArchiveService
             return divorceInfo;
 
         }
-        public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo, bool IsCorrection=false)
+        public DivorceArchiveDTO GetDivorcePreviewArchive(DivorceEvent divorce, string? BirthCertNo, bool IsCorrection=true)
         {
             divorce.Event.DivorceEvent = divorce;
             if (divorce.Event.CivilRegOfficer == null && divorce.Event.CivilRegOfficerId != null)
