@@ -62,7 +62,13 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
             .Include(x => x.CivilRegOfficer.ApplicationUser.UserGroups)
             .Include(x => x.EventPaymentRequest).ThenInclude(x => x.Payment)
             .Include(x => x.EventCertificates)
+            .ThenInclude(x=>x.AuthenticationRequests)
             .Include(x => x.CorrectionRequests)
+            .Include(x=>x.VerficationRequestNavigation)
+            .ThenInclude(x=>x.Request)
+            .ThenInclude(x=>x.Transactions)
+            .ThenInclude(x=>x.CivilRegOfficer)
+            .ThenInclude(x=>x.Address)
             .Where(x => x.Id == selectedEvent.EventId)
             .Select(da => new
             
@@ -70,7 +76,8 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 Registered = da,
                 payment = da.EventPaymentRequest,
                 certificate = da.EventCertificates,
-                correction = da.CorrectionRequests
+                correction = da.CorrectionRequests,
+                Verfication=da.VerficationRequestNavigation.Request.Transactions.OrderByDescending(x=>x.CreatedAt).FirstOrDefault()
             }).FirstOrDefault();
             if (events == null)
             {
@@ -114,7 +121,7 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 foreach (var pay in events?.payment){
                     var history = new EventHistory
                 {
-                    Action =pay.Payment.PaymentRequest.Reason.Value<string>("en"),
+                    Action ="Paid "+pay.Payment.PaymentRequest.Reason.Value<string>("en")+ " Payment",
                     Date = convertor.GregorianToEthiopic((DateTime)pay?.CreatedAt),
                     By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
                     Type = events?.certificate?.FirstOrDefault().Event?.CivilRegOfficer?.ApplicationUser?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
@@ -147,6 +154,23 @@ namespace AppDiv.CRVS.Application.Features.Customers.Query
                 }
                 selectedEvent.Historys.Add(history);
                 }
+            }
+              if (events?.Verfication != null)
+            {
+                var history = new EventHistory
+                {
+                    Action = "Verfication",
+                    Date = convertor.GregorianToEthiopic((DateTime)events?.Verfication.CreatedAt),
+                    By = events.Registered.CivilRegOfficer.FirstNameLang + " " + events.Registered.CivilRegOfficer.MiddleNameLang + " " + events.Registered.CivilRegOfficer.LastNameLang,
+                    Type = events?.Verfication?.CivilRegOfficer?.UserGroups?.Select(x => x.GroupName)?.FirstOrDefault(),
+                    Address = events?.Verfication?.CivilRegOfficer.Address.AddressNameLang,
+
+                };
+                if (history == null)
+                {
+                    throw new NotFoundException("An Error occered on history generatin");
+                }
+                selectedEvent.Historys.Add(history);
 
             }
 
