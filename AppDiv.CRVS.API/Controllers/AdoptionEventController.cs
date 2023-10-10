@@ -62,10 +62,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetAdoptionEventById(Guid id, [FromQuery] Guid? transactionId)
+        public async Task<IActionResult> GetAdoptionEventById(Guid id)
         {
-
-            return Ok(await _mediator.Send(new AdoptionEventGetByIdQuery { Id = id, TransactionId = transactionId }));
+            return Ok(await _mediator.Send(new AdoptionEventGetByIdQuery { Id = id }));
         }
 
     }

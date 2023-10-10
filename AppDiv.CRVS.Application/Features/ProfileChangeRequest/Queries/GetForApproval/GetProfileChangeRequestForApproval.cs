@@ -16,6 +16,8 @@ using AppDiv.CRVS.Application.Features.User.Command.Update;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Application.Contracts.Request;
 using AppDiv.CRVS.Application.Interfaces;
+using AppDiv.CRVS.Application.Service.ArchiveService;
+using AppDiv.CRVS.Application.Service;
 
 namespace AppDiv.CRVS.Application.Features.ProfileChangeRequests.Query.GetForApproval
 {
@@ -30,14 +32,23 @@ namespace AppDiv.CRVS.Application.Features.ProfileChangeRequests.Query.GetForApp
     {
         private readonly IProfileChangeRequestRepository _profileChangeRequestRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IDateAndAddressService _dateAndAddressService;
+        private readonly ILookupFromId _lookupService;
+        private readonly IReportRepostory _reportRepostory;
         private readonly IFileService _fileService;
 
         public GetProfileChangeForApprovalHandler(IProfileChangeRequestRepository profileChangeRequestRepository,
                                                   IUserRepository userRepository,
+                                                  IDateAndAddressService dateAndAddressService,
+                                                  ILookupFromId lookupService,
+                                                  IReportRepostory reportRepostory,
                                                   IFileService fileService)
         {
             _profileChangeRequestRepository = profileChangeRequestRepository;
             _userRepository = userRepository;
+            _dateAndAddressService = dateAndAddressService;
+            _lookupService = lookupService;
+            _reportRepostory = reportRepostory;
             _fileService = fileService;
         }
         public async Task<object> Handle(GetProfileChangeForApproval request, CancellationToken cancellationToken)
@@ -53,7 +64,19 @@ namespace AppDiv.CRVS.Application.Features.ProfileChangeRequests.Query.GetForApp
             {
                 throw new NotFoundException($"profileChangeRequest with id {request.Id}  is not found");
             }
-            var newData = profileChangeRequest.Content.ToObject<UpdateUserRequest>();
+            var content = profileChangeRequest.Content.ToObject<UpdateUserRequest>();
+            var mappedPerson = CustomMapper.Mapper.Map<PersonalInfo>(content.PersonalInfo);
+            var newData = new {
+                content.Id,
+                content.PreferedLanguage,
+                content.UserImage,
+                content.AddressId,
+                content.FingerPrintApiUrl,
+                PersonalInfo = ReturnPerson.GetPerson(mappedPerson, _dateAndAddressService, _lookupService, _reportRepostory),
+                // PersonalInfo = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(content.PersonalInfo)
+
+            };
+
             string? userImage;
             try
             {
@@ -66,21 +89,22 @@ namespace AppDiv.CRVS.Application.Features.ProfileChangeRequests.Query.GetForApp
                 userImage = null;
             }
 
-            var oldData = _userRepository.GetAll()
+            var res = _userRepository.GetAll()
                             .Include(u => u.UserGroups)
                             .Include(u => u.PersonalInfo.ContactInfo)
                             .Where(u => u.Id == profileChangeRequest.UserId)
-                            .Select(u => new
-                            {
-                                u.Id,
-                                u.PreferedLanguage,
-                                UserImage = userImage,
-                                u.AddressId,
-                                u.FingerPrintApiUrl,
-                                PersonalInfo = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(u.PersonalInfo)
-
-                            })
                             .FirstOrDefault();
+            var oldData = new
+            {
+                res.Id,
+                res.PreferedLanguage,
+                UserImage = userImage,
+                res.AddressId,
+                res.FingerPrintApiUrl,
+                PersonalInfo = ReturnPerson.GetPerson(res.PersonalInfo, _dateAndAddressService, _lookupService, _reportRepostory),
+                // PersonalInfo = CustomMapper.Mapper.Map<UpdatePersonalInfoRequest>(res.PersonalInfo)
+
+            };
             NotificationData? notificationData = null;
             if (profileChangeRequest.Request?.Notification != null)
             {

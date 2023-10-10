@@ -47,7 +47,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
             _fingerprintService = fingerprintService;
             _personalInfoRepository = personalInfoRepository;
             _userResolverService = userResolverService;
-            _eventStatusService=eventStatusService;
+            _eventStatusService = eventStatusService;
         }
         public async Task<CreateDeathEventCommandResponse> Handle(CreateDeathEventCommand request, CancellationToken cancellationToken)
         {
@@ -84,7 +84,7 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             var address = await _addressRepostory.GetAsync(workingAddressId);
                             // Map the request to the model entity.
                             var deathEvent = CustomMapper.Mapper.Map<DeathEvent>(request.DeathEvent);
-                            deathEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", deathEvent.Event.EventDate, deathEvent.Event.EventRegDate);
+                            deathEvent.Event.Status = _eventStatusService.ReturnEventStatus("birth", deathEvent.Event.EventDate, deathEvent.Event.EventRegDate);
                             if (request.DeathEvent?.Event?.EventRegisteredAddressId != null && request.DeathEvent?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)
@@ -110,16 +110,18 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             };
 
                             // Save the supporting documents and payment exemption documents.
-                            var (userPhotos, fingerprints, otherDocs) = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
-                            _eventDocumentService.savePhotos(userPhotos);
+                            var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, deathEvent.Event.EventSupportingDocuments);
+                            _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                            _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+
                             //  var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(fingerprints,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
                             //         response.Message="Duplicated Fingerprint";
                             //         response.Success=false; 
                             //         return response;
                             //         }
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)otherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
-                            _eventDocumentService.saveFingerPrints(fingerprints);
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
+                            _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                             if ((!deathEvent.Event.IsExampted) && (address != null && address?.AdminLevel == 5))
                             {
                                 // Get Payment rate for death certificate.

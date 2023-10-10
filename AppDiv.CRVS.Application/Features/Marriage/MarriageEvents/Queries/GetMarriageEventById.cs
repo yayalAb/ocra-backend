@@ -17,7 +17,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
     public record GetMarriageEventByIdQuery : IRequest<UpdateMarriageEventCommand>
     {
         public Guid Id { get; set; }
-        public Guid? TransactionId { get; set; }
     }
 
     public class GetMarriageEventByIdQueryHandler : IRequestHandler<GetMarriageEventByIdQuery, UpdateMarriageEventCommand>
@@ -91,11 +90,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Query
                 Wife = _eventDocumentService.getSingleFingerprintUrls(MarriageEvent.BrideInfo?.Id.ToString()),
                 Witness = MarriageEvent.Witnesses.Select(w => _eventDocumentService.getSingleFingerprintUrls(w.WitnessPersonalInfo?.Id.ToString()).ToList())
             };
-            if (request.TransactionId is not null)
-            {
-                MarriageEvent.Comment = await _mediator.Send(new GetNotificationByTransactionIdQuery { Id = (Guid)request.TransactionId });
-            }
-
             return MarriageEvent;
         }
     }

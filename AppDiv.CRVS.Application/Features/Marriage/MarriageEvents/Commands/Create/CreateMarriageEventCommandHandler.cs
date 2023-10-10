@@ -74,7 +74,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
-            _eventStatusService=eventStatusService;
+            _eventStatusService = eventStatusService;
         }
 
         public async Task<CreateMarriageEventCommandResponse> Handle(CreateMarriageEventCommand request, CancellationToken cancellationToken)
@@ -106,13 +106,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             CreateMarriageEventCommandResponse.Message = CreateMarriageEventCommandResponse.ValidationErrors[0];
                             CreateMarriageEventCommandResponse.Status = 400;
                         }
-                        Guid workingAddressId = await HelperService.GetWorkingAddressId(_userResolverService,_personalInfoRepository,request.IsFromBgService?request.Event.CivilRegOfficerId:null);
+                        Guid workingAddressId = await HelperService.GetWorkingAddressId(_userResolverService, _personalInfoRepository, request.IsFromBgService ? request.Event.CivilRegOfficerId : null);
                         var address = await _addressRepostory.GetAsync(workingAddressId);
                         if (CreateMarriageEventCommandResponse.Success)
                         {
 
                             var marriageEvent = CustomMapper.Mapper.Map<MarriageEvent>(request);
-                            marriageEvent.Event.Status= _eventStatusService.ReturnEventStatus("birth", marriageEvent.Event.EventDate, marriageEvent.Event.EventRegDate);
+                            marriageEvent.Event.Status = _eventStatusService.ReturnEventStatus("birth", marriageEvent.Event.EventDate, marriageEvent.Event.EventRegDate);
                             if (request?.Event?.EventRegisteredAddressId != null && request?.Event?.EventRegisteredAddressId != Guid.Empty)
                             {
                                 if (address == null)
@@ -153,9 +153,11 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                                         .Select(w => w.WitnessPersonalInfo != null ? w.WitnessPersonalInfo.Id : w.WitnessPersonalInfoId).ToList()
                             };
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
-                            _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
-                            _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+                            _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                            _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+
+                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
+                            _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                             //   var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
                             //         CreateMarriageEventCommandResponse = new CreateMarriageEventCommandResponse

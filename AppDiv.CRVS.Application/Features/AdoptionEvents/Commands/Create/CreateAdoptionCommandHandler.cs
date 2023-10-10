@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
             _addressRepostory = addressRepostory;
             _fingerprintService = fingerprintService;
             _userResolverService = userResolverService;
-            _eventStatusService=eventStatusService;
+            _eventStatusService = eventStatusService;
 
         }
         public async Task<CreateAdoptionCommandResponse> Handle(CreateAdoptionCommand request, CancellationToken cancellationToken)
@@ -136,7 +136,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     adoptionEvent.Event.EventRegisteredAddressId = request?.Adoption?.Event?.EventRegisteredAddressId;
                                 }
                                 adoptionEvent.Event.EventAddressId = request?.Adoption?.CourtCase?.Court?.AddressId;
-                                adoptionEvent.Event.Status= _eventStatusService.ReturnEventStatus("Adoption", adoptionEvent.Event.EventDate, adoptionEvent.Event.EventRegDate);
+                                adoptionEvent.Event.Status = _eventStatusService.ReturnEventStatus("Adoption", adoptionEvent.Event.EventDate, adoptionEvent.Event.EventRegDate);
                                 if (adoptionEvent.AdoptiveFather?.Id != null && adoptionEvent?.AdoptiveFather?.Id != Guid.Empty)
                                 {
                                     PersonalInfo selectedperson = _personalInfoRepository.GetById(adoptionEvent.AdoptiveFather.Id);
@@ -201,9 +201,11 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     ChildId = adoptionEvent?.Event.EventOwener?.Id
                                 };
                                 var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, adoptionEvent.Event.EventSupportingDocuments);
-                                _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
-                                _eventDocumentService.saveFingerPrints(separatedDocs.fingerPrint);
+                                _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                                _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+
+                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
+                                _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                                 // var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                                 // if(!FingerPrintResponse.Success){ 
                                 //     CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
@@ -269,7 +271,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     Status = 500,
                                     Success = false,
                                     Message = ex.Message
-                                   
+
 
                                 };
                                 throw;

@@ -30,7 +30,6 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update
         public virtual ICollection<AddWitnessRequest> Witnesses { get; set; }
         public bool IsFromCommand { get; set; } = false;
         public bool ValidateFirst { get; set; } = false;
-        public NotificationData? Comment { get; set; } = null;
 
 
     }

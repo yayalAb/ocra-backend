@@ -81,7 +81,6 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
             if (request.IsYourRequestList)
             {
                 RequestList = RequestList
-                    .Where(r => r.Request.CivilRegOfficerId != r.CivilRegOfficer.PersonalInfoId)
                     .Where(c => _transactionService.GetAll()
                         .Where(t => t.RequestId == c.RequestId && t.CreatedAt > c.CreatedAt)
                         .Count() == 0);
@@ -106,7 +105,12 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
              .Select(t => new AuthenticationRequestListDTO
              {
                 Id = t.Request.Id,
-                TransactionId = t.Id,
+                TransactionId = request.IsYourRequestList 
+                                ? t.Id 
+                                : _transactionService.GetAll()
+                                    .Where(it => it.RequestId == t.RequestId && it.CurrentStep == 0 && it.ApprovalStatus == true)
+                                    .Select(it => it.Id)
+                                    .SingleOrDefault(),
                 OfficerId = Guid.Parse(t.CivilRegOfficerId),
                 RequestedBy = t.Request.CivilRegOfficer.FullNameLang,
                 RequestType = t.Request.RequestType,

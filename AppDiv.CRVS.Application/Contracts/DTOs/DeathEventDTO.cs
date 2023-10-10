@@ -18,7 +18,6 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public Guid? DeathPlaceId { get; set; }
         public Guid? DuringDeathId { get; set; }
         public string? PlaceOfFuneralStr { get; set; }
-        public NotificationData? Comment { get; set; } = null;
 
         [NotMapped]
         public JObject? PlaceOfFuneral

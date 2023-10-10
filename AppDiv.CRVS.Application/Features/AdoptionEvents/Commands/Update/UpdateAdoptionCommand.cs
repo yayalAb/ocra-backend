@@ -101,12 +101,12 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                 var examptionsupportingDocs = request.Event.PaymentExamption?.SupportingDocuments?.Where(doc => doc.Id == null).ToList();
                 var adoptionEvent = CustomMapper.Mapper.Map<AdoptionEvent>(request);
                 adoptionEvent.Event.EventAddressId = adoptionEvent?.CourtCase?.Court?.AddressId;
-                adoptionEvent.Event.IsPaid=SelectedEvent.IsPaid;
-                adoptionEvent.Event.IsVerified=SelectedEvent.IsVerified;
-                adoptionEvent.Event.IsCertified=false;
-                adoptionEvent.Event.EventRegisteredAddressId=SelectedEvent.EventRegisteredAddressId;
-                adoptionEvent.Event.HasPendingDocumentApproval=SelectedEvent.HasPendingDocumentApproval;
-                adoptionEvent.Event.IsOfflineReg=SelectedEvent.IsOfflineReg;
+                adoptionEvent.Event.IsPaid = SelectedEvent.IsPaid;
+                adoptionEvent.Event.IsVerified = SelectedEvent.IsVerified;
+                adoptionEvent.Event.IsCertified = false;
+                adoptionEvent.Event.EventRegisteredAddressId = SelectedEvent.EventRegisteredAddressId;
+                adoptionEvent.Event.HasPendingDocumentApproval = SelectedEvent.HasPendingDocumentApproval;
+                adoptionEvent.Event.IsOfflineReg = SelectedEvent.IsOfflineReg;
                 var personIds = new PersonIdObj();
                 if (!request.IsFromCommand)
                 {
@@ -118,13 +118,14 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     };
                     var docs = await _eventDocumentService.createSupportingDocumentsAsync(supportingDocs, examptionsupportingDocs, adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
                     var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, docs.supportingDocs);
-                    _eventDocumentService.savePhotos(separatedDocs.userPhotos);
-                    _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Adoption");
+                    _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
+                    _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
+                    _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, (ICollection<SupportingDocument>)docs.examptionDocs, "Adoption");
 
                 }
                 else
-                { 
-                   var docs = await _eventDocumentService.createSupportingDocumentsAsync(CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event?.EventSupportingDocuments), CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event?.PaymentExamption?.SupportingDocuments), adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
+                {
+                    var docs = await _eventDocumentService.createSupportingDocumentsAsync(CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event?.EventSupportingDocuments), CustomMapper.Mapper.Map<List<AddSupportingDocumentRequest>>(adoptionEvent.Event?.PaymentExamption?.SupportingDocuments), adoptionEvent.EventId, adoptionEvent.Event.PaymentExamption?.Id, cancellationToken);
                     personIds = new PersonIdObj
                     {
                         MotherId = adoptionEvent.AdoptiveMother != null ? adoptionEvent.AdoptiveMother.Id : adoptionEvent.AdoptiveMotherId,
@@ -140,13 +141,14 @@ public class UpdateAdoptionCommandHandler : IRequestHandler<UpdateAdoptionComman
                     {
                         _eventDocumentService.MoveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.otherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                     }
-                } adoptionEvent.Event.EventSupportingDocuments = null;
+                }
+                adoptionEvent.Event.EventSupportingDocuments = null;
                 if (adoptionEvent.Event.PaymentExamption != null)
                 {
                     adoptionEvent.Event.PaymentExamption.SupportingDocuments = null;
                 }
                 await _adoptionEventRepository.EFUpdate(adoptionEvent, _paymentRequestService, cancellationToken);
-               await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
+                await _adoptionEventRepository.SaveChangesAsync(cancellationToken);
                 // _eventDocumentService.saveSupportingDocuments(adoptionEvent.Event.EventSupportingDocuments, adoptionEvent.Event.PaymentExamption.SupportingDocuments, "Adoption");
                 _adoptionEventRepository.TriggerPersonalInfoIndex();
                 UpdateAdoptionCommandResponse = new UpdateAdoptionCommandResponse { Message = "Adoption Event Updated Successfully" };
