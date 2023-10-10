@@ -19,8 +19,18 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public (string BrideImage, string GroomImage) MarriageImage()
         {
        
-            string brideImage = base.GetAll().Where(s => s.Label == "Bride" && (s.TypeLookup.ValueStr.ToLower().Contains("webcam"))).Select(s => s.Id).FirstOrDefault().ToString();
-            string groomImage = base.GetAll().Where(s => s.Label == "Groom" && (s.TypeLookup.ValueStr.ToLower().Contains("webcam"))).Select(s => s.Id).FirstOrDefault().ToString();
+            string brideImage = base.GetAll()
+                .OrderByDescending(s => s.CreatedAt)
+                .Where(s => s.Label == "Bride" && (s.TypeLookup.ValueStr.ToLower().Contains("webcam")))
+                .Select(s => s.Id)
+                .FirstOrDefault()
+                .ToString();
+            string groomImage = base.GetAll()
+                .OrderByDescending(s => s.CreatedAt)
+                .Where(s => s.Label == "Groom" && (s.TypeLookup.ValueStr.ToLower().Contains("webcam")))
+                .Select(s => s.Id)
+                .FirstOrDefault()
+                .ToString();
 
             return (brideImage, groomImage);
         }
