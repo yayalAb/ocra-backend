@@ -18,13 +18,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
     // Customer GetCustomerByIdQuery with Customer response
     public class GetPlanByIdQuery : IRequest<PlanDTO>
     {
-        public Guid Id { get; set; }
-
-        // public GetPlanByIdQuery(Guid Id)
-        // {
-        //     this.Id = Id;
-        // }
-
+       public Guid Id { get; set; }
     }
 
     public class GetPlanByIdHandler : IRequestHandler<GetPlanByIdQuery, PlanDTO>
@@ -51,6 +45,8 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     ParentPlanId = p.ParentPlanId,
                     PlannedDateEt = p.PlannedDateEt,
                     BudgetYear = p.BudgetYear,
+                    MalePopulationSize = p.MalePopulationSize,
+                    FemalePopulationSize = p.FemalePopulationSize,
                     PopulationSize = p.PopulationSize,
                     EventPlans = CustomMapper.Mapper.Map<List<UpdateEventPlan>>(p.EventPlans)
                 }).SingleOrDefault();

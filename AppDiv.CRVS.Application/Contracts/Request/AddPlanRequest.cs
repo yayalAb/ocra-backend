@@ -13,7 +13,8 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public uint BudgetYear { get; set; }
         public Guid? ParentPlanId { get; set; }
         public Guid AddressId { get; set; }
-        public long PopulationSize { get; set; }
+        public long MalePopulationSize { get; set; }
+        public long FemalePopulationSize { get; set; }
         public ICollection<AddEventPlan> EventPlans { get; set; }
     }
     public class AddEventPlan
@@ -21,6 +22,7 @@ namespace AppDiv.CRVS.Application.Contracts.Request
         public string EventType { get; set; }
         public uint? ActiveTargetAmount { get; set; }
         public uint? OtherTargetAmount { get; set; }
+        public uint? FormNotification { get; set; }
         public int ActualOccurance { get; set; }
         public JObject Remark { get; set; }
     }
