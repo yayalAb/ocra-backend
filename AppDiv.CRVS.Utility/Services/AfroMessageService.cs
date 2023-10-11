@@ -44,6 +44,8 @@ public class AfroMessageService : ISmsService
 
             using (var client = new HttpClient{Timeout = TimeSpan.FromSeconds(100)})
             {
+                try
+                {
                 var url = "https://api.afromessage.com/api/send";
                 var request = new HttpRequestMessage(HttpMethod.Post, url);
                 var jsonContent = new
@@ -59,6 +61,13 @@ public class AfroMessageService : ISmsService
                 var response = await client.SendAsync(request);
                 // Ensure the response was successful
                 // response.EnsureSuccessStatusCode();
+                    
+                }
+                catch (System.Exception e)
+                {
+                    
+                   Console.WriteLine("afroMessage error : "+ e);
+                }
 
             }
 
