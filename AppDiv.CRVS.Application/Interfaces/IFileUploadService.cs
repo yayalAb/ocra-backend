@@ -10,5 +10,6 @@ namespace AppDiv.CRVS.Application.Interfaces
         public (byte[] file, string fileName, string fileExtenion) getFile(string fileId, string folder, string? eventType, string? fingerPrintIndex);
         public (byte[] file, string fileName, string fileExtenion) getFile(string fullPath);
         public List<string> GetFileNamesInfolder(string folder);
+        public (bool exists, string? fullPath) FileExists(string folder, string fileName);
     }
 }

@@ -155,8 +155,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                             _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
-
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
+                            _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                             //   var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
