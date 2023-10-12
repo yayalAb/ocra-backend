@@ -170,13 +170,14 @@ namespace AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create
                             createDivorceEventCommandResponse.Message = "Divorce event created successfully";
                             createDivorceEventCommandResponse.IsManualRegistration = IsManualRegistration;
                             createDivorceEventCommandResponse.EventId = divorceEvent.Event.Id;
+                            createDivorceEventCommandResponse.divorceEventRepository = request.IsFromBgService ? _DivorceEventRepository:null;
 
 
                             if (transaction != null)
                             {
                                 await transaction.CommitAsync();
+                                _DivorceEventRepository.TriggerPersonalInfoIndex();
                             }
-                            _DivorceEventRepository.TriggerPersonalInfoIndex();
                             // _certificateRepository.TriggerCertificateIndex();
 
                             // }

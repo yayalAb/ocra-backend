@@ -159,8 +159,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                         if (transaction != null)
                         {
                             await transaction.CommitAsync();
+                            _deathEventRepository.TriggerPersonalInfoIndex();
                         }
-                        _deathEventRepository.TriggerPersonalInfoIndex();
+                    }
+                    if (request.DeathEvent.IsFromBgService)
+                    {
+                        response.deathEventRepository = _deathEventRepository;
                     }
                     return response;
                 }

@@ -194,6 +194,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     adoptionEvent.CourtCase.Court = null;
                                 }
                                 await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
+
                                 var personIds = new PersonIdObj
                                 {
                                     MotherId = adoptionEvent?.AdoptiveMother?.Id,
@@ -251,14 +252,16 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 if (transaction != null)
                                 {
                                     await transaction.CommitAsync();
+                                    _AdoptionEventRepository.TriggerPersonalInfoIndex();
                                 }
-                                _AdoptionEventRepository.TriggerPersonalInfoIndex();
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
                                     Success = true,
                                     Message = "Adoption Event created Successfully",
                                     IsManualRegistration = IsManualRegistration,
-                                    EventId = adoptionEvent.Event.Id
+                                    EventId = adoptionEvent.Event.Id,
+                                    adoptionEventRepository = request.Adoption.IsFromBgService ? _AdoptionEventRepository : null
+
                                 };
                                 // }
 

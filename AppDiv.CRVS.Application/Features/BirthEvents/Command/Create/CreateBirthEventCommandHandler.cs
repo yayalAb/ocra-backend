@@ -169,11 +169,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 response.Status = 200;
                                 response.IsManualRegistration = IsManualRegistration;
                                 response.EventId = birthEvent.Event.Id;
+                                response.birthEventRepository = request.BirthEvent.IsFromBgService ? _birthEventRepository: null;
                                 if (transaction != null)
                                 {
                                     await transaction.CommitAsync();
+                                    _birthEventRepository.TriggerPersonalInfoIndex();
                                 }
-                                _birthEventRepository.TriggerPersonalInfoIndex();
 
                                 // }
                             }
