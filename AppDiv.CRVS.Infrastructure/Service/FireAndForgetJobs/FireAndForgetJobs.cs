@@ -6,6 +6,7 @@ using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Infrastructure.Context;
 using AutoMapper;
+using Hangfire;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Nest;
@@ -38,7 +39,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
             _dbContext = dbContext;
             _paymentRequestRepository = paymentRequestRepository;
         }
-
+        [AutomaticRetry(Attempts = 5)]
         public async Task IndexPersonInfo(List<PersonalInfoEntry> personalInfoEntries)
         {
             Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$ started $$$$$$$$$$$$$$$$$$$$");
@@ -102,6 +103,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
             Console.WriteLine("################ ended #######################");
 
         }
+        [AutomaticRetry(Attempts = 5)]
         public async Task IndexCertificate(List<CertificateEntry> certificateEntries)
         {
             Console.WriteLine("$$$$$$$$$$$$$$$$$$$$$$ certificate indexing started $$$$$$$$$$$$$$$$$$$$");
@@ -147,8 +149,8 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
 
                 if (updatedCertificates.Any())
                 {
-                //     var tasks = new List<Task>();
-                   foreach (var updatedCertificateIndex in updatedCertificates)
+                    //     var tasks = new List<Task>();
+                    foreach (var updatedCertificateIndex in updatedCertificates)
                     {
                         var updateres = await _elasticClient.UpdateAsync<CertificateIndex>(DocumentPath<CertificateIndex>
                             .Id(updatedCertificateIndex.Id.ToString()),
@@ -158,7 +160,7 @@ namespace AppDiv.CRVS.Infrastructure.Service.FireAndForgetJobs
                                     );
                         //     tasks.Add(task);
                     };
-             
+
 
                 }
                 // await Task.WhenAll();
