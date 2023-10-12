@@ -29,7 +29,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
             TablePkId = audit?.TablePk;
             AuditDate = convertor.GregorianToEthiopic(audit!.AuditDate);
             UserName = audit?.AuditUser?.UserName;
-            UserFullName = audit?.AuditUser.PersonalInfo.FullNameLang;
+            UserFullName = audit?.AuditUser?.PersonalInfo.FullNameLang;
             UserId = audit?.AuditUserId;
             AuditedEntity = audit?.EntityType;
             Address = $"{audit?.Address?.ParentAddress?.ParentAddress?.AddressNameLang}/{audit?.Address?.ParentAddress?.AddressNameLang}/{audit?.Address?.AddressNameLang}".Trim('/');
