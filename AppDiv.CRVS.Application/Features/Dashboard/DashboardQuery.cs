@@ -29,23 +29,19 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
         private readonly IUserResolverService _userResolverService;
         private readonly ILookupRepository _LookupsRepo;
         private readonly IAddressLookupRepository _userRpo;
-        private readonly ISettingRepository _SettinglookupRepository;
-        private static int BirthSetting; 
-       private static int AdoptionSetting;
-       private static int MarriageSetting;
-       private static int DivorceSetting;
-       private static int DeathSetting;
+        private readonly ICertificateRepository _certificateRepository;
+        private readonly ICorrectionRequestRepostory _correctionrequest;
         
 
-
-        public DashboardQueryHandler(ISettingRepository SettinglookupRepository,IEventRepository eventRepository,IAddressLookupRepository userRpo, IUserResolverService userResolverService,ILookupRepository LookupsRepo)
+        public DashboardQueryHandler(ICorrectionRequestRepostory correctionrequest,ICertificateRepository certificateRepository,IEventRepository eventRepository,IAddressLookupRepository userRpo, IUserResolverService userResolverService,ILookupRepository LookupsRepo)
         {
             _eventRepository = eventRepository;
             _dateConverter = new CustomDateConverter();
             _userResolverService=userResolverService;
             _LookupsRepo=LookupsRepo;
             _userRpo=userRpo;
-            _SettinglookupRepository=SettinglookupRepository;
+            _certificateRepository=certificateRepository;
+            _correctionrequest = correctionrequest;
         }
         public async Task<object> Handle(DashboardQuery request, CancellationToken cancellationToken)
         {
@@ -59,13 +55,6 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
             if(request.AddressId!=null &&request.AddressId!=Guid.Empty){
                AddressId=(Guid)request.AddressId;
             }
-            var setting=_SettinglookupRepository.GetAll();
-            BirthSetting =   int.Parse(setting.Where(x => x.Key == "birthSetting").FirstOrDefault()!.Value.Value<string>("active_registration")!);
-            AdoptionSetting = int.Parse(setting.Where(x => x.Key == "adoptionSetting").FirstOrDefault()!.Value.Value<string>("active_registration")!);
-            MarriageSetting = int.Parse(setting.Where(x => x.Key == "marriageSetting").FirstOrDefault()!.Value.Value<string>("active_registration")!);
-            DivorceSetting = int.Parse(setting.Where(x => x.Key == "divorceSetting").FirstOrDefault()!.Value.Value<string>("active_registration")!);
-            DeathSetting =  int.Parse(setting.Where(x => x.Key == "deathSetting").FirstOrDefault()!.Value.Value<string>("active_registration")!);
-            
             var CardValue=new ReportCardResponsDTO();
             Guid MalelookupId = _LookupsRepo.GetAll().Where(l => l.Key == "sex")
                                                 .Where(l => EF.Functions.Like(l.ValueStr, "%ወንድ%")
@@ -86,20 +75,40 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
             .ThenInclude(x=>x.ParentAddress)
             .ThenInclude(x=>x.ParentAddress)
             .ThenInclude(x=>x.ParentAddress)
-            .Include(x=>x.EventCertificates)
-            .Include(x=>x.CorrectionRequests)
-            .ThenInclude(x=>x.Request)
-            .Where(x=>(x.EventRegDate >= startDate && x.EventRegDate <= EndDate)
-            // ||x.CorrectionRequests.Any(c=>c.CreatedAt>= startDate && c.CreatedAt <= EndDate)
-            // ||x.EventCertificates.Any(c=>c.AuthenticationAt>= startDate && c.AuthenticationAt <= EndDate)
-            )
+            .Where(x=>x.EventRegDate >= startDate && x.EventRegDate <= EndDate)
             .Where(x=>x.EventRegisteredAddressId==AddressId||x.EventRegisteredAddress.ParentAddressId==AddressId
             ||x.EventRegisteredAddress.ParentAddress.ParentAddressId==AddressId||x.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId
             ||x.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId);
+            
+            var certificates = _certificateRepository.GetAll()
+                                .Include(x=>x.Event)
+                                .ThenInclude(x=>x.EventRegisteredAddress)
+                                .ThenInclude(x=>x.ParentAddress)
+                                .ThenInclude(x=>x.ParentAddress)
+                                .ThenInclude(x=>x.ParentAddress)
+                                .ThenInclude(x=>x.ParentAddress)
+                                .Where(x=>(x.Status==true && x.AuthenticationStatus==true)&&(x.AuthenticationAt >= startDate && x.AuthenticationAt <= EndDate)&&
+                                 x.Event.EventRegisteredAddressId==AddressId||x.Event.EventRegisteredAddress.ParentAddressId==AddressId
+                                ||x.Event.EventRegisteredAddress.ParentAddress.ParentAddressId==AddressId||x.Event.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId
+                                ||x.Event.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId);
+                                
+            var CorrectionRequests= _correctionrequest.GetAll()
+            .Include(x=>x.Request)
+            .ThenInclude(x=>x.CivilRegOfficer)
+            .ThenInclude(x=>x.ApplicationUser)
+            .ThenInclude(x=>x.Address)
+            .ThenInclude(x=>x.ParentAddress)
+            .ThenInclude(x=>x.ParentAddress)
+            .ThenInclude(x=>x.ParentAddress)
+            .ThenInclude(x=>x.ParentAddress)
+            .Where(x=>(x.CreatedAt >= startDate && x.CreatedAt <= EndDate)&&
+                                 x.Request.CivilRegOfficer.ApplicationUser.AddressId==AddressId||x.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddressId==AddressId
+                                ||x.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddressId==AddressId||x.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddressId==AddressId
+                                ||x.Request.CivilRegOfficer.ApplicationUser.Address.ParentAddress.ParentAddress.ParentAddress.ParentAddressId==AddressId);
             var Approval=new {
-                Authentication = allEvents.Count(e => e.EventCertificates.Where(x=>x.Status==true).FirstOrDefault().AuthenticationStatus==true),
+                Authentication = certificates.Count(),
                 Verification = allEvents.Count(e => e.IsVerified),
-                Change = allEvents.Sum(e => e.CorrectionRequests.Count(x => x.Request.NextStep == x.Request.currentStep))
+                Change = CorrectionRequests.Count()
             };
             var groupedEvent= allEvents
                 .GroupBy(x => x.EventType);
@@ -112,7 +121,8 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
             var EventPivotReport = allEvents.Select(x =>  new DashbordResponse
                 {
                    Event = x.EventType,
-                   setStatus=ReturneventStatus(x.EventType, x.EventDate,x.EventRegDate),
+                   Active=x.Status.ToLower()=="active"? 1:0,
+                   Delay=x.Status.ToLower()!="active"? 1:0,
                    Gender=x.EventOwener.SexLookup.ValueLang,
                    Address=x.EventRegisteredAddressId==AddressId||x.EventRegisteredAddress.ParentAddressId==AddressId?x.EventRegisteredAddress.AddressNameLang:
                    x.EventRegisteredAddress.ParentAddress.ParentAddressId==AddressId? x.EventRegisteredAddress.ParentAddress.AddressNameLang:
@@ -144,29 +154,6 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
                 EventPivotResponse=EventPivotReport
             }; 
         }
-   public static  bool ReturneventStatus(string EventType, DateTime eventDate, DateTime EventRegDate){
-        int days=0;
-            switch(EventType.ToLower()){
-               case "birth":
-                     days=BirthSetting;
-                     break; 
-                case "death":
-                     days=DeathSetting;
-                     break;
-                case "divorce":
-                     days=DivorceSetting;
-                     break;
-                case "adoption":
-                     days=AdoptionSetting;
-                     break;
-                case "marriage":
-                     days=MarriageSetting;
-                     break;
-            }
-            TimeSpan deff = EventRegDate - eventDate;
-            int daysDef = Convert.ToInt32(deff.TotalDays);
-           return daysDef <= days;
-    }
     }
     public class DashbordResponse{
 
@@ -175,15 +162,6 @@ namespace AppDiv.CRVS.Application.Features.Dashboard
            public int? Delay {get; set;}
            public string? Gender {get; set;}
            public string? Address {get; set;}
-           public bool setStatus{
-            get{
-                return true;
-            } set{
-              Active=setStatus?1:0;
-              Delay=!setStatus?1:0;
-           }}
-
-
     }
 
 }
