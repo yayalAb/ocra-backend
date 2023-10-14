@@ -86,5 +86,14 @@ namespace AppDiv.CRVS.API.Controllers
             return Ok(result);
 
         }
+         [HttpGet("ReportForSidebar")]
+        public async Task<ActionResult> GetColums([FromQuery] GetReportListForSidebar query)
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        }
+
+
+        
     }
 }
