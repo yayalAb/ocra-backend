@@ -197,13 +197,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
                             CreateMarriageEventCommandResponse.IsManualRegistration = IsManualRegistration;
                             CreateMarriageEventCommandResponse.EventId = marriageEvent.Event.Id;
+                            CreateMarriageEventCommandResponse.marriageEventRepository = request.IsFromBgService ? _marriageEventRepository : null;
                             // }
                             if (transaction != null)
                             {
-
                                 await transaction.CommitAsync();
+                                _marriageEventRepository.TriggerPersonalInfoIndex();
                             }
-                            _marriageEventRepository.TriggerPersonalInfoIndex();
 
                         }
                         return CreateMarriageEventCommandResponse;

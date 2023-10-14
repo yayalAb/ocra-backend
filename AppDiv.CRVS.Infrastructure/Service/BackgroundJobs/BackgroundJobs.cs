@@ -38,6 +38,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
         private readonly IUserRepository _userRepository;
         private readonly IElasticClient _elasticClient;
         private readonly ILogger<BackgroundJobs> logger;
+        private readonly IBirthEventRepository _birthEventRepository;
         private readonly IPaymentRequestRepository _paymentRequestRepository;
         private readonly CRVSDbContext _dbContext;
 
@@ -48,6 +49,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                               IUserRepository userRepository,
                               IElasticClient elasticClient,
                               ILogger<BackgroundJobs> logger,
+                              IBirthEventRepository birthEventRepository,
                               IPaymentRequestRepository paymentRequestRepository)
         {
             _couchContext = couchContext;
@@ -57,6 +59,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             _userRepository = userRepository;
             _elasticClient = elasticClient;
             this.logger = logger;
+            _birthEventRepository = birthEventRepository;
             _paymentRequestRepository = paymentRequestRepository;
         }
         public async Task Test()
@@ -172,7 +175,8 @@ namespace AppDiv.CRVS.Infrastructure.Service
             Console.WriteLine("job started event sync ....... .......");
 
             var eventDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                    .Where(n => n.StartsWith("ocraeventcouches")).ToList();
+                                //  .Where(n => n.StartsWith("test")).ToList();
+            .Where(n => n.StartsWith("ocraeventcouches")).ToList();
             Console.WriteLine($"db count ---- {eventDbNames.Count}");
 
 
@@ -193,40 +197,63 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
                            using (var transaction = _dbContext.Database.BeginTransaction())
                            {
-                               var eventDocCouch = eventDoc;
+                               //    var eventDocCouch = eventDoc;
+                               dynamic? eventcouchDoc = new object { };
+                               dynamic eventcouchDb = new object { };
                                try
                                {
                                    Console.WriteLine($"doc --eventType-- ${eventDoc.EventType}");
                                    switch (eventDoc.EventType.ToLower())
                                    {
-
                                        case "marriage":
-
                                            var marriageSyncRes = await marriageSync(dbName, eventDoc.Id, eventDb);
-                                           eventDocCouch = marriageSyncRes.MarriageEventCouch;
+                                           //    eventDocCouch = marriageSyncRes.MarriageEventCouch;
+                                           await transaction.CommitAsync();
+                                           marriageSyncRes.repo?.TriggerPersonalInfoIndex();
+                                           eventcouchDoc = marriageSyncRes.MarriageEventCouch;
+                                           eventcouchDb = marriageSyncRes.marriageDb;
                                            break;
                                        case "birth":
                                            var birthSyncRes = await birthSync(dbName, eventDoc.Id, eventDb);
-                                           eventDocCouch = birthSyncRes.BirthEventCouch;
+                                           //    eventDocCouch = birthSyncRes.BirthEventCouch;
+                                           await transaction.CommitAsync();
+                                           birthSyncRes.repo?.TriggerPersonalInfoIndex();
+                                           eventcouchDoc = birthSyncRes.BirthEventCouch;
+                                           eventcouchDb = birthSyncRes.birthDb;
                                            break;
-
                                        case "death":
                                            var deathSyncRes = await deathSync(dbName, eventDoc.Id, eventDb);
-                                           eventDocCouch = deathSyncRes.DeathEventCouch;
+                                           //    eventDocCouch = deathSyncRes.DeathEventCouch;
+                                           await transaction.CommitAsync();
+                                           deathSyncRes.repo?.TriggerPersonalInfoIndex();
+                                           eventcouchDoc = deathSyncRes.DeathEventCouch;
+                                           eventcouchDb = deathSyncRes.deathDb;
                                            break;
                                        case "adoption":
                                            var adoptionSyncRes = await adoptionSync(dbName, eventDoc.Id, eventDb);
-                                           eventDocCouch = adoptionSyncRes.AdoptionEventCouch;
+                                           //    eventDocCouch = adoptionSyncRes.AdoptionEventCouch;
+                                           await transaction.CommitAsync();
+                                           adoptionSyncRes.repo?.TriggerPersonalInfoIndex();
+                                           eventcouchDoc = adoptionSyncRes.AdoptionEventCouch;
+                                           eventcouchDb = adoptionSyncRes.adoptionDb;
                                            break;
                                        case "divorce":
                                            var divorceSyncRes = await divorceSync(dbName, eventDoc.Id, eventDb);
-                                           eventDocCouch = divorceSyncRes.DivorceEventCouch;
+                                           //    eventDocCouch = divorceSyncRes.DivorceEventCouch;
+                                           await transaction.CommitAsync();
+                                           divorceSyncRes.repo?.TriggerPersonalInfoIndex();
+                                           eventcouchDoc = divorceSyncRes.DivorceEventCouch;
+                                           eventcouchDb = divorceSyncRes.divorceDb;
                                            break;
-
-
                                        default: break;
                                    }
-                                   await transaction.CommitAsync();
+                                   if (eventcouchDoc != null)
+                                   {
+
+                                       await eventCertificateAndPaymentCreate(eventcouchDb, eventcouchDb);
+                                   }
+
+
                                }
                                catch (Exception e)
                                {
@@ -235,34 +262,72 @@ namespace AppDiv.CRVS.Infrastructure.Service
                            }
                        });
                     Console.WriteLine("@@@@@@@@@@@ code after transaction @@@@@@@@@@@@@");
-
                 }
 
             }
             Console.WriteLine("job ended  ....... .......");
-
-
         }
 
+        private async Task eventCertificateAndPaymentCreate(dynamic eventcouchDoc, dynamic eventcouchDb)
+        {
+            if (eventcouchDoc.Paid && eventcouchDoc.Payment != null &&!eventcouchDoc.paymentSynced)
+            {
+                (bool succeded, string message) paymentRes = await createPayment(eventcouchDoc.Event.Id, eventcouchDoc.Payment?.PaymentWayLookupId, eventcouchDoc.Payment?.BillNumber);
+                //TODO:if paymentRes == false???
+                Console.WriteLine($"doc --payment created -- ${paymentRes}");
+                if (!paymentRes.succeded)
+                {
+                    eventcouchDoc.Failed = true;
+                    eventcouchDoc.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
+                    await eventcouchDb.AddOrUpdateAsync(eventcouchDoc);
+
+                }
+                else
+                {
+                    eventcouchDoc.paymentSynced = true;
+                    await eventcouchDb.AddOrUpdateAsync(eventcouchDoc);
+
+
+                }
+
+            }
+            if (eventcouchDoc.Certified && !eventcouchDoc.CertificateSynced )
+            {
+
+                (bool succeded, string message) certificateRes = await createCertificate((Guid)eventcouchDoc.Event.Id, eventcouchDoc.serialNo);
+                if (certificateRes.succeded)
+                {
+                    eventcouchDoc.CertificateSynced = true;
+                    await eventcouchDb.AddOrUpdateAsync(eventcouchDoc);
+
+
+                }
+                else
+                {
+                    eventcouchDoc.Failed = true;
+                    eventcouchDoc.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
+                    await eventcouchDb.AddOrUpdateAsync(eventcouchDoc);
+
+                }
+            }
+        }
         public async Task SyncCertificatesAndPayments()
         {
             var eventDbNames = (await _couchContext.Client.GetDatabasesNamesAsync())
-                                 .Where(n => n.StartsWith("ocraeventcouches")).ToList();
+                                //  .Where(n => n.StartsWith("test")).ToList();
+            .Where(n => n.StartsWith("ocraeventcouches")).ToList();
             Console.WriteLine($"db count ---- {eventDbNames.Count}");
-
-
 
             foreach (string dbName in eventDbNames)
             {
                 var eventDb = _couchContext.Client.GetDatabase<BaseEventCouch>(dbName);
-                var certificateUnsynced = eventDb.Where(e => (e.Synced) && (!e.Failed) && ((e.Certified && !e.CertificateSynced) || (e.Paid && e.paymentSynced)));
-
+                var certificateUnsynced = eventDb.Where(e => (e.Synced) && ((e.Certified && !e.CertificateSynced) || (e.Paid && !e.paymentSynced )));
+                Console.WriteLine($"unsynced certificate count {certificateUnsynced.ToList().Count} ");
                 foreach (var eventDoc in certificateUnsynced)
                 {
                     var eventDocCouch = eventDoc;
                     try
                     {
-
 
                         switch (eventDoc.EventType.ToLower())
                         {
@@ -272,45 +337,11 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 var marriageDb = _couchContext.Client.GetDatabase<MarriageEventCouch>(dbName);
                                 var marriageEventCouch = marriageDb.Where(b => b.Id == eventDoc.Id).FirstOrDefault();
                                 eventDocCouch = marriageEventCouch;
-
-
-
                                 if (marriageEventCouch == null || marriageEventCouch.Event.Id == null)
                                 {
                                     break;
                                 }
-
-                                if (marriageEventCouch.Certified)
-                                {
-
-                                    var certificateRes = await createCertificate((Guid)marriageEventCouch.Event.Id, marriageEventCouch.serialNo);
-                                    if (certificateRes.succeded)
-                                    {
-                                        marriageEventCouch.CertificateSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        marriageEventCouch.Failed = true;
-                                        marriageEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                    }
-                                }
-                                if (marriageEventCouch.Paid && marriageEventCouch.Payment != null)
-                                {
-                                    var paymentRes = await createPayment(marriageEventCouch.Event.Id, marriageEventCouch.Payment?.PaymentWayLookupId, marriageEventCouch.Payment?.BillNumber);
-
-                                    if (paymentRes.succeded)
-                                    {
-                                        marriageEventCouch.paymentSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        marriageEventCouch.Failed = true;
-                                        marriageEventCouch.FailureMessage = "Failed to create payment for the event : \n " + paymentRes.message;
-                                    }
-                                }
-                                await marriageDb.AddOrUpdateAsync(marriageEventCouch);
+                                await eventCertificateAndPaymentCreate(marriageEventCouch, marriageDb);
                                 break;
                             case "birth":
                                 var birthDb = _couchContext.Client.GetDatabase<BirthEventCouch>(dbName);
@@ -320,39 +351,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 {
                                     break;
                                 }
-
-                                if (birthEventCouch.Certified)
-                                {
-
-                                    var certificateRes = await createCertificate((Guid)birthEventCouch.Event.Id, birthEventCouch.serialNo);
-                                    if (certificateRes.succeded)
-                                    {
-                                        birthEventCouch.CertificateSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        birthEventCouch.Failed = true;
-                                        birthEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                    }
-                                }
-                                if (birthEventCouch.Paid && birthEventCouch.Payment != null)
-                                {
-                                    var paymentRes = await createPayment(birthEventCouch.Event.Id, birthEventCouch.Payment?.PaymentWayLookupId, birthEventCouch.Payment?.BillNumber);
-
-                                    if (paymentRes.succeded)
-                                    {
-                                        birthEventCouch.paymentSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        birthEventCouch.Failed = true;
-                                        birthEventCouch.FailureMessage = "Failed to create payment for the event : \n " + paymentRes.message;
-                                    }
-                                }
-                                await birthDb.AddOrUpdateAsync(birthEventCouch);
-
+                                await eventCertificateAndPaymentCreate(birthEventCouch, birthDb);
 
                                 break;
 
@@ -365,38 +364,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 {
                                     break;
                                 }
-
-                                if (deathEventCouch.Certified)
-                                {
-
-                                    var certificateRes = await createCertificate((Guid)deathEventCouch.Event.Id, deathEventCouch.serialNo);
-                                    if (certificateRes.succeded)
-                                    {
-                                        deathEventCouch.CertificateSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        deathEventCouch.Failed = true;
-                                        deathEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                    }
-                                }
-                                if (deathEventCouch.Paid && deathEventCouch.Payment != null)
-                                {
-                                    var paymentRes = await createPayment(deathEventCouch.Event.Id, deathEventCouch.Payment?.PaymentWayLookupId, deathEventCouch.Payment?.BillNumber);
-
-                                    if (paymentRes.succeded)
-                                    {
-                                        deathEventCouch.paymentSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        deathEventCouch.Failed = true;
-                                        deathEventCouch.FailureMessage = "Failed to create payment for the event : \n " + paymentRes.message;
-                                    }
-                                }
-                                await deathDb.AddOrUpdateAsync(deathEventCouch);
+                                await eventCertificateAndPaymentCreate(deathEventCouch, deathDb);
                                 break;
                             case "adoption":
                                 var adoptionDb = _couchContext.Client.GetDatabase<AdoptionEventCouch>(dbName);
@@ -406,37 +374,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 {
                                     break;
                                 }
-                                if (adoptionEventCouch.Certified)
-                                {
-
-                                    var certificateRes = await createCertificate((Guid)adoptionEventCouch.Event.Id, adoptionEventCouch.serialNo);
-                                    if (certificateRes.succeded)
-                                    {
-                                        adoptionEventCouch.CertificateSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        adoptionEventCouch.Failed = true;
-                                        adoptionEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                    }
-                                }
-                                if (adoptionEventCouch.Paid && adoptionEventCouch.Payment != null)
-                                {
-                                    var paymentRes = await createPayment(adoptionEventCouch.Event.Id, adoptionEventCouch.Payment?.PaymentWayLookupId, adoptionEventCouch.Payment?.BillNumber);
-
-                                    if (paymentRes.succeded)
-                                    {
-                                        adoptionEventCouch.paymentSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        adoptionEventCouch.Failed = true;
-                                        adoptionEventCouch.FailureMessage = "Failed to create payment for the event : \n " + paymentRes.message;
-                                    }
-                                }
-                                await adoptionDb.AddOrUpdateAsync(adoptionEventCouch);
+                                await eventCertificateAndPaymentCreate(adoptionEventCouch, adoptionDb);
                                 break;
                             case "divorce":
                                 var divorceDb = _couchContext.Client.GetDatabase<DivorceEventCouch>(dbName);
@@ -446,43 +384,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
                                 {
                                     break;
                                 }
-                                if (divorceEventCouch.Certified)
-                                {
-
-                                    var certificateRes = await createCertificate((Guid)divorceEventCouch.Event.Id, divorceEventCouch.serialNo);
-                                    if (certificateRes.succeded)
-                                    {
-                                        divorceEventCouch.CertificateSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        divorceEventCouch.Failed = true;
-                                        divorceEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                                    }
-                                }
-                                if (divorceEventCouch.Paid && divorceEventCouch.Payment != null)
-                                {
-                                    var paymentRes = await createPayment(divorceEventCouch.Event.Id, divorceEventCouch.Payment?.PaymentWayLookupId, divorceEventCouch.Payment?.BillNumber);
-
-                                    if (paymentRes.succeded)
-                                    {
-                                        divorceEventCouch.paymentSynced = true;
-
-                                    }
-                                    else
-                                    {
-                                        divorceEventCouch.Failed = true;
-                                        divorceEventCouch.FailureMessage = "Failed to create payment for the event : \n " + paymentRes.message;
-                                    }
-                                }
-                                await divorceDb.AddOrUpdateAsync(divorceEventCouch);
+                                await eventCertificateAndPaymentCreate(divorceEventCouch, divorceDb);
                                 break;
-
-
                             default: break;
                         }
-
                     }
                     catch (Exception e)
                     {
@@ -527,7 +432,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 PaymentWayLookupId = (Guid)paymentWayLookupId,
                 BillNumber = billNumber
             });
-            return (res.Success, res.Message);
+            return (succeded:res.Success, message:res.Message);
 
         }
 
@@ -548,13 +453,13 @@ namespace AppDiv.CRVS.Infrastructure.Service
             catch (System.Exception e)
             {
 
-                return (false, e.Message + " /n  " + (e.InnerException != null ? e.InnerException.Message : ""));
+                return (succeded:false,message: e.Message + " /n  " + (e.InnerException != null ? e.InnerException.Message : ""));
             }
 
 
         }
 
-        private async Task<(MarriageEventCouch? MarriageEventCouch, bool Success)> marriageSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        private async Task<(MarriageEventCouch? MarriageEventCouch, IMarriageEventRepository? repo, ICouchDatabase<MarriageEventCouch> marriageDb, bool Success)> marriageSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
         {
             MarriageEventCouch? marriageEventCouch = new MarriageEventCouch();
             var marriageDb = _couchContext.Client.GetDatabase<MarriageEventCouch>(dbName);
@@ -569,7 +474,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 if (marriageEventCouch == null)
                 {
                     // break;
-                    return (MarriageEventCouch: marriageEventCouch, Success: false);
+                    return (MarriageEventCouch: marriageEventCouch, repo: null, marriageDb: marriageDb, Success: false);
                 }
                 var exists = _dbContext.MarriageEvents.Where(e => e.Id == marriageEventCouch.Id2).Any();
                 if (exists)
@@ -579,7 +484,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         marriageEventCouch.Synced = true;
                         await marriageDb.AddOrUpdateAsync(marriageEventCouch);
                         Console.WriteLine($"doc --synced -- ${marriageEventCouch.Synced}");
-                        return (MarriageEventCouch: marriageEventCouch, Success: false);
+                        return (MarriageEventCouch: marriageEventCouch, repo: null, marriageDb: marriageDb, Success: false);
 
 
                     }
@@ -588,7 +493,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         marriageEventCouch.Failed = true;
                         marriageEventCouch.FailureMessage = $"duplicate marriage event id , marriage event with id {marriageEventCouch.Id2}already exists in database while exported flag is false";
                         await eventDb.AddOrUpdateAsync(marriageEventCouch);
-                        return (MarriageEventCouch: marriageEventCouch, Success: false);
+                        return (MarriageEventCouch: marriageEventCouch, repo: null, marriageDb: marriageDb, Success: false);
 
                     }
                 }
@@ -649,45 +554,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     throw new Exception(res.Message);
 
                 }
-
-
-                if (marriageEventCouch.Paid && marriageEventCouch.Payment != null)
-                {
-                    var paymentRes = await createPayment(marriageEventCommand.Event.Id, marriageEventCouch.Payment?.PaymentWayLookupId, marriageEventCouch.Payment?.BillNumber);
-
-
-                    Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                    if (!paymentRes.succeded)
-                    {
-                        marriageEventCouch.Failed = true;
-                        marriageEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-                    }
-                    else
-                    {
-                        marriageEventCouch.paymentSynced = true;
-
-                    }
-
-                }
-                if (marriageEventCouch.Certified)
-                {
-
-                    var certificateRes = await createCertificate((Guid)marriageEventCouch.Event.Id, marriageEventCouch.serialNo);
-                    if (certificateRes.succeded)
-                    {
-                        marriageEventCouch.CertificateSynced = true;
-
-                    }
-                    else
-                    {
-                        marriageEventCouch.Failed = true;
-                        marriageEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                    }
-                }
                 marriageEventCouch.Synced = true;
                 await marriageDb.AddOrUpdateAsync(marriageEventCouch);
                 Console.WriteLine($"doc --synced -- ${marriageEventCouch.Synced}");
-                return (MarriageEventCouch: marriageEventCouch, Success: false);
+                return (MarriageEventCouch: marriageEventCouch, repo: res.marriageEventRepository, marriageDb: marriageDb, Success: false);
 
             }
             catch (Exception e)
@@ -708,7 +578,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
         }
 
-        private async Task<(BirthEventCouch? BirthEventCouch, bool Success)> birthSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        private async Task<(BirthEventCouch? BirthEventCouch, IBirthEventRepository? repo, ICouchDatabase<BirthEventCouch> birthDb, bool Success)> birthSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
         {
             var birthDb = _couchContext.Client.GetDatabase<BirthEventCouch>(dbName);
             var birthEventCouch = birthDb.Where(b => b.Id == eventDocId).FirstOrDefault();
@@ -722,7 +592,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
                 if (birthEventCouch == null)
                 {
-                    return (BirthEventCouch: birthEventCouch, Success: false);
+                    return (BirthEventCouch: birthEventCouch, repo: null, birthDb: birthDb, Success: false);
                 }
                 var birthExists = _dbContext.BirthEvents.Where(e => e.Id == birthEventCouch.Id2).Any();
                 if (birthExists)
@@ -732,7 +602,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         birthEventCouch.Synced = true;
                         await birthDb.AddOrUpdateAsync(birthEventCouch);
                         Console.WriteLine($"doc --synced -- ${birthEventCouch.Synced}");
-                        return (BirthEventCouch: birthEventCouch, Success: false);
+                        return (BirthEventCouch: birthEventCouch, repo: null, birthDb: birthDb, Success: false);
 
                     }
                     else
@@ -740,7 +610,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         birthEventCouch.Failed = true;
                         birthEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {birthEventCouch.Id2}already exists in database while exported flag is false";
                         await eventDb.AddOrUpdateAsync(birthEventCouch);
-                        return (BirthEventCouch: birthEventCouch, Success: false);
+                        return (BirthEventCouch: birthEventCouch, repo: null, birthDb: birthDb, Success: false);
                     }
                 }
 
@@ -818,47 +688,11 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     throw new Exception(res2.Message);
 
                 }
-
-
-                if (birthEventCouch.Paid && birthEventCouch.Payment != null)
-                {
-                    var paymentRes = await createPayment(birthEventCommand.BirthEvent.Event.Id, birthEventCouch.Payment?.PaymentWayLookupId, birthEventCouch.Payment?.BillNumber);
-                    //TODO:if paymentRes == false???
-                    Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                    if (!paymentRes.succeded)
-                    {
-                        birthEventCouch.Failed = true;
-                        birthEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-
-                    }
-                    else
-                    {
-                        birthEventCouch.paymentSynced = true;
-
-                    }
-
-
-                }
-                if (birthEventCouch.Certified)
-                {
-
-                    var certificateRes = await createCertificate((Guid)birthEventCouch.Event.Id, birthEventCouch.serialNo);
-                    if (certificateRes.succeded)
-                    {
-                        birthEventCouch.CertificateSynced = true;
-
-                    }
-                    else
-                    {
-                        birthEventCouch.Failed = true;
-                        birthEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                    }
-                }
                 birthEventCouch.Synced = true;
                 await birthDb.AddOrUpdateAsync(birthEventCouch);
                 Console.WriteLine($"doc --synced -- ${birthEventCouch.Synced}");
 
-                return (BirthEventCouch: birthEventCouch, Success: true);
+                return (BirthEventCouch: birthEventCouch, repo: res2.birthEventRepository, birthDb: birthDb, Success: true);
             }
             catch (System.Exception e)
             {
@@ -873,7 +707,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
             }
         }
 
-        private async Task<(DeathEventCouch? DeathEventCouch, bool Success)> deathSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        private async Task<(DeathEventCouch? DeathEventCouch, IDeathEventRepository? repo, ICouchDatabase<DeathEventCouch> deathDb, bool Success)> deathSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
         {
             var deathDb = _couchContext.Client.GetDatabase<DeathEventCouch>(dbName);
             var deathEventCouch = deathDb.Where(b => b.Id == eventDocId).FirstOrDefault();
@@ -886,7 +720,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 if (deathEventCouch == null)
                 {
                     Console.WriteLine($"doc --is null ");
-                    return (DeathEventCouch: deathEventCouch, Success: false);
+                    return (DeathEventCouch: deathEventCouch, repo: null, deathDb: deathDb, Success: false);
                 }
                 var deathExists = _dbContext.BirthEvents.Where(e => e.Id == deathEventCouch.Id2).Any();
                 if (deathExists)
@@ -896,7 +730,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         deathEventCouch.Synced = true;
                         await deathDb.AddOrUpdateAsync(deathEventCouch);
                         Console.WriteLine($"doc --synced -- ${deathEventCouch.Synced}");
-                        return (DeathEventCouch: deathEventCouch, Success: false);
+                        return (DeathEventCouch: deathEventCouch, repo: null, deathDb: deathDb, Success: false);
 
                     }
                     else
@@ -904,7 +738,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         deathEventCouch.Failed = true;
                         deathEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {deathEventCouch.Id2}already exists in database while exported flag is false";
                         await eventDb.AddOrUpdateAsync(deathEventCouch);
-                        return (DeathEventCouch: deathEventCouch, Success: false);
+                        return (DeathEventCouch: deathEventCouch, repo: null, deathDb: deathDb, Success: false);
                     }
                 }
                 Console.WriteLine($"registering death event");
@@ -968,41 +802,9 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
 
                 }
-                if (deathEventCouch.Paid && deathEventCouch.Payment != null)
-                {
-                    var paymentRes = await createPayment(deathEventCommand.DeathEvent.Event.Id, deathEventCouch.Payment?.PaymentWayLookupId, deathEventCouch.Payment?.BillNumber);
-                    //TODO:if paymentRes == false???
-                    Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                    if (!paymentRes.succeded)
-                    {
-                        deathEventCouch.Failed = true;
-                        deathEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-
-                    }
-                    else
-                    {
-                        deathEventCouch.paymentSynced = true;
-
-                    }
-                }
-                if (deathEventCouch.Certified)
-                {
-
-                    var certificateRes = await createCertificate((Guid)deathEventCouch.Event.Id, deathEventCouch.serialNo);
-                    if (certificateRes.succeded)
-                    {
-                        deathEventCouch.CertificateSynced = true;
-
-                    }
-                    else
-                    {
-                        deathEventCouch.Failed = true;
-                        deathEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                    }
-                }
                 deathEventCouch.Synced = true;
                 await deathDb.AddOrUpdateAsync(deathEventCouch);
-                return (DeathEventCouch: deathEventCouch, Success: true);
+                return (DeathEventCouch: deathEventCouch, repo: res3.deathEventRepository, deathDb: deathDb, Success: true);
             }
             catch (Exception e)
             {
@@ -1018,7 +820,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
         }
 
-        private async Task<(AdoptionEventCouch? AdoptionEventCouch, bool Success)> adoptionSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        private async Task<(AdoptionEventCouch? AdoptionEventCouch, IAdoptionEventRepository? repo, ICouchDatabase<AdoptionEventCouch> adoptionDb, bool Success)> adoptionSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
         {
             var adoptionDb = _couchContext.Client.GetDatabase<AdoptionEventCouch>(dbName);
             var adoptionEventCouch = adoptionDb.Where(b => b.Id == eventDocId).FirstOrDefault();
@@ -1031,9 +833,9 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 if (adoptionEventCouch == null)
                 {
                     Console.WriteLine($"doc --is null ");
-                    return (AdoptionEventCouch: adoptionEventCouch, Success: false);
+                    return (AdoptionEventCouch: adoptionEventCouch, repo: null, adoptionDb: adoptionDb, Success: false);
                 }
-                var adoptionExists = _dbContext.BirthEvents.Where(e => e.Id == adoptionEventCouch.Id2).Any();
+                var adoptionExists = _dbContext.AdoptionEvents.Where(e => e.Id == adoptionEventCouch.Id2).Any();
                 if (adoptionExists)
                 {
                     if (adoptionEventCouch.Exported)
@@ -1041,7 +843,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         adoptionEventCouch.Synced = true;
                         await adoptionDb.AddOrUpdateAsync(adoptionEventCouch);
                         Console.WriteLine($"doc --synced -- ${adoptionEventCouch.Synced}");
-                        return (AdoptionEventCouch: adoptionEventCouch, Success: false);
+                        return (AdoptionEventCouch: adoptionEventCouch, repo: null, adoptionDb: adoptionDb, Success: false);
 
                     }
                     else
@@ -1049,7 +851,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         adoptionEventCouch.Failed = true;
                         adoptionEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {adoptionEventCouch.Id2}already exists in database while exported flag is false";
                         await eventDb.AddOrUpdateAsync(adoptionEventCouch);
-                        return (AdoptionEventCouch: adoptionEventCouch, Success: false);
+                        return (AdoptionEventCouch: adoptionEventCouch, repo: null, adoptionDb: adoptionDb, Success: false);
                     }
                 }
                 Console.WriteLine($"registering adoption event");
@@ -1119,44 +921,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
                 }
 
-
-                if (adoptionEventCouch.Paid && adoptionEventCouch.Payment != null)
-                {
-                    var paymentRes = await createPayment(adoptionEventCommand.Adoption.Event.Id, adoptionEventCouch.Payment?.PaymentWayLookupId, adoptionEventCouch.Payment?.BillNumber);
-                    //TODO:if paymentRes == false???
-                    Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                    if (!paymentRes.succeded)
-                    {
-                        adoptionEventCouch.Failed = true;
-                        adoptionEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-
-                    }
-                    else
-                    {
-                        adoptionEventCouch.paymentSynced = true;
-
-                    }
-
-                }
-                if (adoptionEventCouch.Certified)
-                {
-
-                    var certificateRes = await createCertificate((Guid)adoptionEventCouch.Event.Id, adoptionEventCouch.serialNo);
-                    if (certificateRes.succeded)
-                    {
-                        adoptionEventCouch.CertificateSynced = true;
-
-                    }
-                    else
-                    {
-                        adoptionEventCouch.Failed = true;
-                        adoptionEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                    }
-                }
                 adoptionEventCouch.Synced = true;
                 await adoptionDb.AddOrUpdateAsync(adoptionEventCouch);
                 Console.WriteLine($"doc --synced -- ${adoptionEventCouch.Synced}");
-                return (AdoptionEventCouch: adoptionEventCouch, Success: true);
+                return (AdoptionEventCouch: adoptionEventCouch, repo: res4.adoptionEventRepository, adoptionDb: adoptionDb, Success: true);
             }
             catch (Exception e)
             {
@@ -1172,7 +940,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
         }
 
-        private async Task<(DivorceEventCouch? DivorceEventCouch, bool Success)> divorceSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
+        private async Task<(DivorceEventCouch? DivorceEventCouch, IDivorceEventRepository? repo, ICouchDatabase<DivorceEventCouch> divorceDb, bool Success)> divorceSync(string dbName, string eventDocId, ICouchDatabase<BaseEventCouch>? eventDb)
         {
             DivorceEventCouch? divorceEventCouch = new DivorceEventCouch();
             var divorceDb = _couchContext.Client.GetDatabase<DivorceEventCouch>(dbName);
@@ -1188,7 +956,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 if (divorceEventCouch == null)
                 {
                     Console.WriteLine($"doc --is null ");
-                    return (DivorceEventCouch: divorceEventCouch, Success: false);
+                    return (DivorceEventCouch: divorceEventCouch, repo: null, divorceDb: divorceDb, Success: false);
                 }
                 var divorceExists = _dbContext.BirthEvents.Where(e => e.Id == divorceEventCouch.Id2).Any();
                 if (divorceExists)
@@ -1198,7 +966,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         divorceEventCouch.Synced = true;
                         await divorceDb.AddOrUpdateAsync(divorceEventCouch);
                         Console.WriteLine($"doc --synced -- ${divorceEventCouch.Synced}");
-                        return (DivorceEventCouch: divorceEventCouch, Success: false);
+                        return (DivorceEventCouch: divorceEventCouch, repo: null, divorceDb: divorceDb, Success: false);
 
                     }
                     else
@@ -1206,7 +974,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         divorceEventCouch.Failed = true;
                         divorceEventCouch.FailureMessage = $"duplicate birth event id , birth event with id {divorceEventCouch.Id2}already exists in database while exported flag is false";
                         await eventDb.AddOrUpdateAsync(divorceEventCouch);
-                        return (DivorceEventCouch: divorceEventCouch, Success: false);
+                        return (DivorceEventCouch: divorceEventCouch, repo: null, divorceDb: divorceDb, Success: false);
                     }
                 }
                 Console.WriteLine($"registering divorce event");
@@ -1265,41 +1033,10 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
 
                 }
-                if (divorceEventCouch.Paid && divorceEventCouch.Payment != null)
-                {
-                    var paymentRes = await createPayment(divorceEventCommand.Event.Id, divorceEventCouch.Payment?.PaymentWayLookupId, divorceEventCouch.Payment?.BillNumber);
-                    //TODO:if paymentRes == false???
-                    Console.WriteLine($"doc --payment created -- ${paymentRes}");
-                    if (!paymentRes.succeded)
-                    {
-                        divorceEventCouch.Failed = true;
-                        divorceEventCouch.FailureMessage = "Failed to create payment for the event : \n" + paymentRes.message;
-                    }
-                    else
-                    {
-                        divorceEventCouch.paymentSynced = true;
-
-                    }
-                }
-                if (divorceEventCouch.Certified)
-                {
-
-                    var certificateRes = await createCertificate((Guid)divorceEventCouch.Event.Id, divorceEventCouch.serialNo);
-                    if (certificateRes.succeded)
-                    {
-                        divorceEventCouch.CertificateSynced = true;
-
-                    }
-                    else
-                    {
-                        divorceEventCouch.Failed = true;
-                        divorceEventCouch.FailureMessage = "Failed to create certificate for the event : \n " + certificateRes.message;
-                    }
-                }
                 divorceEventCouch.Synced = true;
                 await divorceDb.AddOrUpdateAsync(divorceEventCouch);
                 Console.WriteLine($"doc --synced -- ${divorceEventCouch.Synced}");
-                return (DivorceEventCouch: divorceEventCouch, Success: true);
+                return (DivorceEventCouch: divorceEventCouch, repo: res5.divorceEventRepository, divorceDb: divorceDb, Success: true);
             }
             catch (Exception e)
             {

@@ -608,6 +608,7 @@ namespace AppDiv.CRVS.Application.Service
                     {
                         response.Add(new
                         {
+                            docTypeId = dbDoc.TypeLookup.Id,
                             docType = dbDoc.TypeLookup.Value.Value<string>("en"),
                             eventType = eventType,
                             url = url
