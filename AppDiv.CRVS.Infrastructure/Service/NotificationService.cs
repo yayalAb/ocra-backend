@@ -71,7 +71,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         RequestId = n.RequestId,
                         GroupId = n.GroupId,
                         ReceiverId = n.ReceiverId,
-                        CreatedAt = new CustomDateConverter( n.CreatedAt).ethiopianDate,
+                        CreatedAt = new CustomDateConverter(n.CreatedAt).ethiopianDate,
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang + " " +
                                          n.Sender.PersonalInfo.MiddleNameLang + " " +
                                          n.Sender.PersonalInfo.LastNameLang,
@@ -110,34 +110,34 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
         public async Task<NotificationData?> GetNotification(Guid requestId)
         {
-            var notification =  await _context.Requests
+            var notification = await _context.Requests
                                     .Include(r => r.Notification)
                                     .ThenInclude(n => n.Sender)
                                     .ThenInclude(s => s.PersonalInfo)
                                     .Select(r => r.Notification)
                                     .FirstOrDefaultAsync(n => n.RequestId == requestId);
-            
+
             return notification == null ? null :
              new NotificationData
-                {
-                    Message = notification.MessageStr,
-                    ApprovalType = notification.ApprovalType,
-                    SenderId = notification.SenderId,
-                    SenderUserName = notification.Sender.UserName,
-                    SenderFullName = notification.Sender.PersonalInfo.FullNameLang,
-                    Date = (new CustomDateConverter(notification.CreatedAt)).ethiopianDate
-                };
-            
+             {
+                 Message = notification.MessageStr,
+                 ApprovalType = notification.ApprovalType,
+                 SenderId = notification.SenderId,
+                 SenderUserName = notification.Sender.UserName,
+                 SenderFullName = notification.Sender.PersonalInfo.FullNameLang,
+                 Date = (new CustomDateConverter(notification.CreatedAt)).ethiopianDate
+             };
+
         }
         public async Task RemoveNotification(Guid notificationId)
         {
             var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
-        
+
             if (notification != null)
             {
                 _context.Notifications.Remove(notification);
                 await _context.SaveChangesAsync();
-                
+
                 if (notification.EventRegisteredAddressId != null)
                 {
 
@@ -157,8 +157,14 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     if (addressResponse?.Kebele != null)
                         await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Kebele).RemoveNotification(notificationId);
                 }
-            }else{
-                throw new NotFoundException($"notification with id { notificationId} is not found");
+                else if (!string.IsNullOrEmpty(notification.ReceiverId))
+                {
+                    await _messageHub.Clients.User(notification.ReceiverId).RemoveNotification(notificationId);
+                }
+            }
+            else
+            {
+                throw new NotFoundException($"notification with id {notificationId} is not found");
             }
         }
 
@@ -201,7 +207,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     .Include(n => n.Request.CorrectionRequest)
                     .Include(n => n.Request.AuthenticationRequest)
                     .Include(n => n.EventRegisteredAddress)
-                    .Where(n =>(n.GroupId != null? groupIds.Contains((Guid)n.GroupId):n.ReceiverId == userId)  && !n.Seen)
+                    .Where(n => (n.GroupId != null ? groupIds.Contains((Guid)n.GroupId) : n.ReceiverId == userId) && !n.Seen)
                     .Where(n =>
                      (n.EventRegisteredAddress.AdminLevel >= 4 && n.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == workingAddressId)
                      || (n.EventRegisteredAddress.AdminLevel >= 3 && n.EventRegisteredAddress.ParentAddress.ParentAddress.Id == workingAddressId)
@@ -221,7 +227,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         NotificationObjId = n.NotificationObjId,
                         RequestId = n.RequestId,
                         GroupId = n.GroupId,
-                        CreatedAt =  new CustomDateConverter( n.CreatedAt).ethiopianDate,
+                        CreatedAt = new CustomDateConverter(n.CreatedAt).ethiopianDate,
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang + " " +
                                          n.Sender.PersonalInfo.MiddleNameLang + " " +
                                          n.Sender.PersonalInfo.LastNameLang,
