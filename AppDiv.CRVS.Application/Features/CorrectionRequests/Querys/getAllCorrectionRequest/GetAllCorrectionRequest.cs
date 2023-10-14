@@ -58,7 +58,7 @@ namespace AppDiv.CRVS.Application.Features.CorrectionRequests.Querys.getAllCorre
             .ThenInclude(x=>x.UserGroup)
             .Include(x => x.Event.CivilRegOfficer)
             .Where(x => (x.Request.CivilRegOfficerId == request.CivilRegOfficerId)&&(x.Request.isDeleted==false)
-            &&(x.Request.currentStep!=x.Request.NextStep));
+            &&(x.Request.currentStep!=x.Request.NextStep && x.Request.IsRejected == false));
 
             if(!string.IsNullOrEmpty(request.StartDate) && !string.IsNullOrEmpty(request.EndDate)){
                 var converter=new CustomDateConverter();

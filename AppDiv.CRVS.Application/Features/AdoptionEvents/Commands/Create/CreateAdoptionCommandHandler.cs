@@ -194,6 +194,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                     adoptionEvent.CourtCase.Court = null;
                                 }
                                 await _AdoptionEventRepository.InsertAsync(adoptionEvent, cancellationToken);
+
                                 var personIds = new PersonIdObj
                                 {
                                     MotherId = adoptionEvent?.AdoptiveMother?.Id,
@@ -204,7 +205,7 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                                 _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
 
-                                _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
+                                _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, adoptionEvent?.Event?.PaymentExamption?.SupportingDocuments, "Adoption");
                                 _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                                 // var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                                 // if(!FingerPrintResponse.Success){ 
@@ -251,14 +252,16 @@ namespace AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create
                                 if (transaction != null)
                                 {
                                     await transaction.CommitAsync();
+                                    _AdoptionEventRepository.TriggerPersonalInfoIndex();
                                 }
-                                _AdoptionEventRepository.TriggerPersonalInfoIndex();
                                 CreateAdoptionCommandResponse = new CreateAdoptionCommandResponse
                                 {
                                     Success = true,
                                     Message = "Adoption Event created Successfully",
                                     IsManualRegistration = IsManualRegistration,
-                                    EventId = adoptionEvent.Event.Id
+                                    EventId = adoptionEvent.Event.Id,
+                                    adoptionEventRepository = request.Adoption.IsFromBgService ? _AdoptionEventRepository : null
+
                                 };
                                 // }
 

@@ -16,6 +16,8 @@ namespace AppDiv.CRVS.Domain.Entities
         public uint BudgetYear { get; set; }    
         public Guid AddressId { get; set; }
         public Guid? ParentPlanId { get; set; }
+        public long MalePopulationSize { get; set; }
+        public long FemalePopulationSize { get; set; }
         public long PopulationSize { get; set; }
         public ICollection<EventPlan> EventPlans { get; set; } = null!;
         

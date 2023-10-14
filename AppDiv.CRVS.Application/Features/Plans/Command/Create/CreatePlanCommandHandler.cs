@@ -40,7 +40,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Create
             {
 
                 var plan = CustomMapper.Mapper.Map<Plan>(request.Plan);
-
+                plan.PopulationSize = request.Plan.MalePopulationSize + request.Plan.FemalePopulationSize;
                 await _planRepository.InsertAsync(plan, cancellationToken);
                 var result = await _planRepository.SaveChangesAsync(cancellationToken);
 

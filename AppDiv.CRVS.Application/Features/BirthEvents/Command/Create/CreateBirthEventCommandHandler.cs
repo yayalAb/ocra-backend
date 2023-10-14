@@ -134,8 +134,7 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                             //     }
                             _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                             _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
-
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
+                            _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, birthEvent.Event.PaymentExamption?.SupportingDocuments, "Birth");
                             _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
 
                             // For non exempted documents 
@@ -170,11 +169,12 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                 response.Status = 200;
                                 response.IsManualRegistration = IsManualRegistration;
                                 response.EventId = birthEvent.Event.Id;
+                                response.birthEventRepository = request.BirthEvent.IsFromBgService ? _birthEventRepository: null;
                                 if (transaction != null)
                                 {
                                     await transaction.CommitAsync();
+                                    _birthEventRepository.TriggerPersonalInfoIndex();
                                 }
-                                _birthEventRepository.TriggerPersonalInfoIndex();
 
                                 // }
                             }

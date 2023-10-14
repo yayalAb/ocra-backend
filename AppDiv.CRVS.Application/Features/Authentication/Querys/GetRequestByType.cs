@@ -68,6 +68,7 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                 "change" => RequestList.Include(x => x.Request.CorrectionRequest.Event.EventOwener),
                 "authentication" => RequestList.Include(x => x.Request.AuthenticationRequest.Certificate.Event.EventOwener),
                 "verification" => RequestList.Include(x => x.Request.VerficationRequest.Event.EventOwener),
+                "profile change" => RequestList.Include(x => x.Request.ProfileChangeRequest.User.PersonalInfo),
                 _ => RequestList // Default case when the request type doesn't match any of the above conditions
             };
             RequestList = request.Status switch
@@ -117,8 +118,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                 EventId = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.EventId :
                             t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.EventId :
                             t.Request.VerficationRequest != null ? t.Request.VerficationRequest.EventId : null,
-                RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ?
-                    t.Request.PaymentExamptionRequest.Id : _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
+                RequestId = (t.Request.CorrectionRequest == null) ? (t.Request.AuthenticationRequest == null) ? (t.Request.ProfileChangeRequest == null)?
+                    t.Request.PaymentExamptionRequest.Id :t.Request.ProfileChangeRequest.Id: _WorkflowService.GetEventId(t.Request.AuthenticationRequest.CertificateId) : t.Request.CorrectionRequest.Id,
                 EventType = (t.Request.AuthenticationRequest != null)  ? t.Request.AuthenticationRequest.Certificate.Event.EventType :
                             t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventType :
                             t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventType : string.Empty,
@@ -128,7 +129,8 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                             
                 OwnerFullName = (t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
                                 t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventOwener.FullNameLang : 
-                            t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang : string.Empty,
+                            t.Request.VerficationRequest != null ? t.Request.VerficationRequest.Event.EventOwener.FullNameLang :
+                            t.Request.ProfileChangeRequest != null ?t.Request.ProfileChangeRequest.User.PersonalInfo.FullNameLang: string.Empty,
                 
                 EventRegDate =(t.Request.AuthenticationRequest != null) ? t.Request.AuthenticationRequest.Certificate.Event.EventDateEt :
                                 t.Request.CorrectionRequest != null ? t.Request.CorrectionRequest.Event.EventDateEt: 

@@ -32,6 +32,9 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public AddressResponseDTOE? BirthAddressResponseDTO { get; set; }
         public AddressResponseDTOE? ResidentAddressResponseDTO { get; set; }
         public object? FingerPrints {get;set;}
+        public object? EventDocs {get; set; }
+        public object? Signature {get; set; }
+        public object? Photo {get; set; }
 
     }
 }

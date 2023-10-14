@@ -23,7 +23,8 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
         public uint BudgetYear { get; set; }
         public Guid? ParentPlanId { get; set; }
         public Guid AddressId { get; set; }
-        public long PopulationSize { get; set; }
+        public long MalePopulationSize { get; set; }
+        public long FemalePopulationSize { get; set; }
         public ICollection<UpdateEventPlan> EventPlans { get; set; }
 
     }
@@ -41,6 +42,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Command.Update
             try
             {
                 var plan = CustomMapper.Mapper.Map<Plan>(request);
+                plan.PopulationSize = request.MalePopulationSize + request.FemalePopulationSize;
                 _planRepository.Update(plan);
                 var result = await _planRepository.SaveChangesAsync(cancellationToken);
                 response.Status = 200;

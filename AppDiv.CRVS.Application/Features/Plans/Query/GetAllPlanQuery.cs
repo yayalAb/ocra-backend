@@ -54,6 +54,8 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     Address = $@"{p.Plan.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Plan.Address.ParentAddress!.AddressNameLang}/{p.Plan.Address.AddressNameLang}".Trim('/'),
                     BudgetYear = p.Plan.BudgetYear,
                     PlannedDateEt = p.Plan.PlannedDateEt,
+                    MalePopulationSize = p.Plan.MalePopulationSize,
+                    FemalePopulationSize = p.Plan.FemalePopulationSize,
                     PopulationSize = p.Plan.PopulationSize
                 })
             .PaginateAsync<PlanGridDTO, PlanGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);

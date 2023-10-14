@@ -155,8 +155,7 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             var separatedDocs = _eventDocumentService.extractSupportingDocs(personIds, marriageEvent.Event.EventSupportingDocuments);
                             _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                             _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
-
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
+                            _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, marriageEvent.Event.PaymentExamption?.SupportingDocuments, "Marriage");
                             _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                             //   var FingerPrintResponse   = await _fingerprintService.RegisterfingerPrintService(separatedDocs.fingerPrint,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
@@ -198,13 +197,13 @@ namespace AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create
                             CreateMarriageEventCommandResponse.Message = "Marriage Event created Successfully";
                             CreateMarriageEventCommandResponse.IsManualRegistration = IsManualRegistration;
                             CreateMarriageEventCommandResponse.EventId = marriageEvent.Event.Id;
+                            CreateMarriageEventCommandResponse.marriageEventRepository = request.IsFromBgService ? _marriageEventRepository : null;
                             // }
                             if (transaction != null)
                             {
-
                                 await transaction.CommitAsync();
+                                _marriageEventRepository.TriggerPersonalInfoIndex();
                             }
-                            _marriageEventRepository.TriggerPersonalInfoIndex();
 
                         }
                         return CreateMarriageEventCommandResponse;

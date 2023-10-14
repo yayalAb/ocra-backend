@@ -22,10 +22,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             return _dbContext.LoginHistorys
                                 .AsNoTracking()
-                                .Include(l => l.User)
-                                .ThenInclude(u => u.Address)
-                                .ThenInclude(a => a.ParentAddress)
-                                .ThenInclude(a => a.ParentAddress);
+                                .Include(l => l.User.PersonalInfo)
+                                .Include(u => u.User.Address.ParentAddress.ParentAddress);
         }
 
     }

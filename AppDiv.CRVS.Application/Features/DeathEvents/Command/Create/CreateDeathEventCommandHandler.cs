@@ -114,13 +114,15 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                             _eventDocumentService.savePhotos(separatedDocs.UserPhoto);
                             _eventDocumentService.savePhotos(separatedDocs.Signatures, "Signatures");
 
+
+
                             //  var FingerPrintResponse= await _fingerprintService.RegisterfingerPrintService(fingerprints,cancellationToken);
                             //     if(!FingerPrintResponse.Success){ 
                             //         response.Message="Duplicated Fingerprint";
                             //         response.Success=false; 
                             //         return response;
                             //         }
-                            _eventDocumentService.saveSupportingDocuments((ICollection<SupportingDocument>)separatedDocs.OtherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
+                            _eventDocumentService.saveSupportingDocuments(separatedDocs.OtherDocs, deathEvent.Event.PaymentExamption?.SupportingDocuments, "Death");
                             _eventDocumentService.saveFingerPrints(separatedDocs.FingerPrints);
                             if ((!deathEvent.Event.IsExampted) && (address != null && address?.AdminLevel == 5))
                             {
@@ -157,8 +159,12 @@ namespace AppDiv.CRVS.Application.Features.DeathEvents.Command.Create
                         if (transaction != null)
                         {
                             await transaction.CommitAsync();
+                            _deathEventRepository.TriggerPersonalInfoIndex();
                         }
-                        _deathEventRepository.TriggerPersonalInfoIndex();
+                    }
+                    if (request.DeathEvent.IsFromBgService)
+                    {
+                        response.deathEventRepository = _deathEventRepository;
                     }
                     return response;
                 }

@@ -79,7 +79,7 @@ namespace AppDiv.CRVS.Infrastructure.Services
                 byte[] bytes = Convert.FromBase64String(myString);
 
                 var extension = FileExtractorService.GetFileExtensionFromBase64String(base64String) ?? "bin";
-                var fullPath = Path.Combine(pathToSave, fileName + "."+extension);
+                var fullPath = Path.Combine(pathToSave, fileName + "." + extension);
                 var matchingFiles = Directory.GetFiles(pathToSave, fileName + "*");
                 //removing file with the same id but different extension 
                 matchingFiles.ToList().ForEach(file =>
@@ -152,7 +152,8 @@ namespace AppDiv.CRVS.Infrastructure.Services
                     folderName = Path.Combine("Resources", folder);
                 }
                 var fullPath = Path.Combine(Directory.GetCurrentDirectory(), folderName);
-                var matchingFiles = Directory.GetFiles(fullPath, fileName + "*");
+                var matchingFiles = Directory.GetFiles(fullPath, fileName + "*", SearchOption.AllDirectories);
+
 
                 if (matchingFiles.Length == 0)
                 {
@@ -196,7 +197,6 @@ namespace AppDiv.CRVS.Infrastructure.Services
             try
             {
 
-
                 var fileExtension = Path.GetExtension(fullPath);
                 var actualFileName = Path.GetFileNameWithoutExtension(fullPath);
 
@@ -211,6 +211,20 @@ namespace AppDiv.CRVS.Infrastructure.Services
                 throw new BadRequestException($"could not find the directory of the path specified:\n{e.Message}");
             }
 
+        }
+        public (bool exists, string? fullPath) FileExists(string folder, string fileName)
+        {
+            try
+            {
+
+                var matchingFiles = Directory.GetFiles(folder, fileName + "*");
+                return (exists: matchingFiles.Any(), fullPath: matchingFiles.FirstOrDefault());
+            }
+            catch (System.Exception)
+            {
+
+                return (exists: false, fullPath: null);
+            }
         }
 
 

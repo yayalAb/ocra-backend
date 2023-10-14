@@ -76,15 +76,15 @@ namespace AppDiv.CRVS.Application.Features.User.Command.Create
                 user.PhoneNumber = user.PersonalInfo.ContactInfo.Phone;
                 user.PersonalInfo.PhoneNumber = user.PhoneNumber;
                 user.UserGroups = listGroup;
-                if(user.Address.WorkStartedOn!=null){
+
                 var userAddress= await _addresslookup.GetAsync(user?.AddressId);
                 if(userAddress.WorkStartedOn==null){
-                    userAddress.WorkStartedOn=user?.Address?.WorkStartedOn;
+                    userAddress.WorkStartedOn=request.WorkStartedOn;
                     await _addresslookup.UpdateAsync(userAddress, x=>x.Id);
                     await _addresslookup.SaveChangesAsync(cancellationToken);
                 }
-                }
-                var response = await _identityService.createUser(user);
+                
+                var response = await _identityService.createUser(user); 
                 if (!response.result.Succeeded)
                 {
                     throw new BadRequestException($"could not create user \n{string.Join(",", response.result.Errors)}");

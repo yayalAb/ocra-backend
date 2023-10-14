@@ -65,13 +65,16 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  .ThenInclude(x => x.EventOwener)
                  .Include(x => x.CorrectionRequest)
                  .ThenInclude(x => x.Event.EventOwener)
+                 .Include(x => x.ProfileChangeRequest)
+                 .ThenInclude(x => x.User)
+                 .ThenInclude(x => x.PersonalInfo)
                  .Include(x=>x.VerficationRequest)
                  .Include(w => w.Workflow)
                  .ThenInclude(ss => ss.Steps)
                  .ThenInclude(g => g.UserGroup)
               .Where(wf => ((wf.Workflow.workflowName == wf.RequestType && wf.NextStep != wf.currentStep)
               &&(wf.isDeleted==false)
-               &&(wf.PaymentRequest==null)&&(wf.CorrectionRequest!=null||wf.AuthenticationRequest!=null)));
+               &&(wf.PaymentRequest==null)&&(wf.CorrectionRequest!=null||wf.AuthenticationRequest!=null || wf.ProfileChangeRequest != null)));
 
              if (userGroup.Address.AdminLevel == 1)
             {
@@ -125,15 +128,15 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                  RequestType = w.RequestType,
                  EventId = (request.RequestType == "authentication")  ? w.AuthenticationRequest.Certificate.EventId :
                              request.RequestType == "change" ? w.CorrectionRequest.EventId : null,
-                 RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ?
-                     w.PaymentExamptionRequest.Id : w.AuthenticationRequest.Certificate.EventId : w.CorrectionRequest.Id,
+                 RequestId = (w.CorrectionRequest == null) ? (w.AuthenticationRequest == null) ? (w.ProfileChangeRequest == null)?
+                     w.PaymentExamptionRequest.Id :w.ProfileChangeRequest.Id: w.AuthenticationRequest.Certificate.EventId : w.CorrectionRequest.Id,
                  EventType = (w.AuthenticationRequest!.Certificate != null) ? (string)w.AuthenticationRequest.Certificate.Event.EventType :
-                                (string)w.CorrectionRequest.Event.EventType,
+                              (w.CorrectionRequest != null)?  (string)w.CorrectionRequest.Event.EventType:null,
                  CertificateId = request.RequestType == "change" ? w.CorrectionRequest.Event.CertificateId : 
                                 request.RequestType == "authentication" ? w.AuthenticationRequest.Certificate.Event.CertificateId : "",
                                 
                  OwnerFullName = request.RequestType == "authentication" ? w.AuthenticationRequest.Certificate.Event.EventOwener.FullNameLang :
-                                w.CorrectionRequest.Event.EventOwener.FullNameLang,
+                               request.RequestType == "profile change"?w.ProfileChangeRequest.User.PersonalInfo.FullNameLang: w.CorrectionRequest.Event.EventOwener.FullNameLang,
                  CurrentStep = w.currentStep,
                  NextStep = w.NextStep,
                  EventRegDate=!string.IsNullOrEmpty(w.CorrectionRequest.Event.EventRegDateEt)? w.CorrectionRequest.Event.EventRegDateEt :

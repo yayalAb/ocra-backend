@@ -22,10 +22,32 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
         public async Task<PaginatedList<SystemAuditGridDTO>> Handle(SystemAuditQuery request, CancellationToken cancellationToken)
         {
             var audit = _auditLogRepository.GetAllGrid().Where(a => a.EntityType == "Lookup" || a.EntityType == "Address" || a.EntityType == "Setting");
+            if (request.AddressId != null)
+            {
+                audit = audit.Where(a => request.AddressId == a.AddressId);
+            }
+            if (request.UserId != null)
+            {
+                audit = audit.Where(a => request.UserId == a.AuditUserId);
+            }
+            if (request.StartDate != null && request.EndDate != null)
+            {
+                var convertor = new CustomDateConverter();
+                var startDate = convertor.EthiopicToGregorian(request.StartDate);
+                var endDate = convertor.EthiopicToGregorian(request.EndDate);
+                audit = audit.Where(a => a.AuditDate >= startDate && a.AuditDate <= endDate);
+            }
+            if (request.EntityType != null)
+            {
+                audit = audit.Where(a => a.EntityType == request.EntityType);
+            }
             if (request.SearchString is not null)
             {
                 audit = audit.Where(a => EF.Functions.Like(a.AuditUser.UserName, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.AuditData, "%" + request.SearchString + "%")
+                                      || EF.Functions.Like(a.AuditUser!.PersonalInfo!.FirstNameStr!, "%" + request.SearchString + "%")
+                                      || EF.Functions.Like(a.AuditUser!.PersonalInfo!.MiddleNameStr!, "%" + request.SearchString + "%")
+                                      || EF.Functions.Like(a.AuditUser!.PersonalInfo!.LastNameStr!, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.EntityType, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.Action, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.Address!.AddressNameStr!, "%" + request.SearchString + "%")
