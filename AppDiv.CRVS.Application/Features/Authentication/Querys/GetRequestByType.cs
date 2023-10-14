@@ -46,6 +46,14 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
         }
         public async Task<PaginatedList<AuthenticationRequestListDTO>> Handle(GetRequestByType request, CancellationToken cancellationToken)
         {
+            var user = _UserRepo.GetAll()
+            .Include(g => g.UserGroups)
+            .Include(x=>x.Address)
+            .Where(x => x.Id == _ResolverService.GetUserId()).FirstOrDefault();
+            if (user == null)
+            {
+                throw new NotFoundException("user does not found");
+            }
               var RequestList = _transactionService.GetAll()
                   .Include(x=>x.CivilRegOfficer)
                   .ThenInclude(x=>x.UserGroups)
@@ -141,6 +149,9 @@ namespace AppDiv.CRVS.Application.Features.Authentication.Querys
                 ActionBy=t.CivilRegOfficer.UserName,
                 UserGroups=t.CivilRegOfficer.UserGroups.Select(x=>x.GroupName).FirstOrDefault(),
                 ActionDate=new CustomDateConverter(t.CreatedAt).ethiopianDate,
+                CanApprove = user.UserGroups.Select(x => x.Id)
+                 .ToList().Contains((Guid)t.Request.Workflow.Steps.Where(g => g.step == t.Request.NextStep)
+                 .Select(x => x.UserGroupId).FirstOrDefault()),
                 ResponsbleGroup=t.Request.Workflow.Steps.Where(s=>s.step==t.Request.NextStep).Select(x=>x.UserGroup.GroupName).SingleOrDefault()
              });
             var List = await PaginatedList<AuthenticationRequestListDTO>

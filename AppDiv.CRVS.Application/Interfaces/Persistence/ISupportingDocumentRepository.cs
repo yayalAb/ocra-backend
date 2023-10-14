@@ -9,7 +9,7 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
 {
     public interface ISupportingDocumentRepository : IBaseRepository<SupportingDocument>
     {
-        (string BrideImage, string GroomImage) MarriageImage();
+        (string BrideImage, string GroomImage) MarriageImage(Guid eventId);
 
     }
 }

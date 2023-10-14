@@ -180,11 +180,11 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             }
             if (selectedEvent.EventType.ToLower() == "marriage" || content.marriage != null)
             {
-                (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage();
+                (string Bride, string Groom) image = _supportingDocumentRepository.MarriageImage(selectedEvent.Id);
                 response.Images = new EventImagesDTO
                 {
-                    BrideImage = $"File?id={image.Bride}&fileType=SupportingDocuments&eventType=Marriage",
-                    GroomImage = $"File?id={image.Groom}&fileType=SupportingDocuments&eventType=Marriage",
+                    BrideImage = $"File?id={image.Bride}&fileType=PersonPhotos",
+                    GroomImage = $"File?id={image.Groom}&fileType=PersonPhotos",
                 };
             }
             response.Content = certificate.Content;
