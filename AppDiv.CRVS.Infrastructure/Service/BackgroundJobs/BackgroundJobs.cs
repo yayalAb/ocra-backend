@@ -329,7 +329,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 Console.WriteLine($"unsynced certificate count {certificateUnsynced.ToList().Count} ");
                 foreach (var eventDoc in certificateUnsynced)
                 {
-                    var eventDocCouch = eventDoc;
+                     dynamic? eventDocCouch = new object { };
                     try
                     {
 
