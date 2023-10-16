@@ -184,13 +184,16 @@ namespace AppDiv.CRVS.Infrastructure.Service
             {
 
                 var eventDb = _couchContext.Client.GetDatabase<BaseEventCouch>(dbName);
-                var unsyncedEventDocs = eventDb.Where(e => !(e.Synced) && !(e.Failed));
+                var unsyncedEventDocs = eventDb.Where(e => !(e.Synced));
                 Console.WriteLine($"db name ------- {dbName}");
 
                 Console.WriteLine($"unsynced count -- {unsyncedEventDocs.ToList().Count()}");
 
                 foreach (var eventDoc in unsyncedEventDocs)
                 {
+
+                    if(!eventDoc.Failed ){
+
                     var executionStrategy = _dbContext.Database.CreateExecutionStrategy();
                     await executionStrategy.ExecuteAsync(async () =>
                        {
@@ -262,6 +265,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                            }
                        });
                     Console.WriteLine("@@@@@@@@@@@ code after transaction @@@@@@@@@@@@@");
+                    }
                 }
 
             }
