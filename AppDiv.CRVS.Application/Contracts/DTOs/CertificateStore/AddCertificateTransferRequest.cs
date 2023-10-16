@@ -14,4 +14,10 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string From { get; set; }
         public string To { get; set; }
     }
+
+    public class AddDamagedCertificatesRequest
+    {
+        public string From { get; set; }
+        public string To  { get; set; }
+    }
 }

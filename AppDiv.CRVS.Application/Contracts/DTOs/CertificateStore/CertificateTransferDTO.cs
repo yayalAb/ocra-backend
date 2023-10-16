@@ -14,4 +14,12 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string From { get; set; }
         public string To { get; set; }
     }
+
+    public class DamagedCertificatesDTO
+    {
+        public Guid Id { get; set; }
+        public string From { get; set; }
+        public string To { get; set; }
+        public string? ReportBy { get; set; }
+    }
 }

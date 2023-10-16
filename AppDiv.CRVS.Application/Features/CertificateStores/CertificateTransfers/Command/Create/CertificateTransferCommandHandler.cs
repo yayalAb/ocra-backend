@@ -17,15 +17,18 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
         private readonly ICertificateTransferRepository _CertificateTransferRepository;
         private readonly ICertificateRangeRepository _certificateRangeRepository;
         private readonly IUserRepository _userRepository;
+        private readonly IUserResolverService _userResolver;
         private readonly ILogger<CreateCertificateTransferCommandHandler> _logger;
         public CreateCertificateTransferCommandHandler(ICertificateTransferRepository CertificateTransferRepository,
                                                         ICertificateRangeRepository certificateRangeRepository,
                                                         ILogger<CreateCertificateTransferCommandHandler> logger,
-                                                        IUserRepository userRepository)
+                                                        IUserRepository userRepository,
+                                                        IUserResolverService userResolver)
         {
             _CertificateTransferRepository = CertificateTransferRepository;
             _certificateRangeRepository = certificateRangeRepository;
             _userRepository = userRepository;
+            this._userResolver = userResolver;
             _logger = logger;
         }
         public async Task<CreateCertificateTransferCommandResponse> Handle(CreateCertificateTransferCommand request, CancellationToken cancellationToken)
@@ -52,7 +55,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
                     var CertificateTransfer = CustomMapper.Mapper.Map<CertificateSerialTransfer>(request.CertificateTransfer);
                     CertificateTransfer.Status = false;
                     // save the date
-                    await _CertificateTransferRepository.InsertWithRangeAsync(CertificateTransfer, cancellationToken);
+                    await _CertificateTransferRepository.InsertWithRangeAsync(CertificateTransfer, _userResolver.GetUserId(), cancellationToken);
                     await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
                     response.Created("Certificate Transfer"); // set the response to success
                 }

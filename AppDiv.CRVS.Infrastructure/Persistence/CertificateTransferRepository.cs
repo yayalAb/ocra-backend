@@ -16,7 +16,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             _dbContext = dbContext;
         }
-        public async Task InsertWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken)
+        public async Task InsertWithRangeAsync(CertificateSerialTransfer transfer, string userId, CancellationToken cancellationToken)
         {
             var executionStrategy = this.Database.CreateExecutionStrategy();
             await executionStrategy.ExecuteAsync(async () =>
@@ -34,7 +34,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             {
                                 From = transfer.From,
                                 To = transfer.To,
-                                AddressId = recieverAddress.Id
+                                AddressId = recieverAddress.Id,
+                                UserId = userId
                             };
                             transfer.Status = true;
                             _dbContext.CertificateSerialRanges.Add(recieverRange);
@@ -54,7 +55,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
-        public async Task UpdateWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken)
+        public async Task UpdateWithRangeAsync(CertificateSerialTransfer transfer, string userId, CancellationToken cancellationToken)
         {
             var executionStrategy = this.Database.CreateExecutionStrategy();
             await executionStrategy.ExecuteAsync(async () =>
@@ -82,7 +83,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         {
                             From = transfer.From,
                             To = transfer.To,
-                            AddressId = recieverAddress.Id
+                            AddressId = recieverAddress.Id,
+                            UserId = userId
                         };
                         _dbContext.CertificateSerialRanges.Add(recieverRange);
                         // recieverAddress.CertificateSerialRanges.Add(recieverRange);

@@ -27,9 +27,12 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
     public class UpdateCertificateTransferCommandHandler : IRequestHandler<UpdateCertificateTransferCommand, BaseResponse>
     {
         private readonly ICertificateTransferRepository _CertificateTransferRepository;
-        public UpdateCertificateTransferCommandHandler(ICertificateTransferRepository CertificateTransferRepository)
+        private readonly IUserResolverService _userResolver;
+
+        public UpdateCertificateTransferCommandHandler(ICertificateTransferRepository CertificateTransferRepository, IUserResolverService userResolver)
         {
             _CertificateTransferRepository = CertificateTransferRepository;
+            this._userResolver = userResolver;
         }
         public async Task<BaseResponse> Handle(UpdateCertificateTransferCommand request, CancellationToken cancellationToken)
         {
@@ -42,7 +45,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
 
             try
             {
-                await _CertificateTransferRepository.UpdateWithRangeAsync(certificateTransfer, cancellationToken);
+                await _CertificateTransferRepository.UpdateWithRangeAsync(certificateTransfer, _userResolver.GetUserId(), cancellationToken);
                 // var result = await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
