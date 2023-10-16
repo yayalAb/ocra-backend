@@ -138,7 +138,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                 _context.Notifications.Remove(notification);
                 await _context.SaveChangesAsync();
 
-                if (notification.EventRegisteredAddressId != null)
+                if (notification.EventRegisteredAddressId != null && notification.GroupId?.ToString() != null)
                 {
 
                     var addressResponse = await _addressService.FormatedAddressLoop(notification.EventRegisteredAddressId);
@@ -157,7 +157,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     if (addressResponse?.Kebele != null)
                         await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Kebele).RemoveNotification(notificationId);
                 }
-                else if (!string.IsNullOrEmpty(notification.ReceiverId))
+                if (!string.IsNullOrEmpty(notification.ReceiverId))
                 {
                     await _messageHub.Clients.User(notification.ReceiverId).RemoveNotification(notificationId);
                 }
@@ -226,6 +226,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         MessageStr = n.MessageStr,
                         NotificationObjId = n.NotificationObjId,
                         RequestId = n.RequestId,
+                        ReceiverId = n.ReceiverId,
                         GroupId = n.GroupId,
                         CreatedAt = new CustomDateConverter(n.CreatedAt).ethiopianDate,
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang + " " +
