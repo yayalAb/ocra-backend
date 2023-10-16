@@ -74,7 +74,9 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Query
             {
                 aggregates = null;
             }
-
+            if(SavedReport?.ReportName==null){
+              throw new NotFoundException("Report Name Must not be null");  
+            }
             var Report =  _reportRepo.GetReportData(SavedReport.ReportName, columns, filterse, aggregates).Result;
              var reportRes=await PaginatedList<object>
                             .CreateAsync(
@@ -83,9 +85,9 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Query
 
             var other=string.IsNullOrEmpty(SavedReport?.Other)? null : JObject.Parse(SavedReport?.Other);
             return new {
-                SavedReport.ReportName,
-                SavedReport.Description,
-                SavedReport.ReportTitle,
+                SavedReport?.ReportName,
+                SavedReport?.Description,
+                SavedReport?.ReportTitle,
                 Agrgate =aggregates,
                 Filter =filterse,
                 columns,

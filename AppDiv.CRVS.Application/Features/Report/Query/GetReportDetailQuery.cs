@@ -36,16 +36,16 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                throw new NotFoundException("Report with the given Id does't Found"); 
             }
             var response=new ReportDetailResponsDTo{
-                ReportName=Report.ReportName,
-                ReportTitle=Report.ReportTitle,
-                Description=Report.Description,
-                DefualtColumns=Report.DefualtColumns,
-                Query=Report.Query,
-                ColumnsLang=string.IsNullOrEmpty(Report.columnsLang)? null : JsonSerializer.Deserialize<List<ReportColumsLngDto>>(Report.columnsLang),
-                UserGroups=Report.UserGroups,
-                isAddressBased=Report.isAddressBased,
-                Other=string.IsNullOrEmpty(Report.Other)? null : JObject.Parse(Report.Other),
-                ReportGroup=Report.ReportGroup.ValueLang
+                ReportName=Report?.ReportName,
+                ReportTitle=Report?.ReportTitle,
+                Description=Report?.Description,
+                DefualtColumns=Report?.DefualtColumns,
+                Query=Report?.Query,
+                ColumnsLang=string.IsNullOrEmpty(Report?.columnsLang)? null : JsonSerializer.Deserialize<List<ReportColumsLngDto>>(Report.columnsLang),
+                UserGroups=Report?.UserGroups,
+                isAddressBased=Report?.isAddressBased,
+                Other=string.IsNullOrEmpty(Report?.Other)? null : JObject.Parse(Report?.Other),
+                ReportGroup= Report?.ReportGroup?.ValueLang
              };
             return response;
         }
