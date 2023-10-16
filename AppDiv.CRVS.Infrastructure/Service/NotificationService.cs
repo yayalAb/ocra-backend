@@ -129,9 +129,9 @@ namespace AppDiv.CRVS.Infrastructure.Service
              };
 
         }
-        public async Task RemoveNotification(Guid notificationId)
+        public async Task RemoveNotification(Guid notificationId , Notification? notificationObj)
         {
-            var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
+            var notification = notificationObj?? await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
 
             if (notification != null)
             {
@@ -194,6 +194,14 @@ namespace AppDiv.CRVS.Infrastructure.Service
             await _context.SaveChangesAsync();
 
 
+        }
+        public async Task RemoveNotificationByRequest(Guid requestId)
+        {
+            var notification = _context.Notifications.Where(n => n.RequestId == requestId)
+                                    .FirstOrDefault() ??
+                                     throw new NotFoundException($"notification for the request with id {requestId} is not found");
+            await this.RemoveNotification(notification.Id, notification);
+            
         }
 
         public async Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds)

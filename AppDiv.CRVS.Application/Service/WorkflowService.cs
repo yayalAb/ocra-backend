@@ -232,7 +232,7 @@ namespace AppDiv.CRVS.Application.Service
                     //remove old notification from db and socket
                     if (request.Notification?.Id != null)
                     {
-                        await notificationService.RemoveNotification(request.Notification.Id);
+                        await notificationService.RemoveNotification(request.Notification.Id,null);
 
                     }
 

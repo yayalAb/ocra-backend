@@ -3,7 +3,7 @@ using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
-using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
+using AppDiv.CRVS.Application.Notifications.Queries.GetNotificationByTransactionId;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Utility.Contracts;
 using MediatR;

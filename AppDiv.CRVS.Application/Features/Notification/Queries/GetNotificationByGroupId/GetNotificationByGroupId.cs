@@ -4,7 +4,7 @@ using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Utility.Contracts;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 
-namespace AppDiv.CRVS.Application.Notification.Queries.GetNotificationByGroupId
+namespace AppDiv.CRVS.Application.Notifications.Queries.GetNotificationByGroupId
 
 {
     public class GetNotificationByGroupIdQuery : IRequest<List<NotificationResponseDTO>>
