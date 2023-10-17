@@ -3,7 +3,7 @@ using MediatR;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Common;
 
-namespace AppDiv.CRVS.Application.Features.Notification.Commands.UpdateSeenStatus
+namespace AppDiv.CRVS.Application.Features.Notifications.Commands.UpdateSeenStatus
 
 {
     public class UpdateSeenStatusCommand : IRequest<BaseResponse>
@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Features.Notification.Commands.UpdateSeenStatu
         public async Task<BaseResponse> Handle(UpdateSeenStatusCommand request, CancellationToken cancellationToken)
         {
             //    await _notificationService.updateSeenStatus(request.Id);
-            await _notificationService.RemoveNotification(request.Id);
+            await _notificationService.RemoveNotification(request.Id, null);
             return new BaseResponse { Message = "Notification removed successfully", Status = 200 };
         }
     }
