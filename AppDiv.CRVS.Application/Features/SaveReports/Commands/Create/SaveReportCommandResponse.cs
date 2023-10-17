@@ -10,8 +10,12 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands
     {
         public SaveReportCommandResponse() : base()
         {
+            
+        
 
         }
+  
+
 
     }
 }

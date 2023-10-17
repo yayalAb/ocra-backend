@@ -239,6 +239,8 @@ namespace AppDiv.CRVS.Infrastructure
             services.AddScoped<IMarriageApplicationCouchRepository, MarriageApplicationCouchRepository>();
 
             services.AddScoped<IProfileChangeRequestRepository, ProfileChangeRequestRepository>();
+            services.AddScoped<ISharedReportRepository, SharedReportRepository>();
+            
             
 
 

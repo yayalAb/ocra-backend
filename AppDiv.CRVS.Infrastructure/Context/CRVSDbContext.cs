@@ -77,6 +77,7 @@ namespace AppDiv.CRVS.Infrastructure
         public DbSet<PersonDuplicate> PersonDuplicates { get; set; }
         public DbSet<SystemRange> SystemRanges { get; set; }
         public DbSet<EventPlan> EventPlans { get; set; }
+         public DbSet<SharedReport> SharedReports { get; set; }
         public DbSet<ProfileChangeRequest> ProfileChangeRequests { get; set; }
         public CRVSDbContext(DbContextOptions<CRVSDbContext> options, IUserResolverService userResolverService) : base(options)
         {
