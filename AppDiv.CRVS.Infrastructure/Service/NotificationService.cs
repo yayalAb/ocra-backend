@@ -48,6 +48,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
             await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
+            Console.WriteLine(notification.Id);
 
             var resNotification = await _context.Notifications
                     .Include(n => n.Sender)

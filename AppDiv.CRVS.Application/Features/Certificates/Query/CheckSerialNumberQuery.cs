@@ -48,12 +48,17 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
                                                                     && request.CertificateSerialNumber.CompareTo(r.From) >= 0
                                                                     && request.CertificateSerialNumber.CompareTo(r.To) <= 0);
 
-                    bool isDuplicated = _certificateRepository.GetAll()
-                                            .Where(c => c.CertificateSerialNumber == request.CertificateSerialNumber).Any();
-                    if (inRange == null || isDuplicated)
+                    bool isDuplicated = _certificateRepository.GetAll().Select(c => c.CertificateSerialNumber)
+                                            .Where(c => c == request.CertificateSerialNumber).Any();
+                    if (inRange == null)
                     {
                         response.Status = 400;
                         response.Message = "Serial Number out of range";
+                    }
+                    else if (isDuplicated)
+                    {
+                        response.Status = 400;
+                        response.Message = "This Serial Number is already taken.";
                     }
                 }
                 else
