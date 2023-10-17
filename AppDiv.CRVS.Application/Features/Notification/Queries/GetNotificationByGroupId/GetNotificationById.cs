@@ -6,7 +6,7 @@ using AppDiv.CRVS.Utility.Contracts;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Utility.Services;
 
-namespace AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId
+namespace AppDiv.CRVS.Application.Notifications.Queries.GetNotificationByTransactionId
 
 {
     public class GetNotificationByIdQuery : IRequest<NotificationData>

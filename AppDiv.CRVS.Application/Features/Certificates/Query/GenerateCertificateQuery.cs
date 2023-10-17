@@ -67,6 +67,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
         private readonly IWorkflowRepository _WorkflowRepository;
         private readonly IWorkflowService _WorkflowService;
         private readonly IEventPaymentRequestService _paymentRequestService;
+        private readonly ICertificateTransferRepository _certificateTransfer;
 
         // private readonly IMediator _mediator;
         private readonly ISupportingDocumentRepository _supportingDocumentRepository;
@@ -85,6 +86,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                         IWorkflowRepository WorkflowRepository,
                                         IWorkflowService WorkflowService,
                                         IEventPaymentRequestService paymentRequestService,
+                                        ICertificateTransferRepository certificateTransfer,
                                         // IMediator mediator,
                                         ISupportingDocumentRepository supportingDocumentRepository)
         {
@@ -102,6 +104,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
             _WorkflowRepository = WorkflowRepository;
             _WorkflowService = WorkflowService;
             _paymentRequestService = paymentRequestService;
+            this._certificateTransfer = certificateTransfer;
         }
         public async Task<object> Handle(GenerateCertificateQuery request, CancellationToken cancellationToken)
         {
@@ -138,6 +141,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 {
                     item.Status = false;
                     await _certificateRepository.UpdateAsync(item, x => x.Id);
+                    // await _certificateTransfer.UseSerialNo(request.CertificateSerialNumber, _userResolverService.GetUserId(), cancellationToken);
                 }
                 var Workflow = _WorkflowRepository.GetAll()
                 .Include(x => x.Steps)
@@ -176,6 +180,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                 _eventRepository.Update(CustomMapper.Mapper.Map<Event>(selectedEvent));
                 await _certificateRepository.InsertAsync(certificate, cancellationToken);
                 var result = await _certificateRepository.SaveChangesAsync(cancellationToken);
+                // await _certificateTransfer.UseSerialNo(request.CertificateSerialNumber, _userResolverService.GetUserId(), cancellationToken);
                 _certificateRepository.TriggerCertificateIndex();
             }
             if (selectedEvent.EventType.ToLower() == "marriage" || content.marriage != null)

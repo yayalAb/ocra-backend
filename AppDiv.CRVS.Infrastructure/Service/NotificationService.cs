@@ -48,6 +48,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
             await _context.Notifications.AddAsync(notification);
             await _context.SaveChangesAsync();
+            Console.WriteLine(notification.Id);
 
             var resNotification = await _context.Notifications
                     .Include(n => n.Sender)
@@ -129,16 +130,16 @@ namespace AppDiv.CRVS.Infrastructure.Service
              };
 
         }
-        public async Task RemoveNotification(Guid notificationId)
+        public async Task RemoveNotification(Guid notificationId , Notification? notificationObj)
         {
-            var notification = await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
+            var notification = notificationObj?? await _context.Notifications.Where(n => n.Id == notificationId).FirstOrDefaultAsync();
 
             if (notification != null)
             {
                 _context.Notifications.Remove(notification);
                 await _context.SaveChangesAsync();
 
-                if (notification.EventRegisteredAddressId != null)
+                if (notification.EventRegisteredAddressId != null && notification.GroupId?.ToString() != null)
                 {
 
                     var addressResponse = await _addressService.FormatedAddressLoop(notification.EventRegisteredAddressId);
@@ -157,7 +158,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     if (addressResponse?.Kebele != null)
                         await _messageHub.Clients.Group(notification.GroupId.ToString() + "_" + addressResponse.Kebele).RemoveNotification(notificationId);
                 }
-                else if (!string.IsNullOrEmpty(notification.ReceiverId))
+                if (!string.IsNullOrEmpty(notification.ReceiverId))
                 {
                     await _messageHub.Clients.User(notification.ReceiverId).RemoveNotification(notificationId);
                 }
@@ -195,6 +196,14 @@ namespace AppDiv.CRVS.Infrastructure.Service
 
 
         }
+        public async Task RemoveNotificationByRequest(Guid requestId)
+        {
+            var notification = _context.Notifications.Where(n => n.RequestId == requestId)
+                                    .FirstOrDefault() ??
+                                     throw new NotFoundException($"notification for the request with id {requestId} is not found");
+            await this.RemoveNotification(notification.Id, notification);
+            
+        }
 
         public async Task<List<NotificationResponseDTO>> getNotification(List<Guid> groupIds)
         {
@@ -226,6 +235,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                         MessageStr = n.MessageStr,
                         NotificationObjId = n.NotificationObjId,
                         RequestId = n.RequestId,
+                        ReceiverId = n.ReceiverId,
                         GroupId = n.GroupId,
                         CreatedAt = new CustomDateConverter(n.CreatedAt).ethiopianDate,
                         SenderFullName = n.Sender.PersonalInfo.FirstNameLang + " " +

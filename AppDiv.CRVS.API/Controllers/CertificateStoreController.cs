@@ -73,6 +73,48 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
 
+        [HttpPost("Damaged")]
+        // [ProducesDefaultResponseType(typeof(int))]
+        public async Task<ActionResult> Create(CreateDamagedCertificatesCommand command)
+        {
+            return Ok(await Mediator.Send(command));
+        }
+
+        [HttpPut("Damaged/{id}")]
+        public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDamagedCertificatesCommand command)
+        {
+            try
+            {
+                if (id != Guid.Empty)
+                {
+                    var result = await Mediator.Send(command);
+                    return Ok(result);
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+            catch (Exception exp)
+            {
+                return BadRequest(exp.Message);
+            }
+        }
+
+        [HttpGet("Damaged")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<PaginatedList<DamagedCertificatesDTO>> GetDamaged([FromQuery] GetAllDamagedCertificatesQuery query)
+        {
+            return await Mediator.Send(query);
+        }
+
+        [HttpGet("Damaged/{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<DamagedCertificatesDTO> GetDamagedById(Guid id)
+        {
+            return await Mediator.Send(new GetDamagedCertificateByIdQuery { Id = id });
+        }
+
         // [HttpDelete("Delete/{id}")]
         // public async Task<ActionResult> Delete(Guid id)
         // {

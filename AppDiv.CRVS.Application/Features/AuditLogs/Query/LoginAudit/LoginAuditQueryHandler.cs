@@ -33,11 +33,20 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
                 history = history.Where(a => EF.Functions.Like(a.User.UserName, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.EventType, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.IpAddress!, "%" + request.SearchString + "%")
-                                      || EF.Functions.Like($"{a.User!.PersonalInfo!.FirstNameStr!} {a.User!.PersonalInfo!.MiddleNameStr!} {a.User!.PersonalInfo!.LastNameStr!}" , "%" + request.SearchString + "%")
+                                      || EF.Functions.Like(a.User!.PersonalInfo!.FirstNameStr!, "%" + request.SearchString + "%")
+                                      || EF.Functions.Like(a.User!.PersonalInfo!.MiddleNameStr!, "%" + request.SearchString + "%")
+                                      || EF.Functions.Like(a.User!.PersonalInfo!.LastNameStr!, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.User!.Address!.AddressNameStr!, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.User!.Address!.ParentAddress!.AddressNameStr!, "%" + request.SearchString + "%")
                                       || EF.Functions.Like(a.User!.Address!.ParentAddress!.ParentAddress!.AddressNameStr!, "%" + request.SearchString + "%")
                                     );
+            }
+            if (request.StartDate != null && request.EndDate != null)
+            {
+                var convertor = new CustomDateConverter();
+                var startDate = convertor.EthiopicToGregorian(request.StartDate);
+                var endDate = convertor.EthiopicToGregorian(request.EndDate);
+                history = history.Where(a => a.EventDate >= startDate && a.EventDate <= endDate);
             }
             
             return await history.OrderByDescending(l => l.EventDate).Select(a => new LoginAuditGridDTO(a))

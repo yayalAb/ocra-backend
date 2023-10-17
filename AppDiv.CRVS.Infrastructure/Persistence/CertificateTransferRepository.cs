@@ -16,7 +16,19 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         {
             _dbContext = dbContext;
         }
-        public async Task InsertWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken)
+
+        public async Task UseSerialNo(string serialNo, string userId, CancellationToken cancellationToken)
+        {
+            var transfer = new CertificateSerialTransfer 
+                {
+                    From = serialNo,
+                    To = AddOneTo(serialNo),
+                    SenderId = userId,
+                    RecieverId = userId
+                };
+            await this.UpdateWithRangeAsync(transfer, userId, cancellationToken);
+        }
+        public async Task InsertWithRangeAsync(CertificateSerialTransfer transfer, string userId, CancellationToken cancellationToken)
         {
             var executionStrategy = this.Database.CreateExecutionStrategy();
             await executionStrategy.ExecuteAsync(async () =>
@@ -34,7 +46,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             {
                                 From = transfer.From,
                                 To = transfer.To,
-                                AddressId = recieverAddress.Id
+                                AddressId = recieverAddress.Id,
+                                UserId = userId
                             };
                             transfer.Status = true;
                             _dbContext.CertificateSerialRanges.Add(recieverRange);
@@ -54,7 +67,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         }
 
 
-        public async Task UpdateWithRangeAsync(CertificateSerialTransfer transfer, CancellationToken cancellationToken)
+        public async Task UpdateWithRangeAsync(CertificateSerialTransfer transfer, string userId, CancellationToken cancellationToken)
         {
             var executionStrategy = this.Database.CreateExecutionStrategy();
             await executionStrategy.ExecuteAsync(async () =>
@@ -82,7 +95,8 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         {
                             From = transfer.From,
                             To = transfer.To,
-                            AddressId = recieverAddress.Id
+                            AddressId = recieverAddress.Id,
+                            UserId = userId
                         };
                         _dbContext.CertificateSerialRanges.Add(recieverRange);
                         // recieverAddress.CertificateSerialRanges.Add(recieverRange);
@@ -94,11 +108,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             if (transfer.From.CompareTo(senderRange?.From) > 0 && transfer.To.CompareTo(senderRange?.To) < 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.To = substractOneFrom(transfer.To);
+                                senderRange1.To = SubstractOneFrom(transfer.To);
                                 senderRange1.From = senderRange.From;
                                 senderRange1.AddressId = senderAddress.Id;
                                 var senderRange2 = new CertificateSerialRange();
-                                senderRange2.From = addOneTo(transfer.From);
+                                senderRange2.From = AddOneTo(transfer.From);
                                 senderRange2.To = senderRange.To;
                                 senderRange2.AddressId = senderAddress.Id;
                                 // senderAddress.CertificateSerialRanges = new List<CertificateSerialRange>();
@@ -108,7 +122,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             else if (transfer.From == senderRange?.From && transfer.To.CompareTo(senderRange?.To) < 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.From = addOneTo(transfer.To);
+                                senderRange1.From = AddOneTo(transfer.To);
                                 senderRange1.To = senderRange.To;
                                 senderRange1.AddressId = senderAddress.Id;
                                 _dbContext?.CertificateSerialRanges.Add(senderRange1);
@@ -116,7 +130,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             else if (transfer.To == senderRange?.To && transfer.From.CompareTo(senderRange?.From) > 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.To = substractOneFrom(transfer.To);
+                                senderRange1.To = SubstractOneFrom(transfer.To);
                                 senderRange1.From = senderRange.From;
                                 senderRange1.AddressId = senderAddress.Id;
                                 _dbContext?.CertificateSerialRanges.Add(senderRange1);
@@ -146,7 +160,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             });
         }
 
-        private string substractOneFrom(string serialNumber)
+        private string SubstractOneFrom(string serialNumber)
         {
             int numIndex = -1;
 
@@ -179,7 +193,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 return ("Numeric part not found in the string.");
             }
         }
-        private string addOneTo(string serialNumber)
+        private string AddOneTo(string serialNumber)
         {
             int numIndex = -1;
 

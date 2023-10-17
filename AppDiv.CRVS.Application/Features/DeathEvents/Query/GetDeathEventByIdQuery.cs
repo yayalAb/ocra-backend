@@ -3,7 +3,7 @@ using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Application.Mapper;
 using MediatR;
 using AppDiv.CRVS.Application.Interfaces;
-using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByTransactionId;
+using AppDiv.CRVS.Application.Notifications.Queries.GetNotificationByTransactionId;
 
 namespace AppDiv.CRVS.Application.Features.Customers.Query
 {

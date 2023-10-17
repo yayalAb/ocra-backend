@@ -1,7 +1,7 @@
 
 using Microsoft.AspNetCore.Mvc;
-using AppDiv.CRVS.Application.Features.Notification.Commands.UpdateSeenStatus;
-using AppDiv.CRVS.Application.Notification.Queries.GetNotificationByGroupId;
+using AppDiv.CRVS.Application.Features.Notifications.Commands.UpdateSeenStatus;
+using AppDiv.CRVS.Application.Notifications.Queries.GetNotificationByGroupId;
 using Microsoft.AspNetCore.SignalR;
 using AppDiv.CRVS.Infrastructure.Hub;
 using AppDiv.CRVS.Application.Features.SupportingDocuments.Commands.Create;
