@@ -37,6 +37,13 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
                                                     || EF.Functions.Like(t.Request!.PaymentRequest!.Event.CertificateId!, "%" + request.SearchString + "%")
                                             );
             }
+            if (request.StartDate != null && request.EndDate != null)
+            {
+                var convertor = new CustomDateConverter();
+                var startDate = convertor.EthiopicToGregorian(request.StartDate);
+                var endDate = convertor.EthiopicToGregorian(request.EndDate);
+                transactions = transactions.Where(a => a.Request.CreatedAt >= startDate && a.CreatedAt <= endDate);
+            }
             
             return await transactions.OrderByDescending(t => t.Request!.CreatedAt).Select(t => new TransactionAuditGridDTO(t))
                         .PaginateAsync<TransactionAuditGridDTO,TransactionAuditGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);

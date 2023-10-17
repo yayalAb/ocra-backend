@@ -41,6 +41,13 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
                                       || EF.Functions.Like(a.User!.Address!.ParentAddress!.ParentAddress!.AddressNameStr!, "%" + request.SearchString + "%")
                                     );
             }
+            if (request.StartDate != null && request.EndDate != null)
+            {
+                var convertor = new CustomDateConverter();
+                var startDate = convertor.EthiopicToGregorian(request.StartDate);
+                var endDate = convertor.EthiopicToGregorian(request.EndDate);
+                history = history.Where(a => a.EventDate >= startDate && a.EventDate <= endDate);
+            }
             
             return await history.OrderByDescending(l => l.EventDate).Select(a => new LoginAuditGridDTO(a))
                         .PaginateAsync<LoginAuditGridDTO,LoginAuditGridDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
