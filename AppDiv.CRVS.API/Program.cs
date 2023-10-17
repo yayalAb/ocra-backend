@@ -201,6 +201,17 @@ app.ConfigureExceptionMiddleware();
 
 // Added for authentication
 // Maintain middleware order
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-Content-Type-Options", "nosniff");
+    await next();
+});
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
+    await next();
+});
+
 app.UseRouting();
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
