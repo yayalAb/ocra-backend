@@ -42,7 +42,7 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
                 var convertor = new CustomDateConverter();
                 var startDate = convertor.EthiopicToGregorian(request.StartDate);
                 var endDate = convertor.EthiopicToGregorian(request.EndDate);
-                transactions = transactions.Where(a => a.Request.CreatedAt >= startDate && a.CreatedAt <= endDate);
+                transactions = transactions.Where(a => a.Request.CreatedAt >= startDate && endDate <= a.CreatedAt);
             }
             
             return await transactions.OrderByDescending(t => t.Request!.CreatedAt).Select(t => new TransactionAuditGridDTO(t))

@@ -35,7 +35,7 @@ namespace AppDiv.CRVS.Application.Features.AuditLogs.Query
                 var convertor = new CustomDateConverter();
                 var startDate = convertor.EthiopicToGregorian(request.StartDate);
                 var endDate = convertor.EthiopicToGregorian(request.EndDate);
-                history = history.Where(a => a.StartDate >= startDate && a.CreatedAt <= endDate);
+                history = history.Where(a => a.StartDate >= startDate && endDate <= a.CreatedAt);
             }
             if (request.SearchString is not null)
             {
