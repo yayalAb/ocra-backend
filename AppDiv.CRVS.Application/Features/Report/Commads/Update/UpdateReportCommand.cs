@@ -64,7 +64,8 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads.Update
                 UserGroups=request?.UserGroups,
                 isAddressBased=request?.isAddressBased,
                 Other=request?.Other?.ToString(),
-                ReportGroupId=request.ReportGroupId
+                Query=request?.query,
+                ReportGroupId=request?.ReportGroupId
 
             };
             try
