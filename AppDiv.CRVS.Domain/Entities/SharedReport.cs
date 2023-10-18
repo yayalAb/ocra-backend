@@ -19,6 +19,7 @@ namespace AppDiv.CRVS.Domain.Entities
         public string  ClientId  { get; set; }   
         public string  SHASecret  { get; set; }   
         public string  Email  { get; set; }
+        public Boolean Status { get; set; } = false;
         
     }
 }
