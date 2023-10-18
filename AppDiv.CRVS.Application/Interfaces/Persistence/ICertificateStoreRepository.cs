@@ -16,6 +16,8 @@ namespace AppDiv.CRVS.Application.Interfaces.Persistence
         Task InsertWithRangeAsync(CertificateSerialTransfer transfer,string userId, CancellationToken cancellationToken);
         Task UpdateWithRangeAsync(CertificateSerialTransfer transfer,string userId, CancellationToken cancellationToken);
         Task UseSerialNo(string serialNo, string userId, CancellationToken cancellationToken);
+        bool CheckExistance(string from, string to, Guid addressId);
+        Task<CertificateSerialTransfer> GetAsync(Guid id);
         // public Task<Guid> Add(CertificateTemplate certificateTemplate);
         // public new IQueryable<CertificateTemplate> GetAllAsync();
     }

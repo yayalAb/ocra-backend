@@ -17,6 +17,13 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             _dbContext = dbContext;
         }
 
+        public async Task<CertificateSerialTransfer> GetAsync(Guid id)
+        {
+            return await _dbContext.CertificateSerialTransfers
+                .Include(s => s.Reciever.PersonalInfo)
+                .SingleOrDefaultAsync(s => s.Id == id);
+        }
+
         public async Task UseSerialNo(string serialNo, string userId, CancellationToken cancellationToken)
         {
             var transfer = new CertificateSerialTransfer 
@@ -66,7 +73,12 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
             });
         }
 
-
+        public bool CheckExistance(string from, string to, Guid addressId)
+        {
+            return _dbContext.CertificateSerialRanges
+                .AsNoTracking()
+                .Any(s => s.AddressId == addressId && Convert.ToInt64(s.From) <= Convert.ToInt64(from) && Convert.ToInt64(s.To) >= Convert.ToInt64(to));
+        }
         public async Task UpdateWithRangeAsync(CertificateSerialTransfer transfer, string userId, CancellationToken cancellationToken)
         {
             var executionStrategy = this.Database.CreateExecutionStrategy();

@@ -53,6 +53,11 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
             }
             if (response.Success) // if there is no validation error 
             {
+                if(!_CertificateTransferRepository.CheckExistance(request.CertificateTransfer.From, request.CertificateTransfer.To, _userResolver.GetWorkingAddressId()))
+                {
+                    response.BadRequest($"You Don't have a certificate serial number within {request.CertificateTransfer.From} - {request.CertificateTransfer.To}");
+                    return response;
+                }
                 try
                 {
                     // map the request to the model
