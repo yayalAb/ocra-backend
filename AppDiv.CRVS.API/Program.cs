@@ -189,17 +189,18 @@ if (app.Environment.IsDevelopment())
         await initialiser.InitialiseAsync();
         //await initialiser.SeedAsync();
     }
+ 
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 else
 {
-    builder.Services.AddHsts(options =>
-  {
-      options.MaxAge = TimeSpan.FromDays(365);
-      options.IncludeSubDomains = true;
-      options.Preload = true;
-  });
+//    builder.Services.AddHsts(options =>
+// {
+//     options.MaxAge = TimeSpan.FromDays(365);
+//     options.IncludeSubDomains = true;
+//     options.Preload = true;
+// });
 }
 
 app.ConfigureExceptionMiddleware();
