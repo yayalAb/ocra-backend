@@ -61,7 +61,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
                     // save the date
                     await _CertificateTransferRepository.InsertWithRangeAsync(CertificateTransfer, _userResolver.GetUserId(), cancellationToken);
                     await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
-                    if (request.SenderId is not null)
+                    if (request.CertificateTransfer.SenderId is not null)
                     {
                         await _notification.CreateNotification(
                             CertificateTransfer.Id,

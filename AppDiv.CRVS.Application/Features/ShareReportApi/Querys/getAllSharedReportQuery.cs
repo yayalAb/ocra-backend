@@ -30,6 +30,7 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
                     Id =re.Id,
                     Username =re.Username,
                     UserRole =re.UserRole,
+                    Email=re.Email,
                     ReportTitle =re.ReportTitle,
                     Status=re.Status
                 })
