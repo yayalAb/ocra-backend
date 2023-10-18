@@ -108,11 +108,11 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             if (transfer.From.CompareTo(senderRange?.From) > 0 && transfer.To.CompareTo(senderRange?.To) < 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.To = SubstractOneFrom(transfer.To);
+                                senderRange1.To = SubstractOneFrom(transfer.From);
                                 senderRange1.From = senderRange.From;
                                 senderRange1.AddressId = senderAddress.Id;
                                 var senderRange2 = new CertificateSerialRange();
-                                senderRange2.From = AddOneTo(transfer.From);
+                                senderRange2.From = AddOneTo(transfer.To);
                                 senderRange2.To = senderRange.To;
                                 senderRange2.AddressId = senderAddress.Id;
                                 // senderAddress.CertificateSerialRanges = new List<CertificateSerialRange>();
@@ -130,7 +130,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                             else if (transfer.To == senderRange?.To && transfer.From.CompareTo(senderRange?.From) > 0)
                             {
                                 var senderRange1 = new CertificateSerialRange();
-                                senderRange1.To = SubstractOneFrom(transfer.To);
+                                senderRange1.To = SubstractOneFrom(transfer.From);
                                 senderRange1.From = senderRange.From;
                                 senderRange1.AddressId = senderAddress.Id;
                                 _dbContext?.CertificateSerialRanges.Add(senderRange1);
