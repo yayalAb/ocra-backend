@@ -12,8 +12,6 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
     public record getSharedReportById : IRequest<SharedReportDetailResponseDTO>
     {
         public Guid Id { get; set; }
-        public int? PageCount { set; get; } = 1!;
-        public int? PageSize { get; set; } = 10!;
         
     }
 
@@ -38,7 +36,9 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
                     Other =report.Other,    
                     Username =report.Username,  
                     UserRole =report.UserRole,    
-                    Email  = report.Email
+                    Email  = report.Email,
+                    ClientId=report.ClientId,
+                    SHASecret=report.SHASecret
                 };
         }
     }

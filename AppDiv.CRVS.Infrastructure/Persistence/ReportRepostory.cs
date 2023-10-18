@@ -317,19 +317,20 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
         public string RemoveSpecialChar(string StringToSanitize)
         {
             string output = "";
-            if(StringToSanitize.IndexOf("delete", StringComparison.OrdinalIgnoreCase) >= 0){
-                throw new NotFoundException("Delete string is not allowed in report Create");
+            if(StringToSanitize?.IndexOf(" delete ", StringComparison.OrdinalIgnoreCase) >= 0){
+                throw new NotFoundException("Delete key word is not allowed in report Create Query");
             }
-             if(StringToSanitize.IndexOf("alter", StringComparison.OrdinalIgnoreCase) >= 0){
-                throw new NotFoundException("Alter string is not allowed in report Create");
+             if(StringToSanitize?.IndexOf(" alter ", StringComparison.OrdinalIgnoreCase) >= 0){
+                throw new NotFoundException("Alter key word is not allowed in report Create Query");
+            }
+             if(StringToSanitize?.IndexOf(" drop ", StringComparison.OrdinalIgnoreCase) >= 0){
+                throw new NotFoundException("Drop key word is not allowed in report Create Query");
             }
             if (!string.IsNullOrEmpty(StringToSanitize))
             {
                 output = Regex.Replace(StringToSanitize, "[;-]", "");
 
             }
-
-
             return output;
         }
 
@@ -367,9 +368,6 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 });
             }
             await viewReader.Item2.CloseAsync();
-
-
-
             return result;
         }
 
@@ -417,11 +415,9 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 });
             }
             await viewReader.Item2.CloseAsync();
-
-
             return result;
         }
-        private (string, string,Guid? )ReturnFilterAddress( string ? filters, string groupBySql){
+        private (string, string,Guid?)ReturnFilterAddress( string ? filters, string groupBySql){
             string[] addressArray = { "Country", "Region", "Zone", "Woreda", "Kebele", "addId",
                                      "conid","regid","zoneid","weId","keId" };
             bool containFilterAddress=false;    
@@ -548,10 +544,5 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
 
          return resultString;
         }
-
-
-
-
-
     }
 }

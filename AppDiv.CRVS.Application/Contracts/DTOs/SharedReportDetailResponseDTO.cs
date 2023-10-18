@@ -17,5 +17,7 @@ namespace AppDiv.CRVS.Application.Contracts.DTOs
         public string  Username  { get; set; }  
         public string?  UserRole  { get; set; }    
         public string  Email  { get; set; }
+        public string?  ClientId  { get; set; }    
+        public string?  SHASecret  { get; set; }
     }
 }

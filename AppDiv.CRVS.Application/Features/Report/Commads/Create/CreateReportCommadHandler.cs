@@ -42,15 +42,15 @@ namespace AppDiv.CRVS.Application.Features.Report.Commads
                         Id = Guid.NewGuid(),
                         ReportName =request.ReportName,
                         ReportTitle =request.ReportTitle,
-                        Description =request.Description,
+                        Description =request?.Description,
                         DefualtColumns =defualt,
                         CreatedAt =DateTime.Now,
-                        Query =request.Query,
-                        columnsLang=JsonSerializer.Serialize(request.ColumnsLang),
-                        UserGroups=request.UserGroups,
-                        isAddressBased=request.isAddressBased,
-                        Other=request.Other.ToString(),
-                        ReportGroupId=request.ReportGroupId
+                        Query =request?.Query,
+                        columnsLang=JsonSerializer.Serialize(request?.ColumnsLang),
+                        UserGroups=request?.UserGroups,
+                        isAddressBased=request?.isAddressBased,
+                        Other=request?.Other?.ToString(),
+                        ReportGroupId=request?.ReportGroupId
                     };
                 await _ReportRepository.CreateReportAsync(Report, cancellationToken);
                 CreateReportCommadResponse.Message = "Report created successfully";
