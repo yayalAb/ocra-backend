@@ -66,7 +66,7 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.commands.create
                 };
                 await _ReportRepository.InsertAsync(SharedReport, cancellationToken);
                 await _ReportRepository.SaveChangesAsync(cancellationToken);
-                 var content ="Urls : http://192.168.1.32:7264/api/SharedRepotClient/GetReportData " + "\n ClinetId : " + SharedReport.ClientId +"+ \n SHASecret : "+SharedReport.SHASecret;
+                   var content ="ClinetId : " + SharedReport.ClientId +"+ \n SHASecret : "+SharedReport.SHASecret;
                     var subject = "OCRVS";
                     await _mailService.SendAsync(body: content, subject: subject, senderMailAddress: _config.SENDER_ADDRESS, receiver: SharedReport.Email, cancellationToken);
 
