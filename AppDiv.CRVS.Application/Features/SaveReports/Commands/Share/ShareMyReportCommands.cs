@@ -1,4 +1,5 @@
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Exceptions;
 using AppDiv.CRVS.Application.Interfaces;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Entities;
@@ -19,9 +20,11 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands.Share
     public class ShareMyReportCommandsHandler : IRequestHandler<ShareMyReportCommands, BaseResponse>
     {
         private readonly IMyReportRepository _myReportRepository;
-        public ShareMyReportCommandsHandler(IMyReportRepository myReportRepository)
+        private readonly IReportStoreRepostory _ReportStoreRepository;
+        public ShareMyReportCommandsHandler(IMyReportRepository myReportRepository,IReportStoreRepostory ReportStoreRepository)
         {
             _myReportRepository = myReportRepository;
+            _ReportStoreRepository=ReportStoreRepository;
         }
 
         public async Task<BaseResponse> Handle(ShareMyReportCommands request, CancellationToken cancellationToken)
@@ -29,7 +32,30 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands.Share
             try
             {
                 var mayreport = await _myReportRepository.GetAsync(request.Id);
-                if (mayreport != null)
+                if(mayreport==null){
+                 var  Report = await _ReportStoreRepository.GetAsync(request.Id);
+                 if(Report==null){
+                    throw new NotFoundException("Report With the Given Id does not Found");
+                 }
+                  if (Report != null)
+                   {
+                    foreach (var user in request.UsersId)
+                    {
+                        var Report1 = new MyReports
+                        {
+                            ReportOwnerId = user,
+                            ReportName = Report?.ReportName,
+                            Colums = Report?.DefualtColumns,
+                            Other = Report?.Other,
+                            IsShared = true,
+                            SharedFrom =Report?.CreatedBy,
+                        };
+                        await _myReportRepository.InsertAsync(Report1, cancellationToken);
+                    }
+                }
+                }
+
+                else 
                 {
                     foreach (var user in request.UsersId)
                     {
@@ -51,13 +77,13 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands.Share
             }
             catch (Exception exp)
             {
-                throw (new ApplicationException(exp.Message));
+                throw (new NotFoundException(exp.Message));
             }
 
             var res = new BaseResponse
             {
                 Success = true,
-                Message = "My Report information has been deleted!"
+                Message = "Report Shared!"
             };
             return res;
         }
