@@ -23,7 +23,7 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.commands.update
     public class updateSharedReportApi : IRequest<object>
     {
         public Guid Id { get; set; }
-        public string ReportName { get; set; }
+        public string? ReportName { get; set; }
         public string?  ReportTitle  { get; set; }   
         public string?  Agrgate  { get; set; }    
         public string?  Filter  { get; set; }    
