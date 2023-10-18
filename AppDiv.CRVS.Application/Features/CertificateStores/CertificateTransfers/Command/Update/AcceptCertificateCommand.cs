@@ -46,6 +46,15 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
             try
             {
                 await _CertificateTransferRepository.UpdateWithRangeAsync(certificateTransfer, _userResolver.GetUserId(), cancellationToken);
+                await _notification.CreateNotification(
+                            certificateTransfer.Id,
+                            "Certificate Store", 
+                            $"Your Certificate transfer accepted by {certificateTransfer.RecieverId}",
+                            null, null, 
+                            certificateTransfer.RecieverId, 
+                            null, 
+                            "request", 
+                            certificateTransfer.SenderId);
                 // var result = await _CertificateTransferRepository.SaveChangesAsync(cancellationToken);
             }
             catch (Exception exp)
