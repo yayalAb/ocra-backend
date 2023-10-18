@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AppDiv.CRVS.Application.Interfaces;
 
 namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfers.Command.Update
 {
@@ -28,11 +29,13 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
     {
         private readonly ICertificateTransferRepository _CertificateTransferRepository;
         private readonly IUserResolverService _userResolver;
+        private readonly INotificationService _notification;
 
-        public UpdateCertificateTransferCommandHandler(ICertificateTransferRepository CertificateTransferRepository, IUserResolverService userResolver)
+        public UpdateCertificateTransferCommandHandler(ICertificateTransferRepository CertificateTransferRepository, IUserResolverService userResolver, INotificationService notification)
         {
             _CertificateTransferRepository = CertificateTransferRepository;
             this._userResolver = userResolver;
+            _notification = notification;
         }
         public async Task<BaseResponse> Handle(UpdateCertificateTransferCommand request, CancellationToken cancellationToken)
         {
