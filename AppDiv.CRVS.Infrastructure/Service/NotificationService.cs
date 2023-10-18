@@ -218,6 +218,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                     .Include(n => n.EventRegisteredAddress)
                     .Where(n => (n.GroupId != null ? groupIds.Contains((Guid)n.GroupId) : n.ReceiverId == userId) && !n.Seen)
                     .Where(n =>
+                      (n.EventRegisteredAddressId == null) ||
                      (n.EventRegisteredAddress.AdminLevel >= 4 && n.EventRegisteredAddress.ParentAddress.ParentAddress.ParentAddress.Id == workingAddressId)
                      || (n.EventRegisteredAddress.AdminLevel >= 3 && n.EventRegisteredAddress.ParentAddress.ParentAddress.Id == workingAddressId)
                      || (n.EventRegisteredAddress.AdminLevel >= 2 && n.EventRegisteredAddress.ParentAddress.Id == workingAddressId)
