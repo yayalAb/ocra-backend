@@ -96,7 +96,12 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(_key, _issuer, _audience, _expirtyMinutes));
 
-
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+    options.Preload = true;
+});
 
 builder.Services.AddSignalR(o =>
 {
@@ -182,6 +187,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+
     // app.MigrateDatabase();
     using (var scope = app.Services.CreateScope())
     {
@@ -189,18 +195,13 @@ if (app.Environment.IsDevelopment())
         await initialiser.InitialiseAsync();
         //await initialiser.SeedAsync();
     }
- 
+
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 else
 {
-//    builder.Services.AddHsts(options =>
-// {
-//     options.MaxAge = TimeSpan.FromDays(365);
-//     options.IncludeSubDomains = true;
-//     options.Preload = true;
-// });
+    app.UseHsts();
 }
 
 app.ConfigureExceptionMiddleware();
