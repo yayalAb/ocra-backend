@@ -36,7 +36,9 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
                     Other =report.Other,    
                     Username =report.Username,  
                     UserRole =report.UserRole,    
-                    Email  = report.Email
+                    Email  = report.Email,
+                    ClientId=report.ClientId,
+                    SHASecret=report.SHASecret
                 };
         }
     }
