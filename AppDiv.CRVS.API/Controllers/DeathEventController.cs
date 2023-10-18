@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Certificates.Query;
@@ -20,6 +21,7 @@ namespace AppDiv.CRVS.API.Controllers
     {
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("Death", "Add")]
         public async Task<ActionResult> CreateDeathEvent(CreateDeathEventCommand command)
         {
             try
@@ -53,6 +55,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Death", "ReadAll")]
+
         public async Task<PaginatedList<DeathEventDTO>> Get([FromQuery] GetAllDeathEventQuery query)
         {
             return await Mediator.Send(query);
@@ -60,6 +64,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Death", "Update")]
+
         public async Task<DeathEventDTO> Get(Guid id)
         {
             return await Mediator.Send(new GetDeathEventByIdQuery(id));
@@ -67,6 +73,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("Death", "Update")]
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateDeathEventCommand command)
         {
             try
@@ -96,6 +103,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
+        [CustomAuthorizeAttribute("Death", "Delete")]
+
         public async Task<ActionResult> DeleteDeathEvent(Guid id)
         {
             try

@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Query;
 using AppDiv.CRVS.Application.Features.Certificates.Query;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -11,6 +12,8 @@ namespace AppDiv.CRVS.API.Controllers
     {
 
         [HttpPost]
+        [CustomAuthorizeAttribute("Devorce", "Add")]
+
         public async Task<IActionResult> createDivorceEvent([FromBody] CreateDivorceEventCommand command)
         {
             var res = await Mediator.Send(command);
@@ -36,6 +39,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpPut]
+        [CustomAuthorizeAttribute("Devorce", "Update")]
         public async Task<IActionResult> updateDivorceEvent([FromBody] UpdateDivorceEventCommand command)
         {
 
@@ -51,6 +55,8 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpGet("{id}")]
+        [CustomAuthorizeAttribute("Devorce", "Update")]
+
         public async Task<IActionResult> GetById(Guid id)
         {
             return Ok(await Mediator.Send(new GetDivorceEventByIdQuery { Id = id }));

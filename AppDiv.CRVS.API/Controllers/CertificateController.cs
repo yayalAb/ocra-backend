@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using AppDiv.CRVS.Application.Features.Certificates.Command.Verify;
 using AppDiv.CRVS.Application.Features.Certificates.Query.Check;
 using AppDiv.CRVS.Application.Features.Certificates.Command.ReprintRequest;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -27,6 +28,8 @@ namespace AppDiv.CRVS.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
         // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [CustomAuthorizeAttribute("Certificate", "Add")]
+
         public async Task<object> GetCertificate([FromQuery] Guid id, string? serialNo, bool IsPrint = false, bool checkSerialNumber = true)
         {
             return await Mediator.Send(new GenerateCertificateQuery { Id = id, CertificateSerialNumber = serialNo, IsPrint = IsPrint, CheckSerialNumber = checkSerialNumber });
@@ -34,6 +37,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Archive")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        // ??
         public async Task<object> GetArchive([FromQuery] GenerateArchiveQuery query)
         {
             return await Mediator.Send(query);
@@ -48,6 +52,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("Certificate", "Add")]
+        
         public async Task<ActionResult> CreateCertificate(CreateCertificateCommand command)
         {
             return Ok(await Mediator.Send(command));
@@ -55,6 +61,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Certificate", "ReadAll")]
+
         public async Task<PaginatedList<CertificateDTO>> Get([FromQuery] GetAllCertificateQuery query)
         {
             return await Mediator.Send(query);
@@ -68,12 +76,15 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpGet("paidCertificatesByOfficer")]
+        [CustomAuthorizeAttribute("Certificate", "ReadAll")]
         public async Task<PaginatedList<AuthenticationRequestListDTO>> Get([FromQuery] GetAllPaidCertificateByCivilRegistrarQuery query)
         {
             return await Mediator.Send(query);
         }
 
         [HttpGet("onWaitingCertificatesByOfficer")]
+        [CustomAuthorizeAttribute("Printed", "ReadAll")]
+
         public async Task<PaginatedList<PaidCertificateDTO>> GetAllOnWaiting([FromQuery] OnWaitingCertificateQuery query)
         {
             return await Mediator.Send(query);
@@ -81,6 +92,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpGet("unPaidCertificatesByOfficer")]
+        [CustomAuthorizeAttribute("Payment", "ReadAll")]
         public async Task<PaginatedList<UnPaidCertificateDTO>> Get([FromQuery] GetAllUnPaidCertificateByCivilRegistrarQuery query)
         {
             return await Mediator.Send(query);
@@ -95,6 +107,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("DraftList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("InProgress", "ReadAll")]
+
         public async Task<object> Get([FromQuery] EventDraftListQuery query)
         {
             return await Mediator.Send(query);
@@ -104,6 +118,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("InProgress", "ReadAll")]
         public async Task<CertificateDTO> Get(Guid id)
         {
             return await Mediator.Send(new GetCertificateByIdQuery(id));
@@ -111,6 +126,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Reprint")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        // [CustomAuthorizeAttribute("Certificate", "Update")]
+
         public async Task<object> GetReprint([FromQuery] ReprintCertificateCommand query)
         {
             return await Mediator.Send(query);
@@ -137,6 +154,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("History")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Certificate", "ReadSingle")]
+
         public async Task<EventHistoryDto> GetHistory([FromQuery] GetCertificateHistoryQuery query)
         {
             return await Mediator.Send(query);
@@ -153,6 +172,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("Certificate", "Update")]
+
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateCertificateCommand command)
         {
             try
@@ -173,6 +194,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpPut("Verify")]
+        // [CustomAuthorizeAttribute("Certificate", "Update")]
         public async Task<ActionResult> VerifyCertificate(VerifyCertificateCommand command)
         {
             var result = await Mediator.Send(command);
@@ -182,6 +204,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpDelete("Delete/{id}")]
+        [CustomAuthorizeAttribute("Certificate", "Delete")]
+
         public async Task<ActionResult> DeleteCertificate(Guid id)
         {
             try

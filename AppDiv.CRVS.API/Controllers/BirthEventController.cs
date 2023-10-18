@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Features.BirthEvents.Command.Delete;
 using AppDiv.CRVS.Application.Features.BirthEvents.Command.Update;
 using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.Certificates.Query;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -16,6 +17,7 @@ namespace AppDiv.CRVS.API.Controllers
         // Create birth event
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("Birht", "Add")]
         public async Task<ActionResult> CreateBirthEvent(CreateBirthEventCommand command)
         {
             try
@@ -49,6 +51,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         // Get birth event by id
         [HttpGet("{id}")]
+        [CustomAuthorizeAttribute("Birht", "GetSingle")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<BirthEventDTO> Get(Guid id)
         {
@@ -57,6 +60,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         // Edit birth event
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("Birht", "Update")]
+        
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateBirthEventCommand command)
         {
             try
@@ -87,6 +92,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         // Delete birth event
         [HttpDelete("Delete/{id}")]
+        [CustomAuthorizeAttribute("Birht", "Delete")]
         public async Task<ActionResult> DeleteBirthEvent(Guid id)
         {
             try

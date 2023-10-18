@@ -1,3 +1,4 @@
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Create;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Commands.Update;
 using AppDiv.CRVS.Application.Features.AdoptionEvents.Queries.GetById;
@@ -23,6 +24,7 @@ namespace AppDiv.CRVS.API.Controllers
             _Ilog = Ilog; ;
         }
         [HttpPost("Create")]
+        [CustomAuthorizeAttribute("adoption", "Add")]
         public async Task<ActionResult> CreateAdoption([FromBody] CreateAdoptionCommand command)
         {
             var res = await _mediator.Send(command);
@@ -48,6 +50,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpPut]
+        [CustomAuthorizeAttribute("adoption", "Update")]
+
         public async Task<IActionResult> update([FromBody] UpdateAdoptionCommand command)
         {
             var res = await _mediator.Send(command);
@@ -62,6 +66,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpGet("{id}")]
+        [CustomAuthorizeAttribute("adoption", "Update")]
+
         public async Task<IActionResult> GetAdoptionEventById(Guid id)
         {
             return Ok(await _mediator.Send(new AdoptionEventGetByIdQuery { Id = id }));
