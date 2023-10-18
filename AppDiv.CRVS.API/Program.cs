@@ -231,6 +231,8 @@ app.Use(async (context, next) =>
     context.Response.Headers.Add("Permissions-Policy", "microphone=()");
     await next.Invoke();
 });
+
+
 app.UseRouting();
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
