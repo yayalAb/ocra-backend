@@ -96,7 +96,12 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddSingleton<ITokenGeneratorService>(new TokenGeneratorService(_key, _issuer, _audience, _expirtyMinutes));
 
-
+builder.Services.AddHsts(options =>
+{
+    options.MaxAge = TimeSpan.FromDays(365);
+    options.IncludeSubDomains = true;
+    options.Preload = true;
+});
 
 builder.Services.AddSignalR(o =>
 {
@@ -182,6 +187,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+
     // app.MigrateDatabase();
     using (var scope = app.Services.CreateScope())
     {
@@ -189,8 +195,13 @@ if (app.Environment.IsDevelopment())
         await initialiser.InitialiseAsync();
         //await initialiser.SeedAsync();
     }
+
     app.UseSwagger();
     app.UseSwaggerUI();
+}
+else
+{
+    app.UseHsts();
 }
 
 app.ConfigureExceptionMiddleware();
@@ -211,6 +222,18 @@ app.Use(async (context, next) =>
     context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
     await next();
 });
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Referrer-Policy", "no-referrer");
+    await next.Invoke();
+});
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Permissions-Policy", "microphone=()");
+    await next.Invoke();
+});
+
 
 app.UseRouting();
 app.UseCors("CorsPolicy");
