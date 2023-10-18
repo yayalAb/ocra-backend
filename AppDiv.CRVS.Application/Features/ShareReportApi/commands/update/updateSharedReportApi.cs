@@ -32,6 +32,7 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.commands.update
         public string  Username  { get; set; }  
         public string?  UserRole  { get; set; }    
         public string  Email  { get; set; }
+        public Boolean IsBasicInfo { get; set; } = false;
     }
 
     public class updateSharedReportApiHandler : IRequestHandler<updateSharedReportApi, object>
@@ -57,12 +58,14 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.commands.update
             if(Report==null){
                 throw new NotFoundException("Shared Report with the given Id does't Found"); 
                 }
-                Report.ReportName = request.ReportName;
-                Report.ReportTitle = request.ReportTitle;
-                Report.Agrgate =request.Agrgate;    
-                Report.Filter =request.Filter;    
-                Report.Colums =request.Colums;    
-                Report.Other =request.Other;    
+                if(!request.IsBasicInfo){
+                    Report.ReportName = request.ReportName;
+                    Report.ReportTitle = request.ReportTitle;
+                    Report.Agrgate =request.Agrgate;    
+                    Report.Filter =request.Filter;    
+                    Report.Colums =request.Colums;    
+                    Report.Other =request.Other; 
+                }
                 Report.Username =request.Username; 
                 Report.UserRole =request.UserRole;    
                 Report.Email =request.Email;
