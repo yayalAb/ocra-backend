@@ -47,7 +47,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
                                         From = sn.From,
                                         To = sn.To,
                                         Status = sn.Status,
-                                        SenderName = _userRepository.GetSingle(sn.SenderId).UserName,
+                                        SenderName = sn.SenderId != null ? _userRepository.GetSingle(sn.SenderId).UserName : sn.ReceivedFrom,
                                     })
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
         }
