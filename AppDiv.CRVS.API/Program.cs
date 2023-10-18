@@ -192,6 +192,15 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+else
+{
+    builder.Services.AddHsts(options =>
+  {
+      options.MaxAge = TimeSpan.FromDays(365);
+      options.IncludeSubDomains = true;
+      options.Preload = true;
+  });
+}
 
 app.ConfigureExceptionMiddleware();
 
@@ -211,7 +220,17 @@ app.Use(async (context, next) =>
     context.Response.Headers.Add("X-XSS-Protection", "1; mode=block");
     await next();
 });
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Referrer-Policy", "no-referrer");
+    await next.Invoke();
+});
 
+app.Use(async (context, next) =>
+{
+    context.Response.Headers.Add("Permissions-Policy", "microphone=()");
+    await next.Invoke();
+});
 app.UseRouting();
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
