@@ -20,13 +20,15 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
 
-        [HttpGet("GetReportData")]
-        public async Task<ActionResult> GetReport([FromQuery] GetSharedReportClient query)
+        [HttpPost("GetReportData")]
+        public async Task<ActionResult> GetReport([FromBody] GetSharedReportClient query)
         {
             var result = await _mediator.Send(query);
 
             return Ok(result);
 
         } 
+
+        
 }
 }

@@ -23,8 +23,6 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
     {
         public string ClientId { get; set; }
         public string SHASecret { get; set; }
-        public int? PageCount { get; set; } = 1;
-        public int? PageSize { get; set; } = 10;
 
     }
 
@@ -44,6 +42,9 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
             var SavedReport =  _reportRepository.GetAll().Where(x=>x.ClientId==request.ClientId && x.SHASecret==request.SHASecret).FirstOrDefault();
              if(SavedReport==null){
                 throw new NotFoundException("Wrong Client Id Or SHASecret Key please Check your email!");
+             }
+             if(!SavedReport.Status){
+                throw new NotFoundException("This Api Is Deactivated!");
              }
             List<string>? columns = string.IsNullOrEmpty(SavedReport?.Colums) ? null : SavedReport?.Colums?.Split(',').ToList();
             string? filterse = SavedReport?.Filter;
@@ -71,12 +72,7 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
             if(SavedReport?.ReportName==null){
               throw new NotFoundException("Report Name Must not be null");  
             }
-            var Report =  _reportRepo.GetReportData(SavedReport.ReportName, columns, filterse, aggregates).Result;
-             var reportRes=await PaginatedList<object>
-                            .CreateAsync(
-                                 Report
-                                , request.PageCount ?? 1, request.PageSize ?? 10);
-
+            var Report =  _reportRepo.GetReportData(SavedReport.ReportName, columns, filterse, aggregates).Result;         
             var other=string.IsNullOrEmpty(SavedReport?.Other)? null : JObject.Parse(SavedReport?.Other);
             return new {
                 SavedReport?.ReportName,
@@ -85,7 +81,7 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
                 Filter =filterse,
                 columns,
                 other,
-                reportRes,
+                Report,
             } ;
         }
     }

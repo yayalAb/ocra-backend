@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Features.ShareReportApi.commands.create;
 using AppDiv.CRVS.Application.Features.ShareReportApi.commands.delete;
+using AppDiv.CRVS.Application.Features.ShareReportApi.commands.RefrashToken;
 using AppDiv.CRVS.Application.Features.ShareReportApi.commands.update;
 using AppDiv.CRVS.Application.Features.ShareReportApi.Querys;
 using MediatR;
@@ -49,7 +50,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
       [HttpGet("GetAllSharedReportes")]
-        public async Task<ActionResult> GetReport([FromQuery] getAllSharedReportQueryHandler query)
+        public async Task<ActionResult> GetReport([FromQuery] getAllSharedReportQuery query)
         {
             var result = await _mediator.Send(query);
 
@@ -57,7 +58,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpGet("GetSharedReportById")]
-        public async Task<ActionResult> GetReport([FromQuery] getSharedReportById query)
+        public async Task<ActionResult> GetReportById([FromQuery] getSharedReportById query)
         {
             var result = await _mediator.Send(query);
 
@@ -71,6 +72,23 @@ namespace AppDiv.CRVS.API.Controllers
 
             return Ok(result);
 
-        }      
+        } 
+         [HttpGet("RefrashToken")]
+        public async Task<ActionResult> RefrashToken([FromQuery] RefrashTokenCommand query)
+        {
+            var result = await _mediator.Send(query);
+
+            return Ok(result);
+
+        } 
+         [HttpGet("Deactivate")]
+        public async Task<ActionResult> DeactivateApi([FromQuery] DeactivateApi query)
+        {
+            var result = await _mediator.Send(query);
+            return Ok(result);
+        } 
+
+        
+             
     }
 }

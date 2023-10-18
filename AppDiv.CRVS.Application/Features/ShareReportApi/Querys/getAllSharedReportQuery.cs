@@ -13,7 +13,6 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
     {
         public int? PageCount { set; get; } = 1!;
         public int? PageSize { get; set; } = 10!;
-        public string? SearchString { get; set; }
     }
 
     public class getAllSharedReportQueryHandler : IRequestHandler<getAllSharedReportQuery, PaginatedList<SharedReportResponseDTO>>
@@ -31,7 +30,8 @@ namespace AppDiv.CRVS.Application.Features.ShareReportApi.Querys
                     Id =re.Id,
                     Username =re.Username,
                     UserRole =re.UserRole,
-                    ReportTitle =re.ReportTitle
+                    ReportTitle =re.ReportTitle,
+                    Status=re.Status
                 })
             .PaginateAsync<SharedReportResponseDTO, SharedReportResponseDTO>(request.PageCount ?? 1, request.PageSize ?? 10);
         }
