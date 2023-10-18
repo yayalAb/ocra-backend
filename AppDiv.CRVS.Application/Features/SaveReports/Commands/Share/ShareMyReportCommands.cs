@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands.Share
     // Customer create command with BaseResponse response
     public class ShareMyReportCommands : IRequest<BaseResponse>
     {
-        public Guid Id { get; set; }
+        public string  ReportName { get; set; }
         public Guid[] UsersId { get; set; }
 
     }
@@ -31,9 +31,9 @@ namespace AppDiv.CRVS.Application.Features.SaveReports.Commands.Share
         {
             try
             {
-                var mayreport = await _myReportRepository.GetAsync(request.Id);
+                var mayreport =  _myReportRepository.GetAll().Where(x=>x.ReportName==request.ReportName).FirstOrDefault();
                 if(mayreport==null){
-                 var  Report = await _ReportStoreRepository.GetAsync(request.Id);
+                 var  Report =  _ReportStoreRepository.GetAll().Where(x=>x.ReportName==request.ReportName).FirstOrDefault();
                  if(Report==null){
                     throw new NotFoundException("Report With the Given Id does not Found");
                  }
