@@ -44,13 +44,13 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query.Check
                 var user = _user.GetSingle(request.UserId);
                 if (user != null)
                 {
-                    var inRange = _certificateRange.GetAll().FirstOrDefault(r => r.AddressId == user.AddressId
-                                                                    && request.CertificateSerialNumber.CompareTo(r.From) >= 0
-                                                                    && request.CertificateSerialNumber.CompareTo(r.To) <= 0);
+                    var inRange = _certificateRange.GetAll().Any(r => r.AddressId == user.AddressId
+                                                                    && Convert.ToInt64(request.CertificateSerialNumber) >= Convert.ToInt64(r.From)
+                                                                    && Convert.ToInt64(request.CertificateSerialNumber) <= Convert.ToInt64(r.To));
 
                     bool isDuplicated = _certificateRepository.GetAll().Select(c => c.CertificateSerialNumber)
                                             .Where(c => c == request.CertificateSerialNumber).Any();
-                    if (inRange == null)
+                    if (!inRange)
                     {
                         response.Status = 400;
                         response.Message = "Serial Number out of range";

@@ -51,8 +51,8 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
                 await _CertificateTransferRepository.UpdateWithRangeAsync(certificateTransfer, _userResolver.GetUserId(), cancellationToken);
                 await _notification.CreateNotification(
                             certificateTransfer.Id,
-                            "Certificate Store", 
-                            $"Your Certificate transfer accepted by {certificateTransfer.RecieverId}",
+                            "Certificate Notification", 
+                            $"Your Certificate transfer accepted by {certificateTransfer.Reciever.PersonalInfo.FullNameLang}",
                             null, null, 
                             certificateTransfer.RecieverId, 
                             null, 
