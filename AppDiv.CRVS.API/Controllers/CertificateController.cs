@@ -107,7 +107,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("DraftList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [CustomAuthorizeAttribute("InProgress", "ReadAll")]
+        [CustomAuthorizeAttribute("Unapproved", "ReadAll")]
 
         public async Task<object> Get([FromQuery] EventDraftListQuery query)
         {
@@ -117,9 +117,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [CustomAuthorizeAttribute("InProgress", "ReadAll")]
-        public async Task<CertificateDTO> Get(Guid id)
+        [ProducesResponseType(StatusCodes.Status200OK)]        public async Task<CertificateDTO> Get(Guid id)
         {
             return await Mediator.Send(new GetCertificateByIdQuery(id));
         }
