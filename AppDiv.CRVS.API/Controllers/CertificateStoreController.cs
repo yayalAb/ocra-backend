@@ -37,7 +37,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Recived")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [CustomAuthorizeAttribute("CertificateStoreReceive", "GetAll")]
+        [CustomAuthorizeAttribute("CertificateStoreReceive", "ReadAll")]
 
         public async Task<PaginatedList<CertificateTransferDTO>> Get([FromQuery] GetAllCertificateTransferQuery query)
         {
@@ -46,7 +46,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet("Transferred")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [CustomAuthorizeAttribute("CertificateStoreTransfer", "GetAll")]
+        [CustomAuthorizeAttribute("CertificateStoreTransfer", "ReadAll")]
 
         public async Task<PaginatedList<CertificateTransferDTO>> GetTransfers([FromQuery] GetCertificateTransferByUserQuery query)
         {
