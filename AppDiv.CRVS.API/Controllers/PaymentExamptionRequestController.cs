@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Common;
+﻿using AppDiv.CRVS.API.Helpers;
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Customers.Query;
 using AppDiv.CRVS.Application.Features.PaymentExamptionRequests.Command.Approve;
@@ -15,6 +16,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("Payment", "Add")]
+        
         public async Task<ActionResult> CreatePaymentExamptionRequest(CreatePaymentExamptionRequestCommand command)
         {
             return Ok(await Mediator.Send(command));

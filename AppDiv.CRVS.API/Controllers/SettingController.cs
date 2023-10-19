@@ -1,3 +1,4 @@
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Customers.Command.Create;
@@ -38,6 +39,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("ConfigurationSetting", "ReadAll")]
+
         public async Task<List<SettingDTO>> Get([FromQuery] GetAllSettingQuery query)
         {
             return await _mediator.Send(query);
@@ -46,6 +49,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [CustomAuthorizeAttribute("ConfigurationSetting", "Add")]
+
         public async Task<ActionResult<SettingDTO>> CreateSetting([FromBody] createSettingCommand command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
@@ -67,6 +72,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("ConfigurationSetting", "Update")]
+        
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateSettingCommand command)
         {
             try
@@ -89,6 +96,8 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete/{id}")]
+        [CustomAuthorizeAttribute("ConfigurationSetting", "Delete")]
+
         public async Task<BaseResponse> DeleteSetting(Guid id)
         {
             try

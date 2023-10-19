@@ -17,7 +17,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpGet("GetUserLoging")]
-        [CustomAuthorizeAttribute("userAuditlog", "ReadSingle")]
+        [CustomAuthorizeAttribute("User", "ReadSingle")]
 
         public async Task<IActionResult> GetUserHistory([FromQuery] GetUserLoginHistory query)
         {

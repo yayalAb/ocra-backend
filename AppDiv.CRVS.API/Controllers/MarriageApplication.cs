@@ -5,6 +5,7 @@ using AppDiv.CRVS.Application.Features.MarriageApplications.Command.Update;
 using AppDiv.CRVS.Application.Features.MarriageApplications.Query;
 using AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries.Search;
 using AppDiv.CRVS.Application.Features.Marriage.MarriageApplications.Queries.LastEventRegisteredDate;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -12,6 +13,7 @@ namespace AppDiv.CRVS.API.Controllers
     {
 
         [HttpPost("MarriageApplication")]
+        [CustomAuthorizeAttribute("MarriageApplication", "Add")]
         public async Task<IActionResult> createMarriageApplication([FromBody] CreateMarriageApplicationCommand command)
         {
 
@@ -19,6 +21,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPut("MarriageApplication")]
+        [CustomAuthorizeAttribute("MarriageApplication", "Update")]
+
         public async Task<IActionResult> UpdateMarriageApplication([FromBody] UpdateMarriageApplicationCommand command)
         {
 
@@ -26,11 +30,14 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpGet("MarriageApplication/GetAll")]
+        [CustomAuthorizeAttribute("MarriageApplicationList", "ReadAll")]
+
         public async Task<IActionResult> GetAllMarriageApplications([FromQuery] GetAllMarriageApplicationsQuery query)
         {
             return Ok(await Mediator.Send(query));
         }
         [HttpGet("MarriageApplication/{id}")]
+        [CustomAuthorizeAttribute("MarriageApplication", "Update")]
         public async Task<IActionResult> GetMarriageApplicationById(Guid id)
         {
 

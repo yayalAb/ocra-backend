@@ -1,3 +1,4 @@
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
@@ -58,6 +59,7 @@ namespace AppDiv.CRVS.API.Controllers
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
         public async Task<ActionResult<AddressDTO>> CreateAddress([FromBody] CreateAdderssCommand command)
         {
+
             _Ilog.LogCritical(command.Address.Code);
 
             var result = await _mediator.Send(command);
@@ -73,8 +75,10 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpPost("Merge")]
+        [CustomAuthorizeAttribute("address", "ReadSingle")]
         public async Task<ActionResult<AddressDTO>> MerigeAndSplit([FromBody] MergeAndSplitCommand command)
         {
+            
             var result = await _mediator.Send(command);
             if (result.Success)
             {
@@ -92,11 +96,14 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("address", "Update")]
         public async Task<object> Get(Guid id)
         {
             return await _mediator.Send(new GetAddressByIdQuery(id));
         }
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("address", "Update")]
+
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateaddressCommand command)
         {
             try
@@ -119,6 +126,8 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("address", "Delete")]
+
         public async Task<Object> DeleteAddress([FromBody] DeleteAddressCommand commads)
         {
             try
@@ -178,6 +187,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Country")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("country", "ReadAll")]
+
         public async Task<PaginatedList<CountryDTO>> GetAllCountry([FromQuery] GetAllCountryQuery query)
         {
             return await _mediator.Send(query);
@@ -186,6 +197,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Region")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("region", "ReadAll")]
+
         public async Task<PaginatedList<RegionDTO>> GetAllRegion([FromQuery] GetAllRegionQuery query)
         {
             return await _mediator.Send(query);
@@ -194,6 +207,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Zone")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("zone", "ReadAll")]
+
         public async Task<PaginatedList<ZoneDTO>> GetAllZone([FromQuery] GetAllZoneQuery query)
         {
             return await _mediator.Send(query);
@@ -202,6 +217,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Woreda")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("woreda", "ReadAll")]
+
         public async Task<PaginatedList<WoredaDTO>> GetAllWoreda([FromQuery] GetAllWoredaQuery query)
         {
             return await _mediator.Send(query);
@@ -210,6 +227,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("Kebele")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("kebele", "ReadAll")]
+
         public async Task<PaginatedList<KebeleDTO>> GetAllKebele([FromQuery] GetAllKebeleQuery query)
         {
             return await _mediator.Send(query);
@@ -218,6 +237,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost]
         [Route("Import")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("address", "ReadAll")]
+
         public async Task<ImportAdderssCommandResponse> ImportAddress([FromBody] ImportAdderssCommand command)
         {
             return await _mediator.Send(command);

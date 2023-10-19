@@ -39,6 +39,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [CustomAuthorizeAttribute("Plan", "Add")]
+
         public async Task<ActionResult<PlanDTO>> CreatePlan([FromBody] CreatePlanCommand command)
         {
             // _Ilog.LogCritical(command.Plan);
@@ -61,6 +63,8 @@ namespace AppDiv.CRVS.API.Controllers
             return await _mediator.Send(new GetPlanByIdQuery { Id = id });
         }
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("Plan", "Update")]
+
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdatePlanCommand command)
         {
             try
@@ -83,6 +87,8 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("Plan", "Delete")]
+
         public async Task<Object> DeletePlan([FromBody] DeletePlanCommand commads)
         {
             try
@@ -103,6 +109,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpGet]
         [Route("ParentPlans")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Plan", "ReadAll")]
+
         public async Task<List<PlanGridDTO>> GetParent([FromQuery] GetParentPlanQuery query)
         {
             return await _mediator.Send(query);

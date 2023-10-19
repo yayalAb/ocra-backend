@@ -8,6 +8,7 @@ using AppDiv.CRVS.Application.Features.WorkFlows.Query.GetWorkFlowById;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Update;
 using AppDiv.CRVS.Application.Features.WorkFlows.Commands.Delete;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -29,6 +30,9 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        // WorkFlowSetting
+        [CustomAuthorizeAttribute("WorkFlowSetting", "ReadAll")]
+        
         public async Task<PaginatedList<GetAllWorkFlowDTO>> Get([FromQuery] GetAllWorkFlowQuery query)
         {
             return await _mediator.Send(query);
@@ -37,6 +41,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [CustomAuthorizeAttribute("WorkFlowSetting", "Add")]
+
         public async Task<ActionResult<WorkflowDTO>> CreateGroup([FromBody] CreateWorkFlowCommand command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
@@ -52,12 +58,16 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("WorkFlowSetting", "Update")]
+
         public async Task<WorkflowDTO> Get(Guid id)
         {
             return await _mediator.Send(new GetWorkFlowByIdQuery(id));
         }
 
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("WorkFlowSetting", "Update")]
+
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdateWorkFlowCommand command)
         {
             try
@@ -101,6 +111,8 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("WorkFlowSetting", "Delete")]
+
         public async Task<BaseResponse> DeleteLookup(DeleteWorkFlowCommad command)
         {
             try

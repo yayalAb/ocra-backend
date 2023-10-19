@@ -15,6 +15,7 @@ using AppDiv.CRVS.Application.Features.SaveReports.Commands;
 using AppDiv.CRVS.Application.Features.SaveReports.Query;
 using AppDiv.CRVS.Domain.Entities;
 using AppDiv.CRVS.Application.Features.SaveReports.Commands.Share;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -33,12 +34,15 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("MyReports")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("MyReport", "ReadAll")]
         public async Task<List<MyReports>> Get()
         {
             return await _mediator.Send(new GetMyReports());
         }
         [HttpGet("GetReportById")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("MyReport", "Update")]
+
         public async Task<object> GetMeyReportById([FromQuery] GetMyReportById query)
         {
             return await _mediator.Send(query);
@@ -47,6 +51,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Save")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [CustomAuthorizeAttribute("MyReport", "Create")]
         public async Task<ActionResult> SaveMyReport([FromBody] SaveReportCommand command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
@@ -102,6 +107,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
        [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("MyReport", "Delete")]
+
         public async Task<IActionResult> DeleteMyReport([FromBody] DeleteMyReportCommand command)
         {
             var res = await _mediator.Send(command);
