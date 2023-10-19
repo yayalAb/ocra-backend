@@ -39,7 +39,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [CustomAuthorizeAttribute("ConfigurationSetting", "ReadAll")]
+        [CustomAuthorizeAttribute("ConfigurationSetting", "Update")]
 
         public async Task<List<SettingDTO>> Get([FromQuery] GetAllSettingQuery query)
         {
@@ -49,7 +49,7 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
-        [CustomAuthorizeAttribute("ConfigurationSetting", "Add")]
+        [CustomAuthorizeAttribute("ConfigurationSetting", "Update")]
 
         public async Task<ActionResult<SettingDTO>> CreateSetting([FromBody] createSettingCommand command, CancellationToken token)
         {
