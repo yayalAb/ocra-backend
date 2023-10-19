@@ -26,6 +26,7 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
         public List<Aggregate>? aggregates { get; set; }
         public int? PageCount { get; set; } = 1;
         public int? PageSize { get; set; } = 10;
+        public int? totalCount { get; set; } = 10;
     }
 
     public class GetReportQueryHandler : IRequestHandler<GetReportQuery, object>
@@ -53,17 +54,17 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
             var columnsLang=string.IsNullOrEmpty(reportStore.columnsLang)?"":JsonConvert.DeserializeObject(reportStore.columnsLang); 
             var Report = await _reportRepository.GetReportData(request.reportName, request.columns, request.filterse, request.aggregates, (bool)reportStore.isAddressBased);
 
-            var report=PaginatedList<object>
-                            .CreateAsync(
-                                 Report
-                                , request.PageCount ?? 1, request.PageSize ?? 10);
+            // var report=PaginatedList<object>
+            //                 .CreateAsync(
+            //                      Report
+            //                     , request.PageCount ?? 1, request.PageSize ?? 10);
             var Other=string.IsNullOrEmpty(reportStore.Other)?"": JsonConvert.DeserializeObject(reportStore.Other);              
             return new{
                reportStore.ReportTitle, 
                reportStore.ReportTitleLang,
                columnsLang,
                Other,
-               report
+               Report
             };
 
         }
