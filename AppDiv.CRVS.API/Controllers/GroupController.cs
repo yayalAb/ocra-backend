@@ -10,6 +10,7 @@ using AppDiv.CRVS.Application.Features.Groups.Query.GetGroupById;
 using AppDiv.CRVS.Application.Features.Groups.Commands.Delete;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.Groups.Query.GetDropDownAllGroups;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -31,6 +32,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Group", "ReadAll")]
+        
         public async Task<PaginatedList<FetchGroupDTO>> Get([FromQuery] GetAllGroupQuery query)
         {
             return await _mediator.Send(query);
@@ -52,6 +55,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [CustomAuthorizeAttribute("Group", "Add")]
+
         public async Task<ActionResult<GroupDTO>> CreateGroup([FromBody] CreateGroupCommand command, CancellationToken token)
         {
             var result = await _mediator.Send(command, token);
@@ -67,12 +72,16 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Group", "Update")]
+
         public async Task<GroupDTO> Get(Guid id)
         {
             return await _mediator.Send(new GetGroupbyId(id));
         }
 
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("Group", "Update")]
+
         public async Task<ActionResult> Edit(Guid id, [FromBody] GroupUpdateCommand command)
         {
             try
@@ -95,6 +104,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("Group", "Delete")]
         public async Task<BaseResponse> DeleteLookup([FromBody] DeleteGroupCommands commad)
         {
             try

@@ -1,3 +1,4 @@
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Features.Dashboard;
 using MediatR;
@@ -22,6 +23,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Dashboard", "ReadAll")]
+
         public async Task<object> Get([FromQuery] DashboardQuery query)
         {
             return await _mediator.Send(query);

@@ -12,6 +12,8 @@ using AppDiv.CRVS.Domain.Repositories;
 using AppDiv.CRVS.Application.Interfaces.Persistence;
 using AppDiv.CRVS.Domain.Enums;
 using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Contracts.DTOs;
+using CouchDB.Driver.Query.Extensions;
 
 namespace AppDiv.CRVS.Application.Service
 {
@@ -385,9 +387,6 @@ namespace AppDiv.CRVS.Application.Service
         }
         public async Task<ApplicationUser> GetUserByName(string userName)
         {
-
-
-
             return await _userManager.FindByNameAsync(userName);
         }
         public Task<ApplicationUser> GetUserByIdAsync(string userId)
@@ -421,5 +420,57 @@ namespace AppDiv.CRVS.Application.Service
             await _userManager.UpdateAsync(user);
         }
 
+        public async Task<List<RoleDto>> GetUserRoles(string userId)
+        {
+            var userData =  _userManager.Users.Where(u => u.Id == userId).Include(u => u.UserGroups).FirstOrDefault()
+                                        ??throw new NotFoundException("user not found");
+            var userRoles = userData.UserGroups.SelectMany(ug => ug.Roles
+            .Select(r => new RoleDto
+            {
+                page = r.Value<string>("page") ?? "",
+                title = r.Value<string>("title") ?? "",
+                canAdd = r.Value<bool>("canAdd"),
+                canDelete = r.Value<bool>("canDelete"),
+                canViewDetail = r.Value<bool>("canViewDetail"),
+                canView = r.Value<bool>("canView"),
+                canUpdate = r.Value<bool>("canUpdate")
+            })).GroupBy(r => r.page.Trim(), StringComparer.OrdinalIgnoreCase).Select(g => new RoleDto
+            {
+                page = g.Key,
+                title = g.FirstOrDefault()?.title ?? "",
+                canAdd = g.Aggregate(false, (acc, x) => acc || x.canAdd),
+                canDelete = g.Aggregate(false, (acc, x) => acc || x.canDelete),
+                canUpdate = g.Aggregate(false, (acc, x) => acc || x.canUpdate),
+                canView = g.Aggregate(false, (acc, x) => acc || x.canView),
+                canViewDetail = g.Aggregate(false, (acc, x) => acc || x.canViewDetail)
+            }).ToList();
+            if (userData.CanRegisterEvent != null && userData.CanRegisterEvent == true)
+            {
+                Console.WriteLine($"yyyyyy..........{userData.CanRegisterEvent}");
+                string marriage = Enum.GetName<Page>(Page.Marriage)?.ToLower()!;
+                string birth = Enum.GetName<Page>(Page.Birht)?.ToLower()!;
+                string adoption = Enum.GetName<Page>(Page.Adoption)?.ToLower()!;
+                string death = Enum.GetName<Page>(Page.Death)?.ToLower()!;
+                string divorce = Enum.GetName<Page>(Page.Devorce)?.ToLower()!;
+                string marriageApplication = Enum.GetName<Page>(Page.MarriageApplication)?.ToLower()!;
+                string marriageApplicationList = Enum.GetName<Page>(Page.MarriageApplicationList)?.ToLower()!;
+
+                var pageNamesToMatch = new List<string>
+                    { "marriage","birth","adoption","death","divorce","marriageapplication","marriageapplicationlist"};
+
+                userRoles
+                    .Where(p => pageNamesToMatch.Contains(p.page.ToLower()))
+                    .ToList()
+                    .ForEach(r =>
+                    {
+                        r.canAdd = true;
+                        r.canView = true;
+                        r.canUpdate = true;
+                        r.canViewDetail = true;
+                        r.canDelete = true;
+                    });
+            }
+            return userRoles?? new List<RoleDto>();
+        }
     }
 }

@@ -1,4 +1,5 @@
 
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Create;
 using AppDiv.CRVS.Application.Features.AddressLookup.Commands.Update;
 using AppDiv.CRVS.Application.Features.CertificateTemplatesLookup.Query.GetAllCertificateTemplates;
@@ -22,6 +23,8 @@ namespace AppDiv.CRVS.API.Controllers
             _fileService = fileService;
         }
         [HttpPost("Create")]
+        [CustomAuthorizeAttribute("CertificateTemplateSetting", "Add")]
+
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> CreateCertificateTemplate([FromForm] CreateCertificateTemplateCommand command)
         {
@@ -29,12 +32,16 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpPost("Update")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("CertificateTemplateSetting", "Update")]
+
         public async Task<ActionResult> UpdateCertificateTemplate([FromForm] UpdateCertificateTemplateCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
         [HttpGet]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("CertificateTemplateSetting", "ReadAll")]
+
         public async Task<ActionResult> Get([FromQuery] GetAllCertificateTemplatesQuery query)
         {
             return Ok(await Mediator.Send(query));
@@ -42,6 +49,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetByName")]
         // [ProducesDefaultResponseType(typeof(int))]
+        
         public async Task<IActionResult> GetByName([FromQuery] string name)
         {
             var templateId = await Mediator.Send(new GetCertificateTemplatesByNameQuery { Name = name });

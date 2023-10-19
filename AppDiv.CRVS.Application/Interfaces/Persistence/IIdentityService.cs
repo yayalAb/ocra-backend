@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using AppDiv.CRVS.Application.Common;
+using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Domain;
 using AppDiv.CRVS.Domain.Enums;
 
@@ -31,9 +32,10 @@ namespace AppDiv.CRVS.Application.Interfaces
         Task<bool> CheckPhoneNumber(string phoneNumber);
         Task<Result> DeleteUser(string userId);
         public Task<Result> UnlockUserAsync(string userName);
-        public Task<(Result result , string? userId , IList<string>? roles)> VerifyOtp(string userName, string otp);
+        public Task<(Result result, string? userId, IList<string>? roles)> VerifyOtp(string userName, string otp);
         public Task<(Result result, string? email, string? phone)> ReGenerateOtp(string userId, string otp, DateTime otpExpiry);
-        Task<(bool exists , string? userId)> Exists(string arg, string searchBy);
+        Task<(bool exists, string? userId)> Exists(string arg, string searchBy);
+        Task<List<RoleDto>> GetUserRoles(string userId);
         // string GetUserGroupId(string userId);
     }
 }

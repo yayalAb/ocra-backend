@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -24,6 +25,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpPost("Tranfer")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("CertificateStoreTransfer", "Add")]
+
         public async Task<ActionResult> Create(CreateCertificateTransferCommand command)
         {
             var result = await Mediator.Send(command);
@@ -34,6 +37,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Recived")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("CertificateStoreReceive", "GetAll")]
+
         public async Task<PaginatedList<CertificateTransferDTO>> Get([FromQuery] GetAllCertificateTransferQuery query)
         {
             // query.UserName = User.Identity.Name;
@@ -41,6 +46,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet("Transferred")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("CertificateStoreTransfer", "GetAll")]
+
         public async Task<PaginatedList<CertificateTransferDTO>> GetTransfers([FromQuery] GetCertificateTransferByUserQuery query)
         {
             // query.UserName = User.Identity.Name;
@@ -78,12 +85,17 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpPost("Damaged")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("CertificateStoreDamaged", "Add")]
+
+
         public async Task<ActionResult> Create(CreateDamagedCertificatesCommand command)
         {
             return Ok(await Mediator.Send(command));
         }
 
         [HttpPut("Damaged/{id}")]
+        [CustomAuthorizeAttribute("CertificateStoreDamaged", "Update")]
+
         public async Task<ActionResult> Update([FromRoute] Guid id, [FromBody] UpdateDamagedCertificatesCommand command)
         {
             try
@@ -106,6 +118,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Damaged")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("CertificateStoreDamaged", "ReadAll")]
+
         public async Task<PaginatedList<DamagedCertificatesDTO>> GetDamaged([FromQuery] GetAllDamagedCertificatesQuery query)
         {
             return await Mediator.Send(query);
@@ -113,6 +127,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Damaged/{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("CertificateStoreDamaged", "Update")]
+
         public async Task<DamagedCertificatesDTO> GetDamagedById(Guid id)
         {
             return await Mediator.Send(new GetDamagedCertificateByIdQuery { Id = id });
