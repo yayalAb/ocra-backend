@@ -50,14 +50,13 @@ namespace AppDiv.CRVS.Application.Features.Report.Query
                 };
             }
             var reportStore=_reportStore.GetAll().Where(x=>x.ReportName==request.reportName).FirstOrDefault();
-            // ,
+            var columnsLang=string.IsNullOrEmpty(reportStore.columnsLang)?"":JsonConvert.DeserializeObject(reportStore.columnsLang); 
             var Report = await _reportRepository.GetReportData(request.reportName, request.columns, request.filterse, request.aggregates, (bool)reportStore.isAddressBased);
 
             var report=PaginatedList<object>
                             .CreateAsync(
                                  Report
                                 , request.PageCount ?? 1, request.PageSize ?? 10);
-            var columnsLang=string.IsNullOrEmpty(reportStore.columnsLang)?"":JsonConvert.DeserializeObject(reportStore.columnsLang); 
             var Other=string.IsNullOrEmpty(reportStore.Other)?"": JsonConvert.DeserializeObject(reportStore.Other);              
             return new{
                reportStore.ReportTitle, 
