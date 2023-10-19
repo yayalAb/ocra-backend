@@ -26,7 +26,10 @@ namespace AppDiv.CRVS.API.Controllers
         // [ProducesDefaultResponseType(typeof(int))]
         public async Task<ActionResult> Create(CreateCertificateTransferCommand command)
         {
-            return Ok(await Mediator.Send(command));
+            var result = await Mediator.Send(command);
+            if(!result.Success)
+                return BadRequest(result);
+            return Ok(result);
         }
 
         [HttpGet("Recived")]
