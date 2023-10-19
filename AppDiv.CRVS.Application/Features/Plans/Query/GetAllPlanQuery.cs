@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.Application.Features.Plans.Query
                     EventType = p.EventType,
                     ActiveTargetAmount = p.ActiveTargetAmount,
                     OtherTargetAmount = p.OtherTargetAmount,
-                    Address = $@"{p.Plan.Address.ParentAddress!.ParentAddress!.AddressNameLang}/{p.Plan.Address.ParentAddress!.AddressNameLang}/{p.Plan.Address.AddressNameLang}".Trim('/'),
+                    Address = "hi",
                     BudgetYear = p.Plan.BudgetYear,
                     PlannedDateEt = p.Plan.PlannedDateEt,
                     MalePopulationSize = p.Plan.MalePopulationSize,
