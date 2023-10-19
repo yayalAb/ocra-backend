@@ -22,7 +22,6 @@ using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByParentId;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Import;
 using AppDiv.CRVS.Application.Features.Lookups.Query.Validation;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress;
-using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Service;
 using AppDiv.CRVS.Application.Exceptions;
 
@@ -37,14 +36,11 @@ namespace AppDiv.CRVS.API.Controllers
     {
         private readonly ISender _mediator;
         private readonly ILogger<LookupController> _Ilog;
-        private readonly AuthorizationHelper _authorizationHelper;
 
-        public LookupController(ISender mediator, ILogger<LookupController> Ilog, AuthorizationHelper authorizationHelper)
+        public LookupController(ISender mediator, ILogger<LookupController> Ilog)
         {
             _mediator = mediator;
             _Ilog = Ilog;
-            _authorizationHelper = authorizationHelper;
-            ;
         }
 
 
@@ -90,11 +86,6 @@ namespace AppDiv.CRVS.API.Controllers
         {
             try
             {
-                var isAuthorized = await _authorizationHelper.checkRole(command.Key.Replace("-",string.Empty), "Update","lookup");
-                if (!isAuthorized)
-                {
-                    return Forbid();
-                }
                 if (command.Id == id)
                 {
                     var result = await _mediator.Send(command);
