@@ -263,12 +263,9 @@ app.UseEndpoints(endpoints =>
 app.MapControllers();
 
 //registering background jobs
-// BackgroundJob.Enqueue<IBackgroundJobs>(x => x.job2());
-
-// BackgroundJob.Enqueue<IBackgroundJobs>(x => x.GetEventJob());
-// RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSyncs", x => x.GetEventJob(), Cron.Minutely());
-// RecurringJob.AddOrUpdate<IBackgroundJobs>("marriageApplicationSync", x => x.SyncMarriageApplicationJob(), Cron.Minutely());
-// RecurringJob.AddOrUpdate<IBackgroundJobs>("certificateAndPaymentSync", x => x.SyncCertificatesAndPayments(), Cron.Minutely());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("eventSyncs", x => x.GetEventJob(), Cron.Minutely());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("marriageApplicationSync", x => x.SyncMarriageApplicationJob(), Cron.Minutely());
+RecurringJob.AddOrUpdate<IBackgroundJobs>("certificateAndPaymentSync", x => x.SyncCertificatesAndPayments(), Cron.Minutely());
 
 
 
