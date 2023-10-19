@@ -1,9 +1,11 @@
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Plans.Command.Create;
 using AppDiv.CRVS.Application.Features.Plans.Command.Delete;
 using AppDiv.CRVS.Application.Features.Plans.Command.Update;
 using AppDiv.CRVS.Application.Features.Plans.Query;
+using AppDiv.CRVS.Domain.Enums;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,7 @@ namespace AppDiv.CRVS.API.Controllers
     [ApiController]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin,Member,User")]
     // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+
     public class PlanController : ApiControllerBase
     {
         private readonly ISender _mediator;
@@ -27,6 +30,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("plan", "ReadAll")]
         public async Task<PaginatedList<PlanGridDTO>> Get([FromQuery] GetAllPlanQuery query)
         {
             return await _mediator.Send(query);

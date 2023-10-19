@@ -1,3 +1,4 @@
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Features.LoginHistorys.LogHistory;
 using AppDiv.CRVS.Application.Features.LoginHistorys.Query;
 using Microsoft.AspNetCore.Mvc;
@@ -7,6 +8,8 @@ namespace AppDiv.CRVS.API.Controllers
     public class LoginHistoryController : ApiControllerBase
     {
         [HttpGet]
+        [CustomAuthorizeAttribute("userAuditlog", "ReadAll")]
+
         public async Task<IActionResult> GetAllHistory([FromQuery] GetAllLoginQuery query)
         {
 
@@ -14,6 +17,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpGet("GetUserLoging")]
+        [CustomAuthorizeAttribute("userAuditlog", "ReadSingle")]
+
         public async Task<IActionResult> GetUserHistory([FromQuery] GetUserLoginHistory query)
         {
 
@@ -21,6 +26,7 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpGet("AuditLog")]
+        // ??
         public async Task<IActionResult> AuditLog([FromQuery] GetAllLogHistoryQuery query)
         {
 

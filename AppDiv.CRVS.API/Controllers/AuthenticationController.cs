@@ -15,6 +15,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using AppDiv.CRVS.Application.Features.Authentication.Commands.delete;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -33,6 +34,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
         [HttpGet("Authenticate")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Authentication", "ReadSingle")]
+
         public async Task<ActionResult> Get([FromQuery] AuthenticatCommand query)
         {
             var result = await _mediator.Send(query);
@@ -64,6 +67,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("AuthenticationRequestList")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Authentication", "ReadAll")]
+
         public async Task<object> AuthenticationRequests([FromQuery] GetAuthentcationRequestList query)
         {
             return await _mediator.Send(query);
@@ -71,6 +76,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("Count")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Authentication", "ReadAll")]
+
         public async Task<object> GetCount([FromQuery] GetCount query)
         {
             return await _mediator.Send(query);
@@ -78,11 +85,15 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("RequestByType")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("Authentication", "ReadAll")]
+
         public async Task<PaginatedList<AuthenticationRequestListDTO>> RequestByType([FromQuery] GetRequestByType query)
         {
             return await _mediator.Send(query);
         }
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("Authentication", "Delete")]
+
         public async Task<IActionResult> deleteRequest([FromBody] deleteRequestCommands command)
         {
             var res = await _mediator.Send(command);

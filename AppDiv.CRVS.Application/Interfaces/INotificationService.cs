@@ -20,6 +20,7 @@ namespace AppDiv.CRVS.Application.Interfaces
         public Task RemoveNotification(Guid notificationId, Notification? notificationObj);
         public Task<NotificationData> GetNotification(Guid id);
         public Task RemoveNotificationByRequest(Guid requestId);
+        Task RemoveNotificationByObjId(Guid notificationObjId);
 
 
     }

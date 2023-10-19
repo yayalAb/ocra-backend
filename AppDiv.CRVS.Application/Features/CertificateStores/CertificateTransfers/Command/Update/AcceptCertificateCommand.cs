@@ -49,6 +49,7 @@ namespace AppDiv.CRVS.Application.Features.CertificateStores.CertificateTransfer
             try
             {
                 await _CertificateTransferRepository.UpdateWithRangeAsync(certificateTransfer, _userResolver.GetUserId(), cancellationToken);
+                await _notification.RemoveNotificationByObjId(request.Id);
                 await _notification.CreateNotification(
                             certificateTransfer.Id,
                             "Certificate Notification", 

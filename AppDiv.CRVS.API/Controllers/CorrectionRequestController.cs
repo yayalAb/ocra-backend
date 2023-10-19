@@ -16,6 +16,7 @@ using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DivorceEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.DeathEvents.Command.Update;
 using AppDiv.CRVS.Application.Contracts.DTOs;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -32,6 +33,8 @@ namespace AppDiv.CRVS.API.Controllers
             _Ilog = Ilog; ;
         }
         [HttpPost]
+        [CustomAuthorizeAttribute("CorrectionRequest", "Add")]
+
         public async Task<IActionResult> CorrectionREquest([FromBody] CreateCorrectionRequest command)
         {
              var result = await _mediator.Send(command);
@@ -48,6 +51,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("CorrectionRequest", "ReadAll")]
+
         public async Task<PaginatedList<CorrectionRequestListDTO>> Get([FromQuery] GetAllCorrectionRequest query)
         {
             return await _mediator.Send(query);
@@ -56,12 +61,16 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("CorrectionRequest", "Update")]
+
         public async Task<AddCorrectionRequest> Get(Guid id)
         {
             return await _mediator.Send(new GetCorrectionRequestQuesry(id));
         }
 
         [HttpPut("Edit")]
+        [CustomAuthorizeAttribute("CorrectionRequest", "Update")]
+
         public async Task<ActionResult> Edit(Guid id, [FromBody] updateCorrectionRequestCommand command)
         {
             try
@@ -113,6 +122,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("CorrectionRequest", "Delete")]
+
         public async Task<BaseResponse> DeleteLookup([FromBody] DeleteCorrectionRequestCommad command)
         {
             try
