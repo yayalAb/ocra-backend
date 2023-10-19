@@ -11,7 +11,7 @@ namespace AppDiv.CRVS.API.Controllers
     {
 
         [HttpPost]
-        [CustomAuthorizeAttribute("Payment", "Add")]
+        [CustomAuthorizeAttribute("Payment", "ReadAll")]
 
         public async Task<IActionResult> createPayment([FromBody] CreatePaymentCommand command)
         {
