@@ -232,6 +232,7 @@ namespace AppDiv.CRVS.Infrastructure.Service
                      || (n.EventRegisteredAddress.AdminLevel >= 2 && n.EventRegisteredAddress.ParentAddress.Id == workingAddressId)
                      || (n.EventRegisteredAddress.Id == workingAddressId));
             return await query1
+                    .OrderByDescending(n => n.CreatedAt)
                     .Select(n => new NotificationResponseDTO
                     {
                         Id = n.Id,
