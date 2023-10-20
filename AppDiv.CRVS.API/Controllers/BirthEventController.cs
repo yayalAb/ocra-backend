@@ -51,7 +51,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         // Get birth event by id
         [HttpGet("{id}")]
-        [CustomAuthorizeAttribute("Birht", "ReadSingle")]
+        [CustomAuthorizeAttribute("Birht", "Update")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<BirthEventDTO> Get(Guid id)
         {
