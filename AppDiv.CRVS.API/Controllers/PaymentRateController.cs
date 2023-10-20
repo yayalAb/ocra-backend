@@ -1,4 +1,5 @@
-﻿using AppDiv.CRVS.Application.Common;
+﻿using AppDiv.CRVS.API.Helpers;
+using AppDiv.CRVS.Application.Common;
 using AppDiv.CRVS.Application.Contracts.DTOs;
 using AppDiv.CRVS.Application.Features.Customers.Query;
 using AppDiv.CRVS.Application.Features.Lookups.Query.GetAllUser;
@@ -25,6 +26,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
+        
+        [CustomAuthorizeAttribute("PaymentRateSetting", "Add")]
         public async Task<ActionResult> CreatePaymentRate(CreatePaymentRateCommand command)
         {
             var result = await Mediator.Send(command);
@@ -41,6 +44,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("PaymentRateSetting", "ReadAll")]
+
         public async Task<PaginatedList<FetchPaymentRateDTO>> Get([FromQuery] GetAllPaymentRateQuery query)
         {
             return await Mediator.Send(query);
@@ -48,6 +53,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("PaymentRateSetting", "Update")]
+
         public async Task<PaymentRateDTO> Get(Guid id)
         {
             return await Mediator.Send(new GetPaymentRateByIdQuery(id));
@@ -55,6 +62,7 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("PaymentRateSetting", "Update")]
         public async Task<ActionResult> Edit(Guid id, [FromBody] UpdatePaymentRateCommand command)
         {
             try
@@ -76,6 +84,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("PaymentRateSetting", "Delete")]
+
         public async Task<ActionResult> DeletePaymentRate([FromBody] DeletePaymentRateCommand command)
         {
             try

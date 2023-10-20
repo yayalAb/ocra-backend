@@ -22,6 +22,8 @@ using AppDiv.CRVS.Application.Features.Lookups.Query.GetLookupByParentId;
 using AppDiv.CRVS.Application.Features.Lookups.Command.Import;
 using AppDiv.CRVS.Application.Features.Lookups.Query.Validation;
 using AppDiv.CRVS.Application.Features.AddressLookup.Query.GetDefualtAddress;
+using AppDiv.CRVS.Application.Service;
+using AppDiv.CRVS.Application.Exceptions;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -34,15 +36,17 @@ namespace AppDiv.CRVS.API.Controllers
     {
         private readonly ISender _mediator;
         private readonly ILogger<LookupController> _Ilog;
+
         public LookupController(ISender mediator, ILogger<LookupController> Ilog)
         {
             _mediator = mediator;
-            _Ilog = Ilog; ;
+            _Ilog = Ilog;
         }
 
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+
         public async Task<List<LookupForGridDTO>> Get([FromQuery] GetAllLookupQuery query)
         {
             return await _mediator.Send(query);

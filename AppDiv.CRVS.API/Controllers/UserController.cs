@@ -11,6 +11,7 @@ using AppDiv.CRVS.Application.Features.User.Command.CheckDuplication;
 using AppDiv.CRVS.Application.Features.Auth.YourTeam;
 using AppDiv.CRVS.Application.Features.User.Command.UpdateUserName;
 using AppDiv.CRVS.Application.Features.ProfileChangeRequests.Commands.Create;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -19,6 +20,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpPost("Create")]
         // [ProducesDefaultResponseType(typeof(int))]
+        [CustomAuthorizeAttribute("User", "Add")]
+
         public async Task<ActionResult> CreateUser(CreateUserCommand command)
         {
             var res = await Mediator.Send(command);
@@ -32,6 +35,7 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetUserDetailsByUserName/{userName}")]
         [ProducesDefaultResponseType(typeof(UserResponseDTO))]
+
         public async Task<IActionResult> GetUserDetailsByUserName(string userName)
         {
             var result = await Mediator.Send(new GetUserDetailsByUserNameQuery() { UserName = userName });
@@ -40,6 +44,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("GetAll")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("User", "ReadAll")]
+
         public async Task<PaginatedList<UserResponseDTO>> Get([FromQuery] GetAllUserQuery query)
         {
             return await Mediator.Send(query);
@@ -47,6 +53,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [CustomAuthorizeAttribute("User", "Update")]
+
         public async Task<FetchSingleUserResponseDTO> Get(string id)
         {
             return await Mediator.Send(new GetUserByIdQuery(id));
@@ -54,6 +62,8 @@ namespace AppDiv.CRVS.API.Controllers
 
 
         [HttpPut("Edit/{id}")]
+        [CustomAuthorizeAttribute("User", "Update")]
+
         public async Task<ActionResult> Edit(string id, [FromBody] UpdateUserCommand command)
         {
             try
@@ -75,6 +85,8 @@ namespace AppDiv.CRVS.API.Controllers
         }
 
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("User", "Delete")]
+
         public async Task<ActionResult> DeleteUser([FromBody] DeleteUserCommand command)
         {
             try

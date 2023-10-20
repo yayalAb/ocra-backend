@@ -4,6 +4,7 @@ using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Create;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Command.Update;
 using AppDiv.CRVS.Application.Features.MarriageEvents.Query;
 using AppDiv.CRVS.Application.Features.Certificates.Query;
+using AppDiv.CRVS.API.Helpers;
 
 namespace AppDiv.CRVS.API.Controllers
 {
@@ -11,6 +12,7 @@ namespace AppDiv.CRVS.API.Controllers
     {
 
         [HttpPost]
+        [CustomAuthorizeAttribute("Marriage", "Add")]
         public async Task<IActionResult> createMarriageEvent([FromBody] CreateMarriageEventCommand command)
         {
 
@@ -37,6 +39,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpPut]
+        [CustomAuthorizeAttribute("Marriage", "Update")]
         public async Task<IActionResult> updateMarriageEvent([FromBody] UpdateMarriageEventCommand command)
         {
 
@@ -52,6 +55,7 @@ namespace AppDiv.CRVS.API.Controllers
             }
         }
         [HttpGet("{id}")]
+        [CustomAuthorizeAttribute("Marriage", "Update")]
         public async Task<IActionResult> GetById(Guid id)
         {
 

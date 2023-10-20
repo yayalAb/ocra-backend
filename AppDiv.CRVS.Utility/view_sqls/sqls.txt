@@ -1,8 +1,20 @@
 1. Address_view
 create view view_address as
-select con.AddressNameStr as Country, reg.AddressNameStr as Region,zone.AddressNameStr as Zone,
-		we.AddressNameStr as woreda,ke.AddressNameStr as Kebele,
+select con.AddressNameStr as Country, 
+		reg.AddressNameStr as Region,
+        reg.AddressNameStr ->> '$.or'  as RegionOr,
+        reg.AddressNameStr ->> '$.am'  as RegionAm,
+		zone.AddressNameStr as Zone,
+        zone.AddressNameStr ->> '$.or'  as ZoneOr,
+        zone.AddressNameStr ->> '$.am'  as ZoneAm,
+		we.AddressNameStr as woreda,
+        we.AddressNameStr ->> '$.or'  as woredaOr,
+        we.AddressNameStr ->> '$.am'  as woredaAm,
+        ke.AddressNameStr as Kebele,
+        ke.AddressNameStr ->> '$.or'  as KebeleOr,
+        ke.AddressNameStr ->> '$.am'  as KebeleAm,
         ifnull(ke.id,ifNull(we.id,ifNull(zone.id,ifNull(reg.id,con.id)))) as addId,
+        ifnull(ke.AreaTypeLookupId,ifNull(we.AreaTypeLookupId,ifNull(zone.AreaTypeLookupId,ifNull(reg.AreaTypeLookupId,con.AreaTypeLookupId)))) as AreaTypeId,
         con.id as conid,reg.id as regid,zone.id as zoneid,we.id as weId,ke.id keId
 from (select * from Addresses where ParentAddressId is null) as con
 left join Addresses as reg on reg.ParentAddressId = con.id

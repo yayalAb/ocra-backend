@@ -149,7 +149,7 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                 
                 reportName = this.SanitizeString(reportName);
                 if(string.IsNullOrEmpty(groupBySql)){
-                  sql = $"SELECT {aggregateSql} FROM `{reportName}` {filters}";
+                  sql = $"SELECT  {aggregateSql} FROM `{reportName}` {filters}";
                 }else{
                     if (aggregateSql.EndsWith(","))
                         {
@@ -495,10 +495,10 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                  string TodaysDateStr =_convertor.GetBudgetYear();// TodaysDate.ToString("yyyy/M/d H:mm:ss");
                  if((bool)colums2?.Contains("EventRegDate") && (string.IsNullOrEmpty(filters)|| !filters.Contains("EventRegDate") )){
                     if(string.IsNullOrEmpty(filters)){
-                      filters=$"EventRegDate > '{ TodaysDateStr }' ";
+                      filters=$" EventRegDate > '{ TodaysDateStr }' ";
 
                     }else{
-                      filters +=$"and EventRegDate > '{ TodaysDateStr }' ";
+                      filters +=$" and EventRegDate > '{ TodaysDateStr }' ";
                     }
                  }
 
@@ -507,21 +507,21 @@ namespace AppDiv.CRVS.Infrastructure.Persistence
                         if(!string.IsNullOrEmpty(address.Item1)){
 
                             if(string.IsNullOrEmpty(filters)){
-                            filters=$"{address.Item1} ='{ address.Item3}' ";
+                            filters=$" {address.Item1} ='{ address.Item3}' ";
 
                             }
                             else{
-                            filters+=$"and {address.Item1} ='{ address.Item3}'";
+                            filters+=$" and {address.Item1} ='{ address.Item3}'";
                         }
                     }
                     if(!string.IsNullOrEmpty(address.Item2)){
                         ColumsList=ColumsList+", "+address.Item2;
                         if(string.IsNullOrEmpty(groupBySql)){
-                        groupBySql=$"GROUP BY {address.Item2} ";
+                        groupBySql=$" GROUP BY {address.Item2} ";
 
                         }
                         else{
-                        groupBySql+=$", {address.Item2}";
+                        groupBySql+=$" , {address.Item2}";
                         }
                     }
                  }

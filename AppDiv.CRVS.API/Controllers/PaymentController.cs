@@ -1,6 +1,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using AppDiv.CRVS.Application.Features.Payments.Command.Create;
+using AppDiv.CRVS.API.Helpers;
 // using AppDiv.CRVS.Application.Features.Payments.Command.Update;
 // using AppDiv.CRVS.Application.Features.Payments.Query;
 
@@ -10,6 +11,8 @@ namespace AppDiv.CRVS.API.Controllers
     {
 
         [HttpPost]
+        [CustomAuthorizeAttribute("Payment", "ReadAll")]
+
         public async Task<IActionResult> createPayment([FromBody] CreatePaymentCommand command)
         {
 

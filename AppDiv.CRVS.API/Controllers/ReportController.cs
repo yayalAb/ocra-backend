@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AppDiv.CRVS.API.Helpers;
 using AppDiv.CRVS.Application.Features.Report.Commads;
 using AppDiv.CRVS.Application.Features.Report.Commads.Delete;
 using AppDiv.CRVS.Application.Features.Report.Commads.Update;
@@ -27,6 +28,8 @@ namespace AppDiv.CRVS.API.Controllers
         [HttpPost("Create")]
         // [ProducesResponseType(StatusCodes.Status200OK)]
         // [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
+        [CustomAuthorizeAttribute("Report", "Add")]
+
         public async Task<ActionResult> CreateGroup([FromBody] CreateReportCommad command)
         {
             var result = await _mediator.Send(command);
@@ -48,6 +51,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpGet("GetReportList")]
+        [CustomAuthorizeAttribute("Report", "ReadAll")]
+
         public async Task<ActionResult> GetReport([FromQuery] GetReportsList query)
         {
             var result = await _mediator.Send(query);
@@ -56,6 +61,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpPut("UpdateReport")]
+        [CustomAuthorizeAttribute("Report", "Update")]
+
         public async Task<ActionResult> UpdateReport([FromBody] UpdateReportCommand query)
         {
             var result = await _mediator.Send(query);
@@ -72,6 +79,8 @@ namespace AppDiv.CRVS.API.Controllers
 
         }
         [HttpDelete("Delete")]
+        [CustomAuthorizeAttribute("Report", "Delete")]
+
         public async Task<ActionResult> Delete([FromBody] DeleteReportCommand query)
         {
             var result = await _mediator.Send(query);

@@ -41,17 +41,15 @@ public class AuthorizeActionFilter : IAuthorizationFilter
         var roles = await _identityService.GetUserRoles(userId);
         var addressPages = new string[]{"country","region","zone","woreda","kebele"};
         var auditLogPages = new string[]{"userauditlog","eventauditlog", "workhistoryauditlog","systemauditlog","transactionaudit"};
-        var role = roles.Where(r => 
+        var userRoles = roles.Where(r => 
                         _ControllerName.ToLower() == "address"
                         ? addressPages.Contains(r.page.ToLower()) 
                         :_ControllerName.ToLower() == "auditlog"
                         ?auditLogPages.Contains(r.page.ToLower())
-                        :_ControllerName.ToLower() == "lookup"
-                        ? r.page.ToLower().Contains("lookup")
-                        : r.page.ToLower() == _ControllerName.ToLower()).FirstOrDefault();
+                        : r.page.ToLower() == _ControllerName.ToLower()).ToList();
         bool isAuthorized = false;
 
-        if (role == null)
+        if (userRoles == null || userRoles?.Count == 0)
         {
             context.Result = new ForbidResult();
             return;
@@ -60,15 +58,15 @@ public class AuthorizeActionFilter : IAuthorizationFilter
         switch (_ControllerAction)
         {
             case "ReadAll":
-                isAuthorized = role.canView; break;
+                isAuthorized = userRoles.Where(r => r.canView).Any(); break;
             case "ReadSingle":
-                isAuthorized = role.canViewDetail; break;
+                isAuthorized = userRoles.Where(r => r.canViewDetail).Any(); break;
             case "Update":
-                isAuthorized = role.canUpdate; break;
+                isAuthorized = userRoles.Where(r => r.canUpdate).Any(); break;
             case "Delete":
-                isAuthorized = role.canDelete; break;
+                isAuthorized = userRoles.Where(r => r.canDelete).Any(); break;
             case "Add":
-                isAuthorized = role.canAdd; break;
+                isAuthorized =userRoles.Where(r => r.canAdd).Any(); break;
         }
         if (!isAuthorized)
         {
