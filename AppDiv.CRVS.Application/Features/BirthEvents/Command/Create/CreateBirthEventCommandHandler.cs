@@ -164,6 +164,9 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                     await _smsService.SendBulkSMS(msgRecepients, message);
                                 }
                                 // Save Changes. 
+
+                                // }
+                            }
                                 await _birthEventRepository.SaveChangesAsync(cancellationToken);
                                 response.Message = "Birth Event created Successfully";
                                 response.Status = 200;
@@ -175,9 +178,6 @@ namespace AppDiv.CRVS.Application.Features.BirthEvents.Command.Create
                                     await transaction.CommitAsync();
                                     _birthEventRepository.TriggerPersonalInfoIndex();
                                 }
-
-                                // }
-                            }
                         }
                         catch (System.Exception ex)
                         {

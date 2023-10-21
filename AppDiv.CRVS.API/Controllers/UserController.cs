@@ -53,8 +53,6 @@ namespace AppDiv.CRVS.API.Controllers
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [CustomAuthorizeAttribute("User", "Update")]
-
         public async Task<FetchSingleUserResponseDTO> Get(string id)
         {
             return await Mediator.Send(new GetUserByIdQuery(id));

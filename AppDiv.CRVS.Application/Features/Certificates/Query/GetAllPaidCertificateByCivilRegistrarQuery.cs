@@ -86,6 +86,7 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
                                 IsCertified = e.IsCertified,
                                 HasPendingDocumentApproval = e.HasPendingDocumentApproval,
                                 IsReprint = (e.ReprintWaiting&& (bool)e.IsOfflineReg),
+                                CanApprove = true
 
                             })
                             //   .Select(e => new PaidCertificateDTO
