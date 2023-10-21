@@ -145,9 +145,8 @@ namespace AppDiv.CRVS.Application.Features.Certificates.Query
 				}
 				var verfication_requests = _VerficationRequestRepository.GetAll()
 					.Where(x => x.EventId == selectedEvent.Id).FirstOrDefault();
-					if(verfication_requests==null)
-					{
-							var Workflow = _WorkflowRepository.GetAll()
+				if(verfication_requests==null || selectedEvent.IsVerified){
+				var Workflow = _WorkflowRepository.GetAll()
 				.Include(x => x.Steps)
 				.Where(wf => wf.workflowName == "verification").FirstOrDefault();
 				if (Workflow==null|| (Workflow.Steps.FirstOrDefault() == null))
